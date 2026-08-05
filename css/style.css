@@ -781,6 +781,52 @@ h1, h2 { font-family: var(--serif); font-weight: 500; letter-spacing: 0.002em; t
   .section { padding: 76px 0; }
 }
 
+/* ---------- Handy-Feinschliff ---------- */
+
+@media (max-width: 560px) {
+  .container { padding: 0 22px; }
+
+  .section { padding: 64px 0; }
+  .section-head { margin-bottom: 44px; }
+
+  .hero-inner { padding-top: 84px; padding-bottom: 84px; }
+
+  .hero-actions { flex-direction: column; gap: 12px; }
+  .hero-actions .btn { width: 100%; }
+
+  .cta-band { padding: 76px 22px; }
+  .cta-band .btn { display: flex; width: 100%; margin: 0 0 12px; }
+
+  .hero-status {
+    flex-wrap: wrap;
+    row-gap: 8px;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    margin-top: 38px;
+  }
+
+  .card { padding: 30px 24px; }
+
+  .stat { padding: 28px 22px; }
+  .stat-value { font-size: 1.9rem; }
+
+  .pipeline-step { grid-template-columns: 46px 1fr; gap: 16px; padding: 30px 0; }
+  .step-num { font-size: 1.3rem; }
+
+  .timeline-item { padding: 0 0 36px 40px; }
+
+  .compare-cell { padding: 18px 20px; }
+
+  .pull-quote { padding-left: 20px; }
+
+  .contact-box { padding: 30px 24px; }
+
+  .founder-figure { max-width: none; }
+
+  .footer-top { padding-bottom: 40px; }
+  .site-footer { padding-top: 56px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
