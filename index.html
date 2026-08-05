@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JKHD — Quantitative Systeme &amp; Software</title>
+  <meta name="description" content="JKHD entwickelt quantitative Handelssysteme, Software und Automatisierung. Daten statt Bauchgefühl.">
+  <meta name="theme-color" content="#060607">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JKHD">
+  <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta property="og:url" content="https://www.jkhd.de/">
+  <link rel="canonical" href="https://www.jkhd.de/">
+  <meta property="og:title" content="JKHD — Quantitative Systeme &amp; Software">
+  <meta property="og:description" content="Quantitative Handelssysteme, Software und Automatisierung — entwickelt mit ehrlicher Statistik, betrieben rund um die Uhr.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "JKHD",
+    "url": "https://www.jkhd.de",
+    "email": "elite@jkhd.de",
+    "description": "JKHD entwickelt quantitative Handelssysteme, Software und Automatisierung — mit ehrlicher Statistik, betrieben rund um die Uhr.",
+    "founder": { "@type": "Person", "name": "Julian Kaiser" }
+  }
+  </script>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <canvas id="depthgrid" class="page-canvas" aria-hidden="true"></canvas>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+        <span class="brand-word">JKHD</span>
+      </a>
+      <nav class="site-nav" aria-label="Hauptnavigation">
+        <a href="index.html" class="active">Start</a>
+        <a href="system.html">System</a>
+        <a href="leistungen.html">Leistungen</a>
+        <a href="projekte.html">Projekte</a>
+        <a href="ueber.html">Über</a>
+        <a href="kontakt.html">Kontakt</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Menü öffnen">☰</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <canvas id="dataviz" class="hero-canvas" aria-hidden="true"></canvas>
+    <div class="mark-watermark" data-parallax="0.1" aria-hidden="true">
+      <svg viewBox="0 0 100 100"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+    </div>
+    <div class="container hero-inner">
+      <p class="kicker">Unabhängiges Quant-Projekt — Deutschland</p>
+      <h1>Quantitative Systeme.<br>Software. <span class="accent">Automatisierung.</span></h1>
+      <p class="hero-sub">
+        JKHD entwickelt datengetriebene Handelssysteme und die Software-Infrastruktur
+        dahinter — vom Research auf echten Marktdaten bis zum überwachten Betrieb
+        rund um die Uhr.
+      </p>
+      <div class="hero-actions">
+        <a href="system.html" class="btn btn-primary">Das System</a>
+        <a href="kontakt.html" class="btn btn-ghost">Kontakt aufnehmen</a>
+      </div>
+      <p class="hero-status"><span class="live-dot"></span> System aktiv &nbsp;·&nbsp; Daten live &nbsp;·&nbsp; Überwachung 24/7</p>
+    </div>
+  </section>
+
+  <!-- ================= TICKER ================= -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <div class="ticker-group">
+        <span>Echte CME-Tick-Daten</span>
+        <span>Ehrliche Statistik</span>
+        <span>Multiple-Testing-Korrektur</span>
+        <span>White's Reality Check</span>
+        <span>Trailing-Drawdown-Kontrolle</span>
+        <span>Überwachung 24/7</span>
+        <span>Alles versioniert</span>
+      </div>
+      <div class="ticker-group">
+        <span>Echte CME-Tick-Daten</span>
+        <span>Ehrliche Statistik</span>
+        <span>Multiple-Testing-Korrektur</span>
+        <span>White's Reality Check</span>
+        <span>Trailing-Drawdown-Kontrolle</span>
+        <span>Überwachung 24/7</span>
+        <span>Alles versioniert</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= WAS IST JKHD? ================= -->
+  <section class="section">
+    <div class="container split">
+      <div>
+        <p class="kicker">Was ist JKHD?</p>
+        <h2>Einfach erklärt</h2>
+        <p style="margin-top:16px; color:var(--muted);">
+          JKHD ist ein unabhängiges Quant-Projekt aus Deutschland. Wir bringen Computern
+          bei, Finanzmärkte zu lesen — nicht mit Meinungen oder Bauchgefühl, sondern mit
+          Rohdaten: jeder Tick, jeder Kurs, jede Millisekunde wird gespeichert und
+          ausgewertet.
+        </p>
+        <p style="margin-top:16px; color:var(--muted);">
+          In diesen Daten sucht unser System nach wiederkehrenden Mustern. Die meisten
+          Ideen sterben dabei — und genau das ist der Punkt: Nur was kompromisslose
+          statistische Tests übersteht, darf am Ende automatisch handeln. Und was
+          handelt, wird rund um die Uhr überwacht.
+        </p>
+      </div>
+      <div>
+        <p class="kicker">In drei Sätzen</p>
+        <ul class="check-list">
+          <li><strong style="color:var(--text);">Sammeln</strong> — Wir speichern rohe Marktdaten, tick-genau und ungefiltert.</li>
+          <li><strong style="color:var(--text);">Testen</strong> — Ein Muster zählt erst, wenn es ehrliche Statistik übersteht.</li>
+          <li><strong style="color:var(--text);">Handeln &amp; wachen</strong> — Nur geprüfte Systeme handeln, überwacht 24/7.</li>
+        </ul>
+        <a href="system.html" class="btn btn-ghost" style="margin-top:32px;">Zum System im Detail</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= KENNZAHLEN ================= -->
+  <section class="stat-band" aria-label="Kennzahlen">
+    <div class="container stat-grid">
+      <div class="stat">
+        <span class="stat-value">24/7</span>
+        <span class="stat-label">Überwachter Betrieb</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">2</span>
+        <span class="stat-label">Alpha-Familien im Research</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">100&nbsp;%</span>
+        <span class="stat-label">Versioniert &amp; reproduzierbar</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">0</span>
+        <span class="stat-label">Geschönte Backtests</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DAS SYSTEM (Pipeline) ================= -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">Das System</p>
+        <h2>Eine Pipeline, kein Bauchgefühl</h2>
+        <p>Jede Handelsentscheidung bei JKHD durchläuft dieselbe Strecke — von den
+           Rohdaten bis zum überwachten Betrieb. Kein Schritt wird übersprungen.</p>
+      </div>
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <span class="step-num">01</span>
+          <div>
+            <h3>Echte Marktdaten</h3>
+            <p>Tick-genaue Futures-Daten der CME von einem professionellen Datenanbieter —
+               unverfälscht, vollständig, börsengenau.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <span class="step-num">02</span>
+          <div>
+            <h3>Alpha-Research</h3>
+            <p>Zwei Signal-Familien — Impuls (Momentum) und Überdehnung (Mean-Reversion) —
+               werden systematisch über tausende Parameter-Kombinationen getestet.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <span class="step-num">03</span>
+          <div>
+            <h3>Statistische Härtetests</h3>
+            <p>Multiple-Testing-Korrektur, White's Reality Check und Out-of-Sample-Bestätigung:
+               Was auch nur nach Zufall aussehen könnte, wird verworfen.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <span class="step-num">04</span>
+          <div>
+            <h3>Risiko &amp; Konto-Ökonomie</h3>
+            <p>Trailing-Drawdown-Grenzen, Tagesverlust-Limits und ein Mark-to-Market-Breaker,
+               der im Ernstfall sofort stoppt — je Konto einzeln geführt.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <span class="step-num">05</span>
+          <div>
+            <h3>Betrieb &amp; Überwachung</h3>
+            <p>24/7-Dauerbetrieb mit Watchdogs, Selbstheilung und Drift-Erkennung:
+               Weicht ein System live von der Erwartung ab, schlägt es Alarm.</p>
+          </div>
+        </div>
+      </div>
+      <a href="system.html" class="btn btn-ghost" style="margin-top:44px;">Das System im Detail</a>
+    </div>
+  </section>
+
+  <!-- ================= WAS JKHD AUSMACHT ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">Was JKHD ausmacht</p>
+        <h2>Vier Prinzipien, keine Ausnahmen</h2>
+        <p>Man kann vieles kopieren — Prinzipien nicht. Diese vier gelten bei JKHD
+           für jede Zeile Code und jede Entscheidung.</p>
+      </div>
+      <div class="card-grid card-grid-2">
+        <div class="card">
+          <span class="card-num">01</span>
+          <h3>Ehrlichkeit vor Ergebnis</h3>
+          <p>Wir berichten, was die Daten sagen — auch wenn es unbequem ist.
+             Ein verworfenes Signal ist ein Erfolg der Methode, kein Misserfolg.</p>
+        </div>
+        <div class="card">
+          <span class="card-num">02</span>
+          <h3>Alles aus einer Hand</h3>
+          <p>Daten, Research, Software und Betrieb entstehen bei JKHD selbst.
+             Keine zugekaufte Blackbox, kein fremder Code, den niemand versteht.</p>
+        </div>
+        <div class="card">
+          <span class="card-num">03</span>
+          <h3>Regeln vor Emotionen</h3>
+          <p>Jede Entscheidung ist vorab definiert. Im Betrieb handelt das System —
+             diszipliniert, wiederholbar, ohne Bauchgefühl.</p>
+        </div>
+        <div class="card">
+          <span class="card-num">04</span>
+          <h3>Gebaut für den Ernstfall</h3>
+          <p>Breaker, Alarme, Selbstheilung: Wir bauen für den schlechtesten Tag,
+             nicht für den besten. Wer den Ernstfall einplant, wird von ihm
+             nicht überrascht.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WARUM JKHD ================= -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">Warum JKHD</p>
+        <h2>Der Unterschied liegt im Prozess</h2>
+        <p>Gute Absichten hat jeder. Wir haben Prüfschritte — und die kann
+           man sich ansehen.</p>
+      </div>
+      <div class="compare">
+        <div class="compare-head">
+          <span>Üblich am Markt</span>
+          <span>Bei JKHD</span>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell compare-them" data-label="Üblich am Markt">Backtests, die nur die Gewinner zeigen</div>
+          <div class="compare-cell compare-us" data-label="Bei JKHD">Härtetests, die Zufallstreffer aussortieren — inklusive Multiple-Testing-Korrektur</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell compare-them" data-label="Üblich am Markt">Eine Strategie und viel Hoffnung</div>
+          <div class="compare-cell compare-us" data-label="Bei JKHD">Ganze Signal-Familien, systematisch kartiert und einzeln bewertet</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell compare-them" data-label="Üblich am Markt">Handeln nach Gefühl, Eingreifen von Hand</div>
+          <div class="compare-cell compare-us" data-label="Bei JKHD">Vollautomatischer Betrieb mit Regeln, die vor dem ersten Trade feststehen</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell compare-them" data-label="Üblich am Markt">Blackbox ohne Historie</div>
+          <div class="compare-cell compare-us" data-label="Bei JKHD">Jeder Stand versioniert, jede Entscheidung nachvollziehbar</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell compare-them" data-label="Üblich am Markt">Große Rendite-Versprechen</div>
+          <div class="compare-cell compare-us" data-label="Bei JKHD">Keine Versprechen — nur Prozesse, die man prüfen kann</div>
+        </div>
+      </div>
+      <blockquote class="pull-quote" style="margin-top:64px; max-width:780px;">
+        „Nur wer unterschätzt wurde, weiß, dass es nie Nachteile hat.“
+        <cite><a href="ueber.html" style="color:inherit;">Julian Kaiser — Gründer, JKHD</a></cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ================= LEISTUNGEN (Teaser) ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">Leistungen</p>
+        <h2>Drei Säulen, ein Anspruch</h2>
+        <p>Alles bei JKHD zahlt auf ein Ziel ein: verlässliche, überprüfbare Systeme.</p>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <span class="card-num">01</span>
+          <h3>Quantitative Handelssysteme</h3>
+          <p>Entwicklung und Validierung systematischer Strategien auf echten Marktdaten —
+             mit ehrlicher Statistik statt geschönter Backtests.</p>
+          <a class="card-link" href="leistungen.html">Mehr erfahren</a>
+        </div>
+        <div class="card">
+          <span class="card-num">02</span>
+          <h3>Software &amp; Tools</h3>
+          <p>Dashboards, Datenpipelines und Desktop-Tools — maßgeschneiderte Software,
+             die genau das tut, was sie soll.</p>
+          <a class="card-link" href="leistungen.html">Mehr erfahren</a>
+        </div>
+        <div class="card">
+          <span class="card-num">03</span>
+          <h3>Automatisierung &amp; Monitoring</h3>
+          <p>Systeme, die sich selbst überwachen: Watchdogs, Alarme und Selbstheilung
+             für den Dauerbetrieb rund um die Uhr.</p>
+          <a class="card-link" href="leistungen.html">Mehr erfahren</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="section-alt">
+    <div class="cta-band">
+      <h2>Interesse an einer Zusammenarbeit?</h2>
+      <p>Sprechen Sie mit uns — wir melden uns zeitnah zurück.</p>
+      <a href="kontakt.html" class="btn btn-primary">Kontakt aufnehmen</a>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+            <span class="brand-word">JKHD</span>
+          </a>
+          <p>Quantitative Systeme, Software und Automatisierung — entwickelt mit
+             ehrlicher Statistik, betrieben rund um die Uhr.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer-Navigation">
+          <p class="footer-col-title">Navigation</p>
+          <a href="system.html">System</a>
+          <a href="leistungen.html">Leistungen</a>
+          <a href="projekte.html">Projekte</a>
+          <a href="ueber.html">Über</a>
+        </nav>
+        <div class="footer-contact">
+          <p class="footer-col-title">Kontakt</p>
+          <a href="mailto:elite@jkhd.de">elite@jkhd.de</a>
+          <a href="kontakt.html">Kontaktseite</a>
+        </div>
+      </div>
+      <div class="footer-word" aria-hidden="true">JKHD</div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© <span id="year">2026</span> JKHD. Alle Rechte vorbehalten.</div>
+        <div class="footer-links">
+          <a href="impressum.html">Impressum</a>
+          <a href="datenschutz.html">Datenschutz</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

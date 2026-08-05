@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Das System — JKHD</title>
+  <meta name="description" content="Wie das quantitative Handelssystem von JKHD arbeitet: Daten, Alpha-Research, Validierung, Risiko und 24/7-Betrieb.">
+  <meta name="theme-color" content="#060607">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JKHD">
+  <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta property="og:url" content="https://www.jkhd.de/system.html">
+  <link rel="canonical" href="https://www.jkhd.de/system.html">
+  <meta property="og:title" content="Das System — JKHD">
+  <meta property="og:description" content="Von Rohdaten zu Entscheidungen: die durchgehende Pipeline hinter den Handelssystemen von JKHD.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+        <span class="brand-word">JKHD</span>
+      </a>
+      <nav class="site-nav" aria-label="Hauptnavigation">
+        <a href="index.html">Start</a>
+        <a href="system.html" class="active">System</a>
+        <a href="leistungen.html">Leistungen</a>
+        <a href="projekte.html">Projekte</a>
+        <a href="ueber.html">Über</a>
+        <a href="kontakt.html">Kontakt</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Menü öffnen">☰</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+  <section class="page-head">
+    <div class="mark-watermark" aria-hidden="true">
+      <svg viewBox="0 0 100 100"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+    </div>
+    <div class="container">
+      <p class="kicker">Das System</p>
+      <h1>Von Rohdaten zu <em>Entscheidungen</em></h1>
+      <p>Das Herzstück von JKHD ist eine durchgehende Pipeline: Marktdaten rein,
+         geprüfte Systeme raus. Hier ist jeder Schritt im Detail.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="pipeline">
+
+        <div class="pipeline-step">
+          <span class="step-num">01</span>
+          <div>
+            <h3>Echte Marktdaten</h3>
+            <p>Grundlage ist ein professioneller Datenfeed mit tick-genauen Futures-Daten
+               der CME — unter anderem für den Micro Nasdaq (MNQ). Aus den Rohdaten baut
+               das System eigene Bars und prüft jede Lücke und jeden Ausreißer, bevor
+               die Daten in Berechnungen einfließen.</p>
+            <ul class="check-list">
+              <li>Tick-Daten direkt von der Börse, nicht nachbearbeitet</li>
+              <li>Eigene Bar-Aggregation mit Qualitätsprüfung</li>
+              <li>Lücken-Erkennung, bevor Daten in Modelle fließen</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pipeline-step">
+          <span class="step-num">02</span>
+          <div>
+            <h3>Alpha-Research: zwei Familien</h3>
+            <p>Das System sucht nicht nach einer Strategie, sondern kartiert systematisch
+               ganze Signal-Familien über tausende Parameter-Kombinationen. Aktuell laufen
+               zwei Familien mit gegensätzlicher Logik — ein Dispatcher wählt je Signal
+               das passende Modell.</p>
+            <ul class="check-list">
+              <li><strong style="color:var(--text);">Momentum</strong> — kurzfristige Impuls-Ausbrüche: Wenn der Markt beschleunigt — wie weit trägt die Bewegung?</li>
+              <li><strong style="color:var(--text);">Mean-Reversion</strong> — Überdehnungen: Wenn der Preis zu weit von seinem Anker wegläuft — wie zuverlässig kehrt er zurück?</li>
+              <li>Jede Zelle der Suchlandkarte wird einzeln bewertet — nicht nur die beste</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pipeline-step">
+          <span class="step-num">03</span>
+          <div>
+            <h3>Statistische Härtetests</h3>
+            <p>Wer tausende Kombinationen testet, findet immer etwas, das gut aussieht —
+               meistens Zufall. Genau dagegen ist die Validierung gebaut: Jeder Kandidat
+               muss eine Serie von Tests überleben, die Zufallstreffer aussortieren.</p>
+            <ul class="check-list">
+              <li>Multiple-Testing-Korrektur über die gesamte Suchfamilie</li>
+              <li>White's Reality Check gegen Data-Mining-Illusionen</li>
+              <li>Bestätigung über getrennte Zeiträume (Out-of-Sample)</li>
+              <li>Fidelity-Report: Verhält sich das System live wie im Test?</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pipeline-step">
+          <span class="step-num">04</span>
+          <div>
+            <h3>Risiko &amp; Konto-Ökonomie</h3>
+            <p>Ein Signal ist nur die halbe Wahrheit — die andere Hälfte ist die
+               Risikoseite. Das System führt jedes Handelskonto einzeln mit eigenen
+               Grenzen und rechnet die Ökonomie von Trailing-Drawdown-Konten explizit mit.</p>
+            <ul class="check-list">
+              <li>Trailing-Drawdown- und Tagesverlust-Grenzen je Konto</li>
+              <li>Mark-to-Market-Breaker: Stopp sofort, nicht erst am Tagesende</li>
+              <li>Kontext-Sizing: Positionsgröße passt sich der Marktlage an</li>
+              <li>Meta-Labeling wirkt nur dämpfend — es kann Risiko senken, nie erhöhen</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pipeline-step">
+          <span class="step-num">05</span>
+          <div>
+            <h3>Betrieb &amp; Überwachung</h3>
+            <p>Ein System, das niemand überwacht, ist ein Risiko. Deshalb läuft die gesamte
+               Infrastruktur rund um die Uhr unter Aufsicht mehrerer unabhängiger Wächter —
+               und meldet sich selbst, bevor etwas Größeres passiert.</p>
+            <ul class="check-list">
+              <li>24/7-Dauerbetrieb mit Watchdogs und Selbstheilung</li>
+              <li>Shadow-Tracking: Live-Verhalten wird permanent gegen die Erwartung gehalten</li>
+              <li>Drift-Erkennung — verliert ein Alpha seine Wirkung, wird es stillgelegt</li>
+              <li>Alarm-Kette bis auf den Desktop, jedes Ereignis dauerhaft protokolliert</li>
+              <li>Jeder Stand versioniert und reproduzierbar</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="note" style="max-width:760px; margin-top:44px;">
+        Ehrlichkeit als Prinzip: Wir zeigen keine Fantasie-Renditen. Ein Signal, das
+        unsere Tests nicht besteht, wird verworfen — auch wenn es im Backtest glänzt.
+        Das ist der Unterschied zwischen Research und Wunschdenken.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DER BOT ================= -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">Der Bot</p>
+        <h2>Ein Handelstag — vollautomatisch</h2>
+        <p>Das Herzstück von JKHD ist eine Maschine, die nie müde wird und nie
+           emotional. So sieht ihr Tag aus — was genau sie handelt, bleibt
+           bewusst unser Geheimnis.</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <span class="timeline-label">Vor der Session</span>
+          <h3>Selbstprüfung</h3>
+          <p>Bevor der Markt öffnet, prüft sich das System selbst: Steht der Datenfeed?
+             Gibt es Lücken in den Daten? Sind alle Wächter online? Erst wenn jede
+             Prüfung grün ist, geht der Bot scharf. Wenn nicht, handelt er nicht —
+             ein misstrauisches System ist ein sicheres System.</p>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-label">Während des Handels</span>
+          <h3>Beobachten. Warten. Zuschlagen.</h3>
+          <p>Der Bot liest jeden Tick, der über den Feed kommt — und wartet. Er sucht
+             nicht nach Action, sondern nach der einen Konstellation, die seine geprüften
+             Kriterien erfüllt. Kommt sie nicht, passiert nichts: Geduld ist
+             einprogrammiert. Kommt sie, entscheidet er in Sekundenbruchteilen —
+             und Einstieg, Absicherung und Ausstieg stehen fest, bevor die erste
+             Order das Haus verlässt.</p>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-label">Wenn es ernst wird</span>
+          <h3>Der Notaus denkt mit</h3>
+          <p>Läuft ein Tag gegen ihn, greifen Grenzen, die niemand überstimmen kann:
+             Tagesverlust-Limits, Trailing-Drawdown-Schranken, der Mark-to-Market-Breaker.
+             Der Bot schützt das Konto vor dem Markt — und notfalls vor sich selbst.
+             Kein Überschreiben von Hand, keine Ausnahme „nur heute".</p>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-label">Nach Handelsschluss</span>
+          <h3>Selbstkritik</h3>
+          <p>Nach der Session hält das System sein Live-Verhalten gegen die Erwartung
+             aus dem Research. Weicht ein Alpha ab, wird es gedrosselt oder stillgelegt —
+             automatisch, ohne Diskussion, ohne Nostalgie. Jedes Ereignis landet
+             dauerhaft im Protokoll: nachlesbar, für immer.</p>
+        </div>
+        <div class="timeline-item milestone">
+          <span class="timeline-label">Rund um die Uhr</span>
+          <h3>Niemals allein</h3>
+          <p>Watchdogs überwachen den Bot, ein Wächter überwacht die Watchdogs.
+             Stürzt eine Komponente ab, wird sie automatisch neu gestartet; passiert
+             etwas Kritisches, schlägt die Alarmkette durch, bis es jemand gesehen hat.
+             24/7 — seit dem ersten Tag.</p>
+        </div>
+      </div>
+      <div class="note" style="max-width:760px; margin-top:44px;">
+        Bewusste Diskretion: Welche Signale der Bot handelt, mit welchen Parametern
+        und auf welchen Zeitebenen — das bleibt Betriebsgeheimnis. Wir erklären gern,
+        <em>wie</em> unser Prozess funktioniert, aber nie, <em>was</em> die Signale
+        sind. Genau davon lebt ein Edge.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="cta-band">
+      <h2>Fragen zum System?</h2>
+      <p>Wir erklären gern, wie die Pipeline im Detail arbeitet.</p>
+      <a href="kontakt.html" class="btn btn-primary">Kontakt aufnehmen</a>
+      <a href="projekte.html" class="btn btn-ghost">Zu den Projekten</a>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+            <span class="brand-word">JKHD</span>
+          </a>
+          <p>Quantitative Systeme, Software und Automatisierung — entwickelt mit
+             ehrlicher Statistik, betrieben rund um die Uhr.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer-Navigation">
+          <p class="footer-col-title">Navigation</p>
+          <a href="system.html">System</a>
+          <a href="leistungen.html">Leistungen</a>
+          <a href="projekte.html">Projekte</a>
+          <a href="ueber.html">Über</a>
+        </nav>
+        <div class="footer-contact">
+          <p class="footer-col-title">Kontakt</p>
+          <a href="mailto:elite@jkhd.de">elite@jkhd.de</a>
+          <a href="kontakt.html">Kontaktseite</a>
+        </div>
+      </div>
+      <div class="footer-word" aria-hidden="true">JKHD</div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© <span id="year">2026</span> JKHD. Alle Rechte vorbehalten.</div>
+        <div class="footer-links">
+          <a href="impressum.html">Impressum</a>
+          <a href="datenschutz.html">Datenschutz</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
