@@ -360,16 +360,17 @@ if (siteHeader) {
         : gewaehlt + " von " + rows.length + " Bausteinen gewählt";
     if (hintEl) hintEl.hidden = kern < kernAnzahl;
 
-    // Auswahl an das Anfrageformular weiterreichen
+    // Auswahl an das Anfrageformular weiterreichen: Name~Betrag je Baustein
     const anfrage = config.querySelector('a[href^="kontakt.html"]');
     if (anfrage) {
-      const namen = rows
-        .filter((r) => r.querySelector("input").checked)
-        .map((r) => r.querySelector(".config-name").textContent.trim());
+      const gewaehlteZeilen = rows.filter((r) => r.querySelector("input").checked);
+      const teile = gewaehlteZeilen.map(
+        (r) => r.querySelector(".config-name").textContent.trim() + "~" + preisVon(r)
+      );
       anfrage.setAttribute(
         "href",
-        namen.length
-          ? "kontakt.html?bausteine=" + encodeURIComponent(namen.join("|")) + "#anfrage"
+        teile.length
+          ? "kontakt.html?bausteine=" + encodeURIComponent(teile.join("|")) + "#anfrage"
           : "kontakt.html#anfrage"
       );
     }
@@ -565,11 +566,27 @@ if (siteHeader) {
     hint.classList.toggle("is-error", Boolean(fehler));
   }
 
-  // Bausteine aus dem Konfigurator uebernehmen, falls von dort verlinkt
+  const euro = new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  });
+
+  // Bausteine aus dem Konfigurator uebernehmen: je Eintrag "Name~Betrag"
   function ausKonfigurator() {
     const p = new URLSearchParams(location.search).get("bausteine");
-    return p ? p.split("|").filter(Boolean) : [];
+    if (!p) return [];
+    return p
+      .split("|")
+      .filter(Boolean)
+      .map((eintrag) => {
+        const [name, betrag] = eintrag.split("~");
+        return { name: (name || "").trim(), preis: Number(betrag) || 0 };
+      })
+      .filter((b) => b.name);
   }
+
+  const summeVon = (liste) => liste.reduce((s, b) => s + b.preis, 0);
 
   function nachricht() {
     const haus = wert("iq-haus");
@@ -582,8 +599,19 @@ if (siteHeader) {
     if (haus) zeilen.push("Institution: " + haus);
     if (name) zeilen.push("Ansprechpartner: " + name);
     if (mail) zeilen.push("E-Mail: " + mail);
-    if (bausteine.length) zeilen.push("Ausgewählte Bausteine: " + bausteine.join(", "));
     if (zeilen.length) zeilen.push("");
+
+    if (bausteine.length) {
+      zeilen.push("Zusammenstellung aus dem Konfigurator:");
+      bausteine.forEach((b) => {
+        zeilen.push(
+          "  - " + b.name + ": " + (b.preis > 0 ? euro.format(b.preis) : "im Projekt enthalten")
+        );
+      });
+      zeilen.push("  Ungefähre Summe: " + euro.format(summeVon(bausteine)) + " (unverbindlich)");
+      zeilen.push("");
+    }
+
     if (text) zeilen.push(text, "");
     zeilen.push("—", "Vorbereitet über das Anfrageformular auf www.jkhd.de");
     return zeilen.join("\n");
@@ -635,9 +663,32 @@ if (siteHeader) {
     }
   });
 
-  // Kommt der Besucher aus dem Konfigurator, gleich sichtbar machen
-  const bausteine = ausKonfigurator();
-  if (bausteine.length) {
-    melden(bausteine.length + " Baustein(e) aus dem Konfigurator werden übernommen.");
-  }
+  // Kommt der Besucher aus dem Konfigurator, seine Auswahl sichtbar anzeigen —
+  // er soll sehen, was mitgeschickt wird, bevor er absendet.
+  (function auswahlZeigen() {
+    const bausteine = ausKonfigurator();
+    if (!bausteine.length) return;
+
+    const kasten = document.createElement("div");
+    kasten.className = "inquiry-picked";
+    kasten.innerHTML =
+      '<span class="inquiry-picked-label">Aus dem Konfigurator übernommen</span>' +
+      "<ul>" +
+      bausteine
+        .map(
+          (b) =>
+            "<li><span>" + b.name + "</span><span>" +
+            (b.preis > 0 ? euro.format(b.preis) : "enthalten") +
+            "</span></li>"
+        )
+        .join("") +
+      "</ul>" +
+      '<p class="inquiry-picked-sum"><span>Ungefähre Summe</span><span>' +
+      euro.format(summeVon(bausteine)) +
+      "</span></p>" +
+      '<p class="inquiry-picked-note">Diese Aufstellung geht mit Ihrer Nachricht ' +
+      "mit. Unverbindlich — kein Angebot.</p>";
+
+    form.insertBefore(kasten, form.firstElementChild);
+  })();
 })();
