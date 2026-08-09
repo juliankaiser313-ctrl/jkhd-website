@@ -1666,11 +1666,12 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
    die Wegweiser der Seite und muessen auch aus Abstand lesbar sein. */
 .formula-label {
   display: block;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   font-family: var(--mono);
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
   text-transform: uppercase;
   color: var(--accent);
 }
@@ -1703,5 +1704,5 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .formula { padding: 24px 22px; }
   .formula-eq { font-size: 0.86rem; padding: 14px 16px; }
   /* Auf dem Handy noch eine Spur groesser, dort wird am meisten geblinzelt */
-  .formula-label { font-size: 0.86rem; letter-spacing: 0.12em; }
+  .formula-label { font-size: 1.02rem; letter-spacing: 0.08em; }
 }
