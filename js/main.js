@@ -467,7 +467,7 @@ if (siteHeader) {
 
   const html = `
     <button class="helper-btn" type="button" aria-expanded="false" aria-controls="helper-panel">
-      <span class="helper-btn-icon" aria-hidden="true">?</span>
+      <span class="helper-btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.6a8.2 8.2 0 0 1-8.8 8.2 8.6 8.6 0 0 1-3.1-.7L3.5 20.5l1.4-5a8.2 8.2 0 0 1-.9-3.7 8.2 8.2 0 0 1 8.2-8.2h.5a8.2 8.2 0 0 1 7.8 7.8z"/><path d="M10.2 9.6a1.9 1.9 0 0 1 3.7.6c0 1.3-1.9 1.9-1.9 1.9"/><path d="M12 15.4h.01"/></svg></span>
       <span class="helper-btn-text">Fragen</span>
     </button>
     <div class="helper-panel" id="helper-panel" role="dialog" aria-modal="false"
