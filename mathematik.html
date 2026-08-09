@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mathematik — JKHD</title>
+  <meta name="description" content="Welche Mathematik in einem Quant-System von JKHD steckt: Statistik, Volatilitätsmodelle, Risikokennzahlen, Korrektur für Mehrfachtests, stochastische Prozesse und Marktmikrostruktur.">
+  <meta name="theme-color" content="#f7f6f3">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="JKHD">
+  <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta property="og:url" content="https://www.jkhd.de/mathematik.html">
+  <link rel="canonical" href="https://www.jkhd.de/mathematik.html">
+  <meta property="og:title" content="Mathematik — JKHD">
+  <meta property="og:description" content="Die Verfahren, mit denen wir rechnen — offen benannt. Was daraus wird, bleibt Betriebsgeheimnis.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <script>
+    // Laeuft absichtlich vor dem Stylesheet: verhindert das Aufblitzen
+    // der falschen Farben beim Laden.
+    (function () {
+      try {
+        var g = localStorage.getItem("jkhd-theme");
+        var dunkel = g ? g === "dark"
+          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dunkel) document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="css/fonts.css?v=20260810m">
+  <link rel="stylesheet" href="css/style.css?v=20260810m">
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <div class="build-note">
+    <div class="container">
+      <span class="build-label">Im Aufbau</span>
+      <span>Diese Website wird gerade neu aufgebaut. Inhalte, Angaben und Preise sind vorl&auml;ufig. Auftr&auml;ge nehmen wir erst an, wenn sie vollst&auml;ndig fertig ist &mdash; Anfragen sind jederzeit willkommen.</span>
+      <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+        <span class="brand-word">JKHD</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-tag">
+          <span class="brand-line1">Quant Systems</span>
+          <span class="brand-line2">Just Know How to Dominate.</span>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="Hauptnavigation">
+        <a href="index.html#leistungen">Leistungen</a>
+        <a href="system.html">System</a>
+        <a href="mathematik.html">Mathematik</a>
+        <a href="index.html#unternehmen">Unternehmen</a>
+        <a href="kontakt.html" class="btn btn-primary btn-sm">Kontakt</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Zwischen hellem und dunklem Erscheinungsbild wechseln">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.6 12h2.2M19.2 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg>
+      </button>
+      <button class="nav-toggle" aria-label="Menü öffnen">☰</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+  <!-- ================= SEITENKOPF ================= -->
+  <section class="page-head">
+    <div class="container">
+      <p class="kicker">// Mathematik</p>
+      <h1>Womit wir rechnen.</h1>
+      <p>Diese Seite nennt die Verfahren, auf denen unsere Systeme stehen — und
+         sagt bei jedem, wofür es gut ist und wo es täuscht. Alles davon steht in
+         Lehrbüchern. Was wir daraus bauen, steht nirgends.</p>
+    </div>
+  </section>
+
+  <!-- ================= STATISTIK ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Fundament</p>
+        <h2>Statistik: die Sprache, in der alles gemessen wird.</h2>
+        <p>Ohne diese Größen gibt es keine Aussage über eine Strategie — nur
+           Meinungen über eine Kurve.</p>
+      </div>
+
+      <div class="formulas">
+        <article class="formula">
+          <span class="formula-label">Erwartungswert &amp; Varianz</span>
+          <div class="formula-eq">Var(X) = E[X²] &minus; E[X]²</div>
+          <p>Der Erwartungswert ist der wahrscheinlichkeitsgewichtete Durchschnitt,
+             die Varianz misst die Streuung darum. Die Wurzel der Varianz ist die
+             Standardabweichung — im Handel Volatilität genannt.</p>
+          <p class="formula-use"><b>Wofür:</b> Fundament für alles Weitere:
+             Erwartungswert eines Trades, Risikomessung, jede Kennzahl.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Kovarianz &amp; Korrelation</span>
+          <div class="formula-eq">ρ(X,Y) = Cov(X,Y) / (σ<sub>X</sub> · σ<sub>Y</sub>)</div>
+          <p>Misst, ob zwei Größen gemeinsam schwanken, normiert auf −1 bis +1.</p>
+          <p class="formula-use"><b>Wofür:</b> Zwei Signale, die in Wahrheit
+             dasselbe wetten, sind kein Portfolio. <b>Vorsicht:</b> Korrelation
+             erfasst nur lineare Zusammenhänge und ist über die Zeit instabil —
+             deshalb rollierend rechnen, nie einmalig über die ganze Historie.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Autokorrelation</span>
+          <div class="formula-eq">ρ<sub>k</sub> = Cov(r<sub>t</sub>, r<sub>t−k</sub>) / Var(r<sub>t</sub>)</div>
+          <p>Die Korrelation einer Zeitreihe mit sich selbst, um k Perioden
+             verschoben.</p>
+          <p class="formula-use"><b>Wofür:</b> Der direkteste Test auf
+             Vorhersagbarkeit. Positiv heißt Momentum auf dieser Frequenz, negativ
+             Rückkehr zum Mittel. <b>Falle:</b> Auf Tick-Ebene ist sie fast immer
+             negativ — das ist kein Signal, sondern das Hin und Her zwischen Geld-
+             und Briefkurs.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Log-Renditen</span>
+          <div class="formula-eq">r<sub>t</sub> = ln( P<sub>t</sub> / P<sub>t−1</sub> )</div>
+          <p>Logarithmische Renditen addieren sich über die Zeit, einfache
+             Renditen addieren sich über Positionen.</p>
+          <p class="formula-use"><b>Wofür:</b> Für Zeitreihenanalyse und
+             Volatilitätsschätzung nimmt man Log-Renditen, für Portfolio-Rechnung
+             die einfachen. Wer das vertauscht, rechnet still falsch.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= VOLATILITÄT ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Volatilität</p>
+        <h2>Wie stark schwankt es — und schwankt es gerade anders als sonst?</h2>
+        <p>Volatilität ist keine Konstante. Sie kommt in Wellen, und wer sie als
+           festen Wert behandelt, misst sein Risiko falsch.</p>
+      </div>
+
+      <div class="formulas">
+        <article class="formula">
+          <span class="formula-label">Wurzel-Zeit-Regel</span>
+          <div class="formula-eq">σ<sub>Jahr</sub> = σ · √N</div>
+          <p>Volatilität skaliert mit der Wurzel der Zeit, N ist die Anzahl der
+             Perioden pro Jahr.</p>
+          <p class="formula-use"><b>Vorsicht:</b> Gilt streng nur bei
+             unkorrelierten Renditen. Innerhalb eines Handelstages, mit
+             Autokorrelation und ruhigeren Mittagsstunden, wird sie ungenau — man
+             darf sie kennen, aber nicht blind anwenden.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Realisierte Volatilität</span>
+          <div class="formula-eq">RV<sub>t</sub> = Σ r²<sub>t,i</sub></div>
+          <p>Die Summe der quadrierten Renditen innerhalb eines Tages als
+             Schätzer der Tagesvarianz.</p>
+          <p class="formula-use"><b>Wofür:</b> Der beste voraussetzungsarme
+             Schätzer aus hochfrequenten Daten. <b>Grenze:</b> Je feiner man
+             abtastet, desto genauer — bis das Mikrostruktur-Rauschen überwiegt
+             und die Genauigkeit wieder kippt.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">EWMA</span>
+          <div class="formula-eq">σ²<sub>t</sub> = λ·σ²<sub>t−1</sub> + (1−λ)·r²<sub>t−1</sub></div>
+          <p>Exponentiell gewichtete Volatilität: Neue Bewegungen zählen mehr,
+             alte klingen ab.</p>
+          <p class="formula-use"><b>Wofür:</b> Rekursiv, ein einziger Zustandswert
+             je Instrument, konstanter Aufwand pro Bar. Genau deshalb eignet es
+             sich für einen Wächter, der im Live-Betrieb mitlaufen muss.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">GARCH(1,1)</span>
+          <div class="formula-eq">σ²<sub>t</sub> = ω + α·ε²<sub>t−1</sub> + β·σ²<sub>t−1</sub></div>
+          <p>Wie EWMA, aber mit Rückkehr zu einer langfristigen Volatilität.
+             α ist die Reaktion auf Schocks, β die Trägheit.</p>
+          <p class="formula-use"><b>Wofür:</b> Beschreibt, was jeder Händler kennt:
+             Ruhige Phasen bleiben ruhig, wilde bleiben wild. Grundlage für
+             Vorhersagen über mehrere Perioden und für Regime-Erkennung.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BEWERTUNG & RISIKO ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Bewertung &amp; Risiko</p>
+        <h2>Was ein Ergebnis wert ist — und was es kosten darf.</h2>
+      </div>
+
+      <div class="formulas">
+        <article class="formula">
+          <span class="formula-label">Sharpe- und Sortino-Verhältnis</span>
+          <div class="formula-eq">SR = ( E[R] − R<sub>f</sub> ) / σ</div>
+          <p>Überschussrendite je Einheit Risiko. Sortino zählt nur Abweichungen
+             nach unten als Risiko — Aufwärtsschwankungen werden nicht bestraft.</p>
+          <p class="formula-use"><b>Vorsicht:</b> Ein Sharpe aus einem Rückblick
+             ist fast immer zu hoch. Warum, steht im nächsten Abschnitt.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Drawdown &amp; Calmar</span>
+          <div class="formula-eq">DD<sub>t</sub> = ( P<sub>t</sub> − max<sub>s≤t</sub> P<sub>s</sub> ) / max<sub>s≤t</sub> P<sub>s</sub></div>
+          <p>Der Abstand zum bisherigen Höchststand der Kapitalkurve; der
+             schlimmste davon ist der maximale Drawdown.</p>
+          <p class="formula-use"><b>Wofür:</b> Bei Konten mit Verlustgrenze ist
+             der verbleibende Drawdown-Puffer das eigentliche Risikobudget — nicht
+             die Kontogröße. Positionsgrößen richten sich danach, nicht am
+             nominalen Kapital.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Erwarteter Verlust im Ernstfall</span>
+          <div class="formula-eq">ES<sub>α</sub> = −E[ R | R ≤ −VaR<sub>α</sub> ]</div>
+          <p>Der Value at Risk sagt, welche Verlustschwelle selten überschritten
+             wird. Der Expected Shortfall sagt, wie schlimm es wird, <em>wenn</em>
+             sie überschritten wird.</p>
+          <p class="formula-use"><b>Wofür:</b> Der zweite Wert ist der ehrlichere.
+             Ein Limit, das nur die Schwelle kennt, sagt nichts über den Tag, an
+             dem sie fällt.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Kelly-Kriterium</span>
+          <div class="formula-eq">f* = ( p·b − (1−p) ) / b</div>
+          <p>Der Kapitalanteil, der das langfristige logarithmische Wachstum
+             maximiert.</p>
+          <p class="formula-use"><b>Wofür:</b> Als theoretische Obergrenze — und
+             nur so. Voll gesetzt wird Kelly nie: Die Parameter sind geschätzt,
+             die Verteilungsränder sind dicker als angenommen, und bei einer
+             Verlustgrenze ist nicht Kelly die bindende Bedingung, sondern das
+             Limit.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Kovarianzmatrix &amp; Allokation</span>
+          <div class="formula-eq">σ²<sub>p</sub> = wᵀ Σ w</div>
+          <p>Das Risiko mehrerer Positionen ist nicht die Summe der Einzelrisiken
+             — die Zusammenhänge entscheiden.</p>
+          <p class="formula-use"><b>Vorsicht:</b> Die Inverse einer geschätzten
+             Kovarianzmatrix verstärkt Schätzfehler massiv. In der Praxis nimmt
+             man Schrumpfungsverfahren, Risikoparität oder schlicht ein
+             Volatilitätsziel je Signal statt einer vollen Optimierung.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SELBSTBETRUG ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Der wichtigste Teil</p>
+        <h2>Mathematik gegen den eigenen Selbstbetrug.</h2>
+        <p>Wer hundert Varianten prüft, findet garantiert gute — allein durch
+           Zufall. Dieser Abschnitt ist der Grund, warum bei uns die meisten
+           Kandidaten sterben.</p>
+      </div>
+
+      <div class="formulas">
+        <article class="formula">
+          <span class="formula-label">Korrektur für Mehrfachtests</span>
+          <div class="formula-eq">p<sub>korrigiert</sub> = f( p, Anzahl der Versuche )</div>
+          <p>Jeder zusätzliche Test erhöht die Wahrscheinlichkeit, rein zufällig
+             etwas Gutes zu finden. Die Korrektur rechnet die Anzahl der Versuche
+             gegen das Ergebnis auf.</p>
+          <p class="formula-use"><b>Bedingung:</b> Man muss die Versuche ehrlich
+             mitzählen — auch die verworfenen, auch die von letzter Woche. Wer hier
+             schummelt, betrügt nur sich selbst.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Entwerteter Sharpe</span>
+          <div class="formula-eq">PSR(SR*) = Φ( … n, Schiefe, Wölbung … )</div>
+          <p>Die Wahrscheinlichkeit, dass der wahre Sharpe über einer Messlatte
+             liegt — korrigiert um Stichprobenlänge, Schiefe und Wölbung der
+             Verteilung. Die Messlatte ist dabei jener Sharpe, den man allein
+             durchs Testen vieler Varianten zufällig erwarten würde.</p>
+          <p class="formula-use"><b>Wofür:</b> Nach Bailey und López de Prado. Es
+             beantwortet die einzig richtige Frage: Ist das Ergebnis besser als
+             das, was Zufall bei so vielen Versuchen ohnehin liefert?</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Reality Check</span>
+          <div class="formula-eq">H<sub>0</sub>: max<sub>k</sub> E[f<sub>k</sub>] ≤ 0</div>
+          <p>Ein Test nach White, der die gesamte Suche als Ganzes prüft: Ist der
+             beste gefundene Kandidat besser, als der beste aus reinem Rauschen es
+             wäre?</p>
+          <p class="formula-use"><b>Wofür:</b> Der Unterschied zwischen „dieses
+             Signal sieht gut aus" und „dieses Signal ist besser als Zufall".</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Getrennte Zeiträume</span>
+          <div class="formula-eq">Suchen ≠ Bestätigen</div>
+          <p>Gesucht wird auf einem Zeitraum, bestätigt auf einem anderen, der
+             beim Suchen unberührt bleibt.</p>
+          <p class="formula-use"><b>Grenze:</b> Auch dieser Schutz nutzt sich ab.
+             Derselbe Bestätigungszeitraum verliert mit jedem Test an Aussagekraft
+             — deshalb wird mitgezählt, wie oft er schon benutzt wurde.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROZESSE ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Prozesse &amp; Simulation</p>
+        <h2>Modelle für Zufall — als Maßstab, nicht als Wahrheit.</h2>
+        <p>Kein Modell beschreibt den Markt. Aber ein Modell gibt einen Maßstab,
+           gegen den man messen kann, ob ein Ergebnis bemerkenswert ist.</p>
+      </div>
+
+      <div class="formulas">
+        <article class="formula">
+          <span class="formula-label">Geometrische Brownsche Bewegung</span>
+          <div class="formula-eq">dS = μ·S·dt + σ·S·dW</div>
+          <p>Das Standardmodell für Preispfade: konstante Drift, konstante
+             Volatilität, Zufall über den Wiener-Prozess.</p>
+          <p class="formula-use"><b>Wofür:</b> Als Vergleichsmaßstab und zum
+             Erzeugen synthetischer Pfade. <b>Grenze:</b> Die Wirklichkeit hat
+             Sprünge, Volatilitätscluster und dickere Ränder — das Modell ist ein
+             Lineal, keine Landkarte.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Ornstein-Uhlenbeck</span>
+          <div class="formula-eq">dX = θ·(μ − X)·dt + σ·dW</div>
+          <p>Ein Prozess mit Rückstellkraft: Je weiter der Wert vom Mittel weg
+             ist, desto stärker zieht es ihn zurück. θ bestimmt, wie schnell.</p>
+          <p class="formula-use"><b>Wofür:</b> Das saubere mathematische Bild
+             hinter dem Begriff „Rückkehr zum Mittelwert" — und die Grundlage,
+             um zu prüfen, ob eine Reihe wirklich zurückkehrt oder nur so aussieht.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Itôs Lemma</span>
+          <div class="formula-eq">(dW)² = dt</div>
+          <p>Die Kettenregel für Zufallspfade. Der Zusatzterm mit der zweiten
+             Ableitung existiert, weil Zufallspfade so rau sind, dass quadratische
+             Terme nicht verschwinden.</p>
+          <p class="formula-use"><b>Wofür:</b> Erklärt unter anderem, warum
+             Schwankung selbst Rendite kostet — dieselbe Rechnung, aus der auch
+             die Bewertung von Optionen folgt.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Monte-Carlo</span>
+          <div class="formula-eq">Fehler ~ 1/√N</div>
+          <p>Viele erzeugte Pfade statt einer geschlossenen Formel. Die
+             Genauigkeit wächst nur mit der Wurzel der Anzahl.</p>
+          <p class="formula-use"><b>Wofür:</b> Verteilungen von Ergebnissen statt
+             einer einzelnen Zahl — insbesondere für die Frage, wie tief ein
+             Drawdown allein durch Zufall werden kann.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MIKROSTRUKTUR ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Mikrostruktur &amp; Ausführung</p>
+        <h2>Zwischen Signal und Markt geht die Rendite verloren.</h2>
+        <p>Diese Größen entscheiden darüber, ob eine Idee im Betrieb überlebt —
+           und sie fehlen in den meisten Rückrechnungen.</p>
+      </div>
+
+      <div class="formulas">
+        <article class="formula">
+          <span class="formula-label">Geld-Brief-Spanne</span>
+          <div class="formula-eq">Spread = Brief − Geld</div>
+          <p>Der Abstand zwischen Kauf- und Verkaufskurs. Wer sofort handeln will,
+             zahlt ihn.</p>
+          <p class="formula-use"><b>Wofür:</b> Auf feinen Zeitebenen ist die Spanne
+             oft größer als der erwartete Vorteil. Dann ist die Idee mathematisch
+             richtig und wirtschaftlich tot.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Ausführungsabweichung</span>
+          <div class="formula-eq">Slippage = Ausführung − Signalkurs</div>
+          <p>Die Differenz zwischen dem Kurs, bei dem entschieden wurde, und dem,
+             zu dem tatsächlich gehandelt wurde.</p>
+          <p class="formula-use"><b>Wofür:</b> Sie gehört in die Rechnung, nicht
+             in die Fußnote. Ein System, das ohne sie geprüft wurde, ist nicht
+             geprüft.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Marktwirkung</span>
+          <div class="formula-eq">Wirkung ~ √( Ordergröße / Volumen )</div>
+          <p>Die eigene Order bewegt den Preis. Der Zusammenhang ist nicht linear,
+             sondern flacht ab — typischerweise wurzelförmig.</p>
+          <p class="formula-use"><b>Wofür:</b> Sie begrenzt die Kapazität einer
+             Strategie. Ein Verfahren, das mit kleinem Einsatz funktioniert, muss
+             mit großem nicht funktionieren.</p>
+        </article>
+
+        <article class="formula">
+          <span class="formula-label">Bedingte Wahrscheinlichkeit</span>
+          <div class="formula-eq">P(A|B) = P(B|A) · P(A) / P(B)</div>
+          <p>Der Satz von Bayes: Wie sich eine Einschätzung ändern muss, wenn eine
+             neue Beobachtung hinzukommt.</p>
+          <p class="formula-use"><b>Wofür:</b> Die saubere Form der Frage, die
+             jeder stellt: Wie viel darf ich auf diese eine Beobachtung geben,
+             wenn ich weiß, wie selten sie ohnehin auftritt?</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DISKRETION ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="note" style="max-width:860px;">
+        <b>Was hier bewusst nicht steht:</b> Alles auf dieser Seite ist
+        Lehrbuchwissen — Sie finden es in jeder guten Bibliothek. Was nicht
+        hier steht, ist die eigentliche Arbeit: welche dieser Verfahren wir
+        kombinieren, in welcher Reihenfolge, mit welchen Parametern, auf
+        welchen Zeitebenen und mit welchen Schwellen. Genau davon lebt ein
+        Vorsprung — und deshalb erklären wir gern das <em>Wie</em> unseres
+        Vorgehens, aber nicht das <em>Was</em> unserer Signale.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-panel">
+        <h2>Fragen zur Methodik?</h2>
+        <p>Über Verfahren sprechen wir offen — auch über die, die bei uns
+           durchgefallen sind.</p>
+        <a href="kontakt.html" class="btn btn-primary">Kontakt aufnehmen</a>
+        <a href="system.html" class="btn btn-ghost">Aufbau eines Systems</a>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+            <span class="brand-word">JKHD</span>
+            <span class="brand-divider" aria-hidden="true"></span>
+            <span class="brand-tag">
+              <span class="brand-line1">Quant Systems</span>
+              <span class="brand-line2">Just Know How to Dominate.</span>
+            </span>
+          </a>
+          <p>Quantitative Systeme, Software und Automatisierung.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer-Navigation">
+          <p class="footer-col-title">Navigation</p>
+          <a href="index.html#leistungen">Leistungen</a>
+          <a href="system.html">System</a>
+          <a href="mathematik.html">Mathematik</a>
+          <a href="index.html#unternehmen">Unternehmen</a>
+          <a href="kontakt.html">Kontakt</a>
+        </nav>
+        <div class="footer-contact">
+          <p class="footer-col-title">Kontakt</p>
+          <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+          <a href="mailto:service@jkhd.de">service@jkhd.de</a>
+          <a href="kontakt.html">Kontaktseite</a>
+        </div>
+      </div>
+      <div class="footer-legal">
+        Keine Anlageberatung, keine Anlagevermittlung, keine
+        Finanzportfolioverwaltung. JKHD entwickelt und liefert Software &mdash; den
+        Betrieb eines ausgelieferten Systems verantwortet der Auftraggeber. Angaben
+        auf dieser Webseite sind unverbindlich; Auftr&auml;ge k&ouml;nnen ohne Angabe
+        von Gr&uuml;nden abgelehnt werden.
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© <span id="year">2026</span> JKHD — jkhd.de</div>
+        <div class="footer-links">
+          <a href="impressum.html">Impressum</a>
+          <a href="datenschutz.html">Datenschutz</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js?v=20260810m"></script>
+</body>
+</html>

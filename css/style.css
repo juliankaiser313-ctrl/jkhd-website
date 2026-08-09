@@ -1645,3 +1645,56 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 
 .inquiry-picked-note { margin-top: 12px; color: var(--muted); font-size: 0.8rem; }
+
+/* ---------- Mathematik-Seite: Formel-Karten ---------- */
+
+/* Trennlinien als echte Rahmen, nicht ueber den Hintergrund des Rasters:
+   bei ungerader Kartenzahl bliebe sonst ein gefaerbter Block stehen. */
+.formulas { display: grid; grid-template-columns: 1fr 1fr; }
+
+.formula {
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  border-top: 1px solid var(--border);
+}
+.formula:nth-child(even) { border-left: 1px solid var(--border); }
+
+.formula-label {
+  display: block;
+  margin-bottom: 16px;
+  font-family: var(--mono);
+  font-size: var(--label);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Die Gleichung steht bewusst als Text da, nicht als Bild: kopierbar,
+   vorlesbar und ohne nachgeladene Fremdbibliothek. */
+.formula-eq {
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  border-left: 2px solid var(--border-2);
+  background: var(--wash-1);
+  font-family: var(--mono);
+  font-size: 0.94rem;
+  line-height: 1.7;
+  color: var(--text);
+  overflow-x: auto;
+}
+.formula-eq sub { font-size: 0.75em; }
+
+.formula p { color: var(--muted); font-size: 0.9rem; }
+.formula-use { margin-top: 12px; }
+.formula-use b { color: var(--text); font-weight: 700; }
+
+@media (max-width: 940px) {
+  .formulas { grid-template-columns: 1fr; }
+  .formula:nth-child(even) { border-left: none; }
+}
+
+@media (max-width: 560px) {
+  .formula { padding: 24px 22px; }
+  .formula-eq { font-size: 0.86rem; padding: 14px 16px; }
+}
