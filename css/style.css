@@ -1345,6 +1345,14 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 @media (max-width: 560px) {
   .container { padding: 0 20px; }
 
+  /* Auf schmalen Handys braucht die Kopfzeile mehr Platz, als der Bildschirm
+     hergibt — der Menueknopf wurde dadurch nach rechts hinausgedraengt.
+     Der Markenzusatz entfaellt hier; im Fussbereich bleibt er stehen. */
+  .nav-wrap { gap: 12px; }
+  .site-header .brand-divider,
+  .site-header .brand-tag { display: none; }
+  .theme-toggle, .nav-toggle { flex-shrink: 0; }
+
   .section { padding: 72px 0; }
   .section-head { margin-bottom: 38px; }
 
@@ -1530,8 +1538,12 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 @media (max-width: 560px) {
   .helper { right: 16px; bottom: 16px; left: 16px; align-items: stretch; }
-  .helper-btn { align-self: flex-end; }
   .helper-panel { width: 100%; max-height: calc(100vh - 120px); }
+
+  /* Nur das Fragezeichen: die breite Blase hat sonst Knoepfe darunter verdeckt */
+  .helper-btn { align-self: flex-end; width: 48px; height: 48px; padding: 0; }
+  .helper-btn-text { display: none; }
+  .helper-btn-icon { font-size: 1.15rem; opacity: 1; }
 }
 
 /* ---------- Anfrage-Formular ---------- */
