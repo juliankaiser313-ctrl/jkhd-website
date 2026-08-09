@@ -1189,7 +1189,9 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 .page-head { padding: 88px 0 56px; border-bottom: 1px solid var(--border); }
 .page-head h1 { font-size: clamp(2rem, 4.4vw, 3rem); }
-.page-head p { margin-top: 14px; color: var(--muted); max-width: 640px; font-size: 1.06rem; }
+/* Der Kicker ist selbst ein <p> und darf hiervon nicht erfasst werden —
+   sonst steht er im Seitenkopf groesser als in den Abschnitten. */
+.page-head p:not(.kicker) { margin-top: 14px; color: var(--muted); max-width: 640px; font-size: 1.06rem; }
 
 /* ---------- Footer ---------- */
 
@@ -1660,12 +1662,15 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 .formula:nth-child(even) { border-left: 1px solid var(--border); }
 
+/* Bewusst groesser als die uebrigen Mono-Labels: Diese Bezeichnungen sind
+   die Wegweiser der Seite und muessen auch aus Abstand lesbar sein. */
 .formula-label {
   display: block;
   margin-bottom: 16px;
   font-family: var(--mono);
-  font-size: var(--label);
-  letter-spacing: var(--label-ls);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent);
 }
@@ -1697,4 +1702,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 @media (max-width: 560px) {
   .formula { padding: 24px 22px; }
   .formula-eq { font-size: 0.86rem; padding: 14px 16px; }
+  /* Auf dem Handy noch eine Spur groesser, dort wird am meisten geblinzelt */
+  .formula-label { font-size: 0.86rem; letter-spacing: 0.12em; }
 }
