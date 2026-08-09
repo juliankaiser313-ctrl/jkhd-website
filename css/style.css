@@ -139,14 +139,17 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   color: var(--muted);
 }
 
+/* Ein durchlaufender Satz statt drei Flex-Spalten — sonst bricht der Text
+   unnoetig oft um und das Band wird zum Block. */
 .build-note .container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px 20px;
+  display: block;
+  max-width: 1000px;
   text-align: center;
+  line-height: 1.6;
 }
+
+.build-note .build-label { margin-right: 12px; }
+.build-note a { margin-left: 12px; white-space: nowrap; }
 
 .build-label {
   font-family: var(--mono);
@@ -1351,6 +1354,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
   .audience { flex-direction: column; gap: 8px; }
   .included { flex-direction: column; gap: 8px; }
+
+  /* Das Aufbau-Band darf den ersten Bildschirm nicht dominieren */
+  .build-note { padding: 9px 0; font-size: 0.78rem; }
+  .build-note .container { line-height: 1.5; }
 
   .layer-cols { grid-template-columns: 1fr; gap: 26px; }
 
