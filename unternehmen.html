@@ -2,12 +2,329 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=index.html#unternehmen">
-  <link rel="canonical" href="https://www.jkhd.de/#unternehmen">
-  <title>Weiterleitung — JKHD</title>
-  <meta name="robots" content="noindex">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unternehmen — JKHD</title>
+  <meta name="description" content="Wer hinter JKHD steht: ein unabhängiges Entwicklungshaus für quantitative Systeme aus Deutschland — eigene Systeme im Dauerbetrieb, alles selbst gebaut, ausschließlich für professionelle Adressen.">
+  <meta name="theme-color" content="#f7f6f3">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JKHD">
+  <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta property="og:url" content="https://www.jkhd.de/unternehmen.html">
+  <link rel="canonical" href="https://www.jkhd.de/unternehmen.html">
+  <meta property="og:title" content="Unternehmen — JKHD">
+  <meta property="og:description" content="Ein kleines, unabhängiges Haus für quantitative Systeme — und die Menschen dahinter.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <script>
+    // Laeuft absichtlich vor dem Stylesheet: verhindert das Aufblitzen
+    // der falschen Farben beim Laden.
+    (function () {
+      try {
+        var g = localStorage.getItem("jkhd-theme");
+        var dunkel = g ? g === "dark"
+          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dunkel) document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="css/fonts.css?v=20260810t">
+  <link rel="stylesheet" href="css/style.css?v=20260810t">
 </head>
 <body>
-  <p>Diese Seite ist umgezogen: <a href="index.html#unternehmen">Unternehmen</a></p>
+
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <div class="build-note">
+    <div class="container">
+      <span class="build-label">Im Aufbau</span>
+      <span>Diese Website wird gerade neu aufgebaut. Inhalte, Angaben und Preise sind vorl&auml;ufig. Auftr&auml;ge nehmen wir erst an, wenn sie vollst&auml;ndig fertig ist &mdash; Anfragen sind jederzeit willkommen.</span>
+      <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+        <span class="brand-word">JKHD</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-tag">
+          <span class="brand-line1">Quant Systems</span>
+          <span class="brand-line2">Just Know How to Dominate.</span>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="Hauptnavigation">
+        <a href="index.html#leistungen">Leistungen</a>
+        <a href="system.html">System</a>
+        <a href="mathematik.html">Mathematik</a>
+        <a href="unternehmen.html">Unternehmen</a>
+        <a href="kontakt.html" class="btn btn-primary btn-sm">Kontakt</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Zwischen hellem und dunklem Erscheinungsbild wechseln">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.6 12h2.2M19.2 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg>
+      </button>
+      <button class="nav-toggle" aria-label="Menü öffnen">☰</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+  <!-- ================= SEITENKOPF ================= -->
+  <section class="page-head">
+    <div class="container">
+      <p class="kicker">// Unternehmen</p>
+      <h1>Ein kleines Haus mit einer klaren Aufgabe.</h1>
+      <p>JKHD entwickelt quantitative Systeme für professionelle Adressen —
+         und betreibt dieselbe Technik selbst. Diese Seite sagt, wer dahinter
+         steht und wie wir arbeiten.</p>
+    </div>
+  </section>
+
+  <!-- ================= WER WIR SIND ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Wer wir sind</p>
+        <h2>Gebaut aus dem, was wir selbst brauchen.</h2>
+      </div>
+
+      <div class="about">
+        <div class="about-text">
+          <p class="about-lead">JKHD ist ein unabhängiges Entwicklungshaus für
+             quantitative Handelssysteme mit Sitz in Deutschland. Wir sind
+             bewusst klein — und geben jeden Auftrag persönlich in die Hand,
+             statt ihn weiterzureichen.</p>
+
+          <p>Angefangen hat es nicht mit einem Geschäftsplan, sondern mit einem
+             eigenen Problem: Wer am Markt mit Regeln statt mit Bauchgefühl
+             arbeiten will, braucht Werkzeuge, die es fertig nicht gibt.
+             Datenanbindung, die Lücken nicht heimlich auffüllt. Statistik, die
+             auch Nein sagt. Ein Notaus, der auslöst, wenn niemand hinsieht. Weil
+             sich das nicht kaufen ließ, haben wir es gebaut.</p>
+
+          <p>Aus diesen Werkzeugen ist unser eigenes System entstanden, das
+             seither läuft und überwacht wird. Und aus dem System wurde das
+             Angebot: dieselbe Technik, dieselben Prüfungen, dieselbe Sorgfalt —
+             nur für andere gebaut. Wir verkaufen also nichts, was wir nicht
+             selbst benutzen.</p>
+
+          <span class="founder-subhead">Wie wir arbeiten</span>
+          <p>Alles entsteht im Haus: Datenverarbeitung, Research, Software,
+             Risikoschicht, Betrieb. Wir kaufen keine fremde Blackbox zu und
+             bauen sie nicht als eigene Leistung um. Das ist langsamer, aber es
+             bedeutet, dass wir jede Zeile erklären können — und dass Sie im
+             Fehlerfall nicht auf einen Dritten warten.</p>
+
+          <p>Bewertet wird mit Statistik, die auch gegen uns entscheiden darf.
+             Ein verworfenes Signal ist bei uns kein Rückschlag, sondern ein
+             Ergebnis. Deshalb sagen wir Ihnen auch, wenn ein Ansatz nicht
+             trägt — das ist häufiger die wertvollere Antwort als ein
+             Auftrag um jeden Preis.</p>
+
+          <span class="founder-subhead">Für wen wir arbeiten</span>
+          <p>Unsere Kunden sind Banken, Fonds und professionelle Adressen.
+             Kein Retail-Produkt, keine Copy-Trading-Bots, keine
+             Rendite-Versprechen. Was wir für einen Auftraggeber bauen, gehört
+             ihm allein — wir behalten keine Kopie und verkaufen dieselbe Arbeit
+             nicht ein zweites Mal.</p>
+        </div>
+
+        <aside class="about-facts">
+          <span class="about-facts-label">Auf einen Blick</span>
+          <dl>
+            <div>
+              <dt>Sitz</dt>
+              <dd>Schliengen, Deutschland</dd>
+            </div>
+            <div>
+              <dt>Tätigkeit</dt>
+              <dd>Entwicklung und Lieferung von Software für quantitative
+                  Analyse, Research und Handel</dd>
+            </div>
+            <div>
+              <dt>Kunden</dt>
+              <dd>Banken, Fonds, professionelle Adressen</dd>
+            </div>
+            <div>
+              <dt>Leistungen</dt>
+              <dd>Module, Beratung &amp; System-Audit, Auftragsentwicklung</dd>
+            </div>
+            <div>
+              <dt>Eigene Systeme</dt>
+              <dd>Im überwachten Dauerbetrieb</dd>
+            </div>
+            <div>
+              <dt>Grundsatz</dt>
+              <dd>Alles aus einer Hand, keine zugekaufte Blackbox</dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= EINBLICKE =================
+       Platzhalter: sobald die Fotos da sind, ersetzt jeweils ein <img>
+       den Platzhalter-Kasten. Empfohlen 3:2 quer, mindestens 1200 px breit,
+       Dateien nach assets/. -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Einblicke</p>
+        <h2>Wo gearbeitet wird.</h2>
+        <p>Bilder aus dem Betrieb folgen in Kürze.</p>
+      </div>
+
+      <div class="gallery">
+        <figure class="shot is-empty">
+          <div class="shot-frame"><span>Bild folgt</span></div>
+          <figcaption>Arbeitsplatz &amp; Research</figcaption>
+        </figure>
+        <figure class="shot is-empty">
+          <div class="shot-frame"><span>Bild folgt</span></div>
+          <figcaption>Überwachung im Dauerbetrieb</figcaption>
+        </figure>
+        <figure class="shot is-empty">
+          <div class="shot-frame"><span>Bild folgt</span></div>
+          <figcaption>Technik &amp; Infrastruktur</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DIE KÖPFE ================= -->
+  <section class="section" id="koepfe">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Die Köpfe</p>
+        <h2>Wer dahinter steht.</h2>
+      </div>
+      <div class="founder-card reveal">
+        <div>
+          <div class="portrait">
+            <img src="assets/julian.jpg" alt="Julian Kaiser — Gründer von JKHD">
+          </div>
+        </div>
+        <div>
+          <div class="founder-name">Julian Lukas Kaiser</div>
+          <span class="founder-role">Gründer | Systemarchitektur &amp; Research</span>
+          <p>
+            Julian Kaiser hat JKHD gegründet. Er verantwortet die strategische
+            Ausrichtung sowie die technologische Architektur. Sein Fokus liegt auf
+            der Konzeption und Optimierung der quantitativen Infrastruktur –
+            insbesondere der Datenverarbeitung, der Research-Modelle, der
+            Risikointegration und der Systemüberwachung.
+          </p>
+          <span class="founder-subhead">Werdegang &amp; Entwicklung</span>
+          <p>
+            Der Weg zur Gründung von JKHD ist geprägt von ausgeprägter
+            technischer Ausrichtung und hoher Eigeninitiative. Nach dem
+            Hauptschulabschluss und einer erfolgreich absolvierten Ausbildung
+            im Elektrotechniker-Handwerk erwarb er fundierte Kenntnisse im
+            Bereich komplexer Systeme und technischer Logik. Parallel dazu
+            vertiefte er über ein intensives Autodidaktik-Studium seine
+            Expertise in der quantitativen Finanzmarktanalyse und
+            Algorithmenentwicklung. Die Synthese aus technischem
+            Systemverständnis und datenbasierter Analyse führte schließlich
+            zur Gründung von JKHD.
+          </p>
+        </div>
+      </div>
+      <div class="founder-card reveal">
+        <div>
+          <div class="portrait">
+            <img src="assets/nils.jpg" alt="Nils Sandhas — Mitgründer von JKHD">
+          </div>
+        </div>
+        <div>
+          <div class="founder-name">Nils Sandhas</div>
+          <span class="founder-role">Mitgründer | Organisation &amp; Kommunikation</span>
+          <p>
+            Nils Sandhas ist Mitgründer von JKHD und arbeitet gemeinsam mit
+            Julian Kaiser. Er verantwortet die operativen
+            Prozesse außerhalb der reinen Systemarchitektur: die strategische
+            Kommunikation, die organisatorische Strukturierung sowie die
+            Zuverlässigkeit nach außen. Sein Fokus sorgt dafür, dass JKHD als
+            verlässlicher Partner agiert und vereinbarte Schnittstellen stets
+            präzise eingehalten werden.
+          </p>
+          <span class="founder-subhead">Werdegang &amp; Entwicklung</span>
+          <p>
+            Sein Werdegang unterstreicht den hohen Qualitätsanspruch von JKHD.
+            Aus einer fundierten Ausbildung im Tischlerhandwerk und der
+            Holzverarbeitung bringt er ein ausgeprägtes Verständnis für
+            Präzision, Sorgfalt und handwerkliche Perfektion mit. Ergänzt durch
+            Spezialqualifikationen in der Maschinenführung steht sein
+            Hintergrund für Werte wie Verlässlichkeit und Detailtreue –
+            Qualitäten, die bei JKHD das Fundament jeder Zusammenarbeit bilden.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-panel">
+        <h2>Lernen wir uns kennen.</h2>
+        <p>Sagen Sie uns, was bei Ihnen steht — wir sagen Ihnen ehrlich, ob wir
+           die Richtigen dafür sind.</p>
+        <a href="kontakt.html" class="btn btn-primary">Kontakt aufnehmen</a>
+        <a href="index.html#leistungen" class="btn btn-ghost">Was wir anbieten</a>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+            <span class="brand-word">JKHD</span>
+            <span class="brand-divider" aria-hidden="true"></span>
+            <span class="brand-tag">
+              <span class="brand-line1">Quant Systems</span>
+              <span class="brand-line2">Just Know How to Dominate.</span>
+            </span>
+          </a>
+          <p>Quantitative Systeme, Software und Automatisierung.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer-Navigation">
+          <p class="footer-col-title">Navigation</p>
+          <a href="index.html#leistungen">Leistungen</a>
+          <a href="system.html">System</a>
+          <a href="mathematik.html">Mathematik</a>
+          <a href="unternehmen.html">Unternehmen</a>
+          <a href="kontakt.html">Kontakt</a>
+        </nav>
+        <div class="footer-contact">
+          <p class="footer-col-title">Kontakt</p>
+          <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+          <a href="mailto:service@jkhd.de">service@jkhd.de</a>
+          <a href="kontakt.html">Kontaktseite</a>
+        </div>
+      </div>
+      <div class="footer-legal">
+        Keine Anlageberatung, keine Anlagevermittlung, keine
+        Finanzportfolioverwaltung. JKHD entwickelt und liefert Software &mdash; den
+        Betrieb eines ausgelieferten Systems verantwortet der Auftraggeber. Angaben
+        auf dieser Webseite sind unverbindlich; Auftr&auml;ge k&ouml;nnen ohne Angabe
+        von Gr&uuml;nden abgelehnt werden.
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© <span id="year">2026</span> JKHD — jkhd.de</div>
+        <div class="footer-links">
+          <a href="impressum.html">Impressum</a>
+          <a href="datenschutz.html">Datenschutz</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js?v=20260810t"></script>
 </body>
 </html>

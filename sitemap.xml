@@ -3,5 +3,6 @@
   <url><loc>https://www.jkhd.de/</loc><priority>1.0</priority></url>
   <url><loc>https://www.jkhd.de/system.html</loc><priority>0.8</priority></url>
   <url><loc>https://www.jkhd.de/mathematik.html</loc><priority>0.8</priority></url>
+  <url><loc>https://www.jkhd.de/unternehmen.html</loc><priority>0.7</priority></url>
   <url><loc>https://www.jkhd.de/kontakt.html</loc><priority>0.7</priority></url>
 </urlset>
