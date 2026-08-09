@@ -1413,6 +1413,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .helper-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   padding: 13px 20px;
   background: var(--text);
@@ -1430,12 +1431,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 .helper-btn:hover { transform: translateY(-2px); }
 
-.helper-btn-icon {
-  font-family: var(--mono);
-  font-size: 0.9rem;
-  line-height: 1;
-  opacity: 0.7;
-}
+.helper-btn-icon { display: flex; }
+.helper-btn-icon svg { width: 17px; height: 17px; display: block; }
 
 .helper-panel {
   width: min(380px, calc(100vw - 48px));
@@ -1540,10 +1537,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .helper { right: 16px; bottom: 16px; left: 16px; align-items: stretch; }
   .helper-panel { width: 100%; max-height: calc(100vh - 120px); }
 
-  /* Nur das Fragezeichen: die breite Blase hat sonst Knoepfe darunter verdeckt */
-  .helper-btn { align-self: flex-end; width: 48px; height: 48px; padding: 0; }
+  /* Nur das Symbol: die breite Blase hat sonst Knoepfe darunter verdeckt */
+  .helper-btn { align-self: flex-end; width: 50px; height: 50px; padding: 0; gap: 0; }
   .helper-btn-text { display: none; }
-  .helper-btn-icon { font-size: 1.15rem; opacity: 1; }
+  .helper-btn-icon svg { width: 21px; height: 21px; }
 }
 
 /* ---------- Anfrage-Formular ---------- */
