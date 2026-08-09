@@ -359,6 +359,20 @@ if (siteHeader) {
         ? "Noch nichts ausgewählt"
         : gewaehlt + " von " + rows.length + " Bausteinen gewählt";
     if (hintEl) hintEl.hidden = kern < kernAnzahl;
+
+    // Auswahl an das Anfrageformular weiterreichen
+    const anfrage = config.querySelector('a[href^="kontakt.html"]');
+    if (anfrage) {
+      const namen = rows
+        .filter((r) => r.querySelector("input").checked)
+        .map((r) => r.querySelector(".config-name").textContent.trim());
+      anfrage.setAttribute(
+        "href",
+        namen.length
+          ? "kontakt.html?bausteine=" + encodeURIComponent(namen.join("|")) + "#anfrage"
+          : "kontakt.html#anfrage"
+      );
+    }
   }
 
   rows.forEach((row) => {
@@ -526,4 +540,104 @@ if (siteHeader) {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !panel.hidden) oeffnen(false);
   });
+})();
+
+// ---------- Anfrage-Formular: baut eine E-Mail, verschickt selbst nichts ----------
+// Kein Server, kein Dienstleister: Die Eingaben bleiben im Browser und landen
+// im E-Mail-Programm des Besuchers. Abgeschickt wird dort, von ihm.
+(function () {
+  const form = document.getElementById("inquiry");
+  if (!form) return;
+
+  const hint = document.getElementById("iq-hint");
+  const kopieren = document.getElementById("iq-copy");
+
+  const ZIEL = {
+    kontakt: { mail: "kontakt@jkhd.de", betreff: "Anfrage" },
+    service: { mail: "service@jkhd.de", betreff: "Support" },
+    info: { mail: "info@jkhd.de", betreff: "Anliegen" },
+  };
+
+  const wert = (id) => (document.getElementById(id).value || "").trim();
+
+  function melden(text, fehler) {
+    hint.textContent = text;
+    hint.classList.toggle("is-error", Boolean(fehler));
+  }
+
+  // Bausteine aus dem Konfigurator uebernehmen, falls von dort verlinkt
+  function ausKonfigurator() {
+    const p = new URLSearchParams(location.search).get("bausteine");
+    return p ? p.split("|").filter(Boolean) : [];
+  }
+
+  function nachricht() {
+    const haus = wert("iq-haus");
+    const name = wert("iq-name");
+    const mail = wert("iq-mail");
+    const text = wert("iq-text");
+    const bausteine = ausKonfigurator();
+
+    const zeilen = [];
+    if (haus) zeilen.push("Institution: " + haus);
+    if (name) zeilen.push("Ansprechpartner: " + name);
+    if (mail) zeilen.push("E-Mail: " + mail);
+    if (bausteine.length) zeilen.push("Ausgewählte Bausteine: " + bausteine.join(", "));
+    if (zeilen.length) zeilen.push("");
+    if (text) zeilen.push(text, "");
+    zeilen.push("—", "Vorbereitet über das Anfrageformular auf www.jkhd.de");
+    return zeilen.join("\n");
+  }
+
+  function betreff() {
+    const thema = ZIEL[document.getElementById("iq-thema").value] || ZIEL.kontakt;
+    const haus = wert("iq-haus");
+    return thema.betreff + " über jkhd.de" + (haus ? " — " + haus : "");
+  }
+
+  function ziel() {
+    return (ZIEL[document.getElementById("iq-thema").value] || ZIEL.kontakt).mail;
+  }
+
+  function vollstaendig() {
+    if (!wert("iq-text")) {
+      melden("Bitte beschreiben Sie kurz Ihr Anliegen.", true);
+      document.getElementById("iq-text").focus();
+      return false;
+    }
+    return true;
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!vollstaendig()) return;
+    const url =
+      "mailto:" + ziel() +
+      "?subject=" + encodeURIComponent(betreff()) +
+      "&body=" + encodeURIComponent(nachricht());
+    melden("E-Mail-Programm wird geöffnet …");
+    window.location.href = url;
+    // Falls kein Mail-Programm eingerichtet ist, passiert sichtbar nichts —
+    // deshalb nach kurzer Zeit auf den Kopier-Weg hinweisen.
+    setTimeout(() => {
+      melden("Nichts passiert? Nutzen Sie „Text kopieren“ und schreiben Sie an " + ziel() + ".");
+    }, 2500);
+  });
+
+  kopieren.addEventListener("click", async () => {
+    if (!vollstaendig()) return;
+    const text = "An: " + ziel() + "\nBetreff: " + betreff() + "\n\n" + nachricht();
+    try {
+      await navigator.clipboard.writeText(text);
+      melden("Kopiert — jetzt in Ihr E-Mail-Programm einfügen.");
+    } catch (err) {
+      melden("Kopieren nicht möglich. Bitte an " + ziel() + " schreiben.", true);
+    }
+  });
+
+  // Kommt der Besucher aus dem Konfigurator, gleich sichtbar machen
+  const bausteine = ausKonfigurator();
+  if (bausteine.length) {
+    melden(bausteine.length + " Baustein(e) aus dem Konfigurator werden übernommen.");
+  }
 })();
