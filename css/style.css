@@ -53,8 +53,6 @@
   --rule-3: rgba(16, 16, 18, 0.1);
   --watermark: rgba(16, 16, 18, 0.05);
   --watermark-hi: rgba(16, 16, 18, 0.14);
-  --chart-grid: rgba(16, 16, 18, 0.1);
-  --chart-fill: rgba(16, 16, 18, 0.16);
 }
 
 /* ---------- Dunkel: dieselbe Seite bei Nacht ----------
@@ -87,8 +85,6 @@
   --rule-3: rgba(244, 242, 238, 0.12);
   --watermark: rgba(244, 242, 238, 0.05);
   --watermark-hi: rgba(244, 242, 238, 0.14);
-  --chart-grid: rgba(244, 242, 238, 0.1);
-  --chart-fill: rgba(244, 242, 238, 0.16);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -506,10 +502,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .exclusive-label,
 .creed-cost-label,
 .creed-close-label,
-.verdict-label,
-.verdict-line span:first-child,
-.luck-bar span,
-.luck-stat dt,
 .audience,
 .founder-role,
 .founder-subhead,
@@ -522,8 +514,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 
 /* Zweite Stufe: Mono in Fließrichtung — Unterschrift, Fußnote, Link */
-.rail-link,
-.luck-legend {
+.rail-link {
   font-family: var(--mono);
   font-size: var(--caption);
   letter-spacing: 0.08em;
@@ -539,7 +530,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .offer h3,
 .creed-inner h3,
 .layer-head h3,
-.verdict-intro h3,
 .founder-name { font-size: var(--h3-lg); letter-spacing: -0.02em; }
 
 /* ---------- Zusammenarbeit: Zielgruppe, Leistungen, Exklusivität ---------- */
@@ -1113,142 +1103,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   color: var(--text);
 }
 
-/* ---------- Zufalls-Demo ---------- */
-
-.luck {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  overflow: hidden;
-}
-
-.luck-chart { padding: var(--pad-card); border-right: 1px solid var(--border); }
-
-.luck-bar { display: flex; justify-content: space-between; gap: 16px; color: var(--muted); }
-.luck-flag { color: var(--accent); }
-
-.luck-canvas { position: relative; margin-top: 20px; }
-.luck-canvas svg { display: block; width: 100%; height: auto; }
-
-.luck-grid line { stroke: var(--chart-grid); stroke-width: 1; }
-.luck-area { fill: url(#luck-fill); }
-/* Der Verlauf unter der Kurve wird hier gesetzt, damit er mitschaltet */
-#luck-fill stop:first-child { stop-color: var(--chart-fill); }
-#luck-fill stop:last-child { stop-color: transparent; }
-.luck-line {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.luck-watermark {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--mono);
-  font-size: clamp(2rem, 6vw, 3.4rem);
-  font-weight: 700;
-  letter-spacing: 0.42em;
-  text-transform: uppercase;
-  color: var(--watermark);
-  pointer-events: none;
-  user-select: none;
-}
-
-.luck-legend { margin-top: 16px; color: var(--muted); opacity: 0.75; }
-
-.luck-side { display: flex; flex-direction: column; padding: var(--pad-card); }
-
-.luck-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  overflow: hidden;
-}
-
-.luck-stat { background: var(--panel-2); padding: 15px 16px; }
-.luck-stat dt { color: var(--muted); }
-.luck-stat dd {
-  margin-top: 5px;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 1.4rem;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-}
-
-.luck-note { margin: 20px 0 24px; color: var(--muted); font-size: 0.9rem; }
-
-.luck-roll {
-  margin-top: auto;
-  align-self: flex-start;
-  padding: 12px 22px;
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border-2);
-  border-radius: var(--r-sm);
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s, background 0.2s;
-}
-.luck-roll:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
-.luck-roll:active { transform: translateY(1px); }
-
-/* ---------- Gegentest / Verdikt ---------- */
-
-.verdict {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 44px;
-  align-items: center;
-  margin-top: 16px;
-  padding: var(--pad-panel);
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-}
-
-.verdict-label { display: block; margin-bottom: 12px; color: var(--accent); }
-.verdict-intro h3 { margin-bottom: 12px; }
-.verdict-intro p { color: var(--muted); font-size: 0.94rem; }
-
-.verdict-report { font-family: var(--mono); font-size: 0.76rem; }
-
-.verdict-line {
-  display: grid;
-  grid-template-columns: 132px 1fr;
-  gap: 18px;
-  padding: 9px 0;
-  border-bottom: 1px dashed var(--border);
-  color: var(--text);
-}
-.verdict-line span:first-child { color: var(--muted); padding-top: 1px; }
-.verdict-final { border-bottom: none; padding-top: 14px; }
-.verdict-stamp {
-  justify-self: start;
-  padding: 5px 14px;
-  border: 1px solid var(--accent);
-  border-radius: var(--r-sm);
-  background: var(--accent-dim);
-  color: var(--accent);
-  font-weight: 700;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-}
-
 /* ---------- CTA ---------- */
 
 .cta-panel {
@@ -1429,11 +1283,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
   .footer-top { grid-template-columns: 1fr; gap: 36px; }
 
-  .luck { grid-template-columns: 1fr; }
-  .luck-chart { border-right: none; border-bottom: 1px solid var(--border); }
-  .luck-roll { width: 100%; text-align: center; }
-
-  .verdict { grid-template-columns: 1fr; gap: 30px; }
 
   .nav-toggle { display: flex; align-items: center; justify-content: center; }
 
@@ -1482,13 +1331,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .config-sep, .config-total { padding-left: 22px; padding-right: 22px; }
   .exclusive { padding: 28px 22px; }
 
-  .luck-chart, .luck-side { padding: 24px 22px; }
-  .luck-stats { grid-template-columns: 1fr; }
-  /* auf dem Handy darf die Kurve höher stehen als das Seitenverhältnis vorgibt */
-  .luck-canvas svg { height: 190px; }
 
-  .verdict { padding: 28px 22px; }
-  .verdict-line { grid-template-columns: 1fr; gap: 4px; }
 
   .founder-card { padding: 26px 22px; }
 
