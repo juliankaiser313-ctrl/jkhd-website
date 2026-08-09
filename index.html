@@ -2,17 +2,18 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta name="robots" content="noindex, nofollow"><!-- VORSCHAU -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JKHD — Quantitative Systeme &amp; Software</title>
-  <meta name="description" content="JKHD entwickelt und betreibt quantitative Handelssysteme. Die vollständige Website befindet sich im Aufbau.">
-  <meta name="theme-color" content="#0b0b0c">
+  <meta name="description" content="JKHD entwickelt quantitative Handelssysteme für Banken, Fonds und professionelle Adressen — Module, Beratung und Auftragsentwicklung. Exklusiv: wir behalten keine Kopie.">
+  <meta name="theme-color" content="#0a0a0b">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="JKHD">
-  <meta property="og:title" content="JKHD — Quantitative Systeme &amp; Software">
-  <meta property="og:description" content="Unabhängiges Quant-Projekt aus Deutschland. Die vollständige Website befindet sich im Aufbau.">
   <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
   <meta property="og:url" content="https://www.jkhd.de/">
   <link rel="canonical" href="https://www.jkhd.de/">
+  <meta property="og:title" content="JKHD — Quantitative Systeme &amp; Software">
+  <meta property="og:description" content="Quant-Systeme für professionelle Adressen: Module, Beratung und Auftragsentwicklung — Research auf Rohdaten, statistische Härtetests, überwachter Dauerbetrieb.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
@@ -23,67 +24,561 @@
     "name": "JKHD",
     "url": "https://www.jkhd.de",
     "email": "elite@jkhd.de",
-    "description": "JKHD entwickelt und betreibt quantitative Handelssysteme — mit ehrlicher Statistik, betrieben rund um die Uhr.",
-    "founder": { "@type": "Person", "name": "Julian Kaiser" }
+    "description": "JKHD entwickelt quantitative Handelssysteme für Banken, Fonds und professionelle Adressen — als Modul, als Beratung oder als vollständiges System. Eigene Systeme laufen im Dauerbetrieb.",
+    "founder": { "@type": "Person", "name": "Julian Lukas Kaiser" }
   }
   </script>
-  <style>
-    html, body { height: 100%; }
-    body.holding { display: flex; flex-direction: column; background: var(--dark-bg); }
-    .holding-hero { flex: 1; display: flex; align-items: center; position: relative; overflow: hidden; }
-    .holding-inner { text-align: center; margin: 0 auto; padding: 60px 28px; position: relative; z-index: 1; max-width: 760px; }
-    .holding-mark { width: 76px; height: 76px; fill: var(--dark-text); margin: 0 auto 34px; display: block; }
-    .holding-word { font-weight: 800; font-size: 1.5rem; letter-spacing: 0.5em; color: var(--dark-text); transform: translateX(0.25em); margin-bottom: 30px; }
-    .holding-line { width: 56px; height: 1px; background: var(--dark-text); opacity: 0.5; margin: 0 auto 30px; }
-    .holding-title { font-family: var(--serif); font-size: clamp(1.5rem, 3.4vw, 2.2rem); color: var(--dark-text); line-height: 1.35; }
-    .holding-sub { margin-top: 22px; color: var(--dark-muted); font-size: 1.02rem; }
-    .holding-actions { margin-top: 40px; }
-    .holding-status { justify-content: center; margin-top: 44px; }
-    .holding-footer { border-top: 1px solid var(--dark-border); padding: 22px 28px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; position: relative; z-index: 1; }
-    .holding-footer span { color: var(--dark-muted); font-size: 0.78rem; }
-    .holding-footer nav { display: flex; gap: 24px; }
-    .holding-footer a { color: var(--dark-muted); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
-    .holding-footer a:hover { color: var(--dark-text); opacity: 1; }
-    @media (prefers-reduced-motion: no-preference) {
-      .holding-inner > * { opacity: 0; transform: translateY(18px); animation: fadeUp 0.9s var(--ease) forwards; }
-      .holding-inner > *:nth-child(2) { animation-delay: 0.08s; }
-      .holding-inner > *:nth-child(3) { animation-delay: 0.16s; }
-      .holding-inner > *:nth-child(4) { animation-delay: 0.24s; }
-      .holding-inner > *:nth-child(5) { animation-delay: 0.32s; }
-      .holding-inner > *:nth-child(6) { animation-delay: 0.4s; }
-      .holding-inner > *:nth-child(7) { animation-delay: 0.5s; }
-    }
-  </style>
 </head>
-<body class="holding band-dark">
+<body>
 
-  <main class="holding-hero">
-    <canvas id="dataviz" class="hero-canvas" aria-hidden="true"></canvas>
-    <div class="mark-watermark" aria-hidden="true" style="top:0; right:-6%; height:100%; aspect-ratio:1;">
-      <svg viewBox="0 0 100 100"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+        <span class="brand-word">JKHD</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-tag">
+          <span class="brand-line1">Quant Systems</span>
+          <span class="brand-line2">Just Know How to Dominate.</span>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="Hauptnavigation">
+        <a href="#leistungen">Leistungen</a>
+        <a href="system.html">System</a>
+        <a href="#unternehmen">Unternehmen</a>
+        <a href="kontakt.html" class="btn btn-primary btn-sm">Kontakt</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Menü öffnen">☰</button>
     </div>
-    <div class="holding-inner">
-      <svg class="holding-mark" viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
-      <div class="holding-word">JKHD</div>
-      <div class="holding-line" aria-hidden="true"></div>
-      <h1 class="holding-title">Quantitative Systeme. Software. Automatisierung.</h1>
-      <p class="holding-sub">
-        Die vollständige Website befindet sich im Aufbau.
-        Für Anfragen erreichen Sie uns bereits per E-Mail.
+  </header>
+
+  <main id="main">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <h1>Quantitative Systeme.<br>Gebaut, um zu bestehen.</h1>
+      <p class="hero-sub">
+        JKHD entwickelt quantitative Handelssysteme für Banken, Fonds und
+        professionelle Adressen — und betreibt dieselbe Maschinerie selbst:
+        Research auf echten Marktdaten, kompromisslose statistische Validierung,
+        überwachter Dauerbetrieb.
       </p>
-      <div class="holding-actions">
-        <a href="mailto:elite@jkhd.de" class="btn btn-primary">elite@jkhd.de</a>
+      <div class="hero-actions">
+        <a href="#leistungen" class="btn btn-primary">Was wir anbieten</a>
+        <a href="kontakt.html" class="btn btn-ghost">Kontakt aufnehmen</a>
       </div>
-      <p class="hero-status holding-status"><span class="live-dot"></span> System aktiv &nbsp;·&nbsp; Überwachung 24/7</p>
     </div>
+  </section>
+
+  <!-- ================= TICKER ================= -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <div class="ticker-group">
+        <span>Echte CME-Tick-Daten</span>
+        <span>Multiple-Testing-Korrektur</span>
+        <span>White's Reality Check</span>
+        <span>Out-of-Sample-Validierung</span>
+        <span>Trailing-Drawdown-Kontrolle</span>
+        <span>Überwachung 24/7</span>
+        <span>Alles versioniert</span>
+      </div>
+      <div class="ticker-group">
+        <span>Echte CME-Tick-Daten</span>
+        <span>Multiple-Testing-Korrektur</span>
+        <span>White's Reality Check</span>
+        <span>Out-of-Sample-Validierung</span>
+        <span>Trailing-Drawdown-Kontrolle</span>
+        <span>Überwachung 24/7</span>
+        <span>Alles versioniert</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ZUSAMMENARBEIT ================= -->
+  <section class="section" id="leistungen">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Zusammenarbeit</p>
+        <h2>Wir bauen Quant-Systeme — auch für andere.</h2>
+        <p>Was auf dieser Seite beschrieben ist, betreiben wir selbst. Dieselbe
+           Maschinerie stellen wir professionellen Adressen zur Verfügung:
+           als einzelnes Modul, als Beratung — oder als komplettes System,
+           gebaut nach Ihren Anforderungen.</p>
+      </div>
+
+      <div class="audience">
+        <span class="audience-for">Banken &middot; Fonds &middot; professionelle Adressen</span>
+        <span class="audience-not">Kein Retail-Produkt &middot; keine Copy-Trading-Bots</span>
+      </div>
+
+      <div class="offers">
+        <article class="offer">
+          <span class="offer-num">01</span>
+          <h3>Module</h3>
+          <p class="offer-lead">Einzelne Stufen unseres Systems, lizenziert.</p>
+          <p>Sie haben Research und Handel bereits im Haus und brauchen ein
+             Stück, das sauber funktioniert. Sie bekommen die einzelne Stufe —
+             dokumentiert und geprüft — statt einer Komplettlösung, die Sie
+             nicht brauchen.</p>
+          <ul class="offer-tags">
+            <li>datenaufbereitung</li>
+            <li>härtetest-suite</li>
+            <li>risiko- und breaker-schicht</li>
+            <li>betriebsüberwachung</li>
+          </ul>
+        </article>
+        <article class="offer">
+          <span class="offer-num">02</span>
+          <h3>Beratung</h3>
+          <p class="offer-lead">Ein zweites, unbestechliches Paar Augen.</p>
+          <p>Wir bewerten bestehende Systeme, Research-Methodik und
+             Risikoarchitektur — und sagen Ihnen auch, wenn ein Ansatz nicht
+             trägt. Das ist häufiger die wertvollere Antwort.</p>
+          <ul class="offer-tags">
+            <li>system-audit</li>
+            <li>research-methodik</li>
+            <li>risikoarchitektur</li>
+            <li>zweitmeinung</li>
+          </ul>
+        </article>
+        <article class="offer">
+          <span class="offer-num">03</span>
+          <h3>Entwicklung</h3>
+          <p class="offer-lead">Ihr System. Gebaut, wie beraten.</p>
+          <p>Aus der Beratung wird ein fertiges System — von der
+             Datenaufbereitung bis zum überwachten Betrieb. Geprüft und
+             abgenommen, bevor es Ihr Haus erreicht, und vollständig an Sie
+             übergeben.</p>
+          <ul class="offer-tags">
+            <li>konzeption</li>
+            <li>umsetzung</li>
+            <li>abnahme</li>
+            <li>übergabe</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="block-head">
+        <span class="block-label">Was wir bauen</span>
+        <p>Nicht jedes System muss handeln. Wir bauen die Stufe, die Sie
+           brauchen — und sagen Ihnen vorher, welche das ist.</p>
+      </div>
+
+      <div class="kinds">
+        <article class="kind">
+          <div>
+            <h3>Beobachtung</h3>
+            <p>Systeme, die zusehen und melden: Marktzustände, Datenqualität,
+               das Verhalten Ihrer eigenen Strategien. Kein Eingriff, keine
+               Order — nur Sichtbarkeit.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Marktzugriff</span>
+            <em>keiner</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Analyse</h3>
+            <p>Systeme, die rechnen und bewerten: Research-Pipelines,
+               Signalbewertung, statistische Prüfung. Sie liefern Ergebnisse,
+               über die Ihre Leute entscheiden.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Marktzugriff</span>
+            <em>keiner</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Ausführung</h3>
+            <p>Systeme, die handeln: Regelwerk, Ordermanagement,
+               Risikogrenzen und Notaus. Vollautomatisch — innerhalb der
+               Grenzen, die vor dem ersten Trade feststehen.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Marktzugriff</span>
+            <em>vollautomatisch</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Vollsystem von Grund auf</h3>
+            <p>Alles zusammen, auf leerem Blatt gebaut: von der
+               Rohdaten-Anbindung über Research und Risiko bis zum überwachten
+               Dauerbetrieb. Nicht aus fremden Bausteinen zusammengesetzt.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Umfang</span>
+            <em>komplette Kette</em>
+          </div>
+        </article>
+      </div>
+
+      <div class="exclusive">
+        <span class="exclusive-label">Vertraglich zugesichert</span>
+        <p class="exclusive-claim">Was wir für Sie bauen, gehört Ihnen —
+           vollständig. Wir behalten keine Kopie, keinen Parameter und keine
+           Ableitung davon zurück.</p>
+        <p class="exclusive-sub">Ihr Auftrag wird nicht zu unserem nächsten
+           Produkt: kein Weiterverkauf, keine Wiederverwendung, keine zweite
+           Ausfertigung für jemand anderen.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DER ZUFALL ================= -->
+  <section class="section" id="zufall">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Der Zufall</p>
+        <h2>Diese Kurve hat nie einen Markt gesehen.</h2>
+        <p>Sie ist gewürfelt. Zweihundert Zufallspfade, und hier steht der
+           beste davon — kein Modell, kein Signal, kein einziger echter Trade.
+           Genau so entsteht ein Backtest, der überzeugt und nichts wert ist.</p>
+      </div>
+
+      <div class="luck">
+        <div class="luck-chart">
+          <div class="luck-bar">
+            <span>Zufallspfad &mdash; live in Ihrem Browser</span>
+            <span class="luck-flag">0 echte Trades</span>
+          </div>
+          <div class="luck-canvas">
+            <svg id="luck-svg" viewBox="0 0 640 260" preserveAspectRatio="none" role="img"
+                 aria-label="Beispielkurve aus Zufallszahlen, ohne Marktdaten">
+              <defs>
+                <linearGradient id="luck-fill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(157,184,255,0.20)"/>
+                  <stop offset="100%" stop-color="rgba(157,184,255,0)"/>
+                </linearGradient>
+              </defs>
+              <g class="luck-grid"></g>
+              <path class="luck-area" d=""/>
+              <path class="luck-line" d=""/>
+            </svg>
+            <span class="luck-watermark" aria-hidden="true">Zufall</span>
+          </div>
+          <p class="luck-legend">250 Handelstage &middot; bester aus 200 Pfaden &middot; Startkapital 100</p>
+        </div>
+
+        <div class="luck-side">
+          <dl class="luck-stats">
+            <div class="luck-stat">
+              <dt>Rendite</dt>
+              <dd id="luck-return">&mdash;</dd>
+            </div>
+            <div class="luck-stat">
+              <dt>Sharpe</dt>
+              <dd id="luck-sharpe">&mdash;</dd>
+            </div>
+            <div class="luck-stat">
+              <dt>Trefferquote</dt>
+              <dd id="luck-hit">&mdash;</dd>
+            </div>
+            <div class="luck-stat">
+              <dt>Max. Drawdown</dt>
+              <dd id="luck-dd">&mdash;</dd>
+            </div>
+          </dl>
+          <p class="luck-note">
+            Jeder Klick würfelt zweihundert neue Pfade und zeigt wieder den
+            besten. Die Zahlen ändern sich — gut aussehen wird es immer.
+            Wer aus tausend Versuchen den schönsten zeigt, zeigt genau das hier.
+          </p>
+          <button type="button" class="luck-roll" id="luck-roll">Neu würfeln</button>
+        </div>
+      </div>
+
+      <div class="verdict">
+        <div class="verdict-intro">
+          <span class="verdict-label">Der Gegentest</span>
+          <h3>Wir prüfen jeden Kandidaten gegen genau diesen Zufall.</h3>
+          <p>Ein echter Befund aus unserem eigenen Research — veröffentlicht,
+             weil er die Methode zeigt und nicht das Ergebnis. Was die Prüfung
+             nicht besteht, handelt bei uns keinen einzigen Kontrakt.</p>
+        </div>
+        <div class="verdict-report">
+          <div class="verdict-line"><span>Signal-Familie</span><span>momentum-burst</span></div>
+          <div class="verdict-line"><span>Datenbasis</span><span>index-future &middot; 1 monat echte tick-daten</span></div>
+          <div class="verdict-line"><span>Kandidaten</span><span>54 parameter-zellen</span></div>
+          <div class="verdict-line"><span>Roh-Ergebnis</span><span>mehrere zellen sehen profitabel aus</span></div>
+          <div class="verdict-line"><span>Nach Korrektur</span><span>0 kandidaten bestehen</span></div>
+          <div class="verdict-line verdict-final"><span>Verdikt</span><span class="verdict-stamp">verworfen</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ================= PREIS-LEISTUNG ================= -->
+  <!--
+       ACHTUNG PREISE: Die Beträge stehen ausschließlich in data-preis der
+       jeweiligen Zeile (in Euro, ganze Zahlen). Der angezeigte Preis und die
+       Summe werden daraus berechnet — es gibt keine zweite Stelle.
+       Solange dort 0 steht, ist die Seite NICHT veröffentlichungsreif.
+  -->
+  <section class="section" id="preise">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Preis-Leistung</p>
+        <h2>Stellen Sie sich Ihr System zusammen.</h2>
+        <p>Wählen Sie die Bausteine, die Sie brauchen — unten steht sofort eine
+           Größenordnung. Damit Sie wissen, woran Sie sind, bevor wir
+           miteinander sprechen.</p>
+      </div>
+
+      <div class="config" id="config">
+        <div class="config-head">
+          <span></span>
+          <span>Baustein</span>
+          <span>Richtpreis</span>
+        </div>
+
+        <label class="config-row" data-preis="0" data-kern="ja">
+          <input type="checkbox">
+          <span class="config-box" aria-hidden="true"></span>
+          <span class="config-text">
+            <span class="config-name">Daten &amp; Anbindung</span>
+            <span class="config-desc">Feed-Anbindung, eigene Bar-Aggregation, Lücken- und Ausreißerprüfung.</span>
+          </span>
+          <span class="config-price"></span>
+        </label>
+
+        <label class="config-row" data-preis="0" data-kern="ja">
+          <input type="checkbox">
+          <span class="config-box" aria-hidden="true"></span>
+          <span class="config-text">
+            <span class="config-name">Research &amp; Signalfindung</span>
+            <span class="config-desc">Signal-Familien, über tausende Parameter-Kombinationen kartiert.</span>
+          </span>
+          <span class="config-price"></span>
+        </label>
+
+        <label class="config-row" data-preis="0" data-kern="ja">
+          <input type="checkbox">
+          <span class="config-box" aria-hidden="true"></span>
+          <span class="config-text">
+            <span class="config-name">Statistische Härtetests</span>
+            <span class="config-desc">Multiple-Testing-Korrektur, Reality Check, Out-of-Sample, Fidelity-Report.</span>
+          </span>
+          <span class="config-price"></span>
+        </label>
+
+        <label class="config-row" data-preis="0" data-kern="ja">
+          <input type="checkbox">
+          <span class="config-box" aria-hidden="true"></span>
+          <span class="config-text">
+            <span class="config-name">Risiko &amp; Kapital</span>
+            <span class="config-desc">Tagesverlust-Limit, Trailing-Drawdown, Mark-to-Market-Breaker je Konto.</span>
+          </span>
+          <span class="config-price"></span>
+        </label>
+
+        <label class="config-row" data-preis="0" data-kern="ja">
+          <input type="checkbox">
+          <span class="config-box" aria-hidden="true"></span>
+          <span class="config-text">
+            <span class="config-name">Ausführung &amp; Order</span>
+            <span class="config-desc">Ordermanagement, Brackets zur Signalzeit, Wiederanlauf ohne Doppelorder.</span>
+          </span>
+          <span class="config-price"></span>
+        </label>
+
+        <label class="config-row" data-preis="0" data-kern="ja">
+          <input type="checkbox">
+          <span class="config-box" aria-hidden="true"></span>
+          <span class="config-text">
+            <span class="config-name">Betrieb &amp; Überwachung</span>
+            <span class="config-desc">Watchdog-Kette, Selbstheilung, Shadow-Tracking und Drift-Erkennung.</span>
+          </span>
+          <span class="config-price"></span>
+        </label>
+
+        <div class="config-sep">Ergänzend</div>
+
+        <label class="config-row" data-preis="0">
+          <input type="checkbox">
+          <span class="config-box" aria-hidden="true"></span>
+          <span class="config-text">
+            <span class="config-name">Beratung &amp; System-Audit</span>
+            <span class="config-desc">Bewertung Ihres bestehenden Aufbaus, bevor irgendetwas gebaut wird.</span>
+          </span>
+          <span class="config-price"></span>
+        </label>
+
+        <label class="config-row" data-preis="0">
+          <input type="checkbox">
+          <span class="config-box" aria-hidden="true"></span>
+          <span class="config-text">
+            <span class="config-name">Persönlicher Ansprechpartner</span>
+            <span class="config-desc">Ein fester Betreuer, ausschließlich für Ihr Haus zuständig — an Bedingungen geknüpft.</span>
+          </span>
+          <span class="config-price"></span>
+        </label>
+
+        <div class="config-total">
+          <div>
+            <span class="config-total-label">Ungefähr</span>
+            <div class="config-total-value" id="config-sum">0 &euro;</div>
+            <p class="config-total-meta" id="config-meta">Noch nichts ausgewählt</p>
+            <p class="config-full" id="config-hint" hidden>
+              Alle sechs Bausteine — das ist ein Vollsystem von Grund auf, die
+              komplette Kette aus einer Hand.
+            </p>
+          </div>
+          <div class="config-total-side">
+            <p class="config-disclaimer">
+              <b>Ungefähr</b> heißt ungefähr: eine Vorschau auf die
+              Größenordnung. Kein Angebot, keine Zusage. Der verbindliche Preis
+              entsteht erst, wenn wir Ihren Fall kennen.
+            </p>
+            <a href="kontakt.html" class="btn btn-primary">Angebot anfragen</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="included">
+        <span class="included-label">Immer enthalten</span>
+        <span>Zwei Monate Testbetrieb &mdash; danach können Sie ablehnen</span>
+        <span>24/7-Support</span>
+        <span>Vollständige Übergabe, keine Kopie bei uns</span>
+      </div>
+
+      <div class="note" style="max-width:820px; margin-top:26px;">
+        <b>Persönlicher Ansprechpartner:</b> Für große Institutionen richten wir
+        einen festen Betreuer ein, der ausschließlich für Ihr Haus zuständig ist
+        — nicht eine Hotline, sondern ein Mensch, der Ihr System kennt. Das ist
+        an Bedingungen geknüpft, die wir vorab offen besprechen.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= UNTERNEHMEN ================= -->
+  <section class="section" id="unternehmen">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Unternehmen</p>
+        <h2>Die Köpfe hinter JKHD</h2>
+      </div>
+      <div class="founder-card reveal">
+        <div>
+          <div class="portrait">
+            <img src="assets/julian.jpg" alt="Julian Kaiser — Gründer und CEO von JKHD">
+          </div>
+        </div>
+        <div>
+          <div class="founder-name">Julian Lukas Kaiser</div>
+          <span class="founder-role">Gründer | Gesellschafter | CEO</span>
+          <p>
+            Julian Kaiser leitet JKHD als Gründer und Chief Executive
+            Officer. Er verantwortet die strategische Ausrichtung sowie die
+            technologische Architektur des Unternehmens. Sein Fokus liegt auf
+            der Konzeption und Optimierung der quantitativen Infrastruktur –
+            insbesondere der Datenverarbeitung, der Research-Modelle, der
+            Risikointegration und der Systemüberwachung.
+          </p>
+          <span class="founder-subhead">Werdegang &amp; Entwicklung</span>
+          <p>
+            Der Weg zur Gründung von JKHD ist geprägt von ausgeprägter
+            technischer Ausrichtung und hoher Eigeninitiative. Nach dem
+            Hauptschulabschluss und einer erfolgreich absolvierten Ausbildung
+            im Elektrotechniker-Handwerk erwarb er fundierte Kenntnisse im
+            Bereich komplexer Systeme und technischer Logik. Parallel dazu
+            vertiefte er über ein intensives Autodidaktik-Studium seine
+            Expertise in der quantitativen Finanzmarktanalyse und
+            Algorithmenentwicklung. Die Synthese aus technischem
+            Systemverständnis und datenbasierter Analyse führte schließlich
+            zur Gründung von JKHD.
+          </p>
+        </div>
+      </div>
+      <div class="founder-card reveal">
+        <div>
+          <div class="portrait">
+            <img src="assets/nils.jpg" alt="Nils Sandhas — CCO von JKHD">
+          </div>
+        </div>
+        <div>
+          <div class="founder-name">Nils Sandhas</div>
+          <span class="founder-role">Mitgründer | Co-CEO</span>
+          <p>
+            Nils Sandhas ist Mitgründer von JKHD und leitet das Unternehmen als
+            Co-CEO gemeinsam mit Julian Kaiser. Er verantwortet alle operativen
+            Prozesse außerhalb der reinen Systemarchitektur: die strategische
+            Kommunikation, die organisatorische Strukturierung sowie die
+            Zuverlässigkeit nach außen. Sein Fokus sorgt dafür, dass JKHD als
+            verlässlicher Partner agiert und vereinbarte Schnittstellen stets
+            präzise eingehalten werden.
+          </p>
+          <span class="founder-subhead">Werdegang &amp; Entwicklung</span>
+          <p>
+            Sein Werdegang unterstreicht den hohen Qualitätsanspruch von JKHD.
+            Aus einer fundierten Ausbildung im Tischlerhandwerk und der
+            Holzverarbeitung bringt er ein ausgeprägtes Verständnis für
+            Präzision, Sorgfalt und handwerkliche Perfektion mit. Ergänzt durch
+            Spezialqualifikationen in der Maschinenführung steht sein
+            Hintergrund für Werte wie Verlässlichkeit und Detailtreue –
+            Qualitäten, die bei JKHD das Fundament jeder Zusammenarbeit bilden.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= CTA ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-panel reveal">
+        <h2>Interesse an einer Zusammenarbeit?</h2>
+        <p>Sprechen Sie mit uns — wir melden uns zeitnah zurück.</p>
+        <a href="kontakt.html" class="btn btn-primary">Kontakt aufnehmen</a>
+        <a href="mailto:elite@jkhd.de" class="btn btn-ghost">elite@jkhd.de</a>
+      </div>
+    </div>
+  </section>
+
   </main>
 
-  <footer class="holding-footer">
-    <span>© <span id="year">2026</span> JKHD — jkhd.de</span>
-    <nav aria-label="Rechtliches">
-      <a href="impressum.html">Impressum</a>
-      <a href="datenschutz.html">Datenschutz</a>
-    </nav>
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+            <span class="brand-word">JKHD</span>
+            <span class="brand-divider" aria-hidden="true"></span>
+            <span class="brand-tag">
+              <span class="brand-line1">Quant Systems</span>
+              <span class="brand-line2">Just Know How to Dominate.</span>
+            </span>
+          </a>
+          <p>Quantitative Systeme, Software und Automatisierung — entwickelt mit
+             ehrlicher Statistik, betrieben rund um die Uhr.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer-Navigation">
+          <p class="footer-col-title">Navigation</p>
+          <a href="#leistungen">Leistungen</a>
+          <a href="system.html">System</a>
+          <a href="#unternehmen">Unternehmen</a>
+          <a href="kontakt.html">Kontakt</a>
+        </nav>
+        <div class="footer-contact">
+          <p class="footer-col-title">Kontakt</p>
+          <a href="mailto:elite@jkhd.de">elite@jkhd.de</a>
+          <a href="kontakt.html">Kontaktseite</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© <span id="year">2026</span> JKHD — jkhd.de</div>
+        <div class="footer-links">
+          <a href="impressum.html">Impressum</a>
+          <a href="datenschutz.html">Datenschutz</a>
+        </div>
+      </div>
+    </div>
   </footer>
 
   <script src="js/main.js"></script>
