@@ -107,7 +107,14 @@ a:hover { color: var(--accent); }
 
 ::selection { background: var(--accent); color: var(--bg); }
 
-.container { max-width: 1200px; margin: 0 auto; padding: 0 28px; }
+/* Inhalt breiter als zuvor (war 1200), damit auf grossen Bildschirmen nicht
+   die Haelfte leer bleibt. Kopfzeile, Aufbau-Band und Fussbereich laufen
+   noch weiter — das fuellt die Seite, ohne die Lesbarkeit zu opfern. */
+.container { width: 100%; max-width: 1680px; margin: 0 auto; padding: 0 48px; }
+
+.site-header .container,
+.build-note .container,
+.site-footer .container { max-width: 1860px; }
 
 /* Grosse Ueberschriften in der Serife, alles darunter in der Grotesk */
 h1, h2 { font-family: var(--serif); font-weight: 500; letter-spacing: 0.002em; text-wrap: balance; }
@@ -711,7 +718,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 .config-text { display: block; }
 .config-name { display: block; font-weight: 700; font-size: 0.98rem; }
-.config-desc { display: block; margin-top: 3px; color: var(--muted); font-size: 0.86rem; }
+.config-desc { display: block; max-width: 84ch; margin-top: 3px; color: var(--muted); font-size: 0.86rem; }
 
 .config-price {
   text-align: right;
@@ -821,6 +828,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 .layer-col li {
   position: relative;
+  max-width: 56ch;
   padding-left: 17px;
   color: var(--muted);
   font-size: 0.88rem;
@@ -1094,7 +1102,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .founder-name { font-weight: 800; }
 .founder-role { display: block; color: var(--accent); margin: 6px 0 18px; }
 
-.founder-card p { color: var(--muted); font-size: 0.96rem; }
+.founder-card p { max-width: 78ch; color: var(--muted); font-size: 0.96rem; }
 .founder-card p + p { margin-top: 12px; }
 
 .founder-subhead { display: block; color: var(--accent); margin: 20px 0 8px; }
@@ -1173,6 +1181,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 
 .note {
+  max-width: 900px;
   border: 1px solid var(--border);
   border-left: 2px solid var(--accent);
   background: var(--panel);
@@ -1700,7 +1709,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 .formula-eq sub { font-size: 0.75em; }
 
-.formula p { color: var(--muted); font-size: 0.9rem; }
+.formula p { max-width: 62ch; color: var(--muted); font-size: 0.9rem; }
 .formula-use { margin-top: 12px; }
 .formula-use b { color: var(--text); font-weight: 700; }
 
