@@ -5,59 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 — JKHD</title>
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#0a0a0b">
+  <meta name="theme-color" content="#0b0b0c">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/fonts.css?v=20260809">
-  <link rel="stylesheet" href="css/style.css?v=20260809">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    html, body { height: 100%; }
+    body.holding { display: flex; flex-direction: column; background: var(--dark-bg); }
+    .holding-hero { flex: 1; display: flex; align-items: center; position: relative; overflow: hidden; }
+    .holding-inner { text-align: center; margin: 0 auto; padding: 60px 28px; position: relative; z-index: 1; max-width: 720px; }
+    .holding-mark { width: 64px; height: 64px; fill: var(--dark-text); margin: 0 auto 30px; display: block; }
+    .holding-title { font-family: var(--serif); font-size: clamp(1.6rem, 3.4vw, 2.4rem); color: var(--dark-text); }
+    .holding-sub { margin-top: 18px; color: var(--dark-muted); }
+    .holding-actions { margin-top: 36px; }
+    .holding-footer { border-top: 1px solid var(--dark-border); padding: 22px 28px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .holding-footer span { color: var(--dark-muted); font-size: 0.78rem; }
+    .holding-footer nav { display: flex; gap: 24px; }
+    .holding-footer a { color: var(--dark-muted); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+  </style>
 </head>
-<body>
+<body class="holding band-dark">
 
-  <header class="site-header">
-    <div class="container nav-wrap">
-      <a class="brand" href="index.html" aria-label="JKHD — Startseite">
-        <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
-        <span class="brand-word">JKHD</span>
-        <span class="brand-divider" aria-hidden="true"></span>
-        <span class="brand-tag">
-          <span class="brand-line1">Quant Systems</span>
-          <span class="brand-line2">Just Know How to Dominate.</span>
-        </span>
-      </a>
-      <nav class="site-nav" aria-label="Hauptnavigation">
-        <a href="index.html#leistungen">Leistungen</a>
-        <a href="system.html">System</a>
-        <a href="index.html#unternehmen">Unternehmen</a>
-        <a href="kontakt.html" class="btn btn-primary btn-sm">Kontakt</a>
-      </nav>
-      <button class="nav-toggle" aria-label="Menü öffnen">☰</button>
+  <main class="holding-hero">
+    <div class="mark-watermark" aria-hidden="true" style="top:0; right:-6%; height:100%; aspect-ratio:1;">
+      <svg viewBox="0 0 100 100"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
     </div>
-  </header>
-
-  <main id="main">
-    <section class="hero" style="min-height:calc(80vh - var(--header-h)); display:flex; align-items:center;">
-      <div class="container hero-inner">
-        <span class="pill">Fehler 404</span>
-        <h1>Diese Seite existiert nicht.</h1>
-        <p class="hero-sub">Unser System hat gesucht — und ehrlich, wie es ist, meldet es: kein Treffer.</p>
-        <div class="hero-actions">
-          <a href="index.html" class="btn btn-primary">Zur Startseite</a>
-        </div>
+    <div class="holding-inner">
+      <svg class="holding-mark" viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+      <h1 class="holding-title">Diese Seite existiert nicht.</h1>
+      <p class="holding-sub">Fehler 404 — die angeforderte Adresse wurde nicht gefunden.</p>
+      <div class="holding-actions">
+        <a href="index.html" class="btn btn-primary">Zur Startseite</a>
       </div>
-    </section>
+    </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-bottom" style="border-top:none;">
-        <div class="footer-copy">© <span id="year">2026</span> JKHD — jkhd.de</div>
-        <div class="footer-links">
-          <a href="impressum.html">Impressum</a>
-          <a href="datenschutz.html">Datenschutz</a>
-        </div>
-      </div>
-    </div>
+  <footer class="holding-footer">
+    <span>© <span id="year">2026</span> JKHD — jkhd.de</span>
+    <nav aria-label="Rechtliches">
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+    </nav>
   </footer>
 
-  <script src="js/main.js?v=20260809"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
