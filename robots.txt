@@ -1,3 +1,6 @@
-# Vorschau-Stand - nicht indexieren
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /impressum.html
+Disallow: /datenschutz.html
+
+Sitemap: https://www.jkhd.de/sitemap.xml
