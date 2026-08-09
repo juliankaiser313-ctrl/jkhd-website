@@ -1105,6 +1105,34 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   color: var(--text);
 }
 
+/* ---------- Kontaktwege ---------- */
+
+.routes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+
+.route {
+  display: flex;
+  flex-direction: column;
+  padding-top: 22px;
+  border-top: 2px solid var(--text);
+}
+
+.route-label { display: block; margin-bottom: 14px; color: var(--accent); }
+.route h2 { font-size: var(--h3-lg); margin-bottom: 10px; }
+.route p { color: var(--muted); font-size: 0.93rem; }
+
+.route-mail {
+  margin-top: auto;
+  padding-top: 20px;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  border-bottom: 1px solid var(--border-2);
+  align-self: flex-start;
+  transition: border-color 0.2s;
+}
+.route-mail:hover { color: var(--text); border-bottom-color: var(--text); }
+
 /* ---------- CTA ---------- */
 
 .cta-panel {
@@ -1230,6 +1258,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .console-log { border-right: none; }
 
   .offers { grid-template-columns: 1fr; gap: 34px; }
+  .routes { grid-template-columns: 1fr; gap: 34px; }
 
   .config-total { grid-template-columns: 1fr; gap: 26px; }
   .config-total-side { align-items: stretch; }
