@@ -1600,3 +1600,48 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .field-row { grid-template-columns: 1fr; }
   .inquiry-actions .btn { width: 100%; }
 }
+
+/* Aus dem Konfigurator uebernommene Auswahl im Anfrageformular */
+.inquiry-picked {
+  padding: 20px 22px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  background: var(--wash-1);
+}
+
+.inquiry-picked-label {
+  display: block;
+  margin-bottom: 14px;
+  font-family: var(--mono);
+  font-size: var(--label);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.inquiry-picked ul { list-style: none; display: grid; gap: 8px; }
+.inquiry-picked li,
+.inquiry-picked-sum {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.inquiry-picked li span:last-child,
+.inquiry-picked-sum span:last-child {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.inquiry-picked-sum {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.inquiry-picked-note { margin-top: 12px; color: var(--muted); font-size: 0.8rem; }
