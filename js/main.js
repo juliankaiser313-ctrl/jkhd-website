@@ -404,3 +404,126 @@ if (siteHeader) {
 
   targets.forEach((el) => io.observe(el));
 })();
+
+// ---------- Assistent: haeufige Fragen, sonst an den Menschen ----------
+// Bewusst ohne Sprachmodell: kein API-Schluessel im Browser, keine laufenden
+// Kosten, keine Datenuebertragung — und keine Maschine, die Preise oder
+// Zusagen erfindet. Die Antworten stehen hier, sonst nirgends.
+(function () {
+  if (document.querySelector(".helper")) return;
+
+  const FRAGEN = [
+    {
+      f: "Was kostet ein System?",
+      a: "Die einzelnen Bausteine liegen zwischen 1.800 \u20ac und 9.500 \u20ac, ein Vollsystem aus allen sechs Stufen bei rund 29.300 \u20ac. Beratung und System-Audit kosten 25.000 \u20ac. Das sind Gr\u00f6\u00dfenordnungen, kein Angebot \u2014 im Konfigurator k\u00f6nnen Sie sich Ihre Auswahl zusammenstellen.",
+      link: { text: "Zum Konfigurator", href: "index.html#preise" },
+    },
+    {
+      f: "Baut ihr auch Systeme, die nicht handeln?",
+      a: "Ja, und das ist h\u00e4ufig der Fall. Wir bauen reine Beobachtungssysteme (\u00fcberwachen und melden) und reine Analysesysteme (rechnen und bewerten) \u2014 beide ohne jeden Marktzugriff. Erst die Ausf\u00fchrungsstufe handelt.",
+      link: { text: "Systemarten ansehen", href: "index.html#leistungen" },
+    },
+    {
+      f: "Wie l\u00e4uft eine Zusammenarbeit ab?",
+      a: "In der Regel dreistufig: Beratung und Audit \u2014 dabei spricht ein Berater direkt mit Ihnen und nimmt Ihre Sonderw\u00fcnsche auf. Dann die Umsetzung. Zuletzt Abnahme und \u00dcbergabe. Sie k\u00f6nnen auch nur einzelne Module lizenzieren, wenn bei Ihnen schon etwas steht.",
+      link: { text: "Aufbau eines Systems", href: "system.html" },
+    },
+    {
+      f: "Geh\u00f6rt mir das System danach allein?",
+      a: "Ja. Was wir f\u00fcr Sie bauen, geh\u00f6rt Ihnen vollst\u00e4ndig. Wir behalten keine Kopie, keinen Parameter und keine Ableitung davon zur\u00fcck \u2014 kein Weiterverkauf, keine zweite Ausfertigung f\u00fcr jemand anderen.",
+    },
+    {
+      f: "Kann ich das System vorher testen?",
+      a: "Ja, zwei Monate Testbetrieb sind vorgesehen; danach k\u00f6nnen Sie ablehnen. Die genauen Bedingungen kl\u00e4ren wir vorab im Gespr\u00e4ch \u2014 fragen Sie danach, bevor Sie sich entscheiden.",
+    },
+    {
+      f: "F\u00fcr wen arbeitet ihr?",
+      a: "F\u00fcr Banken, Fonds und professionelle Adressen. Kein Retail-Produkt und keine Copy-Trading-Bots \u2014 Privatpersonen nehmen wir nur in Ausnahmen und nach Absprache.",
+    },
+    {
+      f: "Nehmt ihr gerade Auftr\u00e4ge an?",
+      a: "Aktuell nicht. Diese Website ist im Aufbau; Auftr\u00e4ge nehmen wir erst an, wenn sie fertig ist. Anfragen k\u00f6nnen Sie jederzeit stellen \u2014 wir melden uns, sobald eine Beauftragung m\u00f6glich ist.",
+    },
+    {
+      f: "Handelt ihr mein Geld f\u00fcr mich?",
+      a: "Nein. Wir entwickeln und liefern Software. Keine Anlageberatung, keine Anlagevermittlung, keine Finanzportfolioverwaltung \u2014 wir verwalten kein fremdes Verm\u00f6gen und treffen keine Anlageentscheidungen f\u00fcr Dritte. Den Betrieb verantwortet der Auftraggeber.",
+    },
+  ];
+
+  const html = `
+    <button class="helper-btn" type="button" aria-expanded="false" aria-controls="helper-panel">
+      <span class="helper-btn-icon" aria-hidden="true">?</span>
+      <span class="helper-btn-text">Fragen</span>
+    </button>
+    <div class="helper-panel" id="helper-panel" role="dialog" aria-modal="false"
+         aria-label="H\u00e4ufige Fragen" hidden>
+      <div class="helper-head">
+        <span class="helper-title">H\u00e4ufige Fragen</span>
+        <button class="helper-close" type="button" aria-label="Schlie\u00dfen">&times;</button>
+      </div>
+      <div class="helper-body"></div>
+      <div class="helper-foot">
+        <span>Frage nicht dabei?</span>
+        <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+        <a href="mailto:service@jkhd.de">service@jkhd.de</a>
+      </div>
+    </div>`;
+
+  const wrap = document.createElement("div");
+  wrap.className = "helper";
+  wrap.innerHTML = html;
+  document.body.appendChild(wrap);
+
+  const btn = wrap.querySelector(".helper-btn");
+  const panel = wrap.querySelector(".helper-panel");
+  const body = wrap.querySelector(".helper-body");
+  const close = wrap.querySelector(".helper-close");
+
+  function liste() {
+    body.innerHTML =
+      '<p class="helper-intro">Am schnellsten geht es per E-Mail \u2014 wir antworten pers\u00f6nlich. ' +
+      "Diese Fragen beantworte ich Ihnen aber sofort:</p>" +
+      '<ul class="helper-list">' +
+      FRAGEN.map((q, i) => `<li><button type="button" data-i="${i}">${q.f}</button></li>`).join("") +
+      "</ul>";
+    body.scrollTop = 0;
+  }
+
+  function antwort(i) {
+    const q = FRAGEN[i];
+    body.innerHTML =
+      '<button class="helper-back" type="button">&larr; Alle Fragen</button>' +
+      `<p class="helper-q">${q.f}</p>` +
+      `<p class="helper-a">${q.a}</p>` +
+      (q.link ? `<a class="helper-link" href="${q.link.href}">${q.link.text}</a>` : "");
+    body.scrollTop = 0;
+  }
+
+  function oeffnen(auf) {
+    panel.hidden = !auf;
+    btn.setAttribute("aria-expanded", String(auf));
+    wrap.classList.toggle("is-open", auf);
+    if (auf) {
+      liste();
+      const erste = body.querySelector("button");
+      if (erste) erste.focus();
+    } else {
+      btn.focus();
+    }
+  }
+
+  btn.addEventListener("click", () => oeffnen(panel.hidden));
+  close.addEventListener("click", () => oeffnen(false));
+
+  body.addEventListener("click", (e) => {
+    const ziel = e.target.closest("button");
+    if (!ziel) return;
+    if (ziel.classList.contains("helper-back")) liste();
+    else if (ziel.dataset.i) antwort(Number(ziel.dataset.i));
+    else if (ziel.dataset.i === "0") antwort(0);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !panel.hidden) oeffnen(false);
+  });
+})();
