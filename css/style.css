@@ -718,6 +718,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   color: var(--muted);
 }
 .config-row.is-on .config-price { color: var(--accent); }
+/* Zeilen ohne Betrag: Text statt Zahl, deshalb etwas kleiner */
+.config-price.is-text { font-size: 0.72rem; letter-spacing: 0.04em; }
 
 .config-sep {
   padding: 14px var(--pad-panel);

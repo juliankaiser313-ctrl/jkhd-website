@@ -325,10 +325,17 @@ if (siteHeader) {
   const preisVon = (row) => Number(row.dataset.preis || 0);
   const kernAnzahl = rows.filter((r) => r.dataset.kern === "ja").length;
 
-  // Preisspalte einmalig aus den Daten füllen
+  // Preisspalte einmalig aus den Daten füllen. Zeilen mit data-text zeigen
+  // diesen Text statt eines Betrages — sie zaehlen mit 0 in die Summe.
   rows.forEach((row) => {
     const zelle = row.querySelector(".config-price");
-    if (zelle) zelle.textContent = euro.format(preisVon(row));
+    if (!zelle) return;
+    if (row.dataset.text) {
+      zelle.textContent = row.dataset.text;
+      zelle.classList.add("is-text");
+    } else {
+      zelle.textContent = euro.format(preisVon(row));
+    }
   });
 
   function aktualisieren() {
