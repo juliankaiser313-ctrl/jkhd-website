@@ -11,6 +11,8 @@ Deutsch in der Wurzel, Englisch unter `/en/`.
 index.html         Startseite (Hero, Ticker, Zusammenarbeit 01-03, Systemarten, Konfigurator)
 system.html        Aufbau eines Systems (6 Schichten, "Was ein System nicht leistet")
 pruefung.html      Wie geprüft wird: Grundsätze, Modulprüfung, 6 Stufen, Belastungsproben
+sicherheit.html    Sicherheit & Vertraulichkeit: Grundsätze, 6 Bereiche, Ablauf NDA→Löschung,
+                   offener Abschnitt über fehlende Zertifizierungen
 mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
 unternehmen.html   Wer wir sind, Auf einen Blick, Einblicke, die Köpfe
 kontakt.html       Drei Adressen + Anfrageformular (mailto, kein Server)
@@ -23,6 +25,7 @@ holding/           Eigenständige Holding-Variante, aus der Navigation nicht ver
 en/index.html      Englische Fassung der Startseite
 en/system.html     "How a system is built"
 en/testing.html    "How we test, before anything runs"
+en/security.html   "What you give us stays yours"
 en/mathematics.html
 en/company.html
 en/contact.html
@@ -73,11 +76,17 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
 - **Kommen neue Seitenlinks in die Kopfzeile**, wird sie ab 1141 px breiter —
   dann entweder einen Punkt ins Klappfeld verschieben oder die Schwelle im
   Block `@media (min-width: 1141px)` anheben, sonst schiebt die Zeile die
-  Seite waagerecht hinaus. Stand jetzt bleiben bei 1141 px rund 340 px Luft,
-  das reicht für etwa zwei weitere Einträge. Sprache und
+  Seite waagerecht hinaus. Stand jetzt (inkl. Sicherheit) bleiben bei 1141 px
+  rund 244 px Luft — das reicht für etwa einen weiteren Eintrag.
+- **Inhaltliche Zusagen auf `sicherheit.html`** sind bewusst so formuliert,
+  dass sie ohne Zertifikat haltbar sind: keine Meldefrist in Stunden (die
+  gehört in den Vertrag), keine behaupteten Audits, und ein eigener Abschnitt
+  „Was wir nicht vorweisen können". Beim Ändern diese Linie halten — eine
+  Zusage zu viel fällt im Prüffall auf die Seite zurück. Sprache und
   Darstellung kosten dort keine Breite mehr, die liegen im Feld. Der Block ist
   von den übrigen 940-px-Umbrüchen getrennt.
 - **Seitenpaare:** `pruefung.html ↔ en/testing.html`,
+  `sicherheit.html ↔ en/security.html`,
   `mathematik.html ↔ en/mathematics.html`,
   `unternehmen.html ↔ en/company.html`, `kontakt.html ↔ en/contact.html`,
   `impressum.html ↔ en/imprint.html`, `datenschutz.html ↔ en/privacy.html`,
