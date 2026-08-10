@@ -19,8 +19,8 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="css/fonts.css?v=20260810t">
-  <link rel="stylesheet" href="css/style.css?v=20260810t">
+  <link rel="stylesheet" href="css/fonts.css?v=20260810y">
+  <link rel="stylesheet" href="css/style.css?v=20260810y">
 </head>
 <body>
 
@@ -48,12 +48,15 @@
         <a href="system.html">System</a>
         <a href="mathematik.html">Mathematik</a>
         <a href="unternehmen.html">Unternehmen</a>
+        <div class="nav-theme">
+          <span class="nav-theme-label">Darstellung</span>
+          <div class="theme-switch" role="group" aria-label="Darstellung">
+            <button type="button" class="theme-opt" data-theme-set="light">Hell</button>
+            <button type="button" class="theme-opt" data-theme-set="dark">Dunkel</button>
+          </div>
+        </div>
         <a href="kontakt.html" class="btn btn-primary btn-sm">Kontakt</a>
       </nav>
-      <button class="theme-toggle" type="button" aria-label="Zwischen hellem und dunklem Erscheinungsbild wechseln">
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.6 12h2.2M19.2 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/></svg>
-      </button>
       <button class="nav-toggle" aria-label="Menü öffnen">☰</button>
     </div>
   </header>
@@ -64,8 +67,10 @@
         <span class="pill">Fehler 404</span>
         <h1>Diese Seite existiert nicht.</h1>
         <p class="hero-sub">Unser System hat gesucht — und ehrlich, wie es ist, meldet es: kein Treffer.</p>
+        <p class="hero-sub" lang="en">This page does not exist. Our system searched and, being honest, reports: no match.</p>
         <div class="hero-actions">
           <a href="index.html" class="btn btn-primary">Zur Startseite</a>
+          <a href="en/index.html" class="btn btn-ghost" hreflang="en" lang="en">English home</a>
         </div>
       </div>
     </section>
@@ -90,6 +95,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20260810t"></script>
+  <script src="js/main.js?v=20260810y"></script>
 </body>
 </html>

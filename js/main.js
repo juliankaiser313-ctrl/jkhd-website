@@ -1,23 +1,52 @@
 /* JKHD — gemeinsames JavaScript für alle Seiten */
 
-// ---------- Mobile Navigation ----------
+// ---------- Sprache ----------
+// Dieselbe Datei bedient die deutschen Seiten und die unter /en/. Welche
+// Fassung eines Textes gilt, entscheidet allein das lang-Attribut der Seite —
+// es gibt keine Erkennung und keine Weiterleitung.
+const IST_EN = document.documentElement.lang === "en";
+const T = (de, en) => (IST_EN ? en : de);
+
+// ---------- Navigation ----------
+// Die Menuepunkte liegen auf jeder Bildschirmbreite hinter dem Menueknopf.
+// Weil das der einzige Weg zu den Seiten ist, schliesst das Feld auch wieder:
+// per Escape und beim Klick irgendwo daneben.
 const navToggle = document.querySelector(".nav-toggle");
 const siteNav = document.querySelector(".site-nav");
 
 if (navToggle && siteNav) {
-  navToggle.addEventListener("click", () => {
-    siteNav.classList.toggle("open");
+  const zeigen = (auf) => {
+    siteNav.classList.toggle("open", auf);
+    navToggle.setAttribute("aria-expanded", String(auf));
+  };
+
+  zeigen(false);
+
+  navToggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    zeigen(!siteNav.classList.contains("open"));
+  });
+
+  document.addEventListener("click", (e) => {
+    if (siteNav.classList.contains("open") && !siteNav.contains(e.target)) zeigen(false);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && siteNav.classList.contains("open")) {
+      zeigen(false);
+      navToggle.focus();
+    }
   });
 }
 
 // ---------- Hell/Dunkel ----------
-// Das Thema selbst setzt schon das Vorab-Skript im <head>. Hier haengt nur
-// der Schalter dran: merken, umschalten, und der Systemeinstellung folgen,
-// solange der Besucher nicht selbst gewaehlt hat.
+// Das Thema selbst setzt schon das Vorab-Skript im <head>. Hier haengen nur
+// die beiden Segmente im Menue dran: merken, umschalten, und der
+// Systemeinstellung folgen, solange der Besucher nicht selbst gewaehlt hat.
 (function () {
   const SPEICHER = "jkhd-theme";
   const wurzel = document.documentElement;
-  const schalter = document.querySelector(".theme-toggle");
+  const segmente = document.querySelectorAll(".theme-opt");
   const systemDunkel = window.matchMedia("(prefers-color-scheme: dark)");
 
   const istDunkel = () => wurzel.getAttribute("data-theme") === "dark";
@@ -29,20 +58,26 @@ if (navToggle && siteNav) {
     // Browser-Oberflaeche (Adressleiste auf dem Handy) mitziehen
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute("content", dunkel ? "#0b0b0c" : "#f7f6f3");
-    if (schalter) schalter.setAttribute("aria-pressed", String(dunkel));
+
+    // Das Segment, das gerade gilt, steht hervorgehoben da
+    segmente.forEach((s) => {
+      const an = (s.dataset.themeSet === "dark") === dunkel;
+      s.classList.toggle("is-on", an);
+      s.setAttribute("aria-pressed", String(an));
+    });
   }
 
   anwenden(istDunkel());
 
-  if (schalter) {
-    schalter.addEventListener("click", () => {
-      const neu = !istDunkel();
-      anwenden(neu);
+  segmente.forEach((s) => {
+    s.addEventListener("click", () => {
+      const dunkel = s.dataset.themeSet === "dark";
+      anwenden(dunkel);
       try {
-        localStorage.setItem(SPEICHER, neu ? "dark" : "light");
+        localStorage.setItem(SPEICHER, dunkel ? "dark" : "light");
       } catch (e) {}
     });
-  }
+  });
 
   // Ohne eigene Wahl folgt die Seite dem Betriebssystem, auch waehrend sie offen ist
   const beiSystemwechsel = (e) => {
@@ -316,7 +351,7 @@ if (siteHeader) {
   const hintEl = document.getElementById("config-hint");
   if (!rows.length || !sumEl) return;
 
-  const euro = new Intl.NumberFormat("de-DE", {
+  const euro = new Intl.NumberFormat(T("de-DE", "en-GB"), {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: 0,
@@ -356,13 +391,19 @@ if (siteHeader) {
     sumEl.textContent = euro.format(summe);
     metaEl.textContent =
       gewaehlt === 0
-        ? "Noch nichts ausgewählt"
-        : gewaehlt + " von " + rows.length + " Bausteinen gewählt";
+        ? T("Noch nichts ausgewählt", "Nothing selected yet")
+        : T(
+            gewaehlt + " von " + rows.length + " Bausteinen gewählt",
+            gewaehlt + " of " + rows.length + " components selected"
+          );
     if (hintEl) hintEl.hidden = kern < kernAnzahl;
 
-    // Auswahl an das Anfrageformular weiterreichen: Name~Betrag je Baustein
-    const anfrage = config.querySelector('a[href^="kontakt.html"]');
+    // Auswahl an das Anfrageformular weiterreichen: Name~Betrag je Baustein.
+    // Wohin der Knopf zeigt, steht im HTML (kontakt.html bzw. contact.html) —
+    // hier wird nur die Auswahl angehaengt.
+    const anfrage = config.querySelector(".config-total-side a[href]");
     if (anfrage) {
+      const ziel = (anfrage.getAttribute("href") || "").split("?")[0].split("#")[0];
       const gewaehlteZeilen = rows.filter((r) => r.querySelector("input").checked);
       const teile = gewaehlteZeilen.map(
         (r) => r.querySelector(".config-name").textContent.trim() + "~" + preisVon(r)
@@ -370,8 +411,8 @@ if (siteHeader) {
       anfrage.setAttribute(
         "href",
         teile.length
-          ? "kontakt.html?bausteine=" + encodeURIComponent(teile.join("|")) + "#anfrage"
-          : "kontakt.html#anfrage"
+          ? ziel + "?bausteine=" + encodeURIComponent(teile.join("|")) + "#anfrage"
+          : ziel + "#anfrage"
       );
     }
   }
@@ -427,7 +468,45 @@ if (siteHeader) {
 (function () {
   if (document.querySelector(".helper")) return;
 
-  const FRAGEN = [
+  const FRAGEN_EN = [
+    {
+      f: "What does a system cost?",
+      a: "Individual components range from €1,800 to €9,500; a full system covering all six stages comes to roughly €29,300. Advisory and system audit are €25,000. These are orders of magnitude, not an offer — the configurator lets you put your own selection together.",
+      link: { text: "Go to the configurator", href: "index.html#preise" },
+    },
+    {
+      f: "Do you also build systems that do not trade?",
+      a: "Yes, and that is often the case. We build pure observation systems (they watch and report) and pure analysis systems (they compute and evaluate) — both without any market access at all. Only the execution stage trades.",
+      link: { text: "See the types of system", href: "index.html#leistungen" },
+    },
+    {
+      f: "How does working together proceed?",
+      a: "Usually in three stages: advisory and audit — an advisor speaks with you directly and records your specific requirements. Then implementation. Finally acceptance and handover. You can also license individual modules only, if you already have something in place.",
+      link: { text: "How a system is built", href: "system.html" },
+    },
+    {
+      f: "Does the system belong to me alone afterwards?",
+      a: "Yes. What we build for you belongs to you entirely. We keep no copy, no parameter and no derivative of it — no resale, no second edition for anyone else.",
+    },
+    {
+      f: "Can I test the system beforehand?",
+      a: "Yes, two months of trial operation are provided for; after that you may decline. We settle the exact terms with you in advance — please ask about them before you decide.",
+    },
+    {
+      f: "Who do you work for?",
+      a: "For banks, funds and professional institutions. No retail product and no copy-trading bots — we take on private individuals only in exceptional cases and by arrangement.",
+    },
+    {
+      f: "Are you currently accepting orders?",
+      a: "Not at present. This website is still being built; we will accept orders once it is finished. You are welcome to enquire at any time — we will come back to you as soon as commissioning is possible.",
+    },
+    {
+      f: "Do you trade my money for me?",
+      a: "No. We develop and deliver software. No investment advice, no investment brokerage, no portfolio management — we do not manage third-party assets and make no investment decisions for others. Operation is the client’s responsibility.",
+    },
+  ];
+
+  const FRAGEN_DE = [
     {
       f: "Was kostet ein System?",
       a: "Die einzelnen Bausteine liegen zwischen 1.800 \u20ac und 9.500 \u20ac, ein Vollsystem aus allen sechs Stufen bei rund 29.300 \u20ac. Beratung und System-Audit kosten 25.000 \u20ac. Das sind Gr\u00f6\u00dfenordnungen, kein Angebot \u2014 im Konfigurator k\u00f6nnen Sie sich Ihre Auswahl zusammenstellen.",
@@ -465,20 +544,22 @@ if (siteHeader) {
     },
   ];
 
+  const FRAGEN = IST_EN ? FRAGEN_EN : FRAGEN_DE;
+
   const html = `
     <button class="helper-btn" type="button" aria-expanded="false" aria-controls="helper-panel">
       <span class="helper-btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.6a8.2 8.2 0 0 1-8.8 8.2 8.6 8.6 0 0 1-3.1-.7L3.5 20.5l1.4-5a8.2 8.2 0 0 1-.9-3.7 8.2 8.2 0 0 1 8.2-8.2h.5a8.2 8.2 0 0 1 7.8 7.8z"/><path d="M10.2 9.6a1.9 1.9 0 0 1 3.7.6c0 1.3-1.9 1.9-1.9 1.9"/><path d="M12 15.4h.01"/></svg></span>
-      <span class="helper-btn-text">Fragen</span>
+      <span class="helper-btn-text">${T("Fragen", "Questions")}</span>
     </button>
     <div class="helper-panel" id="helper-panel" role="dialog" aria-modal="false"
-         aria-label="H\u00e4ufige Fragen" hidden>
+         aria-label="${T("H\u00e4ufige Fragen", "Frequently asked questions")}" hidden>
       <div class="helper-head">
-        <span class="helper-title">H\u00e4ufige Fragen</span>
-        <button class="helper-close" type="button" aria-label="Schlie\u00dfen">&times;</button>
+        <span class="helper-title">${T("H\u00e4ufige Fragen", "Frequent questions")}</span>
+        <button class="helper-close" type="button" aria-label="${T("Schlie\u00dfen", "Close")}">&times;</button>
       </div>
       <div class="helper-body"></div>
       <div class="helper-foot">
-        <span>Frage nicht dabei?</span>
+        <span>${T("Frage nicht dabei?", "Question not listed?")}</span>
         <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
         <a href="mailto:service@jkhd.de">service@jkhd.de</a>
       </div>
@@ -496,8 +577,14 @@ if (siteHeader) {
 
   function liste() {
     body.innerHTML =
-      '<p class="helper-intro">Am schnellsten geht es per E-Mail \u2014 wir antworten pers\u00f6nlich. ' +
-      "Diese Fragen beantworte ich Ihnen aber sofort:</p>" +
+      '<p class="helper-intro">' +
+      T(
+        "Am schnellsten geht es per E-Mail \u2014 wir antworten pers\u00f6nlich. " +
+          "Diese Fragen beantworte ich Ihnen aber sofort:",
+        "E-mail is the quickest way \u2014 we answer personally. " +
+          "These questions I can answer for you right away:"
+      ) +
+      "</p>" +
       '<ul class="helper-list">' +
       FRAGEN.map((q, i) => `<li><button type="button" data-i="${i}">${q.f}</button></li>`).join("") +
       "</ul>";
@@ -507,7 +594,9 @@ if (siteHeader) {
   function antwort(i) {
     const q = FRAGEN[i];
     body.innerHTML =
-      '<button class="helper-back" type="button">&larr; Alle Fragen</button>' +
+      '<button class="helper-back" type="button">&larr; ' +
+      T("Alle Fragen", "All questions") +
+      "</button>" +
       `<p class="helper-q">${q.f}</p>` +
       `<p class="helper-a">${q.a}</p>` +
       (q.link ? `<a class="helper-link" href="${q.link.href}">${q.link.text}</a>` : "");
@@ -554,9 +643,9 @@ if (siteHeader) {
   const kopieren = document.getElementById("iq-copy");
 
   const ZIEL = {
-    kontakt: { mail: "kontakt@jkhd.de", betreff: "Anfrage" },
-    service: { mail: "service@jkhd.de", betreff: "Support" },
-    info: { mail: "info@jkhd.de", betreff: "Anliegen" },
+    kontakt: { mail: "kontakt@jkhd.de", betreff: T("Anfrage", "Enquiry") },
+    service: { mail: "service@jkhd.de", betreff: T("Support", "Support") },
+    info: { mail: "info@jkhd.de", betreff: T("Anliegen", "General") },
   };
 
   const wert = (id) => (document.getElementById(id).value || "").trim();
@@ -566,7 +655,7 @@ if (siteHeader) {
     hint.classList.toggle("is-error", Boolean(fehler));
   }
 
-  const euro = new Intl.NumberFormat("de-DE", {
+  const euro = new Intl.NumberFormat(T("de-DE", "en-GB"), {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: 0,
@@ -596,31 +685,44 @@ if (siteHeader) {
     const bausteine = ausKonfigurator();
 
     const zeilen = [];
-    if (haus) zeilen.push("Institution: " + haus);
-    if (name) zeilen.push("Ansprechpartner: " + name);
+    if (haus) zeilen.push(T("Institution: ", "Institution: ") + haus);
+    if (name) zeilen.push(T("Ansprechpartner: ", "Contact: ") + name);
     if (mail) zeilen.push("E-Mail: " + mail);
     if (zeilen.length) zeilen.push("");
 
     if (bausteine.length) {
-      zeilen.push("Zusammenstellung aus dem Konfigurator:");
+      zeilen.push(T("Zusammenstellung aus dem Konfigurator:", "Selection from the configurator:"));
       bausteine.forEach((b) => {
         zeilen.push(
-          "  - " + b.name + ": " + (b.preis > 0 ? euro.format(b.preis) : "im Projekt enthalten")
+          "  - " +
+            b.name +
+            ": " +
+            (b.preis > 0 ? euro.format(b.preis) : T("im Projekt enthalten", "included in the project"))
         );
       });
-      zeilen.push("  Ungefähre Summe: " + euro.format(summeVon(bausteine)) + " (unverbindlich)");
+      zeilen.push(
+        T("  Ungefähre Summe: ", "  Approximate total: ") +
+          euro.format(summeVon(bausteine)) +
+          T(" (unverbindlich)", " (non-binding)")
+      );
       zeilen.push("");
     }
 
     if (text) zeilen.push(text, "");
-    zeilen.push("—", "Vorbereitet über das Anfrageformular auf www.jkhd.de");
+    zeilen.push(
+      "—",
+      T(
+        "Vorbereitet über das Anfrageformular auf www.jkhd.de",
+        "Prepared with the enquiry form on www.jkhd.de"
+      )
+    );
     return zeilen.join("\n");
   }
 
   function betreff() {
     const thema = ZIEL[document.getElementById("iq-thema").value] || ZIEL.kontakt;
     const haus = wert("iq-haus");
-    return thema.betreff + " über jkhd.de" + (haus ? " — " + haus : "");
+    return thema.betreff + T(" über jkhd.de", " via jkhd.de") + (haus ? " — " + haus : "");
   }
 
   function ziel() {
@@ -629,7 +731,10 @@ if (siteHeader) {
 
   function vollstaendig() {
     if (!wert("iq-text")) {
-      melden("Bitte beschreiben Sie kurz Ihr Anliegen.", true);
+      melden(
+        T("Bitte beschreiben Sie kurz Ihr Anliegen.", "Please describe your enquiry briefly."),
+        true
+      );
       document.getElementById("iq-text").focus();
       return false;
     }
@@ -643,23 +748,39 @@ if (siteHeader) {
       "mailto:" + ziel() +
       "?subject=" + encodeURIComponent(betreff()) +
       "&body=" + encodeURIComponent(nachricht());
-    melden("E-Mail-Programm wird geöffnet …");
+    melden(T("E-Mail-Programm wird geöffnet …", "Opening your e-mail program …"));
     window.location.href = url;
     // Falls kein Mail-Programm eingerichtet ist, passiert sichtbar nichts —
     // deshalb nach kurzer Zeit auf den Kopier-Weg hinweisen.
     setTimeout(() => {
-      melden("Nichts passiert? Nutzen Sie „Text kopieren“ und schreiben Sie an " + ziel() + ".");
+      melden(
+        T(
+          "Nichts passiert? Nutzen Sie „Text kopieren“ und schreiben Sie an " + ziel() + ".",
+          "Nothing happened? Use “Copy text” and write to " + ziel() + "."
+        )
+      );
     }, 2500);
   });
 
   kopieren.addEventListener("click", async () => {
     if (!vollstaendig()) return;
-    const text = "An: " + ziel() + "\nBetreff: " + betreff() + "\n\n" + nachricht();
+    const text =
+      T("An: ", "To: ") + ziel() +
+      T("\nBetreff: ", "\nSubject: ") + betreff() +
+      "\n\n" + nachricht();
     try {
       await navigator.clipboard.writeText(text);
-      melden("Kopiert — jetzt in Ihr E-Mail-Programm einfügen.");
+      melden(
+        T("Kopiert — jetzt in Ihr E-Mail-Programm einfügen.", "Copied — now paste it into your e-mail program.")
+      );
     } catch (err) {
-      melden("Kopieren nicht möglich. Bitte an " + ziel() + " schreiben.", true);
+      melden(
+        T(
+          "Kopieren nicht möglich. Bitte an " + ziel() + " schreiben.",
+          "Copying failed. Please write to " + ziel() + "."
+        ),
+        true
+      );
     }
   });
 
@@ -672,22 +793,30 @@ if (siteHeader) {
     const kasten = document.createElement("div");
     kasten.className = "inquiry-picked";
     kasten.innerHTML =
-      '<span class="inquiry-picked-label">Aus dem Konfigurator übernommen</span>' +
+      '<span class="inquiry-picked-label">' +
+      T("Aus dem Konfigurator übernommen", "Taken from the configurator") +
+      "</span>" +
       "<ul>" +
       bausteine
         .map(
           (b) =>
             "<li><span>" + b.name + "</span><span>" +
-            (b.preis > 0 ? euro.format(b.preis) : "enthalten") +
+            (b.preis > 0 ? euro.format(b.preis) : T("enthalten", "included")) +
             "</span></li>"
         )
         .join("") +
       "</ul>" +
-      '<p class="inquiry-picked-sum"><span>Ungefähre Summe</span><span>' +
+      '<p class="inquiry-picked-sum"><span>' +
+      T("Ungefähre Summe", "Approximate total") +
+      "</span><span>" +
       euro.format(summeVon(bausteine)) +
       "</span></p>" +
-      '<p class="inquiry-picked-note">Diese Aufstellung geht mit Ihrer Nachricht ' +
-      "mit. Unverbindlich — kein Angebot.</p>";
+      '<p class="inquiry-picked-note">' +
+      T(
+        "Diese Aufstellung geht mit Ihrer Nachricht mit. Unverbindlich — kein Angebot.",
+        "This breakdown is sent along with your message. Non-binding — not an offer."
+      ) +
+      "</p>";
 
     form.insertBefore(kasten, form.firstElementChild);
   })();
