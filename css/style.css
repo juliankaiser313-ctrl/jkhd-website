@@ -227,19 +227,58 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   white-space: nowrap;
 }
 
-.site-nav { display: flex; align-items: center; gap: 28px; }
+/* ---------- Navigation ----------
+   Die Menuepunkte liegen auf jeder Bildschirmbreite hinter dem Menueknopf:
+   auf dem Handy als Feld ueber die volle Breite, auf dem Desktop als Feld
+   unter dem Knopf (siehe die Regel weiter unten ab 1141 px). Dadurch bleibt
+   in der Kopfzeile nur die Marke stehen. */
+
+.site-nav {
+  display: none;
+  position: absolute;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 28px 18px;
+}
+
+.site-nav.open { display: flex; }
 
 .site-nav a {
   color: var(--muted);
   font-size: 0.86rem;
   font-weight: 600;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
 }
 .site-nav a:hover { color: var(--text); }
 
-.site-nav .btn { margin-left: 6px; }
+.site-nav .btn { margin: 14px 0 0; border: 1px solid var(--border-2); }
+
+/* Sprache und Darstellung als eigene Punkte: links die Beschriftung wie bei
+   den uebrigen Eintraegen, rechts die Segmente. */
+.nav-lang,
+.nav-theme {
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.nav-lang-label,
+.nav-theme-label {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
 
 .nav-toggle {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
@@ -250,29 +289,78 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   cursor: pointer;
 }
 
-/* ---------- Hell/Dunkel-Schalter ---------- */
+/* ---------- Sprache und Darstellung ----------
+   Beide Schalter sind gleich gebaut: zwei feste Segmente statt eines
+   Umschalters. Sichtbar ist, was gerade gilt — und daneben steht, wohin der
+   Klick fuehrt. Bei der Sprache ist das zweite Segment ein echter Link auf
+   dieselbe Seite in der anderen Sprache (kein JavaScript, kein Umleiten),
+   bei der Darstellung ein Knopf.
 
-.theme-toggle {
+   Beide sitzen in der Navigation — auf dem Handy also im Menue hinter den
+   drei Strichen, dort jeweils mit Beschriftung davor. Auf dem Desktop steht
+   nur das Segmentpaar in der Menuezeile, die Beschriftung entfaellt. */
+
+.nav-lang,
+.nav-theme { display: flex; align-items: center; }
+
+.lang-switch,
+.theme-switch {
+  display: inline-flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  height: 38px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+}
+
+.lang-switch > *,
+.theme-switch > * {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  background: transparent;
-  border: 1px solid var(--border-2);
-  border-radius: var(--r-sm);
-  color: var(--text);
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
+  min-width: 36px;
+  padding: 0 7px;
+  color: var(--muted);
+  font-weight: 600;
+  transition: color 0.2s, background 0.2s;
 }
-.theme-toggle:hover { border-color: var(--text); background: var(--wash-1); }
-.theme-toggle svg { width: 17px; height: 17px; display: block; }
 
-/* Sonne bei Nacht, Mond bei Tag — gezeigt wird, wohin der Klick fuehrt */
-.theme-toggle .icon-sun { display: none; }
-:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
-:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+/* Die Segmente der Darstellung sind Knoepfe — Schrift und Flaeche erben sie
+   nicht von selbst. */
+.theme-opt {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: uppercase;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.lang-switch a:hover,
+.theme-opt:hover { color: var(--text); background: var(--wash-1); }
+
+.lang-switch .lang-current,
+.theme-opt.is-on {
+  color: var(--bg);
+  background: var(--text);
+  cursor: default;
+}
+
+/* In der Navigation gelten sonst die Regeln fuer Menuepunkte (groessere
+   Schrift, im Menue zusaetzlich Innenabstand und Trennlinie) — fuer die
+   Segmente werden sie zurueckgenommen. */
+.site-nav .lang-switch a {
+  font-size: inherit;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 0 7px;
+  border-bottom: none;
+}
+.site-nav .lang-switch a:hover { color: var(--text); background: var(--wash-1); }
 
 /* ---------- Buttons / Pills ---------- */
 
@@ -1328,27 +1416,26 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .portrait { max-width: 260px; }
 
   .footer-top { grid-template-columns: 1fr; gap: 36px; }
+}
 
+/* ---------- Menue auf breiten Schirmen ----------
+   Ueber die volle Breite waere das Feld hier eine Bauchbinde. Stattdessen
+   haengt es als abgesetztes Feld unter dem Menueknopf, buendig mit dem
+   rechten Rand des Rahmens (48 px Innenabstand des Containers). */
 
-  .nav-toggle { display: flex; align-items: center; justify-content: center; }
+@media (min-width: 1141px) {
+  .nav-wrap { position: relative; }
 
   .site-nav {
-    display: none;
-    position: absolute;
-    top: var(--header-h);
-    left: 0;
-    right: 0;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    padding: 12px 28px 18px;
+    top: 100%;
+    left: auto;
+    right: 48px;
+    width: 320px;
+    padding: 8px 24px 18px;
+    border: 1px solid var(--border);
+    border-top: none;
+    box-shadow: 0 22px 48px var(--shadow-soft);
   }
-
-  .site-nav.open { display: flex; }
-  .site-nav a { padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .site-nav .btn { margin: 14px 0 0; border: 1px solid var(--border-2); }
 }
 
 @media (max-width: 560px) {
@@ -1360,7 +1447,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .nav-wrap { gap: 12px; }
   .site-header .brand-divider,
   .site-header .brand-tag { display: none; }
-  .theme-toggle, .nav-toggle { flex-shrink: 0; }
+  .nav-toggle { flex-shrink: 0; }
 
   .section { padding: 72px 0; }
   .section-head { margin-bottom: 38px; }

@@ -2,29 +2,83 @@
 
 Statische Webseite für JKHD (HTML/CSS/JS, keine Build-Tools nötig).
 Design: monochrom Schwarz/Weiß, Serifen-Headlines (Playfair Display),
-Markenzeichen (drei Balken) statisch im Hintergrund, davor ein rohes
-Time-&-Sales-Tape (Tick-Feed: Zeit/Preis/Volumen/Seite) als „lebendiger"
-Daten-Hintergrund im Hero — Rohdaten statt Chart.
+Markenzeichen (drei Balken), Hell/Dunkel-Umschaltung. Zweisprachig:
+Deutsch in der Wurzel, Englisch unter `/en/`.
 
 ## Struktur
 
 ```
-index.html        Startseite (Hero mit Rohdaten-Tape + Live-Status, Ticker, Was-ist-JKHD, Pipeline)
-system.html       Das System im Detail (5 Pipeline-Schritte + Der Bot im Betrieb)
-leistungen.html   Leistungen (3 Säulen)
-projekte.html     Projekt-Showcase (u. a. Multi-Prop Alpha System)
-ueber.html        Über JKHD
-kontakt.html      Kontakt (elite@jkhd.de)
-impressum.html    Impressum  — TODO vor Livegang ausfüllen!
-datenschutz.html  Datenschutz — TODO vor Livegang ausfüllen!
-404.html          Fehlerseite (beim Hoster als 404-Seite eintragen)
-robots.txt        Suchmaschinen-Regeln (Sitemap-Verweis auf jkhd.de)
-sitemap.xml       Sitemap für Google (URLs zeigen auf jkhd.de)
-assets/og-image.png  Vorschaubild für Link-Teilen (WhatsApp/LinkedIn etc.)
-css/style.css     Gesamtes Design (Farben oben als CSS-Variablen)
-js/main.js        Mobile-Nav, Rohdaten-Tape, Tiefen-Raster, Scroll-Effekte
-favicon.svg       Browser-Tab-Icon (drei Balken)
+index.html         Startseite (Hero, Ticker, Zusammenarbeit 01-03, Systemarten, Konfigurator)
+system.html        Aufbau eines Systems (6 Schichten, "Was ein System nicht leistet")
+mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
+unternehmen.html   Wer wir sind, Auf einen Blick, Einblicke, die Köpfe
+kontakt.html       Drei Adressen + Anfrageformular (mailto, kein Server)
+impressum.html     Impressum (§ 5 DDG)
+datenschutz.html   Datenschutzerklärung
+404.html           Fehlerseite (zweisprachig)
+ueber/leistungen/projekte/technologie/ansatz.html   Weiterleitungen auf die neuen Seiten
+holding/           Eigenständige Holding-Variante, aus der Navigation nicht verlinkt
+
+en/index.html      Englische Fassung der Startseite
+en/system.html     "How a system is built"
+en/mathematics.html
+en/company.html
+en/contact.html
+en/imprint.html    Servicefassung, deutsche Fassung ist maßgeblich
+en/privacy.html    Servicefassung, deutsche Fassung ist maßgeblich
+
+robots.txt         Suchmaschinen-Regeln (Sitemap-Verweis auf jkhd.de)
+sitemap.xml        Sitemap inkl. hreflang-Paare DE/EN
+assets/og-image.png  Vorschaubild für Link-Teilen
+assets/fonts/      Self-hosted Schriften (DSGVO)
+css/style.css      Gesamtes Design (Farben oben als CSS-Variablen)
+js/main.js         Mobile-Nav, Hell/Dunkel, Konfigurator, Fragen-Blase, Anfrageformular
+favicon.svg        Browser-Tab-Icon (drei Balken)
 ```
+
+## Zweisprachigkeit — was beim Ändern zu beachten ist
+
+Es gibt keine Übersetzungsschicht: jede Seite existiert zweimal als echte
+Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
+
+- **Die Navigation liegt auf jeder Bildschirmbreite hinter dem Menüknopf.**
+  In der Kopfzeile steht nur die Marke. Unter 1141 px klappt das Menü über die
+  volle Breite auf, darüber als 320-px-Feld unter dem Knopf (dafür ist
+  `.nav-wrap` dort `position: relative`, das Feld hängt mit `right: 48px` am
+  Innenabstand des Rahmens). Das Menü schließt per Escape und Klick daneben.
+- **Sprache und Darstellung sind zwei Menüpunkte** (`.nav-lang`, `.nav-theme`),
+  jeweils Beschriftung links, Segmentpaar rechts — „Sprachen"/„Languages" und
+  „Darstellung"/„Appearance".
+- **Sprachschalter** (`.nav-lang`): aktive Sprache als
+  `<span class="lang-current">`, die andere ein Link auf das Gegenstück. Kein
+  JavaScript, keine automatische Weiterleitung, keine Spracherkennung — und
+  dadurch auch nichts, was gespeichert wird.
+- **Hell/Dunkel** (`.nav-theme`): zwei Knöpfe mit `data-theme-set="light|dark"`,
+  der geltende trägt `.is-on`. Gewählt wird in `localStorage` unter
+  `jkhd-theme` gemerkt; ohne eigene Wahl folgt die Seite dem Betriebssystem.
+- **Neue Menüpunkte** kosten nur Höhe im Klappfeld, nicht Breite in der
+  Kopfzeile — die Zeile kann also nicht mehr überlaufen. Der Block
+  `@media (min-width: 1141px)` regelt allein das Aussehen des Feldes auf
+  breiten Schirmen und ist von den übrigen 940-px-Umbrüchen getrennt.
+- **Seitenpaare:** `mathematik.html ↔ en/mathematics.html`,
+  `unternehmen.html ↔ en/company.html`, `kontakt.html ↔ en/contact.html`,
+  `impressum.html ↔ en/imprint.html`, `datenschutz.html ↔ en/privacy.html`,
+  `index.html` und `system.html` heißen in beiden Sprachen gleich.
+- **hreflang:** drei `<link rel="alternate">` im `<head>` jeder Seite
+  (de, en, x-default) — plus dieselben Paare in `sitemap.xml`. Bei einer neuen
+  Seite beides mitziehen.
+- **Texte aus dem JavaScript** (Fragen-Blase, Konfigurator-Meldungen,
+  Formular-Hinweise) stehen in `js/main.js` doppelt und werden über
+  `T("deutsch", "english")` ausgewählt. Maßgeblich ist das `lang`-Attribut
+  der Seite.
+- **Anker-IDs bleiben deutsch** (`#leistungen`, `#preise`, `#anfrage`), damit
+  Verweise in beiden Sprachen identisch funktionieren. Nicht umbenennen.
+- **Preise stehen nur in `data-preis`** der Konfigurator-Zeilen — in beiden
+  Sprachen dieselben Zahlen. Angezeigter Betrag und Summe werden daraus
+  berechnet.
+- **Nach Änderungen an `css/style.css` oder `js/main.js`** den Versionsstempel
+  `?v=...` in allen HTML-Dateien hochzählen, sonst bekommen wiederkehrende
+  Besucher die alte Datei aus dem Browser-Cache.
 
 ## Lokal ansehen
 
@@ -36,17 +90,17 @@ Dann im Browser: http://localhost:8090
 
 ## Livegang: GitHub Pages + IONOS-Domain (jkhd.de)
 
-Deploy-Weg (vorbereitet, CNAME-Datei zeigt auf www.jkhd.de):
-1. GitHub-Repo erstellen (public) und pushen: `gh repo create jkhd-website --public --source . --push`
-2. Pages aktivieren: Branch `master`, Ordner `/ (root)` — oder `gh api`
-3. Bei IONOS (Domains → jkhd.de → DNS) diese Einträge setzen:
-   - `A`-Records für `@` (jkhd.de): 185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153
-   - `CNAME` für `www`: `<github-benutzername>.github.io.`
-4. In den Repo-Settings unter Pages: Custom Domain `www.jkhd.de` + „Enforce HTTPS" (Zertifikat dauert bis ~1 h)
+Live seit August 2026. Repo `juliankaiser313-ctrl/jkhd-website`, GitHub Pages
+auf Branch `main`, Custom Domain `www.jkhd.de` (CNAME-Datei im Repo), IONOS-DNS
+zeigt auf GitHub.
 
-Vor dem Livegang unbedingt:
-- [ ] Impressum ausfüllen (Pflicht in Deutschland, § 5 DDG) — Name + ladungsfähige Anschrift
-- [ ] Datenschutzerklärung vervollständigen (inkl. GitHub-Pages-Hosting)
+Erledigt:
+- [x] Impressum ausgefüllt (§ 5 DDG, Name + ladungsfähige Anschrift)
+- [x] Datenschutzerklärung inkl. GitHub-Pages-Hosting
 - [x] Fonts self-hosted (assets/fonts + css/fonts.css, DSGVO erledigt)
-- [ ] Platzhalter-Texte (mit `TODO` markiert) ersetzen
-- [x] E-Mail-Postfach elite@jkhd.de eingerichtet
+- [x] Englische Fassung unter /en/ mit hreflang
+
+Offen:
+- [ ] Telefonnummer und USt-IdNr im Impressum
+- [ ] Fotos für „Einblicke" auf der Unternehmensseite (bis dahin Platzhalter)
+- [ ] `holding/` verweist auf `css/…` statt `../css/…` — dort fehlt das Design

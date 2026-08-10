@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How a system is built — JKHD</title>
+  <meta name="description" content="How a quant system from JKHD is built: six layers from the data connection through to monitored operation — what goes in and what we watch out for.">
+  <meta name="theme-color" content="#f7f6f3">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="JKHD">
+  <meta property="og:locale" content="en_GB">
+  <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta property="og:url" content="https://www.jkhd.de/en/system.html">
+  <link rel="canonical" href="https://www.jkhd.de/en/system.html">
+  <meta property="og:title" content="How a system is built — JKHD">
+  <meta property="og:description" content="Six layers, their components, and the mistakes we rule out beforehand.">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>
+    (function () {
+      try {
+        var g = localStorage.getItem("jkhd-theme");
+        var dunkel = g ? g === "dark"
+          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dunkel) document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="alternate" hreflang="de" href="https://www.jkhd.de/system.html">
+  <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/system.html">
+  <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/system.html">
+  <link rel="stylesheet" href="../css/fonts.css?v=20260810y">
+  <link rel="stylesheet" href="../css/style.css?v=20260810y">
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="build-note">
+    <div class="container">
+      <span class="build-label">Under construction</span>
+      <span>This website is currently being rebuilt. Content, figures and prices are provisional. We will accept orders only once it is complete &mdash; enquiries are welcome at any time.</span>
+      <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="JKHD — Home">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+        <span class="brand-word">JKHD</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-tag">
+          <span class="brand-line1">Quant Systems</span>
+          <span class="brand-line2">Just Know How to Dominate.</span>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="index.html#leistungen">Services</a>
+        <a href="system.html">System</a>
+        <a href="mathematics.html">Mathematics</a>
+        <a href="company.html">Company</a>
+        <div class="nav-lang">
+          <span class="nav-lang-label">Languages</span>
+          <div class="lang-switch" role="group" aria-label="Sprache / Language">
+            <a href="../system.html" hreflang="de" lang="de" aria-label="Auf Deutsch anzeigen">DE</a>
+            <span class="lang-current" aria-current="true">EN</span>
+          </div>
+        </div>
+        <div class="nav-theme">
+          <span class="nav-theme-label">Appearance</span>
+          <div class="theme-switch" role="group" aria-label="Appearance">
+            <button type="button" class="theme-opt" data-theme-set="light">Light</button>
+            <button type="button" class="theme-opt" data-theme-set="dark">Dark</button>
+          </div>
+        </div>
+        <a href="contact.html" class="btn btn-primary btn-sm">Contact</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Open menu">☰</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+  <!-- ================= PAGE HEAD ================= -->
+  <section class="page-head">
+    <div class="container">
+      <p class="kicker">// Structure</p>
+      <h1>This is what a system of ours looks like.</h1>
+      <p>Six layers, from the data connection through to monitored operation.
+         For each layer this page says what goes in — and which mistake we rule
+         out there before it costs money.</p>
+    </div>
+  </section>
+
+  <!-- ================= LAYERS ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// The layers</p>
+        <h2>Every layer has a job — and an enemy.</h2>
+        <p>A system rarely fails because of the idea. It fails at the point
+           where someone left one of these layers out.</p>
+      </div>
+
+      <div class="layers">
+        <article class="layer">
+          <div class="layer-head">
+            <span class="layer-num">01</span>
+            <h3>Data &amp; connectivity</h3>
+            <p>Raw data arrives tick by tick and is aggregated into bars that
+               we produce ourselves — not bought in and not smoothed by the
+               vendor.</p>
+          </div>
+          <div class="layer-cols">
+            <div class="layer-col">
+              <span class="layer-col-label">Built in</span>
+              <ul>
+                <li>Connection to the data feed, with resumption after a drop-out</li>
+                <li>Our own bar aggregation from ticks</li>
+                <li>Gap and outlier checks, with a log</li>
+                <li>Time zones, trading hours and contract rolls handled properly</li>
+                <li>Immutable storage of the raw data</li>
+              </ul>
+            </div>
+            <div class="layer-col">
+              <span class="layer-col-label">Watched for</span>
+              <ul>
+                <li><b>Look-ahead:</b> no value may be available earlier than it actually was</li>
+                <li><b>Silent gaps:</b> missing bars are not quietly filled in, they are flagged</li>
+                <li><b>Roll dates:</b> a contract change is not a price jump</li>
+                <li><b>Subsequent corrections</b> from the vendor are versioned, not overwritten</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="layer">
+          <div class="layer-head">
+            <span class="layer-num">02</span>
+            <h3>Research &amp; signal discovery</h3>
+            <p>We do not look for one strategy; we map an entire signal family
+               systematically across thousands of parameter combinations.</p>
+          </div>
+          <div class="layer-cols">
+            <div class="layer-col">
+              <span class="layer-col-label">Built in</span>
+              <ul>
+                <li>Signal families instead of individual cases</li>
+                <li>Complete parameter mapping, every cell evaluated separately</li>
+                <li>Separate periods for search and confirmation</li>
+                <li>A baseline for comparison — a signal must beat doing nothing</li>
+                <li>Every run reproducible: seed, data vintage, parameters</li>
+              </ul>
+            </div>
+            <div class="layer-col">
+              <span class="layer-col-label">Watched for</span>
+              <ul>
+                <li><b>Overfitting:</b> the more combinations, the more surely you find coincidence</li>
+                <li><b>Selection blindness:</b> showing only the winners shows nothing</li>
+                <li><b>Regime change:</b> what carried one year need not carry the next</li>
+                <li><b>Data reuse:</b> the same period loses meaning with every test</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="layer">
+          <div class="layer-head">
+            <span class="layer-num">03</span>
+            <h3>Statistical hardening tests</h3>
+            <p>The stage where the majority of all candidates die. A result must
+               show that it could not equally well have arisen by pure
+               chance.</p>
+          </div>
+          <div class="layer-cols">
+            <div class="layer-col">
+              <span class="layer-col-label">Built in</span>
+              <ul>
+                <li>Multiple-testing correction across the entire search</li>
+                <li>White&rsquo;s Reality Check against the chance distribution</li>
+                <li>Out-of-sample confirmation on untouched data</li>
+                <li>Fidelity report: deviation between test and real behaviour</li>
+                <li>Results documented and archived, rejections included</li>
+              </ul>
+            </div>
+            <div class="layer-col">
+              <span class="layer-col-label">Watched for</span>
+              <ul>
+                <li><b>The best of a thousand</b> is impressive by construction — even if all of them are noise</li>
+                <li><b>Pressure for results:</b> a passed test is not repeated until it fits</li>
+                <li><b>Too short a history:</b> too little data delivers any answer you want</li>
+                <li><b>Costs and slippage</b> belong in the test, not in the footnote</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="layer">
+          <div class="layer-head">
+            <span class="layer-num">04</span>
+            <h3>Risk &amp; capital</h3>
+            <p>The limits are fixed before the first trade and are kept
+               separately for each account. They are part of the system, not an
+               afterthought bolted on.</p>
+          </div>
+          <div class="layer-cols">
+            <div class="layer-col">
+              <span class="layer-col-label">Built in</span>
+              <ul>
+                <li>Daily loss limit per account</li>
+                <li>Trailing drawdown limit, carried forward continuously</li>
+                <li>Mark-to-market breaker that stops immediately — not only at the close</li>
+                <li>Position sizes from rules, not from confidence</li>
+                <li>A clearly defined state after the stop: what happens to open positions</li>
+              </ul>
+            </div>
+            <div class="layer-col">
+              <span class="layer-col-label">Watched for</span>
+              <ul>
+                <li><b>Concentration risk:</b> several signals that in truth bet on the same thing</li>
+                <li><b>The one bad day</b> determines the design, not the average</li>
+                <li><b>Limits without enforcement</b> are declarations of intent — here code enforces them</li>
+                <li><b>Manual intervention</b> is not risk management</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="layer">
+          <div class="layer-head">
+            <span class="layer-num">05</span>
+            <h3>Execution &amp; orders</h3>
+            <p>Between signal and market lies the place where most of the return
+               is lost — quietly and without an error message.</p>
+          </div>
+          <div class="layer-cols">
+            <div class="layer-col">
+              <span class="layer-col-label">Built in</span>
+              <ul>
+                <li>Order management with defined behaviour on partial fills</li>
+                <li>Bracket logic fixed at signal time, not after the fact</li>
+                <li>Reconciliation between expected and actual execution</li>
+                <li>Restart after a connection loss without duplicate orders</li>
+                <li>Complete order log, immutable</li>
+              </ul>
+            </div>
+            <div class="layer-col">
+              <span class="layer-col-label">Watched for</span>
+              <ul>
+                <li><b>Slippage and fees</b> decide whether an idea makes or loses money</li>
+                <li><b>Latency:</b> a signal that arrives too late is a different signal</li>
+                <li><b>Duplicate orders</b> after a restart are the most expensive software bug there is</li>
+                <li><b>Orphaned positions</b> without their matching protection</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="layer">
+          <div class="layer-head">
+            <span class="layer-num">06</span>
+            <h3>Operation &amp; monitoring</h3>
+            <p>A system nobody watches is a system whose failure you hear about
+               last. Watchdogs monitor the bot, and a guard monitors the
+               watchdogs.</p>
+          </div>
+          <div class="layer-cols">
+            <div class="layer-col">
+              <span class="layer-col-label">Built in</span>
+              <ul>
+                <li>Watchdog chain with self-healing and an alerting path</li>
+                <li>Shadow tracking: computed against actual result</li>
+                <li>Drift detection — if a signal loses its effect, it is retired</li>
+                <li>Complete logs, every state versioned</li>
+                <li>Defined emergency operation and documented restart</li>
+              </ul>
+            </div>
+            <div class="layer-col">
+              <span class="layer-col-label">Watched for</span>
+              <ul>
+                <li><b>Silent failure:</b> the system appears to run but no longer trades</li>
+                <li><b>Alert fatigue:</b> whoever reports everything reports nothing</li>
+                <li><b>Dependencies:</b> feed, broker, clock, operating system — any of them can fail</li>
+                <li><b>Traceability:</b> months later, every trade must still be explainable</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LIMITS ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Honestly</p>
+        <h2>What such a system does not do.</h2>
+      </div>
+      <div class="creed">
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>No prediction</h3>
+            <p class="creed-say">A system does not predict the market. It
+               applies a rule with discipline and limits the damage when the
+               rule is not working.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>No permanence</h3>
+            <p class="creed-say">Signals lose their effect. That is why drift
+               detection is built in and not optional — retiring a signal is
+               part of operating one.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>No freedom from losses</h3>
+            <p class="creed-say">Losing days are planned for, not a surprise.
+               The question is never whether they come, but how deep they are
+               allowed to go.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Not self-running</h3>
+            <p class="creed-say">Operation, monitoring and upkeep are work.
+               Anyone who does not plan for them is not running a system but a
+               risk.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-panel">
+        <h2>Which layers do you need?</h2>
+        <p>Tell us what you already have in place — we will tell you what is
+           missing and what you can save yourself.</p>
+        <a href="contact.html" class="btn btn-primary">Get in touch</a>
+        <a href="index.html#leistungen" class="btn btn-ghost">See how we work together</a>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" aria-label="JKHD — Home">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+            <span class="brand-word">JKHD</span>
+            <span class="brand-divider" aria-hidden="true"></span>
+            <span class="brand-tag">
+              <span class="brand-line1">Quant Systems</span>
+              <span class="brand-line2">Just Know How to Dominate.</span>
+            </span>
+          </a>
+          <p>Quantitative systems, software and automation.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer navigation">
+          <p class="footer-col-title">Navigation</p>
+          <a href="index.html#leistungen">Services</a>
+          <a href="system.html">System</a>
+          <a href="mathematics.html">Mathematics</a>
+          <a href="company.html">Company</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+        <div class="footer-contact">
+          <p class="footer-col-title">Contact</p>
+          <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+          <a href="mailto:service@jkhd.de">service@jkhd.de</a>
+          <a href="contact.html">Contact page</a>
+        </div>
+      </div>
+      <div class="footer-legal">
+        No investment advice, no investment brokerage, no portfolio management.
+        JKHD develops and delivers software &mdash; operating a delivered system is
+        the client's responsibility. Statements on this website are non-binding;
+        commissions may be declined without giving reasons.
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© <span id="year">2026</span> JKHD — jkhd.de</div>
+        <div class="footer-links">
+          <a href="imprint.html">Legal notice</a>
+          <a href="privacy.html">Privacy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js?v=20260810y"></script>
+</body>
+</html>
