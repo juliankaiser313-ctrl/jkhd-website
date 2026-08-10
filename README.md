@@ -64,11 +64,17 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
 - **Hell/Dunkel** (`.nav-theme`): zwei Knöpfe mit `data-theme-set="light|dark"`,
   der geltende trägt `.is-on`. Gewählt wird in `localStorage` unter
   `jkhd-theme` gemerkt; ohne eigene Wahl folgt die Seite dem Betriebssystem.
-- **Kommen neue Seitenlinks dazu**, wird die offene Kopfzeile ab 1141 px
-  wieder breiter — dann die Schwelle im Block `@media (min-width: 1141px)`
-  anheben, sonst schiebt die Zeile die Seite waagerecht hinaus. Mit sechs
-  Einträgen (Stand: inkl. Prüfung) bleiben bei 1141 px noch rund 115 px Luft;
-  ein weiterer Punkt passt gerade so, zwei nicht mehr. Sprache und
+- **Zwei Ebenen der Navigation:** In der offenen Kopfzeile stehen nur die
+  Seiten, die zuerst gesehen werden sollen (derzeit Leistungen, System,
+  Prüfung + Kontakt-Knopf). Alles Weitere liegt im Klappfeld: `<a>`-Zeilen als
+  direkte Kinder von `.nav-prefs`, oberhalb von Sprache und Darstellung. Auf
+  dem Handy ändert das nichts — dort steht ohnehin alles untereinander in
+  derselben Reihenfolge.
+- **Kommen neue Seitenlinks in die Kopfzeile**, wird sie ab 1141 px breiter —
+  dann entweder einen Punkt ins Klappfeld verschieben oder die Schwelle im
+  Block `@media (min-width: 1141px)` anheben, sonst schiebt die Zeile die
+  Seite waagerecht hinaus. Stand jetzt bleiben bei 1141 px rund 340 px Luft,
+  das reicht für etwa zwei weitere Einträge. Sprache und
   Darstellung kosten dort keine Breite mehr, die liegen im Feld. Der Block ist
   von den übrigen 940-px-Umbrüchen getrennt.
 - **Seitenpaare:** `pruefung.html ↔ en/testing.html`,
