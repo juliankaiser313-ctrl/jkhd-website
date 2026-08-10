@@ -228,10 +228,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 
 /* ---------- Navigation ----------
-   Die Menuepunkte liegen auf jeder Bildschirmbreite hinter dem Menueknopf:
-   auf dem Handy als Feld ueber die volle Breite, auf dem Desktop als Feld
-   unter dem Knopf (siehe die Regel weiter unten ab 1141 px). Dadurch bleibt
-   in der Kopfzeile nur die Marke stehen. */
+   Schmal (bis 1140 px): alles liegt hinter dem Menueknopf, das Feld klappt
+   ueber die volle Breite auf. Breit (ab 1141 px, Regel weiter unten): die
+   Seitenlinks stehen offen in der Kopfzeile, hinter dem Knopf liegen dann
+   nur noch Sprache und Darstellung. */
 
 .site-nav {
   display: none;
@@ -260,8 +260,13 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 .site-nav .btn { margin: 14px 0 0; border: 1px solid var(--border-2); }
 
-/* Sprache und Darstellung als eigene Punkte: links die Beschriftung wie bei
-   den uebrigen Eintraegen, rechts die Segmente. */
+/* Sprache und Darstellung sitzen in einem eigenen Behaelter — nur so lassen
+   sie sich auf breiten Schirmen aus der Menuezeile herausloesen, waehrend die
+   Seitenlinks darin stehen bleiben. */
+.nav-prefs { display: flex; flex-direction: column; }
+
+/* Beide als eigene Punkte: links die Beschriftung wie bei den uebrigen
+   Eintraegen, rechts die Segmente. */
 .nav-lang,
 .nav-theme {
   justify-content: space-between;
@@ -1418,24 +1423,48 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .footer-top { grid-template-columns: 1fr; gap: 36px; }
 }
 
-/* ---------- Menue auf breiten Schirmen ----------
-   Ueber die volle Breite waere das Feld hier eine Bauchbinde. Stattdessen
-   haengt es als abgesetztes Feld unter dem Menueknopf, buendig mit dem
-   rechten Rand des Rahmens (48 px Innenabstand des Containers). */
+/* ---------- Kopfzeile auf breiten Schirmen ----------
+   Hier ist Platz: die Seitenlinks stehen offen nebeneinander, damit System
+   und Mathematik ohne Klick sichtbar bleiben. Hinter dem Menueknopf liegen
+   nur noch Sprache und Darstellung — als abgesetztes Feld buendig unter ihm
+   (48 px = Innenabstand des Rahmens). */
 
 @media (min-width: 1141px) {
   .nav-wrap { position: relative; }
 
   .site-nav {
+    display: flex;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: 28px;
+    width: auto;
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+  }
+
+  .site-nav a { padding: 0; border-bottom: none; }
+  .site-nav .btn { margin: 0 0 0 6px; border-color: transparent; }
+
+  .nav-prefs {
+    display: none;
+    position: absolute;
     top: 100%;
-    left: auto;
     right: 48px;
-    width: 320px;
-    padding: 8px 24px 18px;
+    width: 264px;
+    padding: 2px 22px 14px;
+    background: var(--bg);
     border: 1px solid var(--border);
     border-top: none;
     box-shadow: 0 22px 48px var(--shadow-soft);
   }
+
+  .site-nav.open .nav-prefs { display: flex; }
+
+  /* Im Feld braucht die letzte Zeile keine Trennlinie */
+  .nav-prefs > :last-child { border-bottom: none; padding-bottom: 4px; }
 }
 
 @media (max-width: 560px) {

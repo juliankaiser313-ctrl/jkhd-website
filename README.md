@@ -41,14 +41,20 @@ favicon.svg        Browser-Tab-Icon (drei Balken)
 Es gibt keine Übersetzungsschicht: jede Seite existiert zweimal als echte
 Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
 
-- **Die Navigation liegt auf jeder Bildschirmbreite hinter dem Menüknopf.**
-  In der Kopfzeile steht nur die Marke. Unter 1141 px klappt das Menü über die
-  volle Breite auf, darüber als 320-px-Feld unter dem Knopf (dafür ist
-  `.nav-wrap` dort `position: relative`, das Feld hängt mit `right: 48px` am
-  Innenabstand des Rahmens). Das Menü schließt per Escape und Klick daneben.
-- **Sprache und Darstellung sind zwei Menüpunkte** (`.nav-lang`, `.nav-theme`),
-  jeweils Beschriftung links, Segmentpaar rechts — „Sprachen"/„Languages" und
-  „Darstellung"/„Appearance".
+- **Die Kopfzeile verhält sich nach Breite unterschiedlich:**
+  - **bis 1140 px:** alles hinter dem Menüknopf, das Feld klappt über die volle
+    Breite auf — Seitenlinks, Sprache, Darstellung, Kontakt.
+  - **ab 1141 px:** die Seitenlinks und der Kontakt-Knopf stehen offen in der
+    Kopfzeile; hinter dem Menüknopf liegen nur noch Sprache und Darstellung,
+    als 264-px-Feld bündig unter ihm (dafür ist `.nav-wrap` dort
+    `position: relative`, das Feld hängt mit `right: 48px` am Innenabstand des
+    Rahmens).
+  Das Menü schließt per Escape und Klick daneben; ein Klick auf ein Segment
+  darin lässt es offen.
+- **Sprache und Darstellung** (`.nav-lang`, `.nav-theme`) stecken zusammen in
+  `.nav-prefs` — nur dieser Behälter lässt sich auf breiten Schirmen aus der
+  Menüzeile herauslösen. Jeweils Beschriftung links, Segmentpaar rechts:
+  „Sprachen"/„Languages" und „Darstellung"/„Appearance".
 - **Sprachschalter** (`.nav-lang`): aktive Sprache als
   `<span class="lang-current">`, die andere ein Link auf das Gegenstück. Kein
   JavaScript, keine automatische Weiterleitung, keine Spracherkennung — und
@@ -56,10 +62,11 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
 - **Hell/Dunkel** (`.nav-theme`): zwei Knöpfe mit `data-theme-set="light|dark"`,
   der geltende trägt `.is-on`. Gewählt wird in `localStorage` unter
   `jkhd-theme` gemerkt; ohne eigene Wahl folgt die Seite dem Betriebssystem.
-- **Neue Menüpunkte** kosten nur Höhe im Klappfeld, nicht Breite in der
-  Kopfzeile — die Zeile kann also nicht mehr überlaufen. Der Block
-  `@media (min-width: 1141px)` regelt allein das Aussehen des Feldes auf
-  breiten Schirmen und ist von den übrigen 940-px-Umbrüchen getrennt.
+- **Kommen neue Seitenlinks dazu**, wird die offene Kopfzeile ab 1141 px
+  wieder breiter — dann die Schwelle im Block `@media (min-width: 1141px)`
+  anheben, sonst schiebt die Zeile die Seite waagerecht hinaus. Sprache und
+  Darstellung kosten dort keine Breite mehr, die liegen im Feld. Der Block ist
+  von den übrigen 940-px-Umbrüchen getrennt.
 - **Seitenpaare:** `mathematik.html ↔ en/mathematics.html`,
   `unternehmen.html ↔ en/company.html`, `kontakt.html ↔ en/contact.html`,
   `impressum.html ↔ en/imprint.html`, `datenschutz.html ↔ en/privacy.html`,
