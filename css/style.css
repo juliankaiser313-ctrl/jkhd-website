@@ -1467,6 +1467,14 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
   .site-nav.open .nav-prefs { display: flex; }
 
+  /* Seiten, die im Klappfeld liegen, sind dort Zeilen wie im Handy-Menue —
+     nicht Glieder der waagerechten Leiste. Nur direkte Kinder: das EN/DE im
+     Sprachschalter bleibt ein Segment. */
+  .nav-prefs > a {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
   /* Im Feld braucht die letzte Zeile keine Trennlinie */
   .nav-prefs > :last-child { border-bottom: none; padding-bottom: 4px; }
 }
