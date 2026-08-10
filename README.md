@@ -10,6 +10,7 @@ Deutsch in der Wurzel, Englisch unter `/en/`.
 ```
 index.html         Startseite (Hero, Ticker, Zusammenarbeit 01-03, Systemarten, Konfigurator)
 system.html        Aufbau eines Systems (6 Schichten, "Was ein System nicht leistet")
+pruefung.html      Wie geprüft wird: Grundsätze, Modulprüfung, 6 Stufen, Belastungsproben
 mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
 unternehmen.html   Wer wir sind, Auf einen Blick, Einblicke, die Köpfe
 kontakt.html       Drei Adressen + Anfrageformular (mailto, kein Server)
@@ -21,6 +22,7 @@ holding/           Eigenständige Holding-Variante, aus der Navigation nicht ver
 
 en/index.html      Englische Fassung der Startseite
 en/system.html     "How a system is built"
+en/testing.html    "How we test, before anything runs"
 en/mathematics.html
 en/company.html
 en/contact.html
@@ -64,10 +66,13 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
   `jkhd-theme` gemerkt; ohne eigene Wahl folgt die Seite dem Betriebssystem.
 - **Kommen neue Seitenlinks dazu**, wird die offene Kopfzeile ab 1141 px
   wieder breiter — dann die Schwelle im Block `@media (min-width: 1141px)`
-  anheben, sonst schiebt die Zeile die Seite waagerecht hinaus. Sprache und
+  anheben, sonst schiebt die Zeile die Seite waagerecht hinaus. Mit sechs
+  Einträgen (Stand: inkl. Prüfung) bleiben bei 1141 px noch rund 115 px Luft;
+  ein weiterer Punkt passt gerade so, zwei nicht mehr. Sprache und
   Darstellung kosten dort keine Breite mehr, die liegen im Feld. Der Block ist
   von den übrigen 940-px-Umbrüchen getrennt.
-- **Seitenpaare:** `mathematik.html ↔ en/mathematics.html`,
+- **Seitenpaare:** `pruefung.html ↔ en/testing.html`,
+  `mathematik.html ↔ en/mathematics.html`,
   `unternehmen.html ↔ en/company.html`, `kontakt.html ↔ en/contact.html`,
   `impressum.html ↔ en/imprint.html`, `datenschutz.html ↔ en/privacy.html`,
   `index.html` und `system.html` heißen in beiden Sprachen gleich.

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prüfung — JKHD</title>
+  <meta name="description" content="Wie JKHD Quant-Systeme prüft: was bei einem einzelnen Modul nachgewiesen wird, welche sechs Stufen ein ganzes System durchläuft, welche Ausfälle wir absichtlich herbeiführen — und was Sie am Ende in der Hand halten.">
+  <meta name="theme-color" content="#f7f6f3">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="JKHD">
+  <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta property="og:url" content="https://www.jkhd.de/pruefung.html">
+  <link rel="canonical" href="https://www.jkhd.de/pruefung.html">
+  <meta property="og:title" content="Prüfung — JKHD">
+  <meta property="og:description" content="Prüfen ist kein Schritt am Ende, sondern der größte Teil der Arbeit. Was bei einem Modul nachgewiesen wird und was bei einem ganzen System dazukommt.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <script>
+    (function () {
+      try {
+        var g = localStorage.getItem("jkhd-theme");
+        var dunkel = g ? g === "dark"
+          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dunkel) document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="alternate" hreflang="de" href="https://www.jkhd.de/pruefung.html">
+  <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/testing.html">
+  <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/pruefung.html">
+  <link rel="stylesheet" href="css/fonts.css?v=20260811b">
+  <link rel="stylesheet" href="css/style.css?v=20260811b">
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <div class="build-note">
+    <div class="container">
+      <span class="build-label">Im Aufbau</span>
+      <span>Diese Website wird gerade neu aufgebaut. Inhalte, Angaben und Preise sind vorl&auml;ufig. Auftr&auml;ge nehmen wir erst an, wenn sie vollst&auml;ndig fertig ist &mdash; Anfragen sind jederzeit willkommen.</span>
+      <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+        <span class="brand-word">JKHD</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-tag">
+          <span class="brand-line1">Quant Systems</span>
+          <span class="brand-line2">Just Know How to Dominate.</span>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="Hauptnavigation">
+        <a href="index.html#leistungen">Leistungen</a>
+        <a href="system.html">System</a>
+        <a href="pruefung.html">Prüfung</a>
+        <a href="mathematik.html">Mathematik</a>
+        <a href="unternehmen.html">Unternehmen</a>
+        <div class="nav-prefs">
+          <div class="nav-lang">
+            <span class="nav-lang-label">Sprachen</span>
+            <div class="lang-switch" role="group" aria-label="Sprache / Language">
+              <span class="lang-current" aria-current="true">DE</span>
+              <a href="en/testing.html" hreflang="en" lang="en" aria-label="Switch to English">EN</a>
+            </div>
+          </div>
+          <div class="nav-theme">
+            <span class="nav-theme-label">Darstellung</span>
+            <div class="theme-switch" role="group" aria-label="Darstellung">
+              <button type="button" class="theme-opt" data-theme-set="light">Hell</button>
+              <button type="button" class="theme-opt" data-theme-set="dark">Dunkel</button>
+            </div>
+          </div>
+        </div>
+        <a href="kontakt.html" class="btn btn-primary btn-sm">Kontakt</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Menü öffnen">☰</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+  <!-- ================= SEITENKOPF ================= -->
+  <section class="page-head">
+    <div class="container">
+      <p class="kicker">// Prüfung</p>
+      <h1>Wie wir prüfen, bevor etwas läuft.</h1>
+      <p>Prüfen ist bei uns kein Schritt am Ende, sondern der größte Teil der
+         Arbeit. Diese Seite sagt, was bei einem einzelnen Modul nachgewiesen
+         wird, was bei einem ganzen System dazukommt — und was Sie am Ende
+         schwarz auf weiß in der Hand halten.</p>
+    </div>
+  </section>
+
+  <!-- ================= GRUNDSÄTZE ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Grundsätze</p>
+        <h2>Vier Regeln, die vor dem ersten Lauf feststehen.</h2>
+        <p>Wer erst hinterher festlegt, was als bestanden gilt, prüft nicht —
+           er sucht eine Begründung.</p>
+      </div>
+
+      <div class="creed">
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Getrennte Daten</h3>
+            <p class="creed-say">Gesucht wird auf dem einen Zeitraum,
+               bestätigt auf einem anderen, der bis dahin unberührt bleibt.
+               Wie oft ein Bestätigungszeitraum schon benutzt wurde, wird
+               mitgezählt — er nutzt sich ab.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Abbruch vorher festgelegt</h3>
+            <p class="creed-say">Welche Schwelle ein Kandidat halten muss,
+               steht vor dem ersten Lauf fest und wird nicht nachträglich
+               gesenkt. Ein Test, der so lange wiederholt wird, bis er passt,
+               ist kein Test.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Kosten sind Teil des Tests</h3>
+            <p class="creed-say">Gebühren, Geld-Brief-Spanne und
+               Ausführungsabweichung stehen in der Rechnung, nicht in der
+               Fußnote. Eine Idee, die erst ohne Kosten funktioniert,
+               funktioniert nicht.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Jeder Lauf wiederholbar</h3>
+            <p class="creed-say">Zufallszahl, Datenstand, Parameter und
+               Programmstand werden zu jedem Ergebnis festgehalten. Ein Wert,
+               der sich nicht erneut erzeugen lässt, gilt bei uns nicht als
+               Ergebnis.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= EINZELNES MODUL ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Einzelnes Modul</p>
+        <h2>Wird nur eine Stufe geliefert, wird genau diese Stufe bewiesen.</h2>
+        <p>Jedes Modul verlässt das Haus mit einer eigenen Prüfmappe. Sie
+           bekommen den Nachweis für das, was Sie kaufen — und die Aussage,
+           unter welchen Annahmen er gilt.</p>
+      </div>
+
+      <div class="guards">
+        <article class="guard">
+          <span class="guard-label">Modul 01</span>
+          <h3>Daten &amp; Anbindung</h3>
+          <p>Geprüft wird gegen die Rohdaten selbst, nie gegen eine zweite
+             Ableitung davon.</p>
+          <ul class="guard-list">
+            <li>Bar-Aggregation gegen die Tick-Summe nachgerechnet</li>
+            <li>Künstliche Lücken eingespielt — werden sie gemeldet statt gefüllt?</li>
+            <li>Verbindungsabriss erzwungen, Wiederaufnahme kontrolliert</li>
+            <li>Kontraktwechsel und Zeitumstellung im Bestand nachvollzogen</li>
+            <li>Rohdaten nach dem Lauf unverändert</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Modul 02</span>
+          <h3>Research &amp; Signalfindung</h3>
+          <p>Geprüft wird nicht das beste Ergebnis, sondern die Suche, die zu
+             ihm geführt hat.</p>
+          <ul class="guard-list">
+            <li>Vollständige Parameter-Karte, auch die toten Zellen</li>
+            <li>Gleicher Seed, gleicher Datenstand, gleiches Ergebnis</li>
+            <li>Such- und Bestätigungszeitraum nachweislich getrennt</li>
+            <li>Vergleich gegen Nichtstun als Baseline</li>
+            <li>Anzahl der Versuche vollständig protokolliert</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Modul 03</span>
+          <h3>Statistische Härtetests</h3>
+          <p>Diese Stufe prüfen wir mit Fällen, deren Antwort wir vorher
+             kennen.</p>
+          <ul class="guard-list">
+            <li>Reines Rauschen als Eingabe — die Suite muss ablehnen</li>
+            <li>Künstlich eingebautes Signal — die Suite muss es finden</li>
+            <li>Multiple-Testing-Korrektur gegen die tatsächliche Versuchszahl</li>
+            <li>Reality Check und Out-of-Sample auf derselben Datenlage</li>
+            <li>Abgelehnte Kandidaten dokumentiert, nicht gelöscht</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Modul 04</span>
+          <h3>Risiko &amp; Kapital</h3>
+          <p>Grenzen werden nicht geglaubt. Sie werden im Test absichtlich
+             ausgelöst.</p>
+          <ul class="guard-list">
+            <li>Tagesverlust-Limit vorsätzlich gerissen</li>
+            <li>Trailing-Drawdown über einen Gewinn-Hochpunkt geführt</li>
+            <li>Mark-to-Market-Breaker mitten in offener Position ausgelöst</li>
+            <li>Zustand nach dem Stopp geprüft: Position, Absicherung, Protokoll</li>
+            <li>Positionsgröße gegen den verbleibenden Puffer nachgerechnet</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Modul 05</span>
+          <h3>Ausführung &amp; Order</h3>
+          <p>Geprüft wird gegen einen echten Marktzugang in der Testumgebung,
+             nicht gegen eine Annahme.</p>
+          <ul class="guard-list">
+            <li>Teilausführung erzwungen und weiterverarbeitet</li>
+            <li>Neustart mitten in offener Position — keine zweite Order</li>
+            <li>Bracket zur Signalzeit gegen die tatsächliche Ausführung gehalten</li>
+            <li>Verzögerte und abgelehnte Antworten des Brokers durchgespielt</li>
+            <li>Order-Protokoll lückenlos und unveränderlich</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Modul 06</span>
+          <h3>Betrieb &amp; Überwachung</h3>
+          <p>Geprüft wird der Ausfall, nicht der Normalbetrieb. Der gelingt
+             ohnehin.</p>
+          <ul class="guard-list">
+            <li>Prozess hart abgeschossen — greift die Selbstheilung?</li>
+            <li>Feed stillgelegt: der stille Ausfall muss auffallen</li>
+            <li>Alarmweg bis zum Empfänger durchgespielt</li>
+            <li>Shadow-Tracking gegen die tatsächlichen Zahlen gehalten</li>
+            <li>Wiederanlauf nach der Anleitung, von jemand anderem ausgeführt</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="note">
+        <b>Was ein Modultest nicht abdeckt:</b> Ein Modul kann für sich
+        einwandfrei arbeiten und im Zusammenspiel trotzdem scheitern — an einer
+        Schnittstelle, einer Zeitzone, einer Rundung. Deshalb steht in jeder
+        Prüfmappe, unter welchen Annahmen gemessen wurde und welche Zusagen die
+        umgebende Software Ihres Hauses einhalten muss, damit der Nachweis
+        trägt.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GANZES SYSTEM ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Ganzes System</p>
+        <h2>Sechs Stufen, bis ein System eingeschaltet wird.</h2>
+        <p>Jede Stufe darf abbrechen. Ein Abbruch ist kein Rückschlag, sondern
+           der Zweck der Übung — je früher, desto billiger.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step-row">
+          <div class="step-num">01</div>
+          <div>
+            <h3>Bauteilprüfung</h3>
+            <p>Jede Stufe wird einzeln nachgewiesen, genau wie oben beschrieben.
+               Erst wenn ein Bauteil für sich steht, wird es angeschlossen.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">02</div>
+          <div>
+            <h3>Zusammenspiel</h3>
+            <p>Die Kette von den Daten über das Signal und die Risikoschicht bis
+               zur Order wird als Ganzes durchgespielt. Hier fallen die Fehler
+               auf, die keine Stufe allein macht: Zeitversatz zwischen zwei
+               Bauteilen, doppelte Auslösung, Rundung an der Grenze.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">03</div>
+          <div>
+            <h3>Gesamtprobe auf Historie</h3>
+            <p>Die vollständige Kette läuft über Zeiträume, die bei der Suche
+               unberührt geblieben sind — mit Gebühren, Spanne und
+               Ausführungsabweichung. Das Ergebnis wird mit allen Absagen
+               dokumentiert, nicht nur mit den guten Abschnitten.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">04</div>
+          <div>
+            <h3>Schattenbetrieb</h3>
+            <p>Das System läuft live mit, rechnet mit und meldet — handelt aber
+               nicht. Gerechnetes und tatsächliches Verhalten werden gegeneinander
+               gehalten; die Abweichung steht im Fidelity-Report. Diese Stufe
+               endet nicht nach Kalender, sondern wenn die Abweichung erklärbar
+               ist.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">05</div>
+          <div>
+            <h3>Testbetrieb mit kleinem Einsatz</h3>
+            <p>Echte Orders, kleiner Einsatz, alle Grenzen scharf. Zwei Monate
+               sind dafür vorgesehen — danach können Sie ablehnen. Was in dieser
+               Zeit auffällt, wird behoben und die betroffene Stufe erneut
+               nachgewiesen.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">06</div>
+          <div>
+            <h3>Abnahme und Übergabe</h3>
+            <p>Prüfbericht, Reproduktionsanleitung, Protokolle, Quelltext und
+               Betriebsanleitung gehen an Sie über — vollständig. Wir behalten
+               keine Kopie, keinen Parameter und keine Ableitung davon.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BELASTUNGSPROBEN ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Belastungsproben</p>
+        <h2>Was wir absichtlich kaputt machen.</h2>
+        <p>Ein System zeigt seinen Charakter nicht im Normalbetrieb, sondern an
+           dem Tag, an dem etwas ausfällt. Also führen wir diesen Tag vorher
+           herbei — und halten fest, was dabei herauskommen muss.</p>
+      </div>
+
+      <div class="kinds">
+        <article class="kind">
+          <div>
+            <h3>Feed-Abriss mitten in der Sitzung</h3>
+            <p>Die Datenverbindung fällt aus, während eine Position offen ist.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Erwartet</span>
+            <em>Handel ruht, Lücke markiert, kein Nachholen</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Neustart mit offener Position</h3>
+            <p>Der Rechner startet neu, während eine Position und ihre
+               Absicherung im Markt liegen.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Erwartet</span>
+            <em>Position erkannt, keine zweite Order</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Broker antwortet zu spät</h3>
+            <p>Die Bestätigung einer Order bleibt aus oder kommt verzögert.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Erwartet</span>
+            <em>Order gilt als unbestätigt, kein blindes Nachschieben</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Kurslücke über Nacht</h3>
+            <p>Der Markt eröffnet weit entfernt vom letzten Kurs, jenseits der
+               Absicherung.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Erwartet</span>
+            <em>Breaker greift, Verlust bleibt im Rahmen</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Kontraktwechsel und Zeitumstellung</h3>
+            <p>Der gehandelte Kontrakt rollt, und die Uhr springt um eine
+               Stunde.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Erwartet</span>
+            <em>kein Kurssprung, keine doppelte Bar</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Rückwirkende Datenkorrektur</h3>
+            <p>Der Anbieter korrigiert Kurse, die längst verarbeitet sind.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Erwartet</span>
+            <em>neuer Stand versioniert, alter nachvollziehbar</em>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ERGEBNIS ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Ergebnis</p>
+        <h2>Was Sie am Ende in der Hand halten.</h2>
+        <p>Eine Prüfung, die man Ihnen nur erzählt, ist keine. Sie bekommen sie
+           als Unterlage — prüfbar durch Ihre eigenen Leute.</p>
+      </div>
+
+      <div class="offers">
+        <article class="offer">
+          <span class="offer-num">01</span>
+          <h3>Prüfbericht</h3>
+          <p class="offer-lead">Was gemessen wurde, womit und mit welchem Ergebnis.</p>
+          <p>Für jede Prüfung: Datenstand, Zeitraum, Annahmen, Kennzahlen und
+             das Urteil. Einschließlich der Läufe, die nicht bestanden haben —
+             die stehen im selben Dokument, nicht in einem zweiten.</p>
+          <ul class="offer-tags">
+            <li>kennzahlen</li>
+            <li>annahmen</li>
+            <li>absagen</li>
+          </ul>
+        </article>
+        <article class="offer">
+          <span class="offer-num">02</span>
+          <h3>Reproduktionsanleitung</h3>
+          <p class="offer-lead">Damit Ihr Haus jede Zahl selbst nachrechnen kann.</p>
+          <p>Zufallszahl, Datenstand, Parametersatz, Programmstand und der
+             Befehl, der den Lauf erzeugt. Wer bei Ihnen nachrechnet, muss
+             dieselbe Zahl bekommen — sonst war es keine Messung.</p>
+          <ul class="offer-tags">
+            <li>seed</li>
+            <li>datenstand</li>
+            <li>programmstand</li>
+          </ul>
+        </article>
+        <article class="offer">
+          <span class="offer-num">03</span>
+          <h3>Abnahmeprotokoll</h3>
+          <p class="offer-lead">Die Grundlage für Ihre interne Freigabe.</p>
+          <p>Jede Stufe mit Datum, Ergebnis und Verantwortlichem, dazu die
+             offenen Punkte und die Betriebsanleitung für den Ernstfall. Ihre
+             Revision bekommt damit etwas in die Hand, kein Vertrauen.</p>
+          <ul class="offer-tags">
+            <li>stufen</li>
+            <li>offene punkte</li>
+            <li>notbetrieb</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GRENZEN ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Ehrlich gesagt</p>
+        <h2>Wo eine Prüfung endet.</h2>
+      </div>
+      <div class="creed">
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Sie beweist Verhalten</h3>
+            <p class="creed-say">Eine bestandene Prüfung sagt, wie sich das
+               System unter bekannten Bedingungen verhält. Sie sagt nichts über
+               den Ertrag im nächsten Quartal — und wer das behauptet, verkauft
+               etwas anderes als Software.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Sie ist nicht abgeschlossen</h3>
+            <p class="creed-say">Nach dem Einschalten läuft die Prüfung als
+               Überwachung weiter: Shadow-Tracking und Drift-Erkennung messen
+               dieselben Größen, nur eben täglich. Verliert ein Signal seine
+               Wirkung, wird es stillgelegt.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Sie kennt nur die Vergangenheit</h3>
+            <p class="creed-say">Geprüft wird gegen Daten, die es schon gibt,
+               und gegen Ausfälle, die wir uns vorstellen können. Ein Ereignis,
+               das es so noch nicht gab, ist im Test nicht enthalten — nur die
+               Grenzen, die es abfangen sollen.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Sie ersetzt Ihr Urteil nicht</h3>
+            <p class="creed-say">Wir legen offen, was wir gemessen haben und
+               wie. Die Entscheidung, ob das für Ihr Haus reicht, bleibt bei
+               Ihnen — deshalb geben wir Ihnen die Unterlagen, mit denen Sie sie
+               treffen können.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-panel">
+        <h2>Wie würde Ihr System abschneiden?</h2>
+        <p>Sagen Sie uns, was bei Ihnen läuft — wir sagen Ihnen, welche dieser
+           Prüfungen es bestehen würde und welche nicht.</p>
+        <a href="kontakt.html" class="btn btn-primary">Kontakt aufnehmen</a>
+        <a href="system.html" class="btn btn-ghost">Aufbau eines Systems</a>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+            <span class="brand-word">JKHD</span>
+            <span class="brand-divider" aria-hidden="true"></span>
+            <span class="brand-tag">
+              <span class="brand-line1">Quant Systems</span>
+              <span class="brand-line2">Just Know How to Dominate.</span>
+            </span>
+          </a>
+          <p>Quantitative Systeme, Software und Automatisierung.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer-Navigation">
+          <p class="footer-col-title">Navigation</p>
+          <a href="index.html#leistungen">Leistungen</a>
+          <a href="system.html">System</a>
+          <a href="pruefung.html">Prüfung</a>
+          <a href="mathematik.html">Mathematik</a>
+          <a href="unternehmen.html">Unternehmen</a>
+          <a href="kontakt.html">Kontakt</a>
+        </nav>
+        <div class="footer-contact">
+          <p class="footer-col-title">Kontakt</p>
+          <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+          <a href="mailto:service@jkhd.de">service@jkhd.de</a>
+          <a href="kontakt.html">Kontaktseite</a>
+        </div>
+      </div>
+      <div class="footer-legal">
+        Keine Anlageberatung, keine Anlagevermittlung, keine
+        Finanzportfolioverwaltung. JKHD entwickelt und liefert Software &mdash; den
+        Betrieb eines ausgelieferten Systems verantwortet der Auftraggeber. Angaben
+        auf dieser Webseite sind unverbindlich; Auftr&auml;ge k&ouml;nnen ohne Angabe
+        von Gr&uuml;nden abgelehnt werden.
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© <span id="year">2026</span> JKHD — jkhd.de</div>
+        <div class="footer-links">
+          <a href="impressum.html">Impressum</a>
+          <a href="datenschutz.html">Datenschutz</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js?v=20260811b"></script>
+</body>
+</html>

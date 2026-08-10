@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testing — JKHD</title>
+  <meta name="description" content="How JKHD tests quant systems: what is proven for a single module, the six stages a complete system goes through, which failures we cause on purpose — and what you hold in your hands at the end.">
+  <meta name="theme-color" content="#f7f6f3">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="JKHD">
+  <meta property="og:locale" content="en_GB">
+  <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta property="og:url" content="https://www.jkhd.de/en/testing.html">
+  <link rel="canonical" href="https://www.jkhd.de/en/testing.html">
+  <meta property="og:title" content="Testing — JKHD">
+  <meta property="og:description" content="Testing is not a step at the end but the largest part of the work. What is proven for a module, and what a complete system adds.">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <script>
+    (function () {
+      try {
+        var g = localStorage.getItem("jkhd-theme");
+        var dunkel = g ? g === "dark"
+          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dunkel) document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="alternate" hreflang="de" href="https://www.jkhd.de/pruefung.html">
+  <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/testing.html">
+  <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/pruefung.html">
+  <link rel="stylesheet" href="../css/fonts.css?v=20260811b">
+  <link rel="stylesheet" href="../css/style.css?v=20260811b">
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="build-note">
+    <div class="container">
+      <span class="build-label">Under construction</span>
+      <span>This website is currently being rebuilt. Content, figures and prices are provisional. We will accept orders only once it is complete &mdash; enquiries are welcome at any time.</span>
+      <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="JKHD — Home">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+        <span class="brand-word">JKHD</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-tag">
+          <span class="brand-line1">Quant Systems</span>
+          <span class="brand-line2">Just Know How to Dominate.</span>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="index.html#leistungen">Services</a>
+        <a href="system.html">System</a>
+        <a href="testing.html">Testing</a>
+        <a href="mathematics.html">Mathematics</a>
+        <a href="company.html">Company</a>
+        <div class="nav-prefs">
+          <div class="nav-lang">
+            <span class="nav-lang-label">Languages</span>
+            <div class="lang-switch" role="group" aria-label="Sprache / Language">
+              <a href="../pruefung.html" hreflang="de" lang="de" aria-label="Auf Deutsch anzeigen">DE</a>
+              <span class="lang-current" aria-current="true">EN</span>
+            </div>
+          </div>
+          <div class="nav-theme">
+            <span class="nav-theme-label">Appearance</span>
+            <div class="theme-switch" role="group" aria-label="Appearance">
+              <button type="button" class="theme-opt" data-theme-set="light">Light</button>
+              <button type="button" class="theme-opt" data-theme-set="dark">Dark</button>
+            </div>
+          </div>
+        </div>
+        <a href="contact.html" class="btn btn-primary btn-sm">Contact</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Open menu">☰</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+  <!-- ================= PAGE HEAD ================= -->
+  <section class="page-head">
+    <div class="container">
+      <p class="kicker">// Testing</p>
+      <h1>How we test, before anything runs.</h1>
+      <p>Testing is not a step at the end here, it is the largest part of the
+         work. This page says what is proven for a single module, what a
+         complete system adds — and what you hold in your hands in writing at
+         the end.</p>
+    </div>
+  </section>
+
+  <!-- ================= PRINCIPLES ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Principles</p>
+        <h2>Four rules fixed before the first run.</h2>
+        <p>Whoever decides afterwards what counts as a pass is not testing —
+           they are looking for a justification.</p>
+      </div>
+
+      <div class="creed">
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Separate data</h3>
+            <p class="creed-say">The search runs on one period, the
+               confirmation on another that stays untouched until then. How
+               often a confirmation period has already been used is counted —
+               it wears out.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Abort criteria fixed in advance</h3>
+            <p class="creed-say">The threshold a candidate has to hold is fixed
+               before the first run and is not lowered afterwards. A test
+               repeated until it fits is not a test.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Costs are part of the test</h3>
+            <p class="creed-say">Fees, the bid-ask spread and execution
+               deviation belong in the calculation, not in the footnote. An
+               idea that only works without costs does not work.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>Every run repeatable</h3>
+            <p class="creed-say">Seed, data vintage, parameters and software
+               version are recorded with every result. A number that cannot be
+               produced again does not count as a result here.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SINGLE MODULE ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// A single module</p>
+        <h2>If only one stage is delivered, exactly that stage is proven.</h2>
+        <p>Every module leaves the house with its own test file. You get the
+           evidence for what you are buying — and the statement of the
+           assumptions under which it holds.</p>
+      </div>
+
+      <div class="guards">
+        <article class="guard">
+          <span class="guard-label">Module 01</span>
+          <h3>Data &amp; connectivity</h3>
+          <p>Tested against the raw data itself, never against a second
+             derivative of it.</p>
+          <ul class="guard-list">
+            <li>Bar aggregation recomputed against the tick total</li>
+            <li>Artificial gaps injected — are they flagged instead of filled?</li>
+            <li>Connection loss forced, resumption checked</li>
+            <li>Contract rolls and clock changes traced in the stored data</li>
+            <li>Raw data unchanged after the run</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Module 02</span>
+          <h3>Research &amp; signal discovery</h3>
+          <p>What is tested is not the best result but the search that led to
+             it.</p>
+          <ul class="guard-list">
+            <li>Complete parameter map, dead cells included</li>
+            <li>Same seed, same data vintage, same result</li>
+            <li>Search and confirmation periods demonstrably separate</li>
+            <li>Comparison against doing nothing as a baseline</li>
+            <li>Number of trials fully logged</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Module 03</span>
+          <h3>Statistical hardening tests</h3>
+          <p>We test this stage with cases whose answer we already know.</p>
+          <ul class="guard-list">
+            <li>Pure noise as input — the suite must reject</li>
+            <li>An artificially planted signal — the suite must find it</li>
+            <li>Multiple-testing correction against the real number of trials</li>
+            <li>Reality Check and out-of-sample on the same data</li>
+            <li>Rejected candidates documented, not deleted</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Module 04</span>
+          <h3>Risk &amp; capital</h3>
+          <p>Limits are not taken on trust. In the test they are triggered on
+             purpose.</p>
+          <ul class="guard-list">
+            <li>Daily loss limit deliberately breached</li>
+            <li>Trailing drawdown carried across an equity high</li>
+            <li>Mark-to-market breaker fired mid-position</li>
+            <li>State after the stop checked: position, protection, log</li>
+            <li>Position size recomputed against the remaining buffer</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Module 05</span>
+          <h3>Execution &amp; orders</h3>
+          <p>Tested against real market access in the test environment, not
+             against an assumption.</p>
+          <ul class="guard-list">
+            <li>Partial fills forced and processed onward</li>
+            <li>Restart mid-position — no second order</li>
+            <li>Bracket at signal time held against the actual fill</li>
+            <li>Delayed and rejected broker responses played through</li>
+            <li>Order log complete and immutable</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Module 06</span>
+          <h3>Operation &amp; monitoring</h3>
+          <p>What is tested is the failure, not normal operation. That works
+             anyway.</p>
+          <ul class="guard-list">
+            <li>Process killed hard — does self-healing take over?</li>
+            <li>Feed silenced: the silent failure has to be noticed</li>
+            <li>Alerting path played through to the recipient</li>
+            <li>Shadow tracking held against the actual figures</li>
+            <li>Restart performed from the manual, by someone else</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="note">
+        <b>What a module test does not cover:</b> a module can work perfectly on
+        its own and still fail in combination — at an interface, a time zone, a
+        rounding. That is why every test file states the assumptions under which
+        it was measured, and which guarantees the surrounding software in your
+        house has to keep for the evidence to hold.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= COMPLETE SYSTEM ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// A complete system</p>
+        <h2>Six stages before a system is switched on.</h2>
+        <p>Every stage is allowed to abort. An abort is not a setback but the
+           point of the exercise — the earlier, the cheaper.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step-row">
+          <div class="step-num">01</div>
+          <div>
+            <h3>Component testing</h3>
+            <p>Every stage is proven on its own, exactly as described above.
+               Only once a component stands by itself is it connected.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">02</div>
+          <div>
+            <h3>Interaction</h3>
+            <p>The chain from data through signal and the risk layer to the
+               order is played through as a whole. This is where the faults
+               show up that no single stage makes: a time offset between two
+               components, a double trigger, a rounding at the limit.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">03</div>
+          <div>
+            <h3>Full run on history</h3>
+            <p>The complete chain runs over periods left untouched during the
+               search — with fees, spread and execution deviation. The result is
+               documented with every rejection, not only with the good
+               stretches.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">04</div>
+          <div>
+            <h3>Shadow operation</h3>
+            <p>The system runs alongside live, computes and reports — but does
+               not trade. Computed and actual behaviour are held against each
+               other; the deviation goes into the fidelity report. This stage
+               does not end by calendar but when the deviation is
+               explainable.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">05</div>
+          <div>
+            <h3>Trial operation with a small stake</h3>
+            <p>Real orders, a small stake, every limit live. Two months are
+               provided for this — after which you may decline. Whatever comes
+               up in that time is fixed, and the stage concerned is proven
+               again.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">06</div>
+          <div>
+            <h3>Acceptance and handover</h3>
+            <p>Test report, reproduction instructions, logs, source code and
+               operating manual pass to you — in full. We keep no copy, no
+               parameter and no derivative of it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STRESS TESTS ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Stress tests</p>
+        <h2>What we break on purpose.</h2>
+        <p>A system shows its character not in normal operation but on the day
+           something fails. So we bring that day about beforehand — and record
+           what has to come out of it.</p>
+      </div>
+
+      <div class="kinds">
+        <article class="kind">
+          <div>
+            <h3>Feed loss mid-session</h3>
+            <p>The data connection drops while a position is open.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Expected</span>
+            <em>trading pauses, gap flagged, nothing caught up</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Restart with an open position</h3>
+            <p>The machine restarts while a position and its protection are in
+               the market.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Expected</span>
+            <em>position recognised, no second order</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Broker answers too late</h3>
+            <p>The confirmation of an order fails to arrive or arrives
+               delayed.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Expected</span>
+            <em>order counts as unconfirmed, no blind resend</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Overnight price gap</h3>
+            <p>The market opens far away from the last price, beyond the
+               protection.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Expected</span>
+            <em>breaker fires, loss stays within bounds</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Contract roll and clock change</h3>
+            <p>The traded contract rolls, and the clock jumps by an hour.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Expected</span>
+            <em>no price jump, no duplicate bar</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Retroactive data correction</h3>
+            <p>The vendor corrects prices that have long since been
+               processed.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Expected</span>
+            <em>new vintage versioned, old one still traceable</em>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHAT YOU GET ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// The outcome</p>
+        <h2>What you hold in your hands at the end.</h2>
+        <p>A test you are merely told about is not one. You receive it as
+           documentation — verifiable by your own people.</p>
+      </div>
+
+      <div class="offers">
+        <article class="offer">
+          <span class="offer-num">01</span>
+          <h3>Test report</h3>
+          <p class="offer-lead">What was measured, with what, and with what result.</p>
+          <p>For every test: data vintage, period, assumptions, metrics and the
+             verdict. Including the runs that did not pass — those are in the
+             same document, not in a second one.</p>
+          <ul class="offer-tags">
+            <li>metrics</li>
+            <li>assumptions</li>
+            <li>rejections</li>
+          </ul>
+        </article>
+        <article class="offer">
+          <span class="offer-num">02</span>
+          <h3>Reproduction instructions</h3>
+          <p class="offer-lead">So your house can recompute every figure itself.</p>
+          <p>Seed, data vintage, parameter set, software version and the command
+             that produced the run. Whoever recomputes it on your side must get
+             the same number — otherwise it was not a measurement.</p>
+          <ul class="offer-tags">
+            <li>seed</li>
+            <li>data vintage</li>
+            <li>software version</li>
+          </ul>
+        </article>
+        <article class="offer">
+          <span class="offer-num">03</span>
+          <h3>Acceptance record</h3>
+          <p class="offer-lead">The basis for your internal sign-off.</p>
+          <p>Every stage with date, result and the person responsible, plus the
+             open points and the operating manual for the serious case. Your
+             audit function gets something to hold, not trust.</p>
+          <ul class="offer-tags">
+            <li>stages</li>
+            <li>open points</li>
+            <li>emergency operation</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LIMITS ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Honestly</p>
+        <h2>Where a test ends.</h2>
+      </div>
+      <div class="creed">
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>It proves behaviour</h3>
+            <p class="creed-say">A passed test says how the system behaves
+               under known conditions. It says nothing about the return next
+               quarter — and whoever claims otherwise is selling something
+               other than software.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>It is not finished</h3>
+            <p class="creed-say">After switch-on the testing continues as
+               monitoring: shadow tracking and drift detection measure the same
+               quantities, only daily. If a signal loses its effect, it is
+               retired.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>It only knows the past</h3>
+            <p class="creed-say">Testing runs against data that already exists
+               and against failures we can imagine. An event that has never
+               occurred in that form is not in the test — only the limits meant
+               to catch it are.</p>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <h3>It does not replace your judgement</h3>
+            <p class="creed-say">We disclose what we measured and how. The
+               decision whether that is enough for your house stays with you —
+               which is why we give you the documents to make it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-panel">
+        <h2>How would your system fare?</h2>
+        <p>Tell us what is running at your end — we will tell you which of
+           these tests it would pass and which it would not.</p>
+        <a href="contact.html" class="btn btn-primary">Get in touch</a>
+        <a href="system.html" class="btn btn-ghost">How a system is built</a>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" aria-label="JKHD — Home">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+            <span class="brand-word">JKHD</span>
+            <span class="brand-divider" aria-hidden="true"></span>
+            <span class="brand-tag">
+              <span class="brand-line1">Quant Systems</span>
+              <span class="brand-line2">Just Know How to Dominate.</span>
+            </span>
+          </a>
+          <p>Quantitative systems, software and automation.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer navigation">
+          <p class="footer-col-title">Navigation</p>
+          <a href="index.html#leistungen">Services</a>
+          <a href="system.html">System</a>
+          <a href="testing.html">Testing</a>
+          <a href="mathematics.html">Mathematics</a>
+          <a href="company.html">Company</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+        <div class="footer-contact">
+          <p class="footer-col-title">Contact</p>
+          <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+          <a href="mailto:service@jkhd.de">service@jkhd.de</a>
+          <a href="contact.html">Contact page</a>
+        </div>
+      </div>
+      <div class="footer-legal">
+        No investment advice, no investment brokerage, no portfolio management.
+        JKHD develops and delivers software &mdash; operating a delivered system is
+        the client's responsibility. Statements on this website are non-binding;
+        commissions may be declined without giving reasons.
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© <span id="year">2026</span> JKHD — jkhd.de</div>
+        <div class="footer-links">
+          <a href="imprint.html">Legal notice</a>
+          <a href="privacy.html">Privacy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js?v=20260811b"></script>
+</body>
+</html>
