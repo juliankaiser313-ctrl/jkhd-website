@@ -16,6 +16,13 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/system.html"/>
   </url>
   <url>
+    <loc>https://www.jkhd.de/pruefung.html</loc>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/pruefung.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/testing.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/pruefung.html"/>
+  </url>
+  <url>
     <loc>https://www.jkhd.de/mathematik.html</loc>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/mathematik.html"/>
@@ -50,6 +57,13 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/system.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/system.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/system.html"/>
+  </url>
+  <url>
+    <loc>https://www.jkhd.de/en/testing.html</loc>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/pruefung.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/testing.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/pruefung.html"/>
   </url>
   <url>
     <loc>https://www.jkhd.de/en/mathematics.html</loc>
