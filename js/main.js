@@ -645,8 +645,13 @@ if (siteHeader) {
   // contains() sagt "war nicht drin" — und das Feld haette sich selbst
   // geschlossen. Deshalb wird in der Abwaertsphase gemerkt, dass der Klick
   // aus dem Feld kam, solange das Ziel noch steht.
+  // Gemerkt wird nur, was den sichtbaren Teilen gilt — Knopf und Feld. Nicht
+  // dem Behaelter drumherum: Der ist breiter als der Knopf, und sein
+  // durchsichtiger Rest soll wie "daneben" wirken, nicht wie "drin".
   let vonInnen = false;
-  wrap.addEventListener("click", () => { vonInnen = true; }, true);
+  const ausDerBlase = () => { vonInnen = true; };
+  btn.addEventListener("click", ausDerBlase, true);
+  panel.addEventListener("click", ausDerBlase, true);
 
   document.addEventListener("click", () => {
     if (!panel.hidden && !vonInnen) oeffnen(false, false);

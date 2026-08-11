@@ -1540,6 +1540,11 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   bottom: 24px;
   z-index: 200;
   display: flex;
+  /* Der Behaelter ist breiter als der Knopf: Solange das Feld offen ist,
+     spannt er sich ueber dessen ganze Breite. Ohne diese Zeile faengt der
+     durchsichtige Rest die Klicks ab, die der Seite darunter gelten —
+     und das Feld haelt sie faelschlich fuer Klicks auf sich selbst. */
+  pointer-events: none;
   /* umgekehrt, damit der Knopf unten in der Ecke bleibt und das Feld
      darueber aufklappt — so kennt man es von Hilfe-Blasen */
   flex-direction: column-reverse;
@@ -1570,6 +1575,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 .helper-btn-icon { display: flex; }
 .helper-btn-icon svg { width: 17px; height: 17px; display: block; }
+
+/* Nur die sichtbaren Teile nehmen Klicks entgegen */
+.helper-btn,
+.helper-panel { pointer-events: auto; }
 
 .helper-panel {
   width: min(380px, calc(100vw - 48px));
