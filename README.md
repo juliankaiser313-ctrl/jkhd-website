@@ -60,6 +60,13 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
   `.nav-prefs` — nur dieser Behälter lässt sich auf breiten Schirmen aus der
   Menüzeile herauslösen. Jeweils Beschriftung links, Segmentpaar rechts:
   „Sprachen"/„Languages" und „Darstellung"/„Appearance".
+- **Impressum und Datenschutz** stehen im Klappfeld als `.nav-legal` und sind
+  **nur ab 1141 px sichtbar** — auf dem Handy führt sie die Fußzeile, das
+  Menü bliebe sonst unnötig lang. In der Fußzeile hat beides eine eigene
+  Spalte (`.footer-legal-nav`, „Rechtliches"/„Legal"); die schmale Zeile ganz
+  unten trägt nur noch das Copyright. Die Rechtsseiten selbst
+  (impressum/datenschutz/404) haben weiterhin ihre verkürzte Fußzeile mit
+  `.footer-links`.
 - **Sprachschalter** (`.nav-lang`): aktive Sprache als
   `<span class="lang-current">`, die andere ein Link auf das Gegenstück. Kein
   JavaScript, keine automatische Weiterleitung, keine Spracherkennung — und

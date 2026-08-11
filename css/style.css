@@ -265,6 +265,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
    Seitenlinks darin stehen bleiben. */
 .nav-prefs { display: flex; flex-direction: column; }
 
+/* Rechtsverweise im Klappfeld: standardmaeszig aus, die Regel weiter unten
+   blendet sie ab 1141 px ein (auf dem Handy stehen sie in der Fusszeile). */
+.nav-legal { display: none; }
+
 /* Beide als eigene Punkte: links die Beschriftung wie bei den uebrigen
    Eintraegen, rechts die Segmente. */
 .nav-lang,
@@ -1300,16 +1304,16 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 /* Unten Platz lassen, damit die Fragen-Blase nie die Impressum-Links verdeckt */
 .site-footer { border-top: 1px solid var(--border); padding: 64px 0 80px; background: var(--bg); }
 
-.footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 48px; padding-bottom: 48px; }
+.footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; }
 
 .footer-brand .brand { margin-bottom: 16px; }
 .footer-brand p { color: var(--muted); font-size: 0.9rem; max-width: 320px; }
 
 .footer-col-title { font-weight: 600; color: var(--text); margin-bottom: 14px; }
 
-.footer-nav, .footer-contact { display: flex; flex-direction: column; }
-.footer-nav a, .footer-contact a { color: var(--muted); font-size: 0.9rem; padding: 4px 0; }
-.footer-nav a:hover, .footer-contact a:hover { color: var(--text); }
+.footer-nav, .footer-contact, .footer-legal-nav { display: flex; flex-direction: column; }
+.footer-nav a, .footer-contact a, .footer-legal-nav a { color: var(--muted); font-size: 0.9rem; padding: 4px 0; }
+.footer-nav a:hover, .footer-contact a:hover, .footer-legal-nav a:hover { color: var(--text); }
 
 .footer-legal {
   border-top: 1px solid var(--border);
@@ -1474,6 +1478,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
     padding: 12px 0;
     border-bottom: 1px solid var(--border);
   }
+
+  /* Impressum und Datenschutz stehen hier nur auf breiten Schirmen: Auf dem
+     Handy fuehrt sie die Fusszeile, das Menue bliebe sonst unnoetig lang. */
+  .nav-legal { display: block; }
 
   /* Im Feld braucht die letzte Zeile keine Trennlinie */
   .nav-prefs > :last-child { border-bottom: none; padding-bottom: 4px; }
