@@ -22,13 +22,21 @@ if (navToggle && siteNav) {
 
   zeigen(false);
 
-  navToggle.addEventListener("click", (e) => {
-    e.stopPropagation();
+  // Wie bei der Fragen-Blase weiter unten: In der Abwaertsphase merken, dass
+  // der Klick aus dem Menuebereich kam. Kein stopPropagation — sonst erfaehrt
+  // die Fragen-Blase nichts von dem Klick und bliebe nebenher offen stehen.
+  let ausMenue = false;
+  const merken = () => { ausMenue = true; };
+  siteNav.addEventListener("click", merken, true);
+  navToggle.addEventListener("click", merken, true);
+
+  navToggle.addEventListener("click", () => {
     zeigen(!siteNav.classList.contains("open"));
   });
 
-  document.addEventListener("click", (e) => {
-    if (siteNav.classList.contains("open") && !siteNav.contains(e.target)) zeigen(false);
+  document.addEventListener("click", () => {
+    if (siteNav.classList.contains("open") && !ausMenue) zeigen(false);
+    ausMenue = false;
   });
 
   document.addEventListener("keydown", (e) => {
@@ -603,7 +611,9 @@ if (siteHeader) {
     body.scrollTop = 0;
   }
 
-  function oeffnen(auf) {
+  // fokus=false beim Schliessen von aussen: Wer daneben klickt, will dort
+  // weiterlesen — dann darf der Knopf den Fokus nicht zurueckreiszen.
+  function oeffnen(auf, fokus = true) {
     panel.hidden = !auf;
     btn.setAttribute("aria-expanded", String(auf));
     wrap.classList.toggle("is-open", auf);
@@ -611,7 +621,7 @@ if (siteHeader) {
       liste();
       const erste = body.querySelector("button");
       if (erste) erste.focus();
-    } else {
+    } else if (fokus) {
       btn.focus();
     }
   }
@@ -625,6 +635,22 @@ if (siteHeader) {
     if (ziel.classList.contains("helper-back")) liste();
     else if (ziel.dataset.i) antwort(Number(ziel.dataset.i));
     else if (ziel.dataset.i === "0") antwort(0);
+  });
+
+  // Klick irgendwo daneben schliesst das Feld — wie beim Menue oben.
+  //
+  // Warum nicht einfach wrap.contains(e.target) im Dokument-Zuhoerer: Ein
+  // Klick auf eine Frage baut den Inhalt neu auf. Bis der Klick oben am
+  // Dokument ankommt, haengt der angeklickte Knopf nicht mehr im Dokument,
+  // contains() sagt "war nicht drin" — und das Feld haette sich selbst
+  // geschlossen. Deshalb wird in der Abwaertsphase gemerkt, dass der Klick
+  // aus dem Feld kam, solange das Ziel noch steht.
+  let vonInnen = false;
+  wrap.addEventListener("click", () => { vonInnen = true; }, true);
+
+  document.addEventListener("click", () => {
+    if (!panel.hidden && !vonInnen) oeffnen(false, false);
+    vonInnen = false;
   });
 
   document.addEventListener("keydown", (e) => {
