@@ -23,8 +23,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+
+      # Die Seite ist voruebergehend offline: veroeffentlicht wird nur der
+      # Ordner offline/, nicht das Verzeichnis der eigentlichen Seite. Die
+      # Inhalte bleiben im Repository unangetastet liegen.
+      # Zurueck zur richtigen Seite: diesen Schritt loeschen und unten
+      # wieder "path: ." setzen.
+      - name: Platzhalter vervollstaendigen
+        run: |
+          cp CNAME       offline/CNAME          # Domain bleibt am Repository
+          cp favicon.svg offline/favicon.svg
+          cp offline/index.html offline/404.html  # jede Adresse zeigt den Platzhalter
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: ./offline
       - id: deployment
         uses: actions/deploy-pages@v4

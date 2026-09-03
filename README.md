@@ -122,11 +122,41 @@ python -m http.server 8090 --directory "C:\Quant Arbeit\JKHD-Website"
 
 Dann im Browser: http://localhost:8090
 
+## Zurzeit offline — nur ein Platzhalter ist veröffentlicht
+
+**Stand: die Seite ist absichtlich nicht live.** Unter `www.jkhd.de` steht eine
+einzelne Platzhalterseite; die eigentliche Website liegt vollständig und
+unverändert im Repository, wird aber nicht ausgeliefert.
+
+So ist das gemacht:
+
+- `offline/index.html` — der Platzhalter. Eigenständig: eigene Farben und
+  Maße inline, keine Schriften, keine Stylesheets, kein Skript von außen.
+  Enthält das Impressum nach § 5 DDG, damit die Pflichtangaben trotz
+  abgeschalteter `impressum.html` erreichbar bleiben.
+- `offline/robots.txt` — erlaubt Crawlen **absichtlich weiter**. Nur so lesen
+  Suchmaschinen das `noindex` des Platzhalters und den 404 der alten Adressen
+  und nehmen die Seite aus dem Index. Ein `Disallow: /` würde das verhindern
+  und die alten Treffer länger stehen lassen.
+- `.github/workflows/pages.yml` — lädt `./offline` hoch statt `.` und kopiert
+  vorher `CNAME`, `favicon.svg` und `index.html` → `404.html` hinein. Dadurch
+  bleibt die Domain am Repository und jede beliebige Adresse zeigt den
+  Platzhalter.
+
+**Wieder live schalten:** im Workflow den Schritt „Platzhalter
+vervollständigen" löschen und `path: ./offline` zurück auf `path: .` setzen —
+das ist alles. Danach auf `main` pushen, der Deploy läuft von selbst. Der
+Ordner `offline/` kann liegen bleiben (er wird dann mit ausgeliefert, ist
+über keinen Link erreichbar und trägt `noindex`) oder mit gelöscht werden.
+
+Nicht vergessen: der Deploy hängt an Pushes auf `main`. Ein Commit auf einem
+Arbeitsbranch ändert an der Live-Seite nichts, bis er in `main` liegt.
+
 ## Livegang: GitHub Pages + IONOS-Domain (jkhd.de)
 
-Live seit August 2026. Repo `juliankaiser313-ctrl/jkhd-website`, GitHub Pages
-auf Branch `main`, Custom Domain `www.jkhd.de` (CNAME-Datei im Repo), IONOS-DNS
-zeigt auf GitHub.
+Live seit August 2026 (siehe Abschnitt oben — derzeit ausgesetzt). Repo
+`juliankaiser313-ctrl/jkhd-website`, GitHub Pages auf Branch `main`, Custom
+Domain `www.jkhd.de` (CNAME-Datei im Repo), IONOS-DNS zeigt auf GitHub.
 
 Erledigt:
 - [x] Impressum ausgefüllt (§ 5 DDG, Name + ladungsfähige Anschrift)
