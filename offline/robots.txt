@@ -1,0 +1,7 @@
+# Die Seite ist vorübergehend offline; veröffentlicht wird nur der Ordner
+# offline/. Crawlen bleibt hier absichtlich erlaubt: nur so lesen
+# Suchmaschinen das noindex auf der Platzhalterseite und den 404 der alten
+# Adressen — und nehmen beides aus dem Index. Ein "Disallow: /" wuerde das
+# Gegenteil bewirken und die alten Treffer laenger stehen lassen.
+User-agent: *
+Allow: /

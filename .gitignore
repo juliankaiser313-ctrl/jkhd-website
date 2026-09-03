@@ -1,3 +1,9 @@
 Thumbs.db
 Desktop.ini
 *.log
+
+# Legt der Pages-Workflow beim Bauen des Platzhalters an — gehoert nicht ins
+# Repository, sonst liegen CNAME und Favicon doppelt herum.
+offline/CNAME
+offline/404.html
+offline/favicon.svg

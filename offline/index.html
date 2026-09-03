@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JKHD — vorübergehend offline</title>
+
+  <!-- Absicht: Diese Seite soll aus dem Suchindex verschwinden. Deshalb
+       noindex hier und Disallow NICHT in der robots.txt — eine gesperrte
+       robots.txt wuerde verhindern, dass Suchmaschinen dieses noindex
+       ueberhaupt lesen, und alte Treffer blieben laenger stehen. -->
+  <meta name="robots" content="noindex, nofollow">
+
+  <meta name="theme-color" content="#f7f6f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+  <script>
+    // Laeuft absichtlich vor dem Stylesheet: verhindert das Aufblitzen der
+    // falschen Farben. Liest dieselbe Ablage wie die richtige Seite, damit
+    // wiederkehrende Besucher ihre Wahl behalten.
+    (function () {
+      try {
+        var g = localStorage.getItem("jkhd-theme");
+        var dunkel = g ? g === "dark"
+          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dunkel) document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) {}
+    })();
+  </script>
+
+  <style>
+    /* Eigenstaendig: keine Schriften, keine Stylesheets, kein Skript von
+       aussen. Farben und Masze stammen aus css/style.css der richtigen
+       Seite, damit der Platzhalter nicht fremd wirkt. */
+    :root {
+      --bg: #f7f6f3;
+      --panel: #fdfcfa;
+      --border: #e2dfd8;
+      --text: #101012;
+      --muted: #605f5b;
+      --rule-2: rgba(16, 16, 18, 0.28);
+      --rule-3: rgba(16, 16, 18, 0.1);
+      --shadow: rgba(16, 16, 18, 0.05);
+    }
+    :root[data-theme="dark"] {
+      --bg: #0b0b0c;
+      --panel: #121214;
+      --border: #242426;
+      --text: #f4f2ee;
+      --muted: #9d9d99;
+      --rule-2: rgba(244, 242, 238, 0.28);
+      --rule-3: rgba(244, 242, 238, 0.12);
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0b0b0c;
+        --panel: #121214;
+        --border: #242426;
+        --text: #f4f2ee;
+        --muted: #9d9d99;
+        --rule-2: rgba(244, 242, 238, 0.28);
+        --rule-3: rgba(244, 242, 238, 0.12);
+        --shadow: rgba(0, 0, 0, 0.35);
+      }
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      justify-content: center;
+      padding: 32px 20px 56px;
+    }
+
+    a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--rule-2); }
+    a:hover { border-bottom-color: var(--text); }
+    ::selection { background: var(--text); color: var(--bg); }
+
+    .sheet {
+      width: 100%;
+      max-width: 640px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      box-shadow: 0 1px 2px var(--shadow);
+      padding: 44px 36px 36px;
+    }
+
+    /* --- Markenzeichen: dieselben drei Balken wie im Kopf der Seite --- */
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand svg { width: 26px; height: 26px; fill: var(--text); flex: none; }
+    .brand-word {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+    }
+    .brand-tag {
+      font-size: 0.64rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-left: 1px solid var(--border);
+      padding-left: 12px;
+      margin-left: 2px;
+    }
+
+    hr {
+      border: 0;
+      height: 1px;
+      background: linear-gradient(to right, var(--rule-2), var(--rule-3));
+      margin: 28px 0;
+    }
+
+    .label {
+      font-family: Consolas, "Cascadia Code", monospace;
+      font-size: 0.64rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-family: "Palatino Linotype", Palatino, Georgia, serif;
+      font-size: 1.75rem;
+      font-weight: 400;
+      line-height: 1.28;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-family: "Palatino Linotype", Palatino, Georgia, serif;
+      font-size: 1.08rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+    }
+
+    p { color: var(--muted); margin-bottom: 14px; }
+    p.lead { color: var(--text); }
+    p:last-child { margin-bottom: 0; }
+
+    .contact { margin-top: 22px; }
+    .contact a {
+      font-family: Consolas, "Cascadia Code", monospace;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+    }
+
+    .en { margin-top: 4px; }
+
+    footer {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    footer h3 {
+      font-family: Consolas, "Cascadia Code", monospace;
+      font-size: 0.64rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    footer p { font-size: 0.82rem; margin-bottom: 12px; }
+    address { font-style: normal; }
+
+    @media (max-width: 520px) {
+      .sheet { padding: 32px 22px 28px; }
+      h1 { font-size: 1.45rem; }
+      .brand-tag { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="sheet">
+
+    <div class="brand">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+      <span class="brand-word">JKHD</span>
+      <span class="brand-tag">Quant Systems</span>
+    </div>
+
+    <hr>
+
+    <span class="label">Vorübergehend offline</span>
+    <h1>Diese Webseite ist derzeit nicht erreichbar.</h1>
+    <p class="lead">Wir überarbeiten unseren Auftritt. Solange das dauert, sind
+      hier keine Inhalte abrufbar. Die Seite kommt zurück, sobald sie fertig
+      ist.</p>
+    <p>Aufträge nehmen wir in dieser Zeit nicht an. Anfragen erreichen uns
+      weiterhin per E-Mail — wir melden uns zurück.</p>
+
+    <p class="contact"><a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a></p>
+
+    <hr>
+
+    <section class="en" lang="en">
+      <h2>Temporarily offline</h2>
+      <p>This site is being rebuilt and is not available at the moment. It will
+        return once the work is done. We are not taking on work in the meantime;
+        enquiries by e-mail are welcome and will be answered.</p>
+    </section>
+
+    <footer>
+      <h3>Angaben gemäß § 5 DDG</h3>
+      <address>
+        Julian Lukas Kaiser<br>
+        Hohlebachstraße 31<br>
+        79418 Schliengen<br>
+        Deutschland<br>
+        E-Mail: <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+      </address>
+      <p style="margin-top:12px">Verantwortlich für den Inhalt nach § 18 Abs. 2
+        MStV: Julian Lukas Kaiser, Anschrift wie oben.</p>
+      <p>JKHD entwickelt und liefert Software für quantitative Analyse,
+        Research und Handel. Keine Anlageberatung, keine Anlagevermittlung,
+        keine Finanzportfolioverwaltung.</p>
+      <p>Diese Seite setzt keine Cookies, bindet nichts von fremden Servern ein
+        und wertet nichts aus.</p>
+    </footer>
+
+  </main>
+
+</body>
+</html>
