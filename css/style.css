@@ -268,6 +268,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 /* Rechtsverweise im Klappfeld: standardmaeszig aus, die Regel weiter unten
    blendet sie ab 1141 px ein (auf dem Handy stehen sie in der Fusszeile). */
 .nav-legal { display: none; }
+.nav-nur-breit { display: none; }   /* nur im Klappfeld breiter Schirme */
 
 /* Beide als eigene Punkte: links die Beschriftung wie bei den uebrigen
    Eintraegen, rechts die Segmente. */
@@ -1182,6 +1183,11 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   /* Impressum und Datenschutz stehen hier nur auf breiten Schirmen: Auf dem
      Handy fuehrt sie die Fusszeile, das Menue bliebe sonst unnoetig lang. */
   .nav-legal { display: block; }
+
+  /* "Was wir machen" liegt hier im Klappfeld, die Kopfzeile fuehrt stattdessen
+     die Startseite; auf dem Handy steht der Punkt oben in der Liste. */
+  .nav-nur-schmal { display: none; }
+  .nav-nur-breit { display: block; }
 
   /* Im Feld braucht die letzte Zeile keine Trennlinie */
   .nav-prefs > :last-child { border-bottom: none; padding-bottom: 4px; }
