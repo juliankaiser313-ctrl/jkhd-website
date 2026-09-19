@@ -35,7 +35,7 @@ if (navToggle && siteNav) {
   });
 
   // Ein Klick auf einen Menuepunkt schliesst das Feld. Bei einem Sprung auf
-  // derselben Seite (#leistungen) bliebe es sonst offen stehen und
+  // derselben Seite (Anker) bliebe es sonst offen stehen und
   // verdeckte unterhalb von 1141 px genau das Ziel.
   siteNav.addEventListener("click", (e) => {
     if (e.target.closest("a[href]")) zeigen(false);

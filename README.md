@@ -8,7 +8,8 @@ Deutsch in der Wurzel, Englisch unter `/en/`.
 ## Struktur
 
 ```
-index.html         Startseite (Hero, Ticker, Kontaktkasten — Inhalt dazwischen folgt)
+index.html         Startseite = Menü: Hero mit Marken-Lockup und zwei Knöpfen, leere Laufleiste
+was-wir-machen.html  Was wir machen: ein Satz, ein Absatz in einfacher Sprache, Bäcker-Kasten, Kontaktkasten
 system.html        Aufbau eines Systems (derzeit nur Kontaktkasten — Inhalt folgt)
 pruefung.html      Wie geprüft wird: Grundsätze, Modulprüfung, 6 Stufen, Belastungsproben
 sicherheit.html    Sicherheit & Vertraulichkeit: Grundsätze, 6 Bereiche, Ablauf NDA→Löschung,
@@ -106,9 +107,11 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
   der Seite.
 - **Anker-IDs bleiben deutsch** (`#leistungen`, `#anfrage`), damit
   Verweise in beiden Sprachen identisch funktionieren. Nicht umbenennen.
-  `#leistungen` liegt seit 19.09.2026 auf dem Kontaktkasten der Startseite,
-  bis der neue Inhalt steht. Seit demselben Tag gibt es keine Preise und
-  keinen Konfigurator mehr — JKHD bietet nichts zum Kauf an.
+  Den Anker `#leistungen` gibt es seit 19.09.2026 nicht mehr: der Menüpunkt
+  heißt „Was wir machen" und führt auf `was-wir-machen.html` (EN
+  `en/what-we-do.html`); `leistungen.html` leitet dorthin weiter. Seit
+  demselben Tag gibt es keine Preise und keinen Konfigurator mehr — JKHD
+  bietet nichts zum Kauf an.
 - **Nach Änderungen an `css/style.css` oder `js/main.js`** den Versionsstempel
   `?v=...` in allen HTML-Dateien hochzählen, sonst bekommen wiederkehrende
   Besucher die alte Datei aus dem Browser-Cache.

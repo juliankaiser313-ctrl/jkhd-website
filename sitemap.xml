@@ -9,6 +9,20 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/"/>
   </url>
   <url>
+    <loc>https://www.jkhd.de/was-wir-machen.html</loc>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/was-wir-machen.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/what-we-do.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/was-wir-machen.html"/>
+  </url>
+  <url>
+    <loc>https://www.jkhd.de/en/what-we-do.html</loc>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/was-wir-machen.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/what-we-do.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/was-wir-machen.html"/>
+  </url>
+  <url>
     <loc>https://www.jkhd.de/system.html</loc>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/system.html"/>
