@@ -357,14 +357,14 @@ if (siteHeader) {
 // Die Ziel-Elemente werden hier markiert, das CSS (.reveal/.in) macht den Rest.
 (function () {
   const targets = document.querySelectorAll(
-    ".section-head, .page-head, .offer, .block-head, .kind, .layer, .exclusive, .rail, .guard, .step-row, .creed-cell, .creed-close, .founder-card, .cta-panel, .contact-box, .prose, .console"
+    ".section-head, .page-head, .statement, .weg-schritt, .karte, .paar-seite, .layer, .rail, .guard, .step-row, .creed-cell, .creed-close, .founder-card, .cta-panel, .contact-box, .prose"
   );
   if (!targets.length) return;
 
   targets.forEach((el) => el.classList.add("reveal"));
 
   // Raster-Elemente leicht versetzt einblenden
-  document.querySelectorAll(".offers, .guards, .creed").forEach((grid) => {
+  document.querySelectorAll(".karten, .weg, .paar, .guards, .creed").forEach((grid) => {
     Array.from(grid.children).forEach((card, i) => {
       card.style.transitionDelay = i * 90 + "ms";
     });
@@ -400,67 +400,61 @@ if (siteHeader) {
 
   const FRAGEN_EN = [
     {
-      f: "Do you also build systems that do not trade?",
-      a: "Yes, and that is often the case. We build pure observation systems (they watch and report) and pure analysis systems (they compute and evaluate) — both without any market access at all. Only the execution stage trades.",
-      link: { text: "See the types of system", href: "index.html#leistungen" },
+      f: "Do you sell the program?",
+      a: "No. We build it for ourselves and do not pass it on \u2014 not as software, not as a subscription.",
     },
     {
-      f: "How does working together proceed?",
-      a: "Usually in three stages: advisory and audit — an advisor speaks with you directly and records your specific requirements. Then implementation. Finally acceptance and handover. You can also license individual modules only, if you already have something in place.",
-      link: { text: "How a system is built", href: "system.html" },
+      f: "Do you manage my money?",
+      a: "No, for no one. There are no clients and no client money.",
     },
     {
-      f: "Does the system belong to me alone afterwards?",
-      a: "Yes. What we build for you belongs to you entirely. We keep no copy, no parameter and no derivative of it — no resale, no second edition for anyone else.",
+      f: "Do you give tips on what to buy?",
+      a: "No. We tell nobody what to buy or sell \u2014 not even when asked.",
     },
     {
-      f: "Can I test the system beforehand?",
-      a: "Yes, two months of trial operation are provided for; after that you may decline. We settle the exact terms with you in advance — please ask about them before you decide.",
+      f: "Can I learn from you?",
+      a: "Gladly, in conversation: how to tell chance from real patterns, how to limit losses, what went wrong for us. The recipe itself stays with us.",
+      link: { text: "For like-minded people", href: "index.html#austausch" },
     },
     {
-      f: "Who do you work for?",
-      a: "For banks, funds and professional institutions. No retail product and no copy-trading bots — we take on private individuals only in exceptional cases and by arrangement.",
+      f: "Who is behind it?",
+      a: "One founder who is responsible for everything and runs it himself.",
+      link: { text: "About the company", href: "company.html" },
     },
     {
-      f: "Are you currently accepting orders?",
-      a: "Not at present. This website is still being built; we will accept orders once it is finished. You are welcome to enquire at any time — we will come back to you as soon as commissioning is possible.",
-    },
-    {
-      f: "Do you trade my money for me?",
-      a: "No. We develop and deliver software. No investment advice, no investment brokerage, no portfolio management — we do not manage third-party assets and make no investment decisions for others. Operation is the client’s responsibility.",
+      f: "How do I reach you?",
+      a: "By e-mail to kontakt@jkhd.de or via the contact page. One sentence is enough \u2014 a person answers.",
+      link: { text: "Contact", href: "contact.html" },
     },
   ];
 
   const FRAGEN_DE = [
     {
-      f: "Baut ihr auch Systeme, die nicht handeln?",
-      a: "Ja, und das ist h\u00e4ufig der Fall. Wir bauen reine Beobachtungssysteme (\u00fcberwachen und melden) und reine Analysesysteme (rechnen und bewerten) \u2014 beide ohne jeden Marktzugriff. Erst die Ausf\u00fchrungsstufe handelt.",
-      link: { text: "Systemarten ansehen", href: "index.html#leistungen" },
+      f: "Verkaufen Sie das Programm?",
+      a: "Nein. Wir bauen es f\u00fcr uns und geben es nicht weiter \u2014 weder als Software noch als Abo.",
     },
     {
-      f: "Wie l\u00e4uft eine Zusammenarbeit ab?",
-      a: "In der Regel dreistufig: Beratung und Audit \u2014 dabei spricht ein Berater direkt mit Ihnen und nimmt Ihre Sonderw\u00fcnsche auf. Dann die Umsetzung. Zuletzt Abnahme und \u00dcbergabe. Sie k\u00f6nnen auch nur einzelne Module lizenzieren, wenn bei Ihnen schon etwas steht.",
-      link: { text: "Aufbau eines Systems", href: "system.html" },
+      f: "Verwalten Sie mein Geld?",
+      a: "Nein, f\u00fcr niemanden. Es gibt keine Kunden und kein Kundengeld.",
     },
     {
-      f: "Geh\u00f6rt mir das System danach allein?",
-      a: "Ja. Was wir f\u00fcr Sie bauen, geh\u00f6rt Ihnen vollst\u00e4ndig. Wir behalten keine Kopie, keinen Parameter und keine Ableitung davon zur\u00fcck \u2014 kein Weiterverkauf, keine zweite Ausfertigung f\u00fcr jemand anderen.",
+      f: "Geben Sie Tipps, was ich kaufen soll?",
+      a: "Nein. Wir sagen niemandem, was er kaufen oder verkaufen soll \u2014 auch nicht auf Nachfrage.",
     },
     {
-      f: "Kann ich das System vorher testen?",
-      a: "Ja, zwei Monate Testbetrieb sind vorgesehen; danach k\u00f6nnen Sie ablehnen. Die genauen Bedingungen kl\u00e4ren wir vorab im Gespr\u00e4ch \u2014 fragen Sie danach, bevor Sie sich entscheiden.",
+      f: "Kann ich von Ihnen lernen?",
+      a: "Im Austausch gern: wie man Zufall von echten Mustern unterscheidet, wie man Verluste begrenzt, was bei uns schiefgegangen ist. Das Rezept selbst bleibt bei uns.",
+      link: { text: "F\u00fcr Gleichgesinnte", href: "index.html#austausch" },
     },
     {
-      f: "F\u00fcr wen arbeitet ihr?",
-      a: "F\u00fcr Banken, Fonds und professionelle Adressen. Kein Retail-Produkt und keine Copy-Trading-Bots \u2014 Privatpersonen nehmen wir nur in Ausnahmen und nach Absprache.",
+      f: "Wer steckt dahinter?",
+      a: "Ein Gr\u00fcnder, der alles selbst verantwortet und betreibt.",
+      link: { text: "Zum Unternehmen", href: "unternehmen.html" },
     },
     {
-      f: "Nehmt ihr gerade Auftr\u00e4ge an?",
-      a: "Aktuell nicht. Diese Website ist im Aufbau; Auftr\u00e4ge nehmen wir erst an, wenn sie fertig ist. Anfragen k\u00f6nnen Sie jederzeit stellen \u2014 wir melden uns, sobald eine Beauftragung m\u00f6glich ist.",
-    },
-    {
-      f: "Handelt ihr mein Geld f\u00fcr mich?",
-      a: "Nein. Wir entwickeln und liefern Software. Keine Anlageberatung, keine Anlagevermittlung, keine Finanzportfolioverwaltung \u2014 wir verwalten kein fremdes Verm\u00f6gen und treffen keine Anlageentscheidungen f\u00fcr Dritte. Den Betrieb verantwortet der Auftraggeber.",
+      f: "Wie erreiche ich Sie?",
+      a: "Per E-Mail an kontakt@jkhd.de oder \u00fcber die Kontaktseite. Ein Satz gen\u00fcgt \u2014 es antwortet ein Mensch.",
+      link: { text: "Zur Kontaktseite", href: "kontakt.html" },
     },
   ];
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JKHD — Quantitative Systeme &amp; Software</title>
-  <meta name="description" content="JKHD entwickelt quantitative Handelssysteme für Banken, Fonds und professionelle Adressen — Module, Beratung und Auftragsentwicklung. Exklusiv: wir behalten keine Kopie.">
+  <meta name="description" content="JKHD baut Computerprogramme, die selbstständig an der Börse handeln — und erklärt hier in einfachen Worten, wie das funktioniert und wie die Firma dahinter arbeitet.">
   <meta name="theme-color" content="#f7f6f3">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="JKHD">
@@ -12,7 +12,7 @@
   <meta property="og:url" content="https://www.jkhd.de/">
   <link rel="canonical" href="https://www.jkhd.de/">
   <meta property="og:title" content="JKHD — Quantitative Systeme &amp; Software">
-  <meta property="og:description" content="Quant-Systeme für professionelle Adressen: Module, Beratung und Auftragsentwicklung — Research auf Rohdaten, statistische Härtetests, überwachter Dauerbetrieb.">
+  <meta property="og:description" content="Eine kleine Firma, die Computerprogramme baut, die selbstständig an der Börse handeln. Hier steht in einfachen Worten, wie das funktioniert.">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -33,8 +33,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/index.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/">
-  <link rel="stylesheet" href="css/fonts.css?v=20260919m">
-  <link rel="stylesheet" href="css/style.css?v=20260919m">
+  <link rel="stylesheet" href="css/fonts.css?v=20260919o">
+  <link rel="stylesheet" href="css/style.css?v=20260919o">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -42,8 +42,8 @@
     "name": "JKHD",
     "url": "https://www.jkhd.de",
     "logo": "https://www.jkhd.de/assets/logo.png",
-    "email": "info@jkhd.de",
-    "description": "JKHD entwickelt quantitative Handelssysteme für Banken, Fonds und professionelle Adressen — als Modul, als Beratung oder als vollständiges System. Eigene Systeme laufen im Dauerbetrieb.",
+    "email": "kontakt@jkhd.de",
+    "description": "JKHD baut und betreibt eigene Computerprogramme, die selbstständig an der Börse handeln. Nichts zu verkaufen — die Website erklärt, wie das funktioniert.",
     "founder": { "@type": "Person", "name": "Julian Lukas Kaiser" }
   }
   </script>
@@ -55,7 +55,7 @@
   <div class="build-note">
     <div class="container">
       <span class="build-label">Im Aufbau</span>
-      <span>Diese Website wird gerade neu aufgebaut. Inhalte, Angaben und Preise sind vorl&auml;ufig. Auftr&auml;ge nehmen wir erst an, wenn sie vollst&auml;ndig fertig ist &mdash; Anfragen sind jederzeit willkommen.</span>
+      <span>Diese Website wird gerade neu aufgebaut. Inhalte sind vorl&auml;ufig &mdash; Nachrichten sind jederzeit willkommen.</span>
       <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
     </div>
   </div>
@@ -109,46 +109,193 @@
     <div class="container hero-inner">
       <h1>Quantitative Systeme.</h1>
       <p class="hero-sub">
-        JKHD entwickelt quantitative Handelssysteme für Banken, Fonds und
-        professionelle Adressen.
+        Eine kleine Firma aus Deutschland. Wir bauen Computerprogramme, die
+        selbstständig an der Börse handeln — nach Zahlen, nicht nach Gefühl.
       </p>
       <div class="hero-actions">
-        <a href="#leistungen" class="btn btn-primary">Was wir anbieten</a>
+        <a href="#ablauf" class="btn btn-primary">Wie es funktioniert</a>
         <a href="kontakt.html" class="btn btn-ghost">Kontakt aufnehmen</a>
       </div>
     </div>
   </section>
 
-  <!-- ================= TICKER ================= -->
+  <!-- ================= TICKER =================
+       Bewusst leer: die Leiste bleibt stehen, was hineinkommt, entscheidet
+       Julian noch. Die Hoehe haelt css/style.css (.ticker min-height). -->
   <div class="ticker" aria-hidden="true">
     <div class="ticker-track">
-      <div class="ticker-group">
-        <span>Echte CME-Tick-Daten</span>
-        <span>Multiple-Testing-Korrektur</span>
-        <span>White's Reality Check</span>
-        <span>Out-of-Sample-Validierung</span>
-        <span>Trailing-Drawdown-Kontrolle</span>
-        <span>Überwachung 24/7</span>
-        <span>Alles versioniert</span>
-      </div>
-      <div class="ticker-group">
-        <span>Echte CME-Tick-Daten</span>
-        <span>Multiple-Testing-Korrektur</span>
-        <span>White's Reality Check</span>
-        <span>Out-of-Sample-Validierung</span>
-        <span>Trailing-Drawdown-Kontrolle</span>
-        <span>Überwachung 24/7</span>
-        <span>Alles versioniert</span>
-      </div>
+      <div class="ticker-group"></div>
+      <div class="ticker-group"></div>
     </div>
   </div>
 
-  <!-- ================= CTA ================= -->
+  <!-- ================= IN DREI SÄTZEN ================= -->
   <section class="section" id="leistungen">
     <div class="container">
+      <div class="statement">
+        <p class="kicker">// Kurz gesagt</p>
+        <p class="statement-lead">
+          JKHD baut Computerprogramme, die selbstständig an der Börse kaufen
+          und verkaufen — zu festen Zeiten, jeden Handelstag, ohne dass jemand
+          daneben sitzt.
+        </p>
+        <p class="statement-more">
+          Wir verkaufen nichts: keine Tipps, keine Software, keine Beratung.
+          Wir handeln nur für uns selbst. Diese Seite erklärt in einfachen
+          Worten, wie so ein Programm arbeitet und wie die Firma dahinter
+          funktioniert. Und wer sich für dasselbe begeistert, ist eingeladen,
+          uns zu schreiben.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DER WEG ================= -->
+  <section class="section section-tight" id="ablauf">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Der Weg</p>
+        <h2>So arbeitet das Programm.</h2>
+        <p>Sechs Schritte, vom Mithören an der Börse bis zur Nachricht aufs
+           Handy. Ohne Fachwörter — und ohne zu verraten, wie genau wir es
+           machen.</p>
+      </div>
+
+      <ol class="weg">
+        <li class="weg-schritt">
+          <span class="weg-num" aria-hidden="true">1</span>
+          <h3>Zuhören</h3>
+          <p>Das Programm bekommt die Preise von der Börse und schreibt sie
+             mit. Alles Weitere baut auf diesen Aufzeichnungen auf — nicht auf
+             Meinungen.</p>
+        </li>
+        <li class="weg-schritt">
+          <span class="weg-num" aria-hidden="true">2</span>
+          <h3>Muster suchen</h3>
+          <p>In den Aufzeichnungen sucht das Programm nach Verhalten, das
+             sich wiederholt: Was passiert nach einem schnellen Anstieg? Was
+             nach einer langen Ruhephase? Es probiert dabei nicht eine Idee,
+             sondern tausende Abwandlungen davon.</p>
+        </li>
+        <li class="weg-schritt">
+          <span class="weg-num" aria-hidden="true">3</span>
+          <h3>Den Zufall aussortieren</h3>
+          <p>Fast alles, was wie ein Muster aussieht, ist Zufall. Deshalb
+             muss jede Idee beweisen, dass sie auch auf Daten funktioniert,
+             die sie noch nie gesehen hat — und dass sie nicht nur deshalb
+             gut aussieht, weil wir so viele Ideen ausprobiert haben. Die
+             meisten fallen hier durch. Das ist gewollt.</p>
+        </li>
+        <li class="weg-schritt">
+          <span class="weg-num" aria-hidden="true">4</span>
+          <h3>Grenzen setzen</h3>
+          <p>Bevor das Programm handeln darf, steht fest, wie viel es an
+             einem Tag höchstens verlieren darf und wie viel Geld es bei einem
+             einzelnen Kauf höchstens einsetzen darf. Ist eine Grenze erreicht,
+             hört es auf — ohne Diskussion.</p>
+        </li>
+        <li class="weg-schritt">
+          <span class="weg-num" aria-hidden="true">5</span>
+          <h3>Handeln</h3>
+          <p>Wenn das Programm kauft, steht im selben Moment schon fest, zu
+             welchem Preis es wieder verkauft: mit welchem Gewinn und mit
+             welchem Verlust. Diese Entscheidung fällt vorher — nie im
+             Nachhinein, nie aus dem Bauch.</p>
+        </li>
+        <li class="weg-schritt">
+          <span class="weg-num" aria-hidden="true">6</span>
+          <h3>Aufpassen</h3>
+          <p>Ein zweites Programm überwacht das erste. Bleibt etwas stehen
+             oder verhält sich etwas ungewöhnlich, schlägt es Alarm — und
+             der Mensch dahinter bekommt eine Nachricht aufs Handy.</p>
+        </li>
+      </ol>
+
+      <div class="note">
+        <b>Was auf dieser Seite fehlt — mit Absicht:</b> welche Muster das
+        Programm handelt, welche Zahlen es benutzt und wo genau seine Grenzen
+        liegen. Das ist unser Rezept. Wie beim Bäcker steht es nicht im
+        Schaufenster.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DIE FIRMA ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Die Firma</p>
+        <h2>Wie JKHD funktioniert.</h2>
+        <p>Klein, unabhängig, niemandem verpflichtet.</p>
+      </div>
+
+      <div class="karten">
+        <article class="karte">
+          <span class="karte-num kicker">01</span>
+          <h3>Wir handeln nur für uns</h3>
+          <p>Es gibt keine Kunden, und wir verwalten niemandes Geld. Was das Programm
+             gewinnt oder verliert, betrifft nur uns. Deshalb müssen wir
+             niemandem etwas versprechen — und tun es auch nicht.</p>
+        </article>
+        <article class="karte">
+          <span class="karte-num kicker">02</span>
+          <h3>Ein Kopf, alles aus einer Hand</h3>
+          <p>Hinter JKHD steht ein Gründer, der alles selbst baut, prüft und
+             betreibt. Das macht die Firma klein — und jede Entscheidung
+             nachvollziehbar. Niemand muss raten, wer verantwortlich ist.</p>
+        </article>
+        <article class="karte">
+          <span class="karte-num kicker">03</span>
+          <h3>Meistens sagen wir Nein</h3>
+          <p>Die meisten Ideen, die wir prüfen, landen im Papierkorb, weil
+             sie den Zufallstest nicht bestehen. Das ist kein Scheitern,
+             sondern der eigentliche Job: Wer nichts aussortiert, handelt
+             Zufall.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FÜR GLEICHGESINNTE ================= -->
+  <section class="section section-tight" id="austausch">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Austausch</p>
+        <h2>Für Gleichgesinnte.</h2>
+        <p>Wer selbst an so etwas baut — oder es lernen will — ist willkommen.
+           Damit Sie wissen, woran Sie bei uns sind:</p>
+      </div>
+
+      <div class="paar">
+        <div class="paar-seite">
+          <span class="paar-label kicker">Darüber sprechen wir gern</span>
+          <ul>
+            <li>Wie man herausfindet, ob ein Muster echt ist oder Zufall</li>
+            <li>Wie man ein Programm baut, das nachts nicht einfach stehen bleibt</li>
+            <li>Wie man Verluste begrenzt, bevor sie entstehen</li>
+            <li>Was bei uns schiefgegangen ist — und was wir daraus gelernt haben</li>
+          </ul>
+        </div>
+        <div class="paar-seite paar-nein">
+          <span class="paar-label kicker">Darüber nicht</span>
+          <ul>
+            <li>Welche Muster wir handeln und mit welchen Zahlen</li>
+            <li>Tipps, was Sie kaufen oder verkaufen sollten</li>
+            <li>Ob wir Ihr Geld verwalten: das tun wir nicht, für niemanden</li>
+            <li>Ob wir das Programm verkaufen: auch das nicht</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="section">
+    <div class="container">
       <div class="cta-panel reveal">
-        <h2>Interesse an einer Zusammenarbeit?</h2>
-        <p>Sprechen Sie mit uns — wir melden uns zeitnah zurück.</p>
+        <h2>Schreiben Sie uns.</h2>
+        <p>Ein Satz genügt: wer Sie sind und worüber Sie sprechen möchten.
+           Es antwortet ein Mensch, kein Programm.</p>
         <a href="kontakt.html" class="btn btn-primary">Kontakt aufnehmen</a>
         <a href="mailto:kontakt@jkhd.de" class="btn btn-ghost">kontakt@jkhd.de</a>
       </div>
@@ -170,7 +317,7 @@
               <span class="brand-line2">Just Know How to Dominate.</span>
             </span>
           </a>
-          <p>Quantitative Systeme, Software und Automatisierung.</p>
+          <p>Eigene Programme, die an der Börse handeln. Nichts zu verkaufen.</p>
         </div>
         <nav class="footer-nav" aria-label="Footer-Navigation">
           <p class="footer-col-title">Navigation</p>
@@ -196,10 +343,8 @@
       </div>
       <div class="footer-legal">
         Keine Anlageberatung, keine Anlagevermittlung, keine
-        Finanzportfolioverwaltung. JKHD entwickelt und liefert Software &mdash; den
-        Betrieb eines ausgelieferten Systems verantwortet der Auftraggeber. Angaben
-        auf dieser Webseite sind unverbindlich; Auftr&auml;ge k&ouml;nnen ohne Angabe
-        von Gr&uuml;nden abgelehnt werden.
+        Finanzportfolioverwaltung. JKHD verwaltet kein Kundengeld und verkauft
+        keine Software. Angaben auf dieser Webseite sind unverbindlich.
       </div>
       <div class="footer-bottom">
         <div class="footer-copy">© <span id="year">2026</span> JKHD — jkhd.de</div>
@@ -207,6 +352,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20260919m"></script>
+  <script src="js/main.js?v=20260919o"></script>
 </body>
 </html>
