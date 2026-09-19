@@ -1642,20 +1642,15 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 
 /* ---------- Startseite: Klartext (seit 19.09.2026) ----------
-   JKHD verkauft nichts mehr; die Startseite erklaert in einfachen Worten,
-   wie das Programm und die Firma arbeiten. Vier Bausteine: drei Saetze,
-   der Weg in sechs Schritten, drei Karten zur Firma, das Paar "gern/nicht".
-   Monochrom wie der Rest — Lebendigkeit nur aus Typografie und den grossen
-   Serifen-Ziffern, die beim Ueberfahren aus dem Wasserzeichen auftauchen. */
+   JKHD verkauft nichts mehr; die Startseite sagt in einem Satz, was JKHD
+   tut, und erklaert darunter in einfachen Worten alles in einem Topf.
+   Monochrom wie der Rest, Lebendigkeit nur aus der Typografie. */
 
 /* Die Laufleiste ist bewusst leer (Inhalt entscheidet Julian); die Hoehe
    der frueheren Textzeile bleibt, damit nichts springt. */
 .ticker { min-height: 42px; }
 
-/* Abschnitt, der unmittelbar auf einen anderen folgt: kein doppelter Abstand */
-.section-tight { padding-top: 24px; }
-
-/* --- In drei Saetzen --- */
+/* --- Kurz gesagt --- */
 
 .statement { max-width: 920px; }
 .statement .kicker { margin-bottom: 28px; }
@@ -1678,93 +1673,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   line-height: 1.75;
 }
 
-/* --- Der Weg: sechs Schritte --- */
-
-.weg {
-  list-style: none;
-  border-top: 1px solid var(--border);
-}
-
-.weg-schritt {
-  display: grid;
-  grid-template-columns: 120px 300px 1fr;
-  gap: 36px;
-  align-items: start;
-  padding: 42px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.weg-num {
-  font-family: var(--serif);
-  font-size: 3.4rem;
-  font-weight: 500;
-  line-height: 0.85;
-  letter-spacing: -0.04em;
-  color: var(--watermark-hi);
-  transition: color 0.45s var(--ease);
-}
-.weg-schritt.in .weg-num { color: var(--muted); }      /* sichtbar auch ohne Maus (Handy) */
-.weg-schritt:hover .weg-num { color: var(--text); }
-
-.weg-schritt h3 { padding-top: 6px; font-size: var(--h3-lg); letter-spacing: -0.02em; }
-.weg-schritt p { max-width: 58ch; color: var(--muted); font-size: 1rem; line-height: 1.7; }
-
-/* --- Die Firma: drei Karten --- */
-
-.karten { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-
-.karte { padding-top: 22px; border-top: 2px solid var(--text); }
-.karte-num { display: block; margin-bottom: 14px; }
-.karte h3 { margin-bottom: 10px; font-size: var(--h3-lg); letter-spacing: -0.02em; }
-.karte p { color: var(--muted); font-size: 0.96rem; line-height: 1.65; }
-
-/* --- Fuer Gleichgesinnte: das Paar "gern / nicht" --- */
-
-.paar {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-top: 1px solid var(--border);
-}
-
-.paar-seite { padding: 36px 44px 36px 0; }
-.paar-seite + .paar-seite { padding-left: 44px; padding-right: 0; border-left: 1px solid var(--border); }
-
-.paar-label { display: block; margin-bottom: 20px; }
-.paar-nein .paar-label { color: var(--muted); }
-
-.paar ul { list-style: none; display: grid; gap: 14px; }
-.paar li {
-  position: relative;
-  padding-left: 20px;
-  color: var(--text);
-  font-size: 1rem;
-  line-height: 1.6;
-}
-.paar li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.75em;
-  width: 9px;
-  height: 1px;
-  background: var(--text);
-}
-.paar-nein li { color: var(--muted); }
-.paar-nein li::before { background: var(--border-2); }
-
-@media (max-width: 940px) {
-  .weg-schritt { grid-template-columns: 72px 1fr; gap: 14px 24px; padding: 34px 0; }
-  .weg-schritt p { grid-column: 2; }
-  .karten { grid-template-columns: 1fr; gap: 34px; }
-  .paar { grid-template-columns: 1fr; }
-  .paar-seite { padding-right: 0; }
-  .paar-seite + .paar-seite { padding-left: 0; border-left: none; border-top: 1px solid var(--border); }
-}
+.statement + .note { margin-top: 44px; }
 
 @media (max-width: 560px) {
-  .section-tight { padding-top: 8px; }
-  .weg-schritt { grid-template-columns: 1fr; gap: 10px; padding: 30px 0; }
-  .weg-schritt p { grid-column: 1; }
-  .weg-num { font-size: 2.6rem; }
   .statement-more { font-size: 1rem; }
 }

@@ -357,14 +357,14 @@ if (siteHeader) {
 // Die Ziel-Elemente werden hier markiert, das CSS (.reveal/.in) macht den Rest.
 (function () {
   const targets = document.querySelectorAll(
-    ".section-head, .page-head, .statement, .weg-schritt, .karte, .paar-seite, .layer, .rail, .guard, .step-row, .creed-cell, .creed-close, .founder-card, .cta-panel, .contact-box, .prose"
+    ".section-head, .page-head, .statement, .layer, .rail, .guard, .step-row, .creed-cell, .creed-close, .founder-card, .cta-panel, .contact-box, .prose"
   );
   if (!targets.length) return;
 
   targets.forEach((el) => el.classList.add("reveal"));
 
   // Raster-Elemente leicht versetzt einblenden
-  document.querySelectorAll(".karten, .weg, .paar, .guards, .creed").forEach((grid) => {
+  document.querySelectorAll(".guards, .creed").forEach((grid) => {
     Array.from(grid.children).forEach((card, i) => {
       card.style.transitionDelay = i * 90 + "ms";
     });
@@ -414,7 +414,6 @@ if (siteHeader) {
     {
       f: "Can I learn from you?",
       a: "Gladly, in conversation: how to tell chance from real patterns, how to limit losses, what went wrong for us. The recipe itself stays with us.",
-      link: { text: "For like-minded people", href: "index.html#austausch" },
     },
     {
       f: "Who is behind it?",
@@ -444,7 +443,6 @@ if (siteHeader) {
     {
       f: "Kann ich von Ihnen lernen?",
       a: "Im Austausch gern: wie man Zufall von echten Mustern unterscheidet, wie man Verluste begrenzt, was bei uns schiefgegangen ist. Das Rezept selbst bleibt bei uns.",
-      link: { text: "F\u00fcr Gleichgesinnte", href: "index.html#austausch" },
     },
     {
       f: "Wer steckt dahinter?",
