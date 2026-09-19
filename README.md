@@ -14,7 +14,7 @@ pruefung.html      Wie geprüft wird: Grundsätze, Modulprüfung, 6 Stufen, Bela
 sicherheit.html    Sicherheit & Vertraulichkeit: Grundsätze, 6 Bereiche, Ablauf NDA→Löschung,
                    offener Abschnitt über fehlende Zertifizierungen
 mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
-unternehmen.html   Wer wir sind, Auf einen Blick, Einblicke, die Köpfe
+unternehmen.html   Wer wir sind, Auf einen Blick, Einblicke, der Gründer
 kontakt.html       Drei Adressen + Anfrageformular (mailto, kein Server)
 impressum.html     Impressum (§ 5 DDG)
 datenschutz.html   Datenschutzerklärung

@@ -346,96 +346,11 @@ if (siteHeader) {
   update();
 })();
 
-// ---------- Preis-Konfigurator ----------
-// Die Beträge stehen ausschließlich im data-preis-Attribut der Zeilen (index.html).
-// Hier wird nur gelesen, formatiert und summiert — nirgends ein zweiter Preis.
-(function () {
-  const config = document.getElementById("config");
-  if (!config) return;
-
-  const rows = Array.from(config.querySelectorAll(".config-row"));
-  const sumEl = document.getElementById("config-sum");
-  const metaEl = document.getElementById("config-meta");
-  const hintEl = document.getElementById("config-hint");
-  if (!rows.length || !sumEl) return;
-
-  const euro = new Intl.NumberFormat(T("de-DE", "en-GB"), {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  });
-
-  const preisVon = (row) => Number(row.dataset.preis || 0);
-  const kernAnzahl = rows.filter((r) => r.dataset.kern === "ja").length;
-
-  // Preisspalte einmalig aus den Daten füllen. Zeilen mit data-text zeigen
-  // diesen Text statt eines Betrages — sie zaehlen mit 0 in die Summe.
-  rows.forEach((row) => {
-    const zelle = row.querySelector(".config-price");
-    if (!zelle) return;
-    if (row.dataset.text) {
-      zelle.textContent = row.dataset.text;
-      zelle.classList.add("is-text");
-    } else {
-      zelle.textContent = euro.format(preisVon(row));
-    }
-  });
-
-  function aktualisieren() {
-    let summe = 0;
-    let gewaehlt = 0;
-    let kern = 0;
-
-    rows.forEach((row) => {
-      const box = row.querySelector("input");
-      const an = box.checked;
-      row.classList.toggle("is-on", an);
-      if (!an) return;
-      summe += preisVon(row);
-      gewaehlt++;
-      if (row.dataset.kern === "ja") kern++;
-    });
-
-    sumEl.textContent = euro.format(summe);
-    metaEl.textContent =
-      gewaehlt === 0
-        ? T("Noch nichts ausgewählt", "Nothing selected yet")
-        : T(
-            gewaehlt + " von " + rows.length + " Bausteinen gewählt",
-            gewaehlt + " of " + rows.length + " components selected"
-          );
-    if (hintEl) hintEl.hidden = kern < kernAnzahl;
-
-    // Auswahl an das Anfrageformular weiterreichen: Name~Betrag je Baustein.
-    // Wohin der Knopf zeigt, steht im HTML (kontakt.html bzw. contact.html) —
-    // hier wird nur die Auswahl angehaengt.
-    const anfrage = config.querySelector(".config-total-side a[href]");
-    if (anfrage) {
-      const ziel = (anfrage.getAttribute("href") || "").split("?")[0].split("#")[0];
-      const gewaehlteZeilen = rows.filter((r) => r.querySelector("input").checked);
-      const teile = gewaehlteZeilen.map(
-        (r) => r.querySelector(".config-name").textContent.trim() + "~" + preisVon(r)
-      );
-      anfrage.setAttribute(
-        "href",
-        teile.length
-          ? ziel + "?bausteine=" + encodeURIComponent(teile.join("|")) + "#anfrage"
-          : ziel + "#anfrage"
-      );
-    }
-  }
-
-  rows.forEach((row) => {
-    row.querySelector("input").addEventListener("change", aktualisieren);
-  });
-
-  aktualisieren();
-})();
 // ---------- Scroll-Reveal: Inhalte gleiten beim Scrollen herein ----------
 // Die Ziel-Elemente werden hier markiert, das CSS (.reveal/.in) macht den Rest.
 (function () {
   const targets = document.querySelectorAll(
-    ".section-head, .page-head, .offer, .block-head, .kind, .layer, .config, .exclusive, .rail, .guard, .step-row, .creed-cell, .creed-close, .founder-card, .cta-panel, .contact-box, .prose, .console"
+    ".section-head, .page-head, .offer, .block-head, .kind, .layer, .exclusive, .rail, .guard, .step-row, .creed-cell, .creed-close, .founder-card, .cta-panel, .contact-box, .prose, .console"
   );
   if (!targets.length) return;
 
@@ -478,11 +393,6 @@ if (siteHeader) {
 
   const FRAGEN_EN = [
     {
-      f: "What does a system cost?",
-      a: "Individual components range from €1,800 to €9,500; a full system covering all six stages comes to roughly €29,300. Advisory and system audit are €25,000. These are orders of magnitude, not an offer — the configurator lets you put your own selection together.",
-      link: { text: "Go to the configurator", href: "index.html#preise" },
-    },
-    {
       f: "Do you also build systems that do not trade?",
       a: "Yes, and that is often the case. We build pure observation systems (they watch and report) and pure analysis systems (they compute and evaluate) — both without any market access at all. Only the execution stage trades.",
       link: { text: "See the types of system", href: "index.html#leistungen" },
@@ -515,11 +425,6 @@ if (siteHeader) {
   ];
 
   const FRAGEN_DE = [
-    {
-      f: "Was kostet ein System?",
-      a: "Die einzelnen Bausteine liegen zwischen 1.800 \u20ac und 9.500 \u20ac, ein Vollsystem aus allen sechs Stufen bei rund 29.300 \u20ac. Beratung und System-Audit kosten 25.000 \u20ac. Das sind Gr\u00f6\u00dfenordnungen, kein Angebot \u2014 im Konfigurator k\u00f6nnen Sie sich Ihre Auswahl zusammenstellen.",
-      link: { text: "Zum Konfigurator", href: "index.html#preise" },
-    },
     {
       f: "Baut ihr auch Systeme, die nicht handeln?",
       a: "Ja, und das ist h\u00e4ufig der Fall. Wir bauen reine Beobachtungssysteme (\u00fcberwachen und melden) und reine Analysesysteme (rechnen und bewerten) \u2014 beide ohne jeden Marktzugriff. Erst die Ausf\u00fchrungsstufe handelt.",

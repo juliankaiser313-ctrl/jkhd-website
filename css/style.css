@@ -612,7 +612,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .audience,
 .founder-role,
 .founder-subhead,
-.portrait-note,
 .footer-col-title {
   font-family: var(--mono);
   font-size: var(--label);
@@ -1156,44 +1155,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 /* ---------- Gründer ---------- */
 
 .founder-card {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 40px;
-  align-items: start;
   background: linear-gradient(180deg, var(--panel), var(--panel-2));
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: var(--pad-panel);
-}
-
-.founder-card + .founder-card { margin-top: 20px; }
-
-.portrait {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.portrait svg { width: 64px; fill: #ffffff; opacity: 0.16; }
-.portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
-
-.portrait-note {
-  position: absolute;
-  bottom: 12px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 
 .founder-name { font-weight: 800; }
@@ -1420,9 +1385,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .creed-cell:first-child { padding-top: 0; border-top: none; }
   .creed-cell:last-child { padding-bottom: 0; }
   .creed-mark { font-size: 3.2rem; top: -12px; }
-
-  .founder-card { grid-template-columns: 1fr; }
-  .portrait { max-width: 260px; }
 
   .footer-top { grid-template-columns: 1fr; gap: 36px; }
 }
