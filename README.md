@@ -8,8 +8,8 @@ Deutsch in der Wurzel, Englisch unter `/en/`.
 ## Struktur
 
 ```
-index.html         Startseite (Hero, Ticker, Zusammenarbeit 01-03, Systemarten, Konfigurator)
-system.html        Aufbau eines Systems (6 Schichten, "Was ein System nicht leistet")
+index.html         Startseite (Hero, Ticker, Kontaktkasten — Inhalt dazwischen folgt)
+system.html        Aufbau eines Systems (derzeit nur Kontaktkasten — Inhalt folgt)
 pruefung.html      Wie geprüft wird: Grundsätze, Modulprüfung, 6 Stufen, Belastungsproben
 sicherheit.html    Sicherheit & Vertraulichkeit: Grundsätze, 6 Bereiche, Ablauf NDA→Löschung,
                    offener Abschnitt über fehlende Zertifizierungen
@@ -37,7 +37,7 @@ sitemap.xml        Sitemap inkl. hreflang-Paare DE/EN
 assets/og-image.png  Vorschaubild für Link-Teilen
 assets/fonts/      Self-hosted Schriften (DSGVO)
 css/style.css      Gesamtes Design (Farben oben als CSS-Variablen)
-js/main.js         Mobile-Nav, Hell/Dunkel, Konfigurator, Fragen-Blase, Anfrageformular
+js/main.js         Mobile-Nav, Hell/Dunkel, Fragen-Blase, Anfrageformular
 favicon.svg        Browser-Tab-Icon (drei Balken)
 ```
 
@@ -101,15 +101,14 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
 - **hreflang:** drei `<link rel="alternate">` im `<head>` jeder Seite
   (de, en, x-default) — plus dieselben Paare in `sitemap.xml`. Bei einer neuen
   Seite beides mitziehen.
-- **Texte aus dem JavaScript** (Fragen-Blase, Konfigurator-Meldungen,
-  Formular-Hinweise) stehen in `js/main.js` doppelt und werden über
+- **Texte aus dem JavaScript** (Fragen-Blase, Formular-Hinweise) stehen in `js/main.js` doppelt und werden über
   `T("deutsch", "english")` ausgewählt. Maßgeblich ist das `lang`-Attribut
   der Seite.
-- **Anker-IDs bleiben deutsch** (`#leistungen`, `#preise`, `#anfrage`), damit
+- **Anker-IDs bleiben deutsch** (`#leistungen`, `#anfrage`), damit
   Verweise in beiden Sprachen identisch funktionieren. Nicht umbenennen.
-- **Preise stehen nur in `data-preis`** der Konfigurator-Zeilen — in beiden
-  Sprachen dieselben Zahlen. Angezeigter Betrag und Summe werden daraus
-  berechnet.
+  `#leistungen` liegt seit 19.09.2026 auf dem Kontaktkasten der Startseite,
+  bis der neue Inhalt steht. Seit demselben Tag gibt es keine Preise und
+  keinen Konfigurator mehr — JKHD bietet nichts zum Kauf an.
 - **Nach Änderungen an `css/style.css` oder `js/main.js`** den Versionsstempel
   `?v=...` in allen HTML-Dateien hochzählen, sonst bekommen wiederkehrende
   Besucher die alte Datei aus dem Browser-Cache.
