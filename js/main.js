@@ -585,11 +585,23 @@ if (siteHeader) {
   const api = (box.dataset.api || "").replace(/\/+$/, "");
   const startHtml = koerper.innerHTML;
 
+  const OHNE_SERVER = () => T(
+    "Der Partnerzugang wird gerade eingerichtet — es wurde nichts gesendet. Bis dahin erreichen Sie uns direkt unter <a href=\"mailto:elite@jkhd.de\">elite@jkhd.de</a>.",
+    "Partner access is still being set up — nothing was sent. Until then you can reach us directly at <a href=\"mailto:elite@jkhd.de\">elite@jkhd.de</a>."
+  );
+
   const esc = (s) =>
     String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   const hinweis = (text, fehler) =>
-    `<p class="partner-hinweis${fehler ? " is-error" : ""}">${text}</p>`;
+    `<p class="partner-hinweis${fehler ? " is-error" : ""}" role="${fehler ? "alert" : "status"}" tabindex="-1">${text}</p>`;
+
+  // Nach jedem Neuzeichnen bekommt die Tastatur wieder einen Platz: erst das
+  // Eingabefeld, sonst der Hinweis, sonst der erste Knopf.
+  function fokus() {
+    const ziel = koerper.querySelector("input") || koerper.querySelector(".partner-hinweis") || koerper.querySelector("[data-partner]");
+    if (ziel) ziel.focus();
+  }
 
   const aktionen = (haupt, nebenText, nebenAktion) =>
     `<div class="partner-aktionen">
@@ -599,7 +611,22 @@ if (siteHeader) {
 
   function zurueck() {
     koerper.innerHTML = startHtml;
-    koerper.querySelector('[data-partner="start"]').addEventListener("click", mailSchritt);
+    koerper.querySelector('[data-partner="start"]').addEventListener("click", start);
+    fokus();
+  }
+
+  // Ohne Server gibt es kein Formular: Der Knopf zeigt den Hinweis, der
+  // Kasten traegt ihn von Anfang an unter dem Einleitungstext.
+  function ohneServer() {
+    koerper.innerHTML =
+      hinweis(OHNE_SERVER()) +
+      `<button type="button" class="btn btn-ghost" data-partner="zurueck">${T("Zurück", "Back")}</button>`;
+    koerper.querySelector('[data-partner="zurueck"]').addEventListener("click", zurueck);
+    fokus();
+  }
+
+  function start() {
+    if (!api) ohneServer(); else mailSchritt();
   }
 
   // Schritt 1: E-Mail-Adresse
@@ -617,7 +644,7 @@ if (siteHeader) {
     const eingabe = form.querySelector("input");
     const meldung = form.querySelector(".partner-meldung");
     form.querySelector('[data-partner="zurueck"]').addEventListener("click", zurueck);
-    eingabe.focus();
+    fokus();
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -626,17 +653,7 @@ if (siteHeader) {
         meldung.innerHTML = hinweis(T("Bitte eine gültige E-Mail-Adresse angeben.", "Please enter a valid e-mail address."), true);
         return;
       }
-      if (!api) {
-        // Kein Server angeschlossen: nichts senden, das ehrlich sagen.
-        koerper.innerHTML =
-          hinweis(T(
-            "Der Partnerzugang wird gerade eingerichtet — es wurde nichts gesendet. Bis dahin erreichen Sie uns direkt unter <a href=\"mailto:elite@jkhd.de\">elite@jkhd.de</a>.",
-            "Partner access is still being set up — nothing was sent. Until then you can reach us directly at <a href=\"mailto:elite@jkhd.de\">elite@jkhd.de</a>."
-          )) +
-          `<button type="button" class="btn btn-ghost" data-partner="zurueck">${T("Zurück", "Back")}</button>`;
-        koerper.querySelector('[data-partner="zurueck"]').addEventListener("click", zurueck);
-        return;
-      }
+      if (!api) { ohneServer(); return; }
       meldung.innerHTML = hinweis(T("Code wird angefordert …", "Requesting code …"));
       try {
         const r = await fetch(api + "/code", {
@@ -647,7 +664,7 @@ if (siteHeader) {
         if (!r.ok) throw new Error(String(r.status));
         codeSchritt(email);
       } catch (err) {
-        meldung.innerHTML = hinweis(T("Keine Verbindung zum Server. Bitte später erneut versuchen.", "No connection to the server. Please try again later."), true);
+        meldung.innerHTML = hinweis(T("Das hat gerade nicht geklappt. Bitte später erneut versuchen oder an elite@jkhd.de schreiben.", "That did not work just now. Please try again later or write to elite@jkhd.de."), true);
       }
     });
   }
@@ -671,7 +688,7 @@ if (siteHeader) {
     const eingabe = form.querySelector("input");
     const meldung = form.querySelector(".partner-meldung");
     form.querySelector('[data-partner="mail"]').addEventListener("click", mailSchritt);
-    eingabe.focus();
+    fokus();
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -694,7 +711,7 @@ if (siteHeader) {
         if (!r.ok) throw new Error(String(r.status));
         datenZeigen(await r.json());
       } catch (err) {
-        meldung.innerHTML = hinweis(T("Keine Verbindung zum Server. Bitte später erneut versuchen.", "No connection to the server. Please try again later."), true);
+        meldung.innerHTML = hinweis(T("Das hat gerade nicht geklappt. Bitte später erneut versuchen oder an elite@jkhd.de schreiben.", "That did not work just now. Please try again later or write to elite@jkhd.de."), true);
       }
     });
   }
@@ -710,7 +727,15 @@ if (siteHeader) {
          <button type="button" class="btn btn-ghost" data-partner="zurueck">${T("Abmelden", "Sign out")}</button>
        </div>`;
     koerper.querySelector('[data-partner="zurueck"]').addEventListener("click", zurueck);
+    fokus();
   }
 
-  startKnopf.addEventListener("click", mailSchritt);
+  startKnopf.addEventListener("click", start);
+
+  // Solange kein Server angeschlossen ist, steht der Hinweis von Anfang an im
+  // Kasten — der Besucher soll es lesen, bevor er etwas eintippt.
+  if (!api) {
+    const kopf = box.querySelector(".partner-kopf");
+    if (kopf) kopf.insertAdjacentHTML("beforeend", hinweis(OHNE_SERVER()));
+  }
 })();

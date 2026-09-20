@@ -1665,6 +1665,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .partner-hinweis.is-error { color: var(--text); }
 .partner-hinweis a { border-bottom: 1px solid var(--border-2); }
 .partner-meldung:empty { display: none; }
+.partner-hinweis:focus { outline: none; }
+.partner-kopf .partner-hinweis { margin-top: 14px; }
+.partner-koerper .btn { line-height: 1.25; }          /* Link und Knopf gleich hoch */
+.btn-mail { text-transform: none; letter-spacing: 0.02em; }   /* eine Adresse bleibt eine Adresse */
 
 .partner-daten { display: grid; gap: 14px; width: 100%; }
 .partner-daten h3 { font-size: var(--h3-lg); letter-spacing: -0.02em; }
@@ -1681,6 +1685,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .partner-daten .btn { justify-self: start; }
 
 @media (max-width: 940px) {
+  .field input, .field select, .field textarea { font-size: 1rem; }   /* unter 16 px zoomt iOS beim Antippen */
   .kacheln { grid-template-columns: 1fr; gap: 16px; }
   .kachel { aspect-ratio: auto; min-height: 150px; }
   .partner { grid-template-columns: 1fr; gap: 24px; }
