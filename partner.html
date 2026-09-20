@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aufbau eines Systems — JKHD</title>
-  <meta name="description" content="Wie ein Quant-System von JKHD aufgebaut ist: sechs Schichten von der Datenanbindung bis zum überwachten Betrieb — was eingebaut wird und worauf wir achten.">
+  <title>Partner — JKHD</title>
+  <meta name="description" content="Partnerseite von JKHD — nur nach Anmeldung über den Partnerzugang.">
+  <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#f7f6f3">
-  <meta property="og:type" content="article">
+  <meta property="og:type" content="website">
   <meta property="og:site_name" content="JKHD">
   <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
-  <meta property="og:url" content="https://www.jkhd.de/system.html">
-  <link rel="canonical" href="https://www.jkhd.de/system.html">
-  <meta property="og:title" content="Aufbau eines Systems — JKHD">
-  <meta property="og:description" content="Sechs Schichten, ihre Bauteile und die Fehler, die wir vorher ausschließen.">
+  <meta property="og:url" content="https://www.jkhd.de/partner.html">
+  <link rel="canonical" href="https://www.jkhd.de/partner.html">
+  <meta property="og:title" content="Partner — JKHD">
+  <meta property="og:description" content="Nur nach Anmeldung über den Partnerzugang.">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -30,9 +31,9 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="alternate" hreflang="de" href="https://www.jkhd.de/system.html">
-  <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/system.html">
-  <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/system.html">
+  <link rel="alternate" hreflang="de" href="https://www.jkhd.de/partner.html">
+  <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/partner.html">
+  <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/partner.html">
   <link rel="stylesheet" href="css/fonts.css?v=20260920i">
   <link rel="stylesheet" href="css/style.css?v=20260920i">
 </head>
@@ -75,7 +76,7 @@
             <span class="nav-lang-label">Sprachen</span>
             <div class="lang-switch" role="group" aria-label="Sprache / Language">
               <span class="lang-current" aria-current="true">DE</span>
-              <a href="en/system.html" hreflang="en" lang="en" aria-label="Switch to English">EN</a>
+              <a href="en/partner.html" hreflang="en" lang="en" aria-label="Switch to English">EN</a>
             </div>
           </div>
           <div class="nav-theme">
@@ -94,15 +95,25 @@
 
   <main id="main">
 
-  <!-- ================= CTA ================= -->
+  <section class="page-head">
+    <div class="container">
+      <p class="kicker">// Partner</p>
+      <h1>Partner</h1>
+      <p>Was bei uns zu Ihnen hinterlegt ist, welche Zugänge Sie haben oder anfordern können — und die Adresse, die nur Partner kennen.</p>
+    </div>
+  </section>
+
+  <!-- ================= PARTNERSEITE =================
+       Alles hier rendert js/main.js (Block „Partnerseite") mit dem Anmelde-
+       zeichen aus dem Sitzungsspeicher; ohne Zeichen fuehrt die Seite zum
+       Partnerzugang. Dazwischen der VIP-Bereich „Zugaenge": Katalog aus
+       vip.json des Servers, Freigaben je Partner aus partner.json. Die
+       VIP-Adresse liefert nur der Server — sie steht in keiner Datei dieser
+       Website. -->
   <section class="section">
     <div class="container">
-      <div class="cta-panel">
-        <h2>Welche Schichten brauchen Sie?</h2>
-        <p>Sagen Sie uns, was bei Ihnen schon steht — wir sagen Ihnen, was
-           fehlt und was Sie sich sparen können.</p>
-        <a href="kontakt.html" class="btn btn-primary">Kontakt aufnehmen</a>
-        <a href="was-wir-machen.html" class="btn btn-ghost">Was wir machen</a>
+      <div class="partner-seite" data-api="https://api.jkhd.de" aria-live="polite">
+        <noscript><p class="partner-hinweis is-error">Diese Seite braucht JavaScript — ohne geht die Anmeldung nicht.</p></noscript>
       </div>
     </div>
   </section>

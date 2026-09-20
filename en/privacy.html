@@ -25,8 +25,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/datenschutz.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/privacy.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/datenschutz.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20260920c">
-  <link rel="stylesheet" href="../css/style.css?v=20260920c">
+  <link rel="stylesheet" href="../css/fonts.css?v=20260920i">
+  <link rel="stylesheet" href="../css/style.css?v=20260920i">
 </head>
 <body>
 
@@ -136,16 +136,28 @@
          encrypted form to our server at api.jkhd.de (web space hosted by
          IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, Germany). If the
          address is registered as a partner, we send a six-digit code by
-         e-mail from elite@jkhd.de. The code is stored with us only as a
-         checksum and deleted after ten minutes or after its first use. After
-         you enter the code, the box shows the details we hold about you as a
-         partner.</p>
+         e-mail. The code is stored with us only as a checksum, becomes
+         invalid after ten minutes or after its first use and is deleted at
+         the latest during the next request. After you enter the code, your
+         browser receives a random sign-in token valid for at most one hour;
+         it is kept only in your browser's session storage and with us only
+         as a checksum. The "Partner" page
+         uses it to show the details we hold about you as a partner and the
+         contact address for partners. "Sign out" deletes the token in the
+         browser and with us.</p>
+      <p>The "Enquiry" button in the same box opens a questionnaire; "Send"
+         hands the answers only to your own e-mail program as a prepared
+         e-mail. Nothing is transmitted to our server and nothing is stored in
+         the browser. The same applies to "Request selection" on the partner
+         page: the chosen items are only written into a prepared e-mail to
+         our partner address.</p>
       <p>To prevent abuse, the server keeps a checksum of your IP address and
          of the e-mail address entered for one hour in order to limit the
          number of requests; plain-text addresses are not logged. The legal
          basis is Art. 6 (1) (b) GDPR (performance of the partnership) or
-         (f) GDPR (protection against abuse). For addresses not registered as
-         partners nothing is stored and no e-mail is sent.</p>
+         (f) GDPR (protection against abuse). No e-mail is sent to addresses
+         not registered as partners; for them only the checksum mentioned
+         above is kept, for one hour.</p>
       <h2>Contact by e-mail</h2>
       <p>If you contact us by e-mail, we process your details exclusively in
          order to deal with your enquiry (Art. 6 (1) (b) or (f) GDPR). The data
@@ -185,6 +197,6 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20260920c"></script>
+  <script src="../js/main.js?v=20260920i"></script>
 </body>
 </html>

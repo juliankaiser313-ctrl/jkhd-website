@@ -53,6 +53,9 @@
   --rule-3: rgba(16, 16, 18, 0.1);
   --watermark: rgba(16, 16, 18, 0.05);
   --watermark-hi: rgba(16, 16, 18, 0.14);
+  --vip: #b3261e;                       /* die einzige Farbe der Seite: der VIP-Kasten */
+  --vip-wash: rgba(179, 38, 30, 0.06);
+  --gold: #d9a400;                      /* die Krone ueber allem, was VIP heisst */
 }
 
 /* ---------- Dunkel: dieselbe Seite bei Nacht ----------
@@ -85,6 +88,9 @@
   --rule-3: rgba(244, 242, 238, 0.12);
   --watermark: rgba(244, 242, 238, 0.05);
   --watermark-hi: rgba(244, 242, 238, 0.14);
+  --vip: #ff7b72;
+  --vip-wash: rgba(255, 123, 114, 0.09);
+  --gold: #f2c94c;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -402,6 +408,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .btn-ghost:hover { color: var(--text); border-color: var(--text); background: transparent; transform: translateY(-2px); }
 
 .btn-sm { padding: 10px 20px; font-size: 0.7rem; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn:disabled:hover { transform: none; box-shadow: none; }
 
 .pill {
   display: inline-flex;
@@ -1608,8 +1616,11 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 /* ---------- Kontakt: drei Kacheln und der Partnerzugang (20.09.2026) ----------
    Drei quadratische Kacheln, je eine Adresse; darunter der Kasten fuer
-   Partner, dessen Ablauf (E-Mail -> Code -> Daten) js/main.js rendert. Die
-   Eingabefelder nutzen die bestehenden .field-Regeln. */
+   Partner, dessen Ablauf (E-Mail -> Code -> Anmeldung) js/main.js rendert.
+   Der Kasten ist in beiden Darstellungen schwarz (Julians Wunsch) und traegt
+   das 72-px-Kachelmuster der Startseite: Er tauscht nur die Farbtoken, damit
+   Knoepfe und Felder (.btn, .field) darin von selbst hell auf dunkel
+   erscheinen. Nach der Anmeldung geht es auf partner.html („Partnerseite"). */
 
 .kacheln { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 
@@ -1617,8 +1628,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  aspect-ratio: 1 / 1;
-  padding: 28px;
+  min-height: 190px;                 /* war ein Quadrat — auf breiten Schirmen zu viel Leere */
+  padding: 24px 28px;
   border: 1px solid var(--border-2);
   border-radius: var(--r-lg);
   background: linear-gradient(180deg, var(--panel), var(--panel-2));
@@ -1626,6 +1637,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   transition: border-color 0.3s var(--ease), transform 0.3s var(--ease), background 0.3s var(--ease);
 }
 .kachel:hover { color: var(--text); border-color: var(--text); transform: translateY(-3px); background: var(--wash-2); }
+/* Die Kachel-eigene transition wuerde die des Scroll-Reveals ersetzen — dann
+   blendet nichts ein. Beides zusammen: */
+.kachel.reveal, .kachel.reveal.in { transition: opacity 0.8s var(--ease), transform 0.8s var(--ease), border-color 0.3s var(--ease), background 0.3s var(--ease); }
+.kachel.settled { transition: transform 0.3s var(--ease), border-color 0.3s var(--ease), background 0.3s var(--ease); }   /* nach dem Einblenden: Hover-Tempo */
 
 .kachel-label {
   display: block;
@@ -1644,22 +1659,52 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 
 .partner {
+  --bg: #101012; --panel: #17171a; --panel-2: #1c1c1f;
+  --border: #2a2a2e; --border-2: #5a5a60;
+  --text: #f7f6f3; --muted: #b9b7b1; --accent: #f7f6f3;
+  --shadow-strong: rgba(255, 255, 255, 0.16);   /* Hover-Glanz statt Schatten: auf Schwarz waere ein Schatten unsichtbar */
+  color-scheme: dark;                          /* Bildlaufleisten, Auswahllisten, Autofill folgen dem schwarzen Kasten */
+  position: relative;
+  overflow: hidden;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.2fr 1fr;
   gap: 40px;
-  align-items: start;
+  align-items: center;
   margin-top: 24px;
-  padding: var(--pad-panel);
-  border: 1px solid var(--border-2);
+  padding: calc(var(--pad-panel) + 8px) var(--pad-panel);
+  border: 1px solid #3a3a40;
   border-radius: var(--r-lg);
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  background:
+    radial-gradient(ellipse 60% 70% at 85% 0%, rgba(255, 255, 255, 0.07), transparent 65%),
+    linear-gradient(180deg, var(--bg), var(--panel));
+  color: var(--text);
 }
+/* Das Kachelmuster der Startseite (.hero::before), nach links unten ausgeblendet */
+.partner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 80% 90% at 100% 0%, black 20%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 90% at 100% 0%, black 20%, transparent 78%);
+  pointer-events: none;
+}
+.partner > * { position: relative; z-index: 1; }
 
-.partner h2 { margin: 10px 0 12px; font-size: var(--h3-lg); letter-spacing: -0.02em; }
+.partner h2 { margin: 10px 0 12px; font-size: clamp(1.5rem, 2.4vw, 1.9rem); letter-spacing: -0.02em; }
 .partner-kopf p { max-width: 52ch; color: var(--muted); font-size: 0.96rem; }
 
-.partner-koerper { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.partner-koerper { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 14px; }
+.partner.is-anfrage { grid-template-columns: 1fr; }          /* der Fragebogen bekommt die ganze Breite */
+.partner.is-anfrage .partner-koerper { justify-content: flex-start; }
+.partner-anfrage .partner-hinweis { max-width: none; }
+.partner-meldung { display: grid; gap: 12px; justify-items: start; }
+.partner-rohtext { width: 100%; padding: 12px 14px; border: 1px solid var(--border-2); border-radius: var(--r-sm); background: var(--panel); color: var(--text); font-family: var(--mono); font-size: 0.85rem; line-height: 1.5; }
 .partner-form { display: grid; gap: 16px; width: 100%; max-width: 440px; }
+.partner-form.partner-anfrage { max-width: 680px; }          /* nach .partner-form, sonst verliert es die Kaskade */
 .partner-aktionen { display: flex; flex-wrap: wrap; gap: 12px; }
 .partner-hinweis { color: var(--muted); font-size: 0.95rem; max-width: 52ch; }
 .partner-hinweis.is-error { color: var(--text); }
@@ -1667,12 +1712,60 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .partner-meldung:empty { display: none; }
 .partner-hinweis:focus { outline: none; }
 .partner-kopf .partner-hinweis { margin-top: 14px; }
-.partner-koerper .btn { line-height: 1.25; }          /* Link und Knopf gleich hoch */
-.btn-mail { text-transform: none; letter-spacing: 0.02em; }   /* eine Adresse bleibt eine Adresse */
 
-.partner-daten { display: grid; gap: 14px; width: 100%; }
-.partner-daten h3 { font-size: var(--h3-lg); letter-spacing: -0.02em; }
-.partner-daten dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 24px; }
+/* Partnerseite (partner.html): Karte mit den Daten, darunter der VIP-Kasten.
+   Der Kasten ist bewusst rot — die einzige Farbe der Seite — und die Adresse
+   darin steht verdeckt, bis der Partner sie aufdeckt. */
+.partner-seite { display: grid; gap: 24px; max-width: 760px; }
+.partner-karte {
+  display: grid;
+  gap: 14px;
+  padding: var(--pad-panel);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-lg);
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+}
+.partner-karte h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); letter-spacing: -0.02em; }
+.partner-karte p { max-width: 52ch; color: var(--muted); }
+.partner-karte .btn { justify-self: start; }
+
+.partner-daten dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 24px; margin-top: 6px; }
+
+/* VIP-Bereich: der Katalog der Zugaenge, je Modul eine kleine Karte */
+.module { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 6px; }
+.modul {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  justify-items: start;
+  padding: 18px 20px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-lg);
+  background: var(--panel);
+}
+.modul.is-frei { border-color: var(--text); }
+.modul.is-bald { border-style: dashed; }
+.modul.is-bald .modul-name { color: var(--muted); }
+.modul-hinweis { font-size: 0.88rem; color: var(--muted); }
+.modul-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; width: 100%; }
+.modul-name { font-family: var(--serif); font-size: 1.15rem; letter-spacing: -0.01em; }
+.modul-neu {
+  padding: 1px 7px;
+  border: 1px solid var(--vip);
+  border-radius: var(--r-sm);
+  font-family: var(--mono);
+  font-size: var(--caption);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--vip);
+}
+.modul-status { margin-left: auto; font-family: var(--mono); font-size: var(--caption); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.modul.is-frei .modul-status { color: var(--text); }
+.partner-karte .modul p { max-width: none; font-size: 0.95rem; }
+.modul-wahl { display: inline-flex; align-items: center; gap: 8px; font-size: 0.92rem; cursor: pointer; }
+.modul-wahl input { width: 16px; height: 16px; accent-color: var(--text); cursor: pointer; }
+.module .partner-aktionen { grid-column: 1 / -1; align-items: center; }
+.modul-zaehler { margin: 0; }
 .partner-daten dt {
   padding-top: 3px;
   font-family: var(--mono);
@@ -1681,12 +1774,42 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   text-transform: uppercase;
   color: var(--muted);
 }
-.partner-daten dd { color: var(--text); }
-.partner-daten .btn { justify-self: start; }
+.partner-daten dd { color: var(--text); overflow-wrap: anywhere; }
+
+.vip {
+  display: grid;
+  gap: 10px;
+  padding: 26px 28px;
+  border: 2px solid var(--vip);
+  border-radius: var(--r-lg);
+  background: var(--vip-wash);
+}
+.vip-krone { display: block; width: 34px; height: 26px; margin-bottom: 4px; fill: var(--gold); }
+.vip-krone + .kachel-label, .vip-krone + .vip-label { margin-top: 2px; }
+
+.vip-label {
+  font-family: var(--mono);
+  font-size: var(--label);
+  font-weight: 700;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--vip);
+}
+.vip p { max-width: 52ch; color: var(--muted); font-size: 0.95rem; }
+.vip-adresse { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; margin-top: 4px; }
+.vip-wert { font-family: var(--serif); font-size: clamp(1.2rem, 2vw, 1.6rem); letter-spacing: 0.01em; overflow-wrap: anywhere; }
+.vip-wert.is-verdeckt { letter-spacing: 0.14em; color: var(--muted); -webkit-user-select: none; user-select: none; }
+.vip-wert a { border-bottom: 1px solid var(--border-2); }
+.vip .btn-ghost { border-color: var(--vip); color: var(--vip); }
+.vip .btn-ghost:hover { background: var(--vip); border-color: var(--vip); color: var(--bg); }   /* im Dunkelmodus ist --vip hell, Weiss darauf unlesbar */
 
 @media (max-width: 940px) {
   .field input, .field select, .field textarea { font-size: 1rem; }   /* unter 16 px zoomt iOS beim Antippen */
   .kacheln { grid-template-columns: 1fr; gap: 16px; }
-  .kachel { aspect-ratio: auto; min-height: 150px; }
+  .kachel { min-height: 150px; }
   .partner { grid-template-columns: 1fr; gap: 24px; }
+  .partner-koerper { justify-content: flex-start; }
+  .partner-daten dl { grid-template-columns: 1fr; gap: 2px 0; }
+  .module { grid-template-columns: 1fr; }
+  .partner-daten dd + dt { margin-top: 12px; }
 }

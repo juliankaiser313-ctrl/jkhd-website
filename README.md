@@ -17,6 +17,7 @@ sicherheit.html    Sicherheit & Vertraulichkeit: Grundsätze, 6 Bereiche, Ablauf
 mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
 unternehmen.html   Wer wir sind, Auf einen Blick, Einblicke, der Gründer
 kontakt.html       Drei Kacheln (kontakt@ / service@ / info@) + Partnerzugang (siehe unten)
+partner.html       Partnerseite: nur nach Anmeldung, noindex, nicht im Menü (siehe unten)
 impressum.html     Impressum (§ 5 DDG)
 datenschutz.html   Datenschutzerklärung
 404.html           Fehlerseite (zweisprachig)
@@ -118,26 +119,52 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
 
 ## Partnerzugang (Kontaktseite) — Server läuft unter https://api.jkhd.de
 
-Der Kasten „Nur für Partner" auf `kontakt.html` / `en/contact.html` führt den
-Ablauf **E-Mail eingeben → Code per E-Mail → Code eingeben → hinterlegte Daten
-sehen**. Das Frontend dafür ist fertig (`js/main.js`, Abschnitt Partnerzugang).
-Der Server dazu liegt im eigenen Repo `C:\Quant Arbeit\JKHD-Partner-Server`
-(PHP auf IONOS Webhosting Plus, Vertrag 300371840) und ist als
+Der Kasten „Nur für Partner" auf `kontakt.html` / `en/contact.html` (ein
+Knopf „Anmelden", in Tinte gesetzt) führt den Ablauf **E-Mail eingeben → Code
+per E-Mail → Code eingeben → weiter auf `partner.html`**. Die Partnerseite
+(`partner.html` / `en/partner.html`, `noindex`, nicht im Menü und nicht in der
+Sitemap) zeigt die hinterlegten Daten und darunter in einem roten Kasten die
+**VIP-E-Mail-Adresse** — verdeckt, bis der Partner sie aufdeckt. Die Adresse
+steht in keiner Datei dieser Website; sie kommt nur vom Server an Angemeldete.
+Dazwischen der **VIP-Bereich „Zugänge"**: der Katalog aus `api-daten/vip.json`
+des Servers (je Modul `id`, `name`, `kurz`, `kurz_en`, `neu`, `status`
+`anfrage`|`bald`, optional `link`), je Partner die `freigaben` aus
+`partner.json`. Freigeschaltete Module zeigen „Öffnen" (wenn `link` gesetzt),
+anforderbare ein Häkchen, `bald` nur den Status (`bald` schlägt eine Freigabe);
+„Auswahl anfordern" öffnet per `mailto:` das E-Mail-Programm mit den gewählten
+Modulen an die VIP-Adresse. Der Server gibt `link` nur für freigeschaltete
+Module heraus.
+Frontend: `js/main.js`, Abschnitte „Partnerzugang" und „Partnerseite".
+Daneben „Anfrage": ein fester Fragebogen (Name, E-Mail, Rolle, Anliegen,
+Profil, Nachricht — `FRAGEN()` in `js/main.js`); „Senden" öffnet per `mailto:`
+das E-Mail-Programm mit dem fertigen Text an `service@jkhd.de`, nichts geht an
+den Server. Dazu ein „Text kopieren"-Knopf für Browser ohne Mailprogramm.
+Der Server dazu liegt im eigenen (nicht veröffentlichten) Repo
+`JKHD-Partner-Server` (PHP auf IONOS Webhosting) und ist als
 `https://api.jkhd.de` angebunden (`data-api` am `.partner`-Element, seit
 20.09.2026). Steht `data-api` leer, wird nichts gesendet und der Kasten sagt
 das dem Besucher offen.
 
-Was der Server können muss (Vorschlag, klein gehalten):
+Schnittstelle (so gebaut, Stand 20.09.2026):
 
 - `POST {api}/code` mit `{"email": "…"}` — prüft die Adresse gegen die
   Partnerliste, erzeugt einen kurzlebigen Code (z. B. 6 Ziffern, 10 Minuten,
-  einmal gültig), schickt ihn von `elite@jkhd.de` und antwortet **immer** mit
+  einmal gültig), schickt ihn von der Partner-Adresse und antwortet **immer** mit
   `204` — auch für unbekannte Adressen, damit niemand ausprobieren kann, wer
   Partner ist. Anfragen pro Adresse und IP begrenzen.
 - `POST {api}/login` mit `{"email": "…", "code": "…"}` — bei gültigem Code
-  `200` mit `{"name": "…", "felder": [{"label": "…", "wert": "…"}, …]}`,
-  sonst `401`. Was in `felder` steht, pflegt Julian je Partner.
-- CORS für `https://www.jkhd.de`, sonst nichts.
+  `200` mit `{"token": "…"}` (64 Hex-Zeichen, eine Stunde gültig), sonst `401`;
+  `429`, wenn die IP-Grenze erreicht ist. Das Zeichen liegt im Browser nur im
+  `sessionStorage` (`jkhd-partner`).
+- `POST {api}/daten` mit `{"token": "…"}` — `200` mit `{"name": "…",
+  "felder": [{"label": "…", "wert": "…"}, …], "vip": "…", "module": [...],
+  "freigaben": ["…"]}`, sonst `401`; `429`, wenn unbekannte Zeichen die
+  IP-Grenze erreicht haben. Was in `felder` und `freigaben` steht, pflegt
+  Julian je Partner; `module` ist der Katalog aus `vip.json`.
+- `POST {api}/abmelden` mit `{"token": "…"}` — `204`, Zeichen ist weg
+  (`429` wie bei /daten).
+- CORS für `https://www.jkhd.de`, `https://jkhd.de` und die lokale Vorschau
+  `http://localhost:8090`, sonst nichts.
 
 Partner pflegen = `api-daten/partner.json` auf dem Webspace (siehe README des
 Server-Repos). Die Datenschutzerklärung beschreibt die Verarbeitung im
@@ -151,11 +178,11 @@ python -m http.server 8090 --directory "C:\Quant Arbeit\JKHD-Website"
 
 Dann im Browser: http://localhost:8090
 
-## Zurzeit offline — nur ein Platzhalter ist veröffentlicht
+## Live seit 20.09.2026 — und der Offline-Schalter
 
-**Stand: die Seite ist absichtlich nicht live.** Unter `www.jkhd.de` steht eine
-einzelne Platzhalterseite; die eigentliche Website liegt vollständig und
-unverändert im Repository, wird aber nicht ausgeliefert.
+**Stand: die Seite ist live** (`path: .` im Workflow). Vom 03.09. bis 20.09.2026 stand
+unter `www.jkhd.de` nur ein Platzhalter; der Mechanismus bleibt im Repository,
+damit die Seite jederzeit wieder abgeschaltet werden kann.
 
 So ist das gemacht:
 
@@ -172,11 +199,20 @@ So ist das gemacht:
   bleibt die Domain am Repository und jede beliebige Adresse zeigt den
   Platzhalter.
 
-**Wieder live schalten:** im Workflow den Schritt „Platzhalter
-vervollständigen" löschen und `path: ./offline` zurück auf `path: .` setzen —
-das ist alles. Danach auf `main` pushen, der Deploy läuft von selbst. Der
-Ordner `offline/` kann liegen bleiben (er wird dann mit ausgeliefert, ist
-über keinen Link erreichbar und trägt `noindex`) oder mit gelöscht werden.
+**Wieder offline:** im Workflow `path: .` auf `path: ./offline` setzen und davor
+diesen Schritt einsetzen, dann auf `main` pushen:
+
+```yaml
+      - name: Platzhalter vervollstaendigen
+        run: |
+          cp CNAME       offline/CNAME          # Domain bleibt am Repository
+          cp favicon.svg offline/favicon.svg
+          cp offline/index.html offline/404.html  # jede Adresse zeigt den Platzhalter
+```
+
+**Wieder live:** den Schritt löschen, `path: .` — das ist alles. Der Ordner
+`offline/` bleibt liegen (wird mit ausgeliefert, ist über keinen Link erreichbar
+und trägt `noindex`).
 
 Nicht vergessen: der Deploy hängt an Pushes auf `main`. Ein Commit auf einem
 Arbeitsbranch ändert an der Live-Seite nichts, bis er in `main` liegt.
