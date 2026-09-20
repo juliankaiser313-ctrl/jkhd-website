@@ -925,34 +925,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 .founder-subhead { display: block; color: var(--accent); margin: 20px 0 8px; }
 
-/* ---------- Kontaktwege ---------- */
-
-.routes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-
-.route {
-  display: flex;
-  flex-direction: column;
-  padding-top: 22px;
-  border-top: 2px solid var(--text);
-}
-
-.route-label { display: block; margin-bottom: 14px; color: var(--accent); }
-.route h2 { font-size: var(--h3-lg); margin-bottom: 10px; }
-.route p { color: var(--muted); font-size: 0.93rem; }
-
-.route-mail {
-  margin-top: auto;
-  padding-top: 20px;
-  font-family: var(--mono);
-  font-size: 0.82rem;
-  letter-spacing: 0.04em;
-  color: var(--text);
-  border-bottom: 1px solid var(--border-2);
-  align-self: flex-start;
-  transition: border-color 0.2s;
-}
-.route-mail:hover { color: var(--text); border-bottom-color: var(--text); }
-
 /* ---------- CTA ---------- */
 
 .cta-panel {
@@ -972,14 +944,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .cta-panel .btn { margin: 0 6px 10px; }
 
 /* ---------- Kontakt / Prose ---------- */
-
-.contact-box {
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 44px;
-  max-width: 620px;
-}
 
 .note {
   max-width: 900px;
@@ -1074,7 +1038,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   
 
   .offers { grid-template-columns: 1fr; gap: 34px; }
-  .routes { grid-template-columns: 1fr; gap: 34px; }
+  
 
   
   
@@ -1236,7 +1200,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .cta-panel { padding: 64px 22px; }
   .cta-panel .btn { display: flex; width: 100%; margin: 0 0 10px; }
 
-  .contact-box { padding: 28px 22px; }
+  
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1403,8 +1367,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 /* ---------- Anfrage-Formular ---------- */
 
-.inquiry { max-width: 720px; display: grid; gap: 20px; }
-
 .field { display: grid; gap: 7px; }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
@@ -1448,72 +1410,11 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   padding-right: 40px;
 }
 
-.inquiry-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
-
-.inquiry-hint {
-  font-family: var(--mono);
-  font-size: var(--caption);
-  color: var(--muted);
-}
-.inquiry-hint.is-error { color: var(--text); }
-
-.inquiry-privacy {
-  padding-left: 16px;
-  border-left: 2px solid var(--accent-dim);
-  color: var(--muted);
-  font-size: 0.86rem;
-  max-width: 62ch;
-}
-
 @media (max-width: 560px) {
   .field-row { grid-template-columns: 1fr; }
-  .inquiry-actions .btn { width: 100%; }
 }
 
 /* Aus dem Konfigurator uebernommene Auswahl im Anfrageformular */
-.inquiry-picked {
-  padding: 20px 22px;
-  border: 1px solid var(--border-2);
-  border-radius: var(--r-sm);
-  background: var(--wash-1);
-}
-
-.inquiry-picked-label {
-  display: block;
-  margin-bottom: 14px;
-  font-family: var(--mono);
-  font-size: var(--label);
-  letter-spacing: var(--label-ls);
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.inquiry-picked ul { list-style: none; display: grid; gap: 8px; }
-.inquiry-picked li,
-.inquiry-picked-sum {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-.inquiry-picked li span:last-child,
-.inquiry-picked-sum span:last-child {
-  font-family: var(--mono);
-  font-size: 0.82rem;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-.inquiry-picked-sum {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-  color: var(--text);
-  font-weight: 700;
-}
-
-.inquiry-picked-note { margin-top: 12px; color: var(--muted); font-size: 0.8rem; }
 
 /* ---------- Mathematik-Seite: Formel-Karten ---------- */
 
@@ -1703,4 +1604,84 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 @media (max-width: 560px) {
   .statement-more { font-size: 1rem; }
+}
+
+/* ---------- Kontakt: drei Kacheln und der Partnerzugang (20.09.2026) ----------
+   Drei quadratische Kacheln, je eine Adresse; darunter der Kasten fuer
+   Partner, dessen Ablauf (E-Mail -> Code -> Daten) js/main.js rendert. Die
+   Eingabefelder nutzen die bestehenden .field-Regeln. */
+
+.kacheln { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+.kachel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  aspect-ratio: 1 / 1;
+  padding: 28px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-lg);
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  color: var(--text);
+  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease), background 0.3s var(--ease);
+}
+.kachel:hover { color: var(--text); border-color: var(--text); transform: translateY(-3px); background: var(--wash-2); }
+
+.kachel-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--label);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.kachel-mail {
+  font-family: var(--serif);
+  font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.partner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+  margin-top: 24px;
+  padding: var(--pad-panel);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-lg);
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+}
+
+.partner h2 { margin: 10px 0 12px; font-size: var(--h3-lg); letter-spacing: -0.02em; }
+.partner-kopf p { max-width: 52ch; color: var(--muted); font-size: 0.96rem; }
+
+.partner-koerper { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.partner-form { display: grid; gap: 16px; width: 100%; max-width: 440px; }
+.partner-aktionen { display: flex; flex-wrap: wrap; gap: 12px; }
+.partner-hinweis { color: var(--muted); font-size: 0.95rem; max-width: 52ch; }
+.partner-hinweis.is-error { color: var(--text); }
+.partner-hinweis a { border-bottom: 1px solid var(--border-2); }
+.partner-meldung:empty { display: none; }
+
+.partner-daten { display: grid; gap: 14px; width: 100%; }
+.partner-daten h3 { font-size: var(--h3-lg); letter-spacing: -0.02em; }
+.partner-daten dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 24px; }
+.partner-daten dt {
+  padding-top: 3px;
+  font-family: var(--mono);
+  font-size: var(--label);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.partner-daten dd { color: var(--text); }
+.partner-daten .btn { justify-self: start; }
+
+@media (max-width: 940px) {
+  .kacheln { grid-template-columns: 1fr; gap: 16px; }
+  .kachel { aspect-ratio: auto; min-height: 150px; }
+  .partner { grid-template-columns: 1fr; gap: 24px; }
 }

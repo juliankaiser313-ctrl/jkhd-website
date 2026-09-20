@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact — JKHD</title>
-  <meta name="description" content="Get in touch with JKHD: three addresses for enquiries, support and general matters — plus a form that prepares your enquiry without sending anything to a server.">
+  <meta name="description" content="Get in touch with JKHD: three addresses — kontakt@ to get in touch, service@ for enquiries, info@ for everything else. Partners find their access on this page.">
   <meta name="theme-color" content="#f7f6f3">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="JKHD">
@@ -13,7 +13,7 @@
   <meta property="og:url" content="https://www.jkhd.de/en/contact.html">
   <link rel="canonical" href="https://www.jkhd.de/en/contact.html">
   <meta property="og:title" content="Contact — JKHD">
-  <meta property="og:description" content="Three addresses, one honest answer — we reply with a concrete assessment, not a standard e-mail.">
+  <meta property="og:description" content="Three addresses: kontakt@ to get in touch, service@ for enquiries, info@ for everything else.">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -32,8 +32,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/kontakt.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/contact.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/kontakt.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20260919r">
-  <link rel="stylesheet" href="../css/style.css?v=20260919r">
+  <link rel="stylesheet" href="../css/fonts.css?v=20260920a">
+  <link rel="stylesheet" href="../css/style.css?v=20260920a">
 </head>
 <body>
 
@@ -97,103 +97,43 @@
     <div class="container">
       <p class="kicker">// Contact</p>
       <h1>Let us speak directly</h1>
-      <p>The quickest way is a short e-mail. So that it lands in front of the
-         right pair of eyes straight away, we keep three addresses — take
-         whichever fits best. We reply with a concrete assessment rather than a
-         standard e-mail.</p>
     </div>
   </section>
 
+  <!-- ================= THREE WAYS ================= -->
   <section class="section">
     <div class="container">
-      <div class="routes">
-        <article class="route">
-          <span class="route-label">Enquiries &amp; offers</span>
-          <h2>You want something built</h2>
-          <p>First contact, project enquiries, offers, advisory work. Describe
-             briefly what you already have and what should be added.</p>
-          <a class="route-mail" href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
-        </article>
-
-        <article class="route">
-          <span class="route-label">Support &amp; operation</span>
-          <h2>You are already a client</h2>
-          <p>Questions about a running system, faults, change requests. Name
-             your system in the subject line and it will be quicker.</p>
-          <a class="route-mail" href="mailto:service@jkhd.de">service@jkhd.de</a>
-        </article>
-
-        <article class="route">
-          <span class="route-label">General</span>
-          <h2>Everything else</h2>
-          <p>Press, invoices, data protection, administration — and anything
-             that fits into neither of the other two boxes.</p>
-          <a class="route-mail" href="mailto:info@jkhd.de">info@jkhd.de</a>
-        </article>
+      <div class="kacheln">
+        <a class="kachel" href="mailto:kontakt@jkhd.de">
+          <span class="kachel-label">Get in touch</span>
+          <span class="kachel-mail">kontakt@jkhd.de</span>
+        </a>
+        <a class="kachel" href="mailto:service@jkhd.de">
+          <span class="kachel-label">Enquiries</span>
+          <span class="kachel-mail">service@jkhd.de</span>
+        </a>
+        <a class="kachel" href="mailto:info@jkhd.de">
+          <span class="kachel-label">Everything else</span>
+          <span class="kachel-mail">info@jkhd.de</span>
+        </a>
       </div>
 
-      <div class="note" style="max-width:820px; margin-top:32px;">
-        <b>Direct line:</b> if you have already spoken with us, you can reach
-        the management directly at
-        <a href="mailto:elite@jkhd.de">elite@jkhd.de</a>.
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="anfrage">
-    <div class="container">
-      <div class="section-head">
-        <p class="kicker">// Enquiry</p>
-        <h2>Prepare an enquiry</h2>
-        <p>Fill in whatever you want to say — on sending, your own e-mail
-           program opens with the finished message addressed to the right
-           address.</p>
-      </div>
-
-      <form class="inquiry" id="inquiry" novalidate>
-        <div class="field">
-          <label for="iq-thema">What is it about?</label>
-          <select id="iq-thema" name="thema">
-            <option value="kontakt">Enquiry or offer</option>
-            <option value="service">Support &mdash; I am already a client</option>
-            <option value="info">General (press, invoices, administration)</option>
-          </select>
+      <!-- ================= PARTNERS =================
+           The flow (e-mail -> code -> data) lives in js/main.js. While
+           data-api is empty no server is connected: nothing is sent and the
+           box says so openly. Interface: README. -->
+      <section class="partner" id="partner" data-api="" aria-labelledby="partner-titel">
+        <div class="partner-kopf">
+          <span class="kachel-label">Partners only</span>
+          <h2 id="partner-titel">Partner access</h2>
+          <p>Exclusively for partners of JKHD. You enter your e-mail address,
+             receive a code and then see the data we hold about you.</p>
         </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="iq-haus">Institution or company</label>
-            <input type="text" id="iq-haus" name="haus" autocomplete="organization">
-          </div>
-          <div class="field">
-            <label for="iq-name">Your name</label>
-            <input type="text" id="iq-name" name="name" autocomplete="name">
-          </div>
+        <div class="partner-koerper">
+          <button type="button" class="btn btn-primary" data-partner="start">Open access</button>
+          <a class="btn btn-ghost" href="mailto:elite@jkhd.de">elite@jkhd.de</a>
         </div>
-
-        <div class="field">
-          <label for="iq-mail">E-mail for our reply</label>
-          <input type="email" id="iq-mail" name="mail" autocomplete="email">
-        </div>
-
-        <div class="field">
-          <label for="iq-text">Your enquiry</label>
-          <textarea id="iq-text" name="text" rows="6"
-            placeholder="What do you already have in place, and what should be added?"></textarea>
-        </div>
-
-        <div class="inquiry-actions">
-          <button type="submit" class="btn btn-primary">Open e-mail program</button>
-          <button type="button" class="btn btn-ghost" id="iq-copy">Copy text</button>
-          <span class="inquiry-hint" id="iq-hint" role="status" aria-live="polite"></span>
-        </div>
-
-        <p class="inquiry-privacy">
-          This form sends nothing to us and nothing to third parties. Your
-          entries stay in your browser until you send the message yourself from
-          your own e-mail program. No server, no storage, no transmission.
-        </p>
-      </form>
+      </section>
     </div>
   </section>
 
@@ -247,6 +187,6 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20260919r"></script>
+  <script src="../js/main.js?v=20260920a"></script>
 </body>
 </html>

@@ -357,14 +357,14 @@ if (siteHeader) {
 // Die Ziel-Elemente werden hier markiert, das CSS (.reveal/.in) macht den Rest.
 (function () {
   const targets = document.querySelectorAll(
-    ".section-head, .page-head, .statement, .layer, .rail, .guard, .step-row, .creed-cell, .creed-close, .founder-card, .cta-panel, .contact-box, .prose"
+    ".section-head, .page-head, .statement, .kachel, .partner, .layer, .rail, .guard, .step-row, .creed-cell, .creed-close, .founder-card, .cta-panel, .prose"
   );
   if (!targets.length) return;
 
   targets.forEach((el) => el.classList.add("reveal"));
 
   // Raster-Elemente leicht versetzt einblenden
-  document.querySelectorAll(".guards, .creed").forEach((grid) => {
+  document.querySelectorAll(".kacheln, .guards, .creed").forEach((grid) => {
     Array.from(grid.children).forEach((card, i) => {
       card.style.transitionDelay = i * 90 + "ms";
     });
@@ -567,192 +567,150 @@ if (siteHeader) {
   });
 })();
 
-// ---------- Anfrage-Formular: baut eine E-Mail, verschickt selbst nichts ----------
-// Kein Server, kein Dienstleister: Die Eingaben bleiben im Browser und landen
-// im E-Mail-Programm des Besuchers. Abgeschickt wird dort, von ihm.
+// ---------- Partnerzugang: E-Mail -> Code -> Daten ----------
+// Der Kasten auf der Kontaktseite. Ein Server dahinter ist noch nicht
+// angeschlossen (data-api am .partner-Element leer): Dann wird nichts
+// gesendet, und der Kasten sagt das offen. Sobald es ihn gibt, erwartet der
+// Ablauf diese Schnittstelle (siehe README, Abschnitt Partnerzugang):
+//   POST {api}/code   {"email": "..."}                 -> 204, immer (verraet nicht, wer Partner ist)
+//   POST {api}/login  {"email": "...", "code": "..."}  -> 200 {"name": "...", "felder": [{"label": "...", "wert": "..."}]}
+//                                                      -> 401 bei falschem oder abgelaufenem Code
 (function () {
-  const form = document.getElementById("inquiry");
-  if (!form) return;
+  const box = document.querySelector(".partner");
+  if (!box) return;
+  const koerper = box.querySelector(".partner-koerper");
+  const startKnopf = box.querySelector('[data-partner="start"]');
+  if (!koerper || !startKnopf) return;
 
-  const hint = document.getElementById("iq-hint");
-  const kopieren = document.getElementById("iq-copy");
+  const api = (box.dataset.api || "").replace(/\/+$/, "");
+  const startHtml = koerper.innerHTML;
 
-  const ZIEL = {
-    kontakt: { mail: "kontakt@jkhd.de", betreff: T("Anfrage", "Enquiry") },
-    service: { mail: "service@jkhd.de", betreff: T("Support", "Support") },
-    info: { mail: "info@jkhd.de", betreff: T("Anliegen", "General") },
-  };
+  const esc = (s) =>
+    String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-  const wert = (id) => (document.getElementById(id).value || "").trim();
+  const hinweis = (text, fehler) =>
+    `<p class="partner-hinweis${fehler ? " is-error" : ""}">${text}</p>`;
 
-  function melden(text, fehler) {
-    hint.textContent = text;
-    hint.classList.toggle("is-error", Boolean(fehler));
+  const aktionen = (haupt, nebenText, nebenAktion) =>
+    `<div class="partner-aktionen">
+       <button type="submit" class="btn btn-primary">${haupt}</button>
+       <button type="button" class="btn btn-ghost" data-partner="${nebenAktion}">${nebenText}</button>
+     </div>`;
+
+  function zurueck() {
+    koerper.innerHTML = startHtml;
+    koerper.querySelector('[data-partner="start"]').addEventListener("click", mailSchritt);
   }
 
-  const euro = new Intl.NumberFormat(T("de-DE", "en-GB"), {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  });
+  // Schritt 1: E-Mail-Adresse
+  function mailSchritt() {
+    koerper.innerHTML =
+      `<form class="partner-form" novalidate>
+         <div class="field">
+           <label for="partner-mail">${T("Ihre E-Mail-Adresse", "Your e-mail address")}</label>
+           <input id="partner-mail" name="email" type="email" required autocomplete="email" inputmode="email">
+         </div>
+         ${aktionen(T("Code anfordern", "Request code"), T("Abbrechen", "Cancel"), "zurueck")}
+         <div class="partner-meldung"></div>
+       </form>`;
+    const form = koerper.querySelector("form");
+    const eingabe = form.querySelector("input");
+    const meldung = form.querySelector(".partner-meldung");
+    form.querySelector('[data-partner="zurueck"]').addEventListener("click", zurueck);
+    eingabe.focus();
 
-  // Bausteine aus dem Konfigurator uebernehmen: je Eintrag "Name~Betrag"
-  function ausKonfigurator() {
-    const p = new URLSearchParams(location.search).get("bausteine");
-    if (!p) return [];
-    return p
-      .split("|")
-      .filter(Boolean)
-      .map((eintrag) => {
-        const [name, betrag] = eintrag.split("~");
-        return { name: (name || "").trim(), preis: Number(betrag) || 0 };
-      })
-      .filter((b) => b.name);
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = eingabe.value.trim();
+      if (!eingabe.checkValidity() || !email) {
+        meldung.innerHTML = hinweis(T("Bitte eine gültige E-Mail-Adresse angeben.", "Please enter a valid e-mail address."), true);
+        return;
+      }
+      if (!api) {
+        // Kein Server angeschlossen: nichts senden, das ehrlich sagen.
+        koerper.innerHTML =
+          hinweis(T(
+            "Der Partnerzugang wird gerade eingerichtet — es wurde nichts gesendet. Bis dahin erreichen Sie uns direkt unter <a href=\"mailto:elite@jkhd.de\">elite@jkhd.de</a>.",
+            "Partner access is still being set up — nothing was sent. Until then you can reach us directly at <a href=\"mailto:elite@jkhd.de\">elite@jkhd.de</a>."
+          )) +
+          `<button type="button" class="btn btn-ghost" data-partner="zurueck">${T("Zurück", "Back")}</button>`;
+        koerper.querySelector('[data-partner="zurueck"]').addEventListener("click", zurueck);
+        return;
+      }
+      meldung.innerHTML = hinweis(T("Code wird angefordert …", "Requesting code …"));
+      try {
+        const r = await fetch(api + "/code", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+        if (!r.ok) throw new Error(String(r.status));
+        codeSchritt(email);
+      } catch (err) {
+        meldung.innerHTML = hinweis(T("Keine Verbindung zum Server. Bitte später erneut versuchen.", "No connection to the server. Please try again later."), true);
+      }
+    });
   }
 
-  const summeVon = (liste) => liste.reduce((s, b) => s + b.preis, 0);
+  // Schritt 2: Code aus der E-Mail
+  function codeSchritt(email) {
+    koerper.innerHTML =
+      `<form class="partner-form" novalidate>
+         ${hinweis(T(
+           "Wenn diese Adresse bei uns als Partner hinterlegt ist, haben wir Ihnen gerade einen Code geschickt. Er ist nur kurz gültig.",
+           "If this address is registered with us as a partner, we have just sent you a code. It is valid for a short time only."
+         ))}
+         <div class="field">
+           <label for="partner-code">${T("Code aus der E-Mail", "Code from the e-mail")}</label>
+           <input id="partner-code" name="code" type="text" required autocomplete="one-time-code" inputmode="numeric" maxlength="12">
+         </div>
+         ${aktionen(T("Anmelden", "Sign in"), T("Andere Adresse", "Different address"), "mail")}
+         <div class="partner-meldung"></div>
+       </form>`;
+    const form = koerper.querySelector("form");
+    const eingabe = form.querySelector("input");
+    const meldung = form.querySelector(".partner-meldung");
+    form.querySelector('[data-partner="mail"]').addEventListener("click", mailSchritt);
+    eingabe.focus();
 
-  function nachricht() {
-    const haus = wert("iq-haus");
-    const name = wert("iq-name");
-    const mail = wert("iq-mail");
-    const text = wert("iq-text");
-    const bausteine = ausKonfigurator();
-
-    const zeilen = [];
-    if (haus) zeilen.push(T("Institution: ", "Institution: ") + haus);
-    if (name) zeilen.push(T("Ansprechpartner: ", "Contact: ") + name);
-    if (mail) zeilen.push("E-Mail: " + mail);
-    if (zeilen.length) zeilen.push("");
-
-    if (bausteine.length) {
-      zeilen.push(T("Zusammenstellung aus dem Konfigurator:", "Selection from the configurator:"));
-      bausteine.forEach((b) => {
-        zeilen.push(
-          "  - " +
-            b.name +
-            ": " +
-            (b.preis > 0 ? euro.format(b.preis) : T("im Projekt enthalten", "included in the project"))
-        );
-      });
-      zeilen.push(
-        T("  Ungefähre Summe: ", "  Approximate total: ") +
-          euro.format(summeVon(bausteine)) +
-          T(" (unverbindlich)", " (non-binding)")
-      );
-      zeilen.push("");
-    }
-
-    if (text) zeilen.push(text, "");
-    zeilen.push(
-      "—",
-      T(
-        "Vorbereitet über das Anfrageformular auf www.jkhd.de",
-        "Prepared with the enquiry form on www.jkhd.de"
-      )
-    );
-    return zeilen.join("\n");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const code = eingabe.value.trim();
+      if (!code) {
+        meldung.innerHTML = hinweis(T("Bitte den Code eingeben.", "Please enter the code."), true);
+        return;
+      }
+      meldung.innerHTML = hinweis(T("Wird geprüft …", "Checking …"));
+      try {
+        const r = await fetch(api + "/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, code }),
+        });
+        if (r.status === 401) {
+          meldung.innerHTML = hinweis(T("Der Code ist falsch oder abgelaufen.", "The code is wrong or has expired."), true);
+          return;
+        }
+        if (!r.ok) throw new Error(String(r.status));
+        datenZeigen(await r.json());
+      } catch (err) {
+        meldung.innerHTML = hinweis(T("Keine Verbindung zum Server. Bitte später erneut versuchen.", "No connection to the server. Please try again later."), true);
+      }
+    });
   }
 
-  function betreff() {
-    const thema = ZIEL[document.getElementById("iq-thema").value] || ZIEL.kontakt;
-    const haus = wert("iq-haus");
-    return thema.betreff + T(" über jkhd.de", " via jkhd.de") + (haus ? " — " + haus : "");
+  // Schritt 3: die hinterlegten Daten
+  function datenZeigen(daten) {
+    const felder = Array.isArray(daten.felder) ? daten.felder : [];
+    koerper.innerHTML =
+      `<div class="partner-daten">
+         <span class="kachel-label">${T("Ihre Daten bei JKHD", "Your data at JKHD")}</span>
+         <h3>${esc(daten.name || "")}</h3>
+         <dl>${felder.map((f) => `<dt>${esc(f.label)}</dt><dd>${esc(f.wert)}</dd>`).join("")}</dl>
+         <button type="button" class="btn btn-ghost" data-partner="zurueck">${T("Abmelden", "Sign out")}</button>
+       </div>`;
+    koerper.querySelector('[data-partner="zurueck"]').addEventListener("click", zurueck);
   }
 
-  function ziel() {
-    return (ZIEL[document.getElementById("iq-thema").value] || ZIEL.kontakt).mail;
-  }
-
-  function vollstaendig() {
-    if (!wert("iq-text")) {
-      melden(
-        T("Bitte beschreiben Sie kurz Ihr Anliegen.", "Please describe your enquiry briefly."),
-        true
-      );
-      document.getElementById("iq-text").focus();
-      return false;
-    }
-    return true;
-  }
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (!vollstaendig()) return;
-    const url =
-      "mailto:" + ziel() +
-      "?subject=" + encodeURIComponent(betreff()) +
-      "&body=" + encodeURIComponent(nachricht());
-    melden(T("E-Mail-Programm wird geöffnet …", "Opening your e-mail program …"));
-    window.location.href = url;
-    // Falls kein Mail-Programm eingerichtet ist, passiert sichtbar nichts —
-    // deshalb nach kurzer Zeit auf den Kopier-Weg hinweisen.
-    setTimeout(() => {
-      melden(
-        T(
-          "Nichts passiert? Nutzen Sie „Text kopieren“ und schreiben Sie an " + ziel() + ".",
-          "Nothing happened? Use “Copy text” and write to " + ziel() + "."
-        )
-      );
-    }, 2500);
-  });
-
-  kopieren.addEventListener("click", async () => {
-    if (!vollstaendig()) return;
-    const text =
-      T("An: ", "To: ") + ziel() +
-      T("\nBetreff: ", "\nSubject: ") + betreff() +
-      "\n\n" + nachricht();
-    try {
-      await navigator.clipboard.writeText(text);
-      melden(
-        T("Kopiert — jetzt in Ihr E-Mail-Programm einfügen.", "Copied — now paste it into your e-mail program.")
-      );
-    } catch (err) {
-      melden(
-        T(
-          "Kopieren nicht möglich. Bitte an " + ziel() + " schreiben.",
-          "Copying failed. Please write to " + ziel() + "."
-        ),
-        true
-      );
-    }
-  });
-
-  // Kommt der Besucher aus dem Konfigurator, seine Auswahl sichtbar anzeigen —
-  // er soll sehen, was mitgeschickt wird, bevor er absendet.
-  (function auswahlZeigen() {
-    const bausteine = ausKonfigurator();
-    if (!bausteine.length) return;
-
-    const kasten = document.createElement("div");
-    kasten.className = "inquiry-picked";
-    kasten.innerHTML =
-      '<span class="inquiry-picked-label">' +
-      T("Aus dem Konfigurator übernommen", "Taken from the configurator") +
-      "</span>" +
-      "<ul>" +
-      bausteine
-        .map(
-          (b) =>
-            "<li><span>" + b.name + "</span><span>" +
-            (b.preis > 0 ? euro.format(b.preis) : T("enthalten", "included")) +
-            "</span></li>"
-        )
-        .join("") +
-      "</ul>" +
-      '<p class="inquiry-picked-sum"><span>' +
-      T("Ungefähre Summe", "Approximate total") +
-      "</span><span>" +
-      euro.format(summeVon(bausteine)) +
-      "</span></p>" +
-      '<p class="inquiry-picked-note">' +
-      T(
-        "Diese Aufstellung geht mit Ihrer Nachricht mit. Unverbindlich — kein Angebot.",
-        "This breakdown is sent along with your message. Non-binding — not an offer."
-      ) +
-      "</p>";
-
-    form.insertBefore(kasten, form.firstElementChild);
-  })();
+  startKnopf.addEventListener("click", mailSchritt);
 })();

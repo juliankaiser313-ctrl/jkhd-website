@@ -16,7 +16,7 @@ sicherheit.html    Sicherheit & Vertraulichkeit: Grundsätze, 6 Bereiche, Ablauf
                    offener Abschnitt über fehlende Zertifizierungen
 mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
 unternehmen.html   Wer wir sind, Auf einen Blick, Einblicke, der Gründer
-kontakt.html       Drei Adressen + Anfrageformular (mailto, kein Server)
+kontakt.html       Drei Kacheln (kontakt@ / service@ / info@) + Partnerzugang (siehe unten)
 impressum.html     Impressum (§ 5 DDG)
 datenschutz.html   Datenschutzerklärung
 404.html           Fehlerseite (zweisprachig)
@@ -38,7 +38,7 @@ sitemap.xml        Sitemap inkl. hreflang-Paare DE/EN
 assets/og-image.png  Vorschaubild für Link-Teilen
 assets/fonts/      Self-hosted Schriften (DSGVO)
 css/style.css      Gesamtes Design (Farben oben als CSS-Variablen)
-js/main.js         Mobile-Nav, Hell/Dunkel, Fragen-Blase, Anfrageformular
+js/main.js         Mobile-Nav, Hell/Dunkel, Fragen-Blase, Partnerzugang
 favicon.svg        Browser-Tab-Icon (drei Balken)
 ```
 
@@ -115,6 +115,35 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
 - **Nach Änderungen an `css/style.css` oder `js/main.js`** den Versionsstempel
   `?v=...` in allen HTML-Dateien hochzählen, sonst bekommen wiederkehrende
   Besucher die alte Datei aus dem Browser-Cache.
+
+## Partnerzugang (Kontaktseite) — Server noch nicht angeschlossen
+
+Der Kasten „Nur für Partner" auf `kontakt.html` / `en/contact.html` führt den
+Ablauf **E-Mail eingeben → Code per E-Mail → Code eingeben → hinterlegte Daten
+sehen**. Das Frontend dafür ist fertig (`js/main.js`, Abschnitt Partnerzugang).
+Eine statische Seite kann aber weder E-Mails verschicken noch Codes prüfen —
+dafür braucht es einen kleinen Server. Solange `data-api` am `.partner`-Element
+leer ist, wird **nichts gesendet**; der Kasten sagt das dem Besucher offen und
+verweist auf `elite@jkhd.de`.
+
+Was der Server können muss (Vorschlag, klein gehalten):
+
+- `POST {api}/code` mit `{"email": "…"}` — prüft die Adresse gegen die
+  Partnerliste, erzeugt einen kurzlebigen Code (z. B. 6 Ziffern, 10 Minuten,
+  einmal gültig), schickt ihn von `elite@jkhd.de` und antwortet **immer** mit
+  `204` — auch für unbekannte Adressen, damit niemand ausprobieren kann, wer
+  Partner ist. Anfragen pro Adresse und IP begrenzen.
+- `POST {api}/login` mit `{"email": "…", "code": "…"}` — bei gültigem Code
+  `200` mit `{"name": "…", "felder": [{"label": "…", "wert": "…"}, …]}`,
+  sonst `401`. Was in `felder` steht, pflegt Julian je Partner.
+- CORS für `https://www.jkhd.de`, sonst nichts.
+
+Offen (Julians Entscheidung): wo der Server läuft (IONOS-Webspace mit PHP,
+Cloudflare Worker, …), wie die Mail rausgeht (IONOS-SMTP für elite@jkhd.de),
+wo die Partnerdaten liegen und wer sie pflegt. Sobald das steht: `data-api`
+in beiden Kontaktseiten setzen, den Abschnitt „Partnerzugang" in der
+Datenschutzerklärung ergänzen (E-Mail-Adresse wird zum Codeversand an den
+Server übermittelt), Stempel hochzählen.
 
 ## Lokal ansehen
 
