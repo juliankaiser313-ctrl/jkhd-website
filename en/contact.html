@@ -32,8 +32,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/kontakt.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/contact.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/kontakt.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20260920b">
-  <link rel="stylesheet" href="../css/style.css?v=20260920b">
+  <link rel="stylesheet" href="../css/fonts.css?v=20260920c">
+  <link rel="stylesheet" href="../css/style.css?v=20260920c">
 </head>
 <body>
 
@@ -119,10 +119,10 @@
       </div>
 
       <!-- ================= PARTNERS =================
-           The flow (e-mail -> code -> data) lives in js/main.js. While
-           data-api is empty no server is connected: nothing is sent and the
-           box says so openly. Interface: README. -->
-      <section class="partner" id="partner" data-api="" aria-labelledby="partner-titel">
+           The flow (e-mail -> code -> data) lives in js/main.js and talks to
+           data-api (IONOS webspace, repo JKHD-Partner-Server). Empty data-api
+           = no server, and the box says so openly. -->
+      <section class="partner" id="partner" data-api="https://api.jkhd.de" aria-labelledby="partner-titel">
         <div class="partner-kopf">
           <span class="kachel-label">Partners only</span>
           <h2 id="partner-titel">Partner access</h2>
@@ -188,6 +188,6 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20260920b"></script>
+  <script src="../js/main.js?v=20260920c"></script>
 </body>
 </html>

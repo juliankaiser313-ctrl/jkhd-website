@@ -674,8 +674,8 @@ if (siteHeader) {
     koerper.innerHTML =
       `<form class="partner-form" novalidate>
          ${hinweis(T(
-           "Wenn diese Adresse bei uns als Partner hinterlegt ist, haben wir Ihnen gerade einen Code geschickt. Er ist nur kurz gültig.",
-           "If this address is registered with us as a partner, we have just sent you a code. It is valid for a short time only."
+           "Wenn diese Adresse bei uns als Partner hinterlegt ist, haben wir Ihnen gerade einen Code geschickt. Er gilt zehn Minuten und nur einmal.",
+           "If this address is registered with us as a partner, we have just sent you a code. It is valid for ten minutes and can be used once."
          ))}
          <div class="field">
            <label for="partner-code">${T("Code aus der E-Mail", "Code from the e-mail")}</label>

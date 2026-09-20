@@ -116,15 +116,16 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
   `?v=...` in allen HTML-Dateien hochzählen, sonst bekommen wiederkehrende
   Besucher die alte Datei aus dem Browser-Cache.
 
-## Partnerzugang (Kontaktseite) — Server noch nicht angeschlossen
+## Partnerzugang (Kontaktseite) — Server läuft unter https://api.jkhd.de
 
 Der Kasten „Nur für Partner" auf `kontakt.html` / `en/contact.html` führt den
 Ablauf **E-Mail eingeben → Code per E-Mail → Code eingeben → hinterlegte Daten
 sehen**. Das Frontend dafür ist fertig (`js/main.js`, Abschnitt Partnerzugang).
-Eine statische Seite kann aber weder E-Mails verschicken noch Codes prüfen —
-dafür braucht es einen kleinen Server. Solange `data-api` am `.partner`-Element
-leer ist, wird **nichts gesendet**; der Kasten sagt das dem Besucher offen und
-verweist auf `elite@jkhd.de`.
+Der Server dazu liegt im eigenen Repo `C:\Quant Arbeit\JKHD-Partner-Server`
+(PHP auf IONOS Webhosting Plus, Vertrag 300371840) und ist als
+`https://api.jkhd.de` angebunden (`data-api` am `.partner`-Element, seit
+20.09.2026). Steht `data-api` leer, wird nichts gesendet und der Kasten sagt
+das dem Besucher offen.
 
 Was der Server können muss (Vorschlag, klein gehalten):
 
@@ -138,12 +139,9 @@ Was der Server können muss (Vorschlag, klein gehalten):
   sonst `401`. Was in `felder` steht, pflegt Julian je Partner.
 - CORS für `https://www.jkhd.de`, sonst nichts.
 
-Offen (Julians Entscheidung): wo der Server läuft (IONOS-Webspace mit PHP,
-Cloudflare Worker, …), wie die Mail rausgeht (IONOS-SMTP für elite@jkhd.de),
-wo die Partnerdaten liegen und wer sie pflegt. Sobald das steht: `data-api`
-in beiden Kontaktseiten setzen, den Abschnitt „Partnerzugang" in der
-Datenschutzerklärung ergänzen (E-Mail-Adresse wird zum Codeversand an den
-Server übermittelt), Stempel hochzählen.
+Partner pflegen = `api-daten/partner.json` auf dem Webspace (siehe README des
+Server-Repos). Die Datenschutzerklärung beschreibt die Verarbeitung im
+Abschnitt „Partnerzugang".
 
 ## Lokal ansehen
 
