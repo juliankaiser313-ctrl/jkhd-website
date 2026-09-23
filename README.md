@@ -11,9 +11,12 @@ Deutsch in der Wurzel, Englisch unter `/en/`.
 index.html         Startseite = Menü: Hero mit Marken-Lockup und zwei Knöpfen, leere Laufleiste
 was-wir-machen.html  Was wir machen: ein Satz, ein Absatz in einfacher Sprache, Bäcker-Kasten, Kontaktkasten
 system.html        Aufbau eines Systems (derzeit nur Kontaktkasten — Inhalt folgt)
-pruefung.html      Wie geprüft wird: Grundsätze, Modulprüfung, 6 Stufen, Belastungsproben
-sicherheit.html    Sicherheit & Vertraulichkeit: Grundsätze, 6 Bereiche, Ablauf NDA→Löschung,
-                   offener Abschnitt über fehlende Zertifizierungen
+pruefung.html      Wie wir das EIGENE System prüfen: 5 Stufen, 6 Belastungsproben mit
+                   „Erwartet", 6 Lehren aus eigenen Fehlschlägen, Empfehlung in 5 Schritten
+                   (24 Stichpunkte), ehrlicher Schluss (23.09.2026)
+sicherheit.html    Sicherheit am EIGENEN System: 7 Sperren am Geldweg, 3 Karten „Spuren",
+                   3 Karten „Daten", 5 Karten „Was wir nicht vorweisen können" —
+                   kein Mandanten-, NDA- oder Übergabe-Bezug mehr (23.09.2026)
 mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
 unternehmen.html   Wer wir sind, Auf einen Blick, Einblicke, der Gründer
 kontakt.html       Drei Kacheln (kontakt@ / service@ / info@) + Partnerzugang (siehe unten)
@@ -26,8 +29,8 @@ holding/           Eigenständige Holding-Variante, aus der Navigation nicht ver
 
 en/index.html      Englische Fassung der Startseite
 en/system.html     "How a system is built"
-en/testing.html    "How we test, before anything runs"
-en/security.html   "What you give us stays yours"
+en/testing.html    "How we test our own system"
+en/security.html   "There are no client files here"
 en/mathematics.html
 en/company.html
 en/contact.html
@@ -88,10 +91,15 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
   Seite waagerecht hinaus. Stand jetzt (inkl. Sicherheit) bleiben bei 1141 px
   rund 244 px Luft — das reicht für etwa einen weiteren Eintrag.
 - **Inhaltliche Zusagen auf `sicherheit.html`** sind bewusst so formuliert,
-  dass sie ohne Zertifikat haltbar sind: keine Meldefrist in Stunden (die
-  gehört in den Vertrag), keine behaupteten Audits, und ein eigener Abschnitt
-  „Was wir nicht vorweisen können". Beim Ändern diese Linie halten — eine
-  Zusage zu viel fällt im Prüffall auf die Seite zurück. Sprache und
+  dass sie ohne Zertifikat haltbar sind: nichts zusagen, was nicht im eigenen
+  Quelltext belegt ist, keine behaupteten Audits, und ein eigener Abschnitt
+  „Was wir nicht vorweisen können" — dort steht seit dem 23.09.2026 auch, dass
+  keine der Sperren je echtes Geld gehalten hat. Zweite Linie: **Prinzip statt
+  Bauplan.** Keine Pfade, keine Fristen, keine Code-Formate, keine
+  Ablagearten, keine Kopfzahl, kein Meldeweg, kein Betriebsort — eine
+  Gegenprüfung aus der Sicht eines Angreifers hat am 23.09. genau dort vier
+  Stellen gefunden. Beim Ändern diese Linie halten — eine Zusage zu viel fällt
+  im Prüffall auf die Seite zurück. Sprache und
   Darstellung kosten dort keine Breite mehr, die liegen im Feld. Der Block ist
   von den übrigen 940-px-Umbrüchen getrennt.
 - **Seitenpaare:** `pruefung.html ↔ en/testing.html`,
