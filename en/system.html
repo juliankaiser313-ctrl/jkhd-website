@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>How a system is built — JKHD</title>
-  <meta name="description" content="How a quant system from JKHD is built: six layers from the data connection through to monitored operation — what goes in and what we watch out for.">
+  <title>The basic kinds — JKHD</title>
+  <meta name="description" content="The eight basic kinds of automated trading system in plain language: arbitrage, market making, trend, mean reversion, pairs trading, carry, events, order book — each with its catch.">
   <meta name="theme-color" content="#f7f6f3">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="JKHD">
@@ -12,8 +12,8 @@
   <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
   <meta property="og:url" content="https://www.jkhd.de/en/system.html">
   <link rel="canonical" href="https://www.jkhd.de/en/system.html">
-  <meta property="og:title" content="How a system is built — JKHD">
-  <meta property="og:description" content="Six layers, their components, and the mistakes we rule out beforehand.">
+  <meta property="og:title" content="The basic kinds — JKHD">
+  <meta property="og:description" content="Eight basic kinds of automated trading system — plainly explained, each with its catch.">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -32,8 +32,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/system.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/system.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/system.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20260923b">
-  <link rel="stylesheet" href="../css/style.css?v=20260923b">
+  <link rel="stylesheet" href="../css/fonts.css?v=20260923d">
+  <link rel="stylesheet" href="../css/style.css?v=20260923d">
 </head>
 <body>
 
@@ -93,13 +93,135 @@
 
   <main id="main">
 
+  <section class="page-head">
+    <div class="container">
+      <p class="kicker">// System</p>
+      <h1>How a system tries to make money.</h1>
+      <p>A trading program always carries an assumption about why a price
+         moves. This page shows the eight basic kinds — in plain language and
+         with the catch each one has.</p>
+    </div>
+  </section>
+
+  <!-- ================= THE BASIC KINDS =================
+       The families of automated trading systems in plain language, each with
+       its catch. Built from the .creed grid (cell: number, title, sentence,
+       catch) — the same parts as the principles on the security page. -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// The basic kinds</p>
+        <h2>Eight ways a program tries to make money</h2>
+        <p>Every automated trading system belongs to one of these families, or
+           mixes several. Here is what each one does and where it fails. Not a
+           manual — just the idea behind it.</p>
+      </div>
+      <div class="creed">
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">01</span>
+            <h3>Arbitrage</h3>
+            <p class="creed-say">The same thing at two prices. Whoever sees both at once buys cheaply there and sells dearly here — in the same moment, without betting on a direction.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The catch</span>
+              <p>The gap is tiny and gone in milliseconds. Without the shortest line and a machine next to the exchange you arrive too late.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">02</span>
+            <h3>Market making</h3>
+            <p class="creed-say">Always quote a price to buy and a price to sell, and earn the spread between them. The money comes from turnover, not from direction.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The catch</span>
+              <p>You get filled in full exactly when everyone runs the same way — and you are left holding the position nobody wants.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">03</span>
+            <h3>Trend</h3>
+            <p class="creed-say">What moves often keeps moving. You join the direction that is already running and stay until it breaks.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The catch</span>
+              <p>Many small false starts stand against a few large hits. Whoever cannot sit through the false starts stops before the hit.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">04</span>
+            <h3>Mean reversion</h3>
+            <p class="creed-say">A spike usually comes back. You trade against the exaggeration and wait for the price to settle.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The catch</span>
+              <p>Sometimes the spike is not a spike but a beginning. Then the loss grows with every step you add.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">05</span>
+            <h3>Pairs trading</h3>
+            <p class="creed-say">Two things that normally move together drift apart for a while: sell the dearer one, buy the cheaper one, wait for them to meet again.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The catch</span>
+              <p>“Normally” is an assumption about the past. If a company really changes, the pair never comes back together.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">06</span>
+            <h3>Carry</h3>
+            <p class="creed-say">Some positions pay you for holding them — an interest difference, a roll gain, an insurance premium. The money comes from waiting, not moving.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The catch</span>
+              <p>It goes well for a long time and then very badly once. The premium is the payment for exactly that rare once.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">07</span>
+            <h3>Events</h3>
+            <p class="creed-say">Figures, decisions, dates: the price jumps when something new becomes known. What is traded is the reaction, not your own opinion.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The catch</span>
+              <p>The reaction takes milliseconds, and part of the news is already in the price. Whoever reads it first trades the second wave.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">08</span>
+            <h3>Order book</h3>
+            <p class="creed-say">The order book shows who wants how much at which price. The jostling of orders tells you something about the next small step.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The catch</span>
+              <p>That holds for seconds, not days. And orders lie: they are placed to be seen and then withdrawn.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="creed-close">
+        <span class="creed-close-label">// And here?</span>
+        We work on patterns in the price — movement that keeps running, and
+        spikes that come back. Arbitrage and high-frequency trading are not
+        among them: those need lines and locations a small firm does not buy.
+      </p>
+    </div>
+  </section>
+
   <!-- ================= CTA ================= -->
   <section class="section">
     <div class="container">
       <div class="cta-panel">
-        <h2>Which layers do you need?</h2>
-        <p>Tell us what you already have in place — we will tell you what is
-           missing and what you can save yourself.</p>
+        <h2>Which system do you use?</h2>
+        <p>Write to us — we welcome suggestions for improvement, and we answer
+           questions too.</p>
         <a href="contact.html" class="btn btn-primary">Get in touch</a>
         <a href="what-we-do.html" class="btn btn-ghost">What we do</a>
       </div>
@@ -156,6 +278,6 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20260923b"></script>
+  <script src="../js/main.js?v=20260923d"></script>
 </body>
 </html>

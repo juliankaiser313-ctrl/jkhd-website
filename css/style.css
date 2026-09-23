@@ -53,6 +53,10 @@
   --rule-3: rgba(16, 16, 18, 0.1);
   --watermark: rgba(16, 16, 18, 0.05);
   --watermark-hi: rgba(16, 16, 18, 0.14);
+  /* Vorbelegung fuer den Vollbild-Hero: Kopfzeile + Aufbau-Band. Ohne
+     JavaScript bleibt es dabei (statt nur der Kopfzeile, was den Hero um die
+     Bandhoehe zu hoch machte); mit Skript wird der genaue Wert gesetzt. */
+  --hero-abzug: calc(var(--header-h) + 45px);
   --vip: #b3261e;                       /* die einzige Farbe der Seite: der VIP-Kasten */
   --vip-wash: rgba(179, 38, 30, 0.06);
   --gold: #d9a400;                      /* die Krone ueber allem, was VIP heisst */
@@ -139,6 +143,19 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   transition: top 0.2s;
 }
 .skip-link:focus { top: 12px; }
+
+/* Nur fuer Bildschirmleser: sichtbar fuer die Technik, unsichtbar fuer das Auge */
+.nur-vorlesen {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
@@ -474,8 +491,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .hero-voll {
   display: grid;
   align-content: center;
-  min-height: calc(100vh - var(--hero-abzug, var(--header-h)));
-  min-height: calc(100svh - var(--hero-abzug, var(--header-h)));
+  min-height: calc(100vh - var(--hero-abzug));
+  min-height: calc(100svh - var(--hero-abzug));
   padding: 72px 0 112px;
 }
 
@@ -497,6 +514,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   color: var(--muted);
 }
 .hero-weiter:hover { color: var(--text); }
+.hero-voll.ist-ueberhoch .hero-weiter { display: none; }   /* passt der Hero nicht auf den Schirm, zeigt der Pfeil ins Leere */
 .hero-weiter svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1233,7 +1251,9 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   
   
 
-  /* Das Aufbau-Band darf den ersten Bildschirm nicht dominieren */
+  /* Das Aufbau-Band darf den ersten Bildschirm nicht dominieren; es braucht
+     hier mehr Zeilen, darum eine groessere Vorbelegung fuer den Hero-Abzug. */
+  :root { --hero-abzug: calc(var(--header-h) + 76px); }
   .build-note { padding: 9px 0; font-size: 0.78rem; }
   .build-note .container { line-height: 1.5; }
 

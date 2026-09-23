@@ -354,16 +354,20 @@ if (siteHeader) {
 })();
 
 // ---------- Startseite: der Hero fuellt genau den ersten Bildschirm ----------
-// Abgezogen wird alles, was ueber dem Hero liegt (Aufbau-Band + Kopfzeile).
-// Gemessen statt geraten, damit es auch stimmt, wenn das Band wegfaellt oder
-// der Text darin umbricht.
+// Den ersten Wert setzt ein Inline-Skript in index.html direkt hinter der
+// Kopfzeile (sonst waere die Seite beim ersten Zeichnen zu hoch). Hier wird
+// nur nachgemessen: abgezogen wird, was ueber dem Hero liegt (Aufbau-Band +
+// Kopfzeile). Abgerundet, damit die Laufleiste keine Haarlinie zeigt.
 (function () {
   const hero = document.querySelector(".hero-voll");
   if (!hero) return;
 
   function abzug() {
     const oben = hero.getBoundingClientRect().top + window.scrollY;
-    document.documentElement.style.setProperty("--hero-abzug", Math.round(oben) + "px");
+    document.documentElement.style.setProperty("--hero-abzug", Math.floor(oben) + "px");
+    // Passt der Hero nicht auf den Schirm (kurzes Fenster, starker Zoom),
+    // waere der Pfeil unter der Falte — dann ist er ueberfluessig.
+    hero.classList.toggle("ist-ueberhoch", Math.ceil(oben + hero.offsetHeight) > window.innerHeight + 1);
   }
 
   let geplant = false;
@@ -375,7 +379,14 @@ if (siteHeader) {
 
   abzug();
   window.addEventListener("resize", spaeter);
-  window.addEventListener("orientationchange", spaeter);
+  // Die Hoehe des Aufbau-Bandes haengt an der Schriftgroesse: reiner Textzoom
+  // aendert sie, ohne dass resize feuert. Der Beobachter merkt es trotzdem.
+  if (window.ResizeObserver) {
+    const wache = new ResizeObserver(spaeter);
+    document.querySelectorAll(".build-note, .site-header").forEach((el) => wache.observe(el));
+  } else {
+    window.addEventListener("orientationchange", spaeter);
+  }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(abzug);
 })();
 

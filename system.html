@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aufbau eines Systems — JKHD</title>
-  <meta name="description" content="Wie ein Quant-System von JKHD aufgebaut ist: sechs Schichten von der Datenanbindung bis zum überwachten Betrieb — was eingebaut wird und worauf wir achten.">
+  <title>Die Grundarten — JKHD</title>
+  <meta name="description" content="Die acht Grundarten automatischer Handelssysteme in einfacher Sprache: Arbitrage, Marktmachen, Trend, Rückkehr zum Mittel, Paarhandel, Halteprämie, Ereignisse, Orderbuch — je mit dem Haken, den sie hat.">
   <meta name="theme-color" content="#f7f6f3">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="JKHD">
   <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
   <meta property="og:url" content="https://www.jkhd.de/system.html">
   <link rel="canonical" href="https://www.jkhd.de/system.html">
-  <meta property="og:title" content="Aufbau eines Systems — JKHD">
-  <meta property="og:description" content="Sechs Schichten, ihre Bauteile und die Fehler, die wir vorher ausschließen.">
+  <meta property="og:title" content="Die Grundarten — JKHD">
+  <meta property="og:description" content="Acht Grundarten automatischer Handelssysteme — einfach erklärt, je mit dem Haken.">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -33,8 +33,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/system.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/system.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/system.html">
-  <link rel="stylesheet" href="css/fonts.css?v=20260923b">
-  <link rel="stylesheet" href="css/style.css?v=20260923b">
+  <link rel="stylesheet" href="css/fonts.css?v=20260923d">
+  <link rel="stylesheet" href="css/style.css?v=20260923d">
 </head>
 <body>
 
@@ -94,13 +94,136 @@
 
   <main id="main">
 
+  <section class="page-head">
+    <div class="container">
+      <p class="kicker">// System</p>
+      <h1>Wie ein System Geld verdienen will.</h1>
+      <p>Ein Handelsprogramm hat immer eine Annahme darüber, warum ein Preis
+         sich bewegt. Diese Seite zeigt die acht Grundarten — in einfacher
+         Sprache und mit dem Haken, den jede hat.</p>
+    </div>
+  </section>
+
+  <!-- ================= GRUNDARTEN =================
+       Die Familien automatischer Handelssysteme in einfacher Sprache, je mit
+       dem Haken. Gebaut aus dem .creed-Raster (Zelle: Nummer, Titel, Satz,
+       Haken) — dieselben Bausteine wie die Prinzipien auf der Sicherheitsseite. -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Grundarten</p>
+        <h2>Acht Wege, auf denen ein Programm Geld verdienen will</h2>
+        <p>Jedes automatische Handelssystem gehört in eine dieser Familien —
+           oder es mischt mehrere. Hier steht, was jede tut und woran sie
+           scheitert. Keine Anleitung, nur die Idee dahinter.</p>
+      </div>
+      <div class="creed">
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">01</span>
+            <h3>Arbitrage</h3>
+            <p class="creed-say">Dieselbe Sache, zwei Preise. Wer beide gleichzeitig sieht, kauft dort billig und verkauft hier teuer — im selben Moment, ohne auf eine Richtung zu wetten.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">Der Haken</span>
+              <p>Der Unterschied ist winzig und nach Millisekunden weg. Ohne die kürzeste Leitung und einen Rechner neben der Börse kommt man zu spät.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">02</span>
+            <h3>Marktmachen</h3>
+            <p class="creed-say">Immer ein Kauf- und ein Verkaufsangebot stellen und an der Spanne dazwischen verdienen. Verdient wird am Umsatz, nicht an der Richtung.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">Der Haken</span>
+              <p>Die volle Ladung bekommt man genau dann, wenn alle in dieselbe Richtung rennen — und sitzt auf der Position, die keiner will.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">03</span>
+            <h3>Trend</h3>
+            <p class="creed-say">Was sich bewegt, bewegt sich oft weiter. Man steigt in die laufende Richtung ein und bleibt drin, bis sie bricht.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">Der Haken</span>
+              <p>Viele kleine Fehlstarts stehen gegen wenige große Treffer. Wer die Fehlstarts nicht aushält, hört vor dem Treffer auf.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">04</span>
+            <h3>Rückkehr zum Mittel</h3>
+            <p class="creed-say">Ein Ausschlag geht meist wieder zurück. Man handelt gegen die Übertreibung und wartet, bis sich der Kurs beruhigt.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">Der Haken</span>
+              <p>Manchmal ist der Ausschlag kein Ausschlag, sondern der Anfang. Dann wächst der Verlust mit jedem Schritt, den man nachlegt.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">05</span>
+            <h3>Paarhandel</h3>
+            <p class="creed-say">Zwei Dinge, die sonst zusammenlaufen, laufen kurz auseinander: das teurere verkaufen, das billigere kaufen, auf die Annäherung warten.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">Der Haken</span>
+              <p>„Sonst“ ist eine Annahme über die Vergangenheit. Ändert sich ein Unternehmen wirklich, kommt das Paar nie mehr zusammen.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">06</span>
+            <h3>Halteprämie</h3>
+            <p class="creed-say">Manche Positionen zahlen fürs Halten — Zinsunterschied, Rollgewinn, Versicherungsprämie. Verdient wird am Warten, nicht an der Bewegung.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">Der Haken</span>
+              <p>Es läuft lange gut und dann einmal sehr schlecht. Die Prämie ist die Bezahlung für genau dieses seltene Mal.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">07</span>
+            <h3>Ereignisse</h3>
+            <p class="creed-say">Zahlen, Beschlüsse, Termine: Der Kurs springt, wenn etwas Neues bekannt wird. Gehandelt wird die Reaktion, nicht die eigene Meinung.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">Der Haken</span>
+              <p>Die Reaktion dauert Millisekunden, und ein Teil der Nachricht steht schon im Kurs. Wer sie erst liest, handelt die zweite Welle.</p>
+            </div>
+          </div>
+        </div>
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">08</span>
+            <h3>Orderbuch</h3>
+            <p class="creed-say">Im Orderbuch steht, wer wie viel zu welchem Preis will. Aus dem Drängeln der Aufträge lässt sich der nächste kleine Schritt lesen.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">Der Haken</span>
+              <p>Das gilt für Sekunden, nicht für Tage. Und Aufträge lügen: Sie werden gestellt, um gesehen zu werden, und verschwinden wieder.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="creed-close">
+        <span class="creed-close-label">// Und bei uns?</span>
+        Wir arbeiten an Mustern im Kursverlauf — Bewegung, die weiterläuft, und
+        Ausschlägen, die zurückkommen. Arbitrage und Hochfrequenzhandel gehören
+        nicht dazu: Dafür braucht es Leitungen und Standorte, die sich eine
+        kleine Firma nicht kauft.
+      </p>
+    </div>
+  </section>
+
   <!-- ================= CTA ================= -->
   <section class="section">
     <div class="container">
       <div class="cta-panel">
-        <h2>Welche Schichten brauchen Sie?</h2>
-        <p>Sagen Sie uns, was bei Ihnen schon steht — wir sagen Ihnen, was
-           fehlt und was Sie sich sparen können.</p>
+        <h2>Welches System nutzen Sie?</h2>
+        <p>Schreiben Sie uns — über Verbesserungsvorschläge freuen wir uns,
+           Fragen beantworten wir auch.</p>
         <a href="kontakt.html" class="btn btn-primary">Kontakt aufnehmen</a>
         <a href="was-wir-machen.html" class="btn btn-ghost">Was wir machen</a>
       </div>
@@ -157,6 +280,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20260923b"></script>
+  <script src="js/main.js?v=20260923d"></script>
 </body>
 </html>
