@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Testing — JKHD</title>
-  <meta name="description" content="How JKHD tests quant systems: what is proven for a single module, the six stages a complete system goes through, which failures we cause on purpose — and what you hold in your hands at the end.">
+  <meta name="description" content="How JKHD tests its own trading system: five stages, six stress tests, six lessons from tests that were wrong themselves — and a recommendation of what to test, in which order.">
   <meta name="theme-color" content="#f7f6f3">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="JKHD">
@@ -13,7 +13,7 @@
   <meta property="og:url" content="https://www.jkhd.de/en/testing.html">
   <link rel="canonical" href="https://www.jkhd.de/en/testing.html">
   <meta property="og:title" content="Testing — JKHD">
-  <meta property="og:description" content="Testing is not a step at the end but the largest part of the work. What is proven for a module, and what a complete system adds.">
+  <meta property="og:description" content="Five stages, six stress tests, six lessons from our own failures — and a recommendation of what to test.">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -93,15 +93,424 @@
 
   <main id="main">
 
+  <section class="page-head">
+    <div class="container">
+      <p class="kicker">// Testing</p>
+      <h1>How we test our own system.</h1>
+      <p>We build programs that trade on the markets by themselves, and we use
+         them only ourselves. This page says how we test them, what our own
+         tests have taught us — and what we would recommend to anyone setting
+         out to do the same.</p>
+    </div>
+  </section>
+
+  <!-- ================= HOW WE TEST ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// How we test</p>
+        <h2>Five stages before a program may touch money.</h2>
+        <p>Every stage is allowed to stop the process. Stopping is not the
+           setback, it is the point of the exercise — the earlier, the
+           cheaper.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step-row">
+          <div class="step-num">01</div>
+          <div>
+            <h3>Red first</h3>
+            <p>A test only counts here once it has been red with the fault
+               present: first the test, then the repair. Every item on our task
+               list has its own field for that — leaving it empty means nothing
+               was proven, only claimed.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">02</div>
+          <div>
+            <h3>A frozen comparison run</h3>
+            <p>A stored run is replayed line by line: two runs with the same
+               input must be bit-identical. A second test deliberately gives a
+               different input and demands a different result — otherwise the
+               first would pass even if the run ignored the input entirely. If
+               the comparison file is missing, the test fails; it is not
+               skipped.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">03</div>
+          <div>
+            <h3>Searching against chance</h3>
+            <p>The search runs on the earlier part of the history and is
+               confirmed on the later one; any record whose measurement window
+               reaches into the confirmation part is dropped beforehand, and in
+               a rolling procedure the selection has to hold again at every time
+               boundary. Costs and slippage sit inside the figure a candidate is
+               judged by. The same search additionally runs over series in which
+               the link between signal and future has been destroyed, and over
+               one with an effect built in on purpose: that tells us how often
+               it fires on noise, and whether it finds anything at all.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">04</div>
+          <div>
+            <h3>Shadow operation under the locks that matter</h3>
+            <p>A candidate first runs along without money. While it does, the
+               locks that decide about the signal must apply to it as well:
+               regime filter, repetition stop, only one open position. The
+               capital limits fall away because no capital is at stake —
+               everything else does not. If a single one were missing, entries
+               would appear that never could have happened with money at stake,
+               and their results would land in the same evidence that later
+               decides on promotion.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">05</div>
+          <div>
+            <h3>Monitored continuous operation</h3>
+            <p>A process being listed by the operating system does not prove it
+               is working. So the clock writes its own sign of life out of wall
+               time and a counter; a watchdog ends a stalled run and restarts it
+               only on the next pass, rather than letting two run at once.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="note">
+        <b>Two things that belong with this:</b> warnings count as errors here,
+        and every exception to that is listed individually with its reason. And
+        the one run that carries the whole chain into the execution path takes
+        minutes rather than seconds — it is excluded from the normal test run
+        and tied to a fixed occasion instead: before any change to the clock it
+        is mandatory. That this leaves a gap in
+        day-to-day runs is itself asserted in the test suite, so the gap stays
+        named instead of going quiet.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STRESS TESTS ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Stress tests</p>
+        <h2>What we break on purpose.</h2>
+        <p>A system shows its character not in normal operation but on the day
+           something fails. So we bring that day forward — and write down what
+           has to come out of it.</p>
+      </div>
+
+      <div class="kinds">
+        <article class="kind">
+          <div>
+            <h3>Connection lost mid-order</h3>
+            <p>The broker loses the connection while an order is in flight, and
+               never answers.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Expected</span>
+            <em>No trade booked, the slot stays taken, nothing is sent after it</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Restart in mid-session</h3>
+            <p>The process dies between two day boundaries while the book is
+               open.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Expected</span>
+            <em>Balance and daily loss survive — and the daily loss limit can only get stricter, never more generous</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Two writers, one file</h3>
+            <p>Both have read, neither has written; then both write — inside
+               the same process. Two separate processes are not covered by our
+               code; that gap is named.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Expected</span>
+            <em>No entry lost, the file's checksum chain intact</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Half a final line</h3>
+            <p>The process is killed hard and the last log line breaks off
+               mid-word.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Expected</span>
+            <em>Writing can continue, and the truncated bytes are kept as evidence</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Process runs, work stalls</h3>
+            <p>The process sits there perfectly, but no longer processes a
+               single tick.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Expected</span>
+            <em>End it first, restart it on the next pass</em>
+          </div>
+        </article>
+        <article class="kind">
+          <div>
+            <h3>Switching between practice and earnest</h3>
+            <p>The mode switch is requested while the position state is
+               unclear.</p>
+          </div>
+          <div class="kind-spec">
+            <span>Expected</span>
+            <em>Open, contradictory or unreadable positions block the switch</em>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHAT WE LEARNED ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Learned</p>
+        <h2>Six lessons from our own tests.</h2>
+        <p>Not from books, but from tests that were wrong themselves. Each of
+           them lulled us into safety for a while.</p>
+      </div>
+
+      <div class="creed">
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">01</span>
+            <h3>Green with nothing behind it</h3>
+            <p class="creed-say">Our own check for coding rules silently fell
+               back to a plain syntax test whenever the tool was missing, and
+               passed that success on. For six weeks it reported green without
+               having checked a single rule.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The lesson</span>
+              <p>A green result with nothing behind it is worse than a red one:
+                 it answers the question without asking it. Today the command
+                 refuses the green result and says that nothing was checked.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">02</span>
+            <h3>The test was the culprit</h3>
+            <p class="creed-say">A full test run wrote into the control file of
+               the running system and thereby set the kill switch. A second time
+               it created files inside the data of the running programs — and
+               that was noticed only by chance.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The lesson</span>
+              <p>The separation between testing and operation has to be
+                 enforced, not agreed upon. And afterwards you go and look at
+                 what has newly appeared in the real data.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">03</span>
+            <h3>The net without meshes</h3>
+            <p class="creed-say">One of our frozen comparison runs was cited
+               throughout our own task list as the safety net for position size,
+               daily budget and order path. Measured, that very run does not
+               execute a single trade — the trading sits in a different run, and
+               that was written down nowhere.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The lesson</span>
+              <p>What a test run actually touches has to be measured. Nothing
+                 follows from the name of a test — and an unnamed gap turns into
+                 a silent assumption.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">04</span>
+            <h3>Tests that cannot go red</h3>
+            <p class="creed-say">Our own suite contained assertions made always
+               true by an appended expression: in the report they counted as
+               checks and checked nothing. When we armed them again, two held
+               straight away — the third was simply worded wrongly.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The lesson</span>
+              <p>Whoever switches a disabled check back on finds the fault in
+                 the check at least as often as in the code under test. Without
+                 switching it on, neither ever comes to light.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">05</span>
+            <h3>Green one day, red the next</h3>
+            <p class="creed-say">Our deepest run read the control layer of the
+               running system. It came out green or red depending on what had
+               last been clicked on the panel — without a single line of code
+               having changed.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The lesson</span>
+              <p>A test whose result depends on anything other than the code
+                 under test is worthless as a net. Worse: it trains you to click
+                 red runs away.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">06</span>
+            <h3>The floor is not a data problem</h3>
+            <p class="creed-say">How small an effect may be for us to detect it
+               at all has a fixed base made of trading costs and a safety
+               haircut. No additional amount of data buys that away; only the
+               part above it improves.</p>
+            <div class="creed-cost">
+              <span class="creed-cost-label">The lesson</span>
+              <p>Before obtaining more data, measure which part of your own
+                 blindness actually depends on the amount of data. The rest is
+                 the physics of costs.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RECOMMENDATION ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Recommendation</p>
+        <h2>What we would test — in this order.</h2>
+        <p>No prescription, just the order that would have saved us work.
+           Starting at the top means having to believe less further down.</p>
+      </div>
+
+      <div class="guards">
+        <article class="guard">
+          <span class="guard-label">Step 01</span>
+          <h3>The measuring device first</h3>
+          <p>Before you test your system, test your test. Otherwise you are
+             measuring your confidence, not your system.</p>
+          <ul class="guard-list">
+            <li>Two runs with the same input must give the same result — before that you are comparing chance</li>
+            <li>Run every check once against the fault it is meant to find</li>
+            <li>One single command that reads the running state and delivers a verdict at the end — a checklist in a document ends up merely being copied out</li>
+            <li>Measure which paths a test run touches, and name the gap explicitly</li>
+            <li>Build guards on the property, not on a list of known names: our first one counted three known shapes and missed five more of the same kind</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Step 02</span>
+          <h3>Data and features</h3>
+          <p>Our most expensive faults were sitting here — and at first
+             glance they were invisible.</p>
+          <ul class="guard-list">
+            <li>For every feature, the question: was this value complete at the moment of the decision?</li>
+            <li>A range computed across the night measures the overnight gap, not a tradable path — session boundaries belong in the calculation</li>
+            <li>Contract rolls and clock changes: walk them through on the data, do not assume them</li>
+            <li>A half-written log must stay readable and keep the remainder as evidence</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Step 03</span>
+          <h3>Statistics</h3>
+          <p>What is being tested here is not the best result, but the search
+             that led to it.</p>
+          <ul class="guard-list">
+            <li>Search and confirm on separate stretches; lock the border zone between them</li>
+            <li>Costs and slippage inside the figure you test against — not as a deduction afterwards</li>
+            <li>And the part of the costs that grows with the distance to the stop calculated separately from the fixed part</li>
+            <li>Run the same procedure over data with no link in it and count how often it reports something</li>
+            <li>Alongside that, a series with an effect built in: does the setup find anything at all?</li>
+            <li>In a rolling procedure the selection has to hold again at every time boundary</li>
+            <li>Note down for every procedure what it cannot see — in the same place as the procedure itself</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Step 04</span>
+          <h3>Risk</h3>
+          <p>A good average says nothing about whether one sequence of results
+             tears the account along the way.</p>
+          <ul class="guard-list">
+            <li>Draw many possible sequences of results and count how often the account fails</li>
+            <li>For every unavoidable assumption, pick the variant whose error makes the result look worse</li>
+            <li>Know your own cost floor before buying more data</li>
+            <li>Demand a real distance from zero at your own gate, and do not ask the question again after every new result — otherwise it eventually lets anything through</li>
+          </ul>
+        </article>
+
+        <article class="guard">
+          <span class="guard-label">Step 05</span>
+          <h3>Execution and operation</h3>
+          <p>The part backtests know nothing about — and the part where money
+             actually moves. The failures from the section above belong here;
+             and these four as well:</p>
+          <ul class="guard-list">
+            <li>Let a candidate run along without money first — under the same locks that decide about the signal — and check that this recording does not stop the moment it is promoted</li>
+            <li>Reconcile your own positions against the broker's: a position that exists on only one side has to produce a line in the log</li>
+            <li>Check that a rule is really called in operation — we had a finished invariant against phantom positions sitting there, and the only thing calling it was a test</li>
+            <li>A failed run must never look like a null result — otherwise every crash improves the verdict</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="note">
+        <b>How to tell that a test is worth nothing:</b> it cannot go red. Or it
+        was skipped — and in a short report a skip looks almost like a pass. Or
+        its result depends on something other than the code under test. Or its
+        failure message promises more than it really checks: that message is an
+        assurance to everyone who reads it later.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= THE HONEST LIMIT ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Limit</p>
+        <h2>What these tests do not achieve.</h2>
+        <p>None of them creates an advantage in the market. They prevent
+           self-deception: taking noise for a pattern, a number for a
+           measurement, a green tick for proof. Part of it is also precaution —
+           there is no real broker attached to our system yet, and the failure
+           drills run against stand-ins. And what is not tested sits in the same
+           list as what is: two writers in two processes, for one. Or the single
+           command that reads the running state and delivers a verdict — we
+           recommend it above, and we do not have it yet.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ================= CTA ================= -->
   <section class="section">
     <div class="container">
       <div class="cta-panel">
-        <h2>How would your system fare?</h2>
-        <p>Tell us what is running at your end — we will tell you which of
-           these tests it would pass and which it would not.</p>
+        <h2>How do you test?</h2>
+        <p>Write to us — suggestions for improvement are welcome, and we answer
+           questions too.</p>
         <a href="contact.html" class="btn btn-primary">Get in touch</a>
-        <a href="system.html" class="btn btn-ghost">How a system is built</a>
+        <a href="system.html" class="btn btn-ghost">The basic kinds</a>
       </div>
     </div>
   </section>
