@@ -353,6 +353,32 @@ if (siteHeader) {
   update();
 })();
 
+// ---------- Startseite: der Hero fuellt genau den ersten Bildschirm ----------
+// Abgezogen wird alles, was ueber dem Hero liegt (Aufbau-Band + Kopfzeile).
+// Gemessen statt geraten, damit es auch stimmt, wenn das Band wegfaellt oder
+// der Text darin umbricht.
+(function () {
+  const hero = document.querySelector(".hero-voll");
+  if (!hero) return;
+
+  function abzug() {
+    const oben = hero.getBoundingClientRect().top + window.scrollY;
+    document.documentElement.style.setProperty("--hero-abzug", Math.round(oben) + "px");
+  }
+
+  let geplant = false;
+  function spaeter() {
+    if (geplant) return;
+    geplant = true;
+    requestAnimationFrame(() => { geplant = false; abzug(); });
+  }
+
+  abzug();
+  window.addEventListener("resize", spaeter);
+  window.addEventListener("orientationchange", spaeter);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(abzug);
+})();
+
 // ---------- Scroll-Reveal: Inhalte gleiten beim Scrollen herein ----------
 // Die Ziel-Elemente werden hier markiert, das CSS (.reveal/.in) macht den Rest.
 (function () {
