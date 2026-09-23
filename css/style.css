@@ -479,11 +479,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   padding: 72px 0 112px;
 }
 
-/* Das Raster reicht ueber den ganzen Bildschirm und verlaeuft erst unten */
-.hero-voll::before {
-  mask-image: linear-gradient(to bottom, #000 58%, transparent 97%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 97%);
-}
+/* Das Raster behaelt die weiche Maske von .hero (radial, von oben mittig nach
+   aussen verlaufend) — auf dem hohen Hero wird es dadurch nach unten und zu
+   den Raendern hin schwaecher, statt ueberall gleich stark zu stehen
+   (Julian, 23.09.2026: „nicht so schoen wie vorher"). Keine eigene Maske hier. */
 
 .hero-weiter {
   position: absolute;
