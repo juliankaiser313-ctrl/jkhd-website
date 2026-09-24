@@ -624,6 +624,8 @@ const PartnerSitzung = {
 // Kasten sagt das offen. Schnittstelle (siehe README, Abschnitt Partnerzugang):
 //   POST {api}/code   {"email": "..."}                 -> 204, immer (verraet nicht, wer Partner ist)
 //   POST {api}/login  {"email": "...", "code": "..."}  -> 200 {"token": "..."}, 401 bei falschem oder abgelaufenem Code
+//   POST {api}/anfrage {name, email, rolle, anliegen, profil, nachricht, sprache}
+//                                                     -> 200 {"ok":true}, 429 zu oft, 400 Eingabe
 //   Danach geht es auf partner.html; die holt mit dem Zeichen POST {api}/daten.
 (function () {
   const box = document.querySelector(".partner");
@@ -736,8 +738,12 @@ const PartnerSitzung = {
   let lauf = 0;
   function neuerLauf() { return ++lauf; }
   function veraltet(meins) { return meins !== lauf; }
+  // Waehrend eine Anfrage laeuft, ist der Senden-Knopf zu — „Abbrechen"
+  // bleibt offen, sonst sitzt fest, wer auf eine haengende Antwort wartet.
   function gesperrt(form, ja) {
-    form.querySelectorAll("button").forEach((b) => { b.disabled = ja; });
+    form.querySelectorAll("button").forEach((b) => {
+      if (b.dataset.partner !== "zurueck") b.disabled = ja;
+    });
   }
 
   // Schritt 1: E-Mail-Adresse
@@ -859,16 +865,31 @@ const PartnerSitzung = {
     window.location.href = "partner.html";
   }
 
-  // Anfrage: ein fester Fragebogen. „Senden" baut aus den Antworten eine
-  // E-Mail und oeffnet das E-Mail-Programm des Besuchers (mailto) — es geht
-  // nichts an den Server, es bleibt nichts im Browser.
+  // Anfrage: ein fester Fragebogen. „Senden" schickt die Antworten an den
+  // Zugang; der leitet sie an service@ weiter und bestaetigt dem Einsender
+  // sofort per E-Mail (Julians Wunsch, 24.09.2026). Klappt das nicht — kein
+  // Server, kein Netz, Bremse —, oeffnet sich wie bisher das E-Mail-Programm
+  // mit dem fertigen Text: niemand verliert, was er geschrieben hat.
   const FRAGEN = () => [
     { id: "name", frage: T("Ihr Name", "Your name"), typ: "text", pflicht: true, auto: "name" },
     { id: "email", frage: T("Ihre E-Mail-Adresse", "Your e-mail address"), typ: "email", pflicht: true, auto: "email" },
+    // Die Optionen tragen stabile Schluessel: gesendet wird der Schluessel,
+    // angezeigt die uebersetzte Beschriftung. Sonst haetten wir auf der
+    // englischen Seite andere Werte als auf der deutschen.
     { id: "rolle", frage: T("Was beschreibt Sie am besten?", "What describes you best?"), typ: "select", pflicht: true,
-      optionen: [T("Quant / Entwickler", "Quant / developer"), T("Trader", "Trader"), T("Unternehmen", "Company"), T("Etwas anderes", "Something else")] },
+      optionen: [
+        { w: "quant", t: T("Quant / Entwickler", "Quant / developer") },
+        { w: "trader", t: T("Trader", "Trader") },
+        { w: "firma", t: T("Unternehmen", "Company") },
+        { w: "anderes", t: T("Etwas anderes", "Something else") },
+      ] },
     { id: "anliegen", frage: T("Worum geht es?", "What is it about?"), typ: "select", pflicht: true,
-      optionen: [T("Partnerschaft", "Partnership"), T("Austausch unter Quants", "Exchange among quants"), T("Zugang zum Partnerbereich", "Access to the partner area"), T("Etwas anderes", "Something else")] },
+      optionen: [
+        { w: "partnerschaft", t: T("Partnerschaft", "Partnership") },
+        { w: "austausch", t: T("Austausch unter Quants", "Exchange among quants") },
+        { w: "zugang", t: T("Zugang zum Partnerbereich", "Access to the partner area") },
+        { w: "anderes", t: T("Etwas anderes", "Something else") },
+      ] },
     { id: "profil", frage: T("Website oder Profil (optional)", "Website or profile (optional)"), typ: "url", pflicht: false, auto: "url" },
     { id: "nachricht", frage: T("Ihre Nachricht", "Your message"), typ: "textarea", pflicht: true },
   ];
@@ -880,7 +901,7 @@ const PartnerSitzung = {
     if (f.typ === "select") {
       return `<div class="field">${label}<select id="${id}" name="${f.id}"${pflicht}>
         <option value="">${T("Bitte wählen", "Please choose")}</option>
-        ${f.optionen.map((o) => `<option>${esc(o)}</option>`).join("")}</select></div>`;
+        ${f.optionen.map((o) => `<option value="${esc(o.w)}">${esc(o.t)}</option>`).join("")}</select></div>`;
     }
     if (f.typ === "textarea") {
       return `<div class="field">${label}<textarea id="${id}" name="${f.id}" rows="5" maxlength="1500"${pflicht}></textarea></div>`;
@@ -890,18 +911,23 @@ const PartnerSitzung = {
   }
 
   function anfrageSchritt() {
+    const meins = neuerLauf();
     const fragen = FRAGEN();
     box.classList.add("is-anfrage");
     koerper.innerHTML =
       `<form class="partner-form partner-anfrage" novalidate>
          ${hinweis(T(
-           "Ein paar Fragen — am Ende öffnet sich Ihr E-Mail-Programm mit dem fertigen Text, Sie müssen nur noch senden.",
-           "A few questions — at the end your e-mail program opens with the finished text; you only need to send it."
+           "Ein paar Fragen. Wir bestätigen den Eingang sofort per E-Mail und antworten innerhalb von 24 Stunden.",
+           "A few questions. We confirm receipt by e-mail right away and answer within 24 hours."
          ))}
          <div class="field-row">${feldHtml(fragen[0])}${feldHtml(fragen[1])}</div>
          <div class="field-row">${feldHtml(fragen[2])}${feldHtml(fragen[3])}</div>
          ${fragen.slice(4).map(feldHtml).join("")}
          ${aktionen(T("Senden", "Send"), T("Abbrechen", "Cancel"), "zurueck")}
+         ${hinweis(T(
+           `Pflichtfelder sind markiert. Was mit Ihren Angaben passiert, steht in der <a href="${IST_EN ? "../datenschutz.html" : "datenschutz.html"}">Datenschutzerklärung</a>.`,
+           `Required fields are marked. What happens with your details is set out in the <a href="../datenschutz.html">privacy policy</a>.`
+         ))}
          <div class="partner-meldung"></div>
        </form>`;
     const form = koerper.querySelector("form");
@@ -909,7 +935,7 @@ const PartnerSitzung = {
     form.querySelector('[data-partner="zurueck"]').addEventListener("click", zurueck);
     fokus();
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const werte = fragen.map((f) => ({ f, el: form.elements[f.id] }));
       const leer = werte.find(({ f, el }) => f.pflicht && !el.value.trim());
@@ -926,20 +952,123 @@ const PartnerSitzung = {
       }
       const bauen = () => {
         const zeilen = fragen.map((f) => {
-          const wert = form.elements[f.id].value.trim() || "—";
+          const el = form.elements[f.id];
+          // Bei Auswahlfeldern steht im Wert der Schluessel — in die Mail
+          // gehoert, was der Besucher gelesen hat.
+          const wert = (f.typ === "select" ? (el.selectedOptions[0] || {}).text : el.value).trim() || "—";
           return f.typ === "textarea" ? f.frage + ":\n" + wert : f.frage + ": " + wert;
         });
         return T("Guten Tag,\n\nhier meine Anfrage über www.jkhd.de:\n\n", "Hello,\n\nhere is my enquiry via www.jkhd.de:\n\n")
           + zeilen.join("\n") + "\n";
       };
       const betreff = T("Partneranfrage", "Partner enquiry") + " — " + form.elements.name.value.trim();
-      kopierHinweis(meldung, bauen, ANFRAGE_AN);
-      // Ein Doppelklick oder zweimal Enter wuerde zwei Entwuerfe oeffnen
-      const senden = form.querySelector('[type="submit"]');
-      senden.disabled = true;
-      setTimeout(() => { senden.disabled = false; }, 2000);
-      window.location.href = mailto(ANFRAGE_AN, betreff, bauen());
+
+      // Ohne Server bleibt es beim alten Weg: das Mailprogramm des Besuchers.
+      if (!api) { perMailprogramm(meldung, bauen, betreff); return; }
+
+      meldung.innerHTML = hinweis(T("Anfrage wird gesendet …", "Sending enquiry …"));
+      gesperrt(form, true);
+      const daten = {
+        name: form.elements.name.value.trim(),
+        email: form.elements.email.value.trim(),
+        rolle: form.elements.rolle.value.trim(),
+        anliegen: form.elements.anliegen.value.trim(),
+        profil: form.elements.profil.value.trim(),
+        nachricht: form.elements.nachricht.value.trim(),
+        sprache: IST_EN ? "en" : "de",
+      };
+      const text = bauen();
+      try {
+        const r = await fetch(api + "/anfrage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(daten),
+          // Ohne Zeitlimit haengt das Formular, wenn die Antwort ausbleibt.
+          signal: AbortSignal.timeout ? AbortSignal.timeout(12000) : undefined,
+        });
+        if (veraltet(meins)) return;
+        if (r.status === 429) {
+          gesperrt(form, false);
+          meldung.innerHTML = hinweis(T(
+            `Gerade sind zu viele Anfragen unterwegs. Bitte in einer Stunde erneut versuchen — oder direkt an <a href="mailto:${ANFRAGE_AN}">${ANFRAGE_AN}</a> schreiben.`,
+            `Too many enquiries are in flight just now. Please try again in an hour — or write directly to <a href="mailto:${ANFRAGE_AN}">${ANFRAGE_AN}</a>.`
+          ), true);
+          return;
+        }
+        if (r.status === 400) {
+          gesperrt(form, false);
+          meldung.innerHTML = hinweis(T(
+            "Eine Angabe fehlt oder ist unvollständig — bitte Name, E-Mail-Adresse und Nachricht prüfen.",
+            "Something is missing or incomplete — please check name, e-mail address and message."
+          ), true);
+          return;
+        }
+        if (!r.ok) throw new Error(String(r.status));
+        let bestaetigt = true;
+        try { bestaetigt = (await r.json()).bestaetigung !== false; } catch (e) {}
+        angekommen(daten.email, bestaetigt, text);
+      } catch (err) {
+        if (veraltet(meins)) return;
+        gesperrt(form, false);
+        meldung.innerHTML = hinweis(T(
+          "Der Zugang ist gerade nicht erreichbar — wir gehen über Ihr E-Mail-Programm, damit Ihr Text nicht verloren geht.",
+          "The access is not reachable just now — we will go via your e-mail program so your text is not lost."
+        ), true);
+        perMailprogramm(meldung, bauen, betreff, true);
+      }
     });
+  }
+
+  // Der alte Weg, jetzt nur noch Rueckfall: Mailprogramm oeffnen und den Text
+  // zum Kopieren anbieten. `anhaengen` laesst die Fehlermeldung darueber
+  // stehen, statt sie zu ueberschreiben.
+  function perMailprogramm(meldung, bauen, betreff, anhaengen) {
+    const ziel = anhaengen ? document.createElement("div") : meldung;
+    kopierHinweis(ziel, bauen, ANFRAGE_AN);
+    if (anhaengen) meldung.appendChild(ziel);
+    window.location.href = mailto(ANFRAGE_AN, betreff, bauen());
+  }
+
+  // Erfolg: die Anfrage liegt beim Zugang. „Unterwegs" ist die ehrliche
+  // Formulierung — der Versand laeuft in einer zweiten Anfrage des Servers und
+  // kann noch scheitern, deshalb steht auch der Weg dahinter da.
+  // Erfolg. Die Anfrage liegt bei uns — das ist die Aussage, die traegt.
+  // Ob die Bestaetigung wirklich rausgegangen ist, sagt der Server mit; sonst
+  // stuende hier ein Versprechen, das niemand geprueft hat. Der eigene Text
+  // bleibt zum Kopieren stehen, damit auch ohne Bestaetigung nichts verloren
+  // ist.
+  function angekommen(email, bestaetigt, text) {
+    neuerLauf();
+    koerper.innerHTML =
+      hinweis(T(
+        `<b>Ihre Anfrage ist bei uns angekommen.</b> Wir antworten innerhalb von 24 Stunden.`,
+        `<b>Your enquiry has arrived.</b> We will answer within 24 hours.`
+      )) +
+      hinweis(bestaetigt
+        ? T(
+            `Eine Bestätigung ist an ${esc(email)} unterwegs, Absender ${ANFRAGE_AN}. Ist sie in ein paar Minuten nicht da, sehen Sie bitte im Spam-Ordner nach.`,
+            `A confirmation is on its way to ${esc(email)} from ${ANFRAGE_AN}. If it has not arrived in a few minutes, please check your spam folder.`
+          )
+        : T(
+            `Eine Bestätigungs-Mail haben wir dieses Mal nicht geschickt — an diese Adresse ging vor kurzem schon eine. Die Anfrage selbst ist da.`,
+            `We did not send a confirmation e-mail this time — one recently went to this address. The enquiry itself has arrived.`
+          )) +
+      `<div class="partner-aktionen">
+         <button type="button" class="btn btn-ghost" data-partner="kopieren">${T("Text kopieren", "Copy text")}</button>
+         <button type="button" class="btn btn-ghost" data-partner="zurueck">${T("Zurück", "Back")}</button>
+       </div>`;
+    koerper.querySelector('[data-partner="zurueck"]').addEventListener("click", zurueck);
+    koerper.querySelector('[data-partner="kopieren"]').addEventListener("click", async (ev) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        ev.target.textContent = T("Kopiert", "Copied");
+      } catch (e) {
+        ev.target.insertAdjacentHTML("afterend",
+          `<textarea class="partner-rohtext" rows="8" readonly>${esc(text)}</textarea>`);
+        ev.target.remove();
+      }
+    });
+    fokus();
   }
 
   startKnopf.addEventListener("click", start);

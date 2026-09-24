@@ -144,9 +144,19 @@ Modulen an die VIP-Adresse. Der Server gibt `link` nur für freigeschaltete
 Module heraus.
 Frontend: `js/main.js`, Abschnitte „Partnerzugang" und „Partnerseite".
 Daneben „Anfrage": ein fester Fragebogen (Name, E-Mail, Rolle, Anliegen,
-Profil, Nachricht — `FRAGEN()` in `js/main.js`); „Senden" öffnet per `mailto:`
-das E-Mail-Programm mit dem fertigen Text an `service@jkhd.de`, nichts geht an
-den Server. Dazu ein „Text kopieren"-Knopf für Browser ohne Mailprogramm.
+Profil, Nachricht — `FRAGEN()` in `js/main.js`). **Seit 24.09.2026 geht er an
+den Server** (`POST {api}/anfrage`): der leitet die Anfrage an `service@`
+weiter und schickt dem Einsender sofort eine Eingangsbestätigung mit der
+Zusage von 24 Stunden (Julians Wunsch; Absender `service@`). Die Auswahlfelder
+senden **stabile Schlüssel** (`quant|trader|firma|anderes` bzw.
+`partnerschaft|austausch|zugang|anderes`), nicht die übersetzten
+Beschriftungen — sonst könnte die Prüfung auf der englischen Seite nie
+greifen. Der alte Weg über das E-Mail-Programm ist der **Rückfall**: ohne
+`data-api`, bei Netzfehler, Zeitüberschreitung (12 s) oder `502` öffnet sich
+wie früher das Mailprogramm mit dem fertigen Text, dazu ein „Text
+kopieren"-Knopf — so verliert niemand, was er geschrieben hat. Die
+Erfolgskachel behält den Kopier-Knopf und sagt ehrlich, ob eine Bestätigung
+rausgegangen ist (der Server meldet `{"bestaetigung": true|false}`).
 Der Server dazu liegt im eigenen (nicht veröffentlichten) Repo
 `JKHD-Partner-Server` (PHP auf IONOS Webhosting) und ist als
 `https://api.jkhd.de` angebunden (`data-api` am `.partner`-Element, seit
@@ -171,6 +181,15 @@ Schnittstelle (so gebaut, Stand 20.09.2026):
   Julian je Partner; `module` ist der Katalog aus `vip.json`.
 - `POST {api}/abmelden` mit `{"token": "…"}` — `204`, Zeichen ist weg
   (`429` wie bei /daten).
+- `POST {api}/anfrage` mit `{name, email, rolle, anliegen, profil, nachricht,
+  sprache}` — `200` mit `{"ok": true, "bestaetigung": true|false}`, `400` bei
+  fehlender Angabe, `429` wenn eine der vier Bremsen greift (Netz, Adresse,
+  Mail-Domain, Gesamt), `403` ohne erlaubten `Origin`, `502` wenn die Anfrage
+  nicht rausgeht. **Anders als /code antwortet diese Route ehrlich** — es gibt
+  hier kein Geheimnis zu schützen, jeder darf anfragen. Nur die Bestätigung
+  fällt still aus, wenn dieselbe Adresse in derselben Stunde schon eine
+  bekommen hat (`bestaetigung: false`); sonst wäre die Antwort ein Messgerät
+  für jemanden, der fremde Postfächer zumüllen will.
 - CORS für `https://www.jkhd.de`, `https://jkhd.de` und die lokale Vorschau
   `http://localhost:8090`, sonst nichts.
 
