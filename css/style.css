@@ -1777,6 +1777,31 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .partner-hinweis:focus { outline: none; }
 .partner-kopf .partner-hinweis { margin-top: 14px; }
 
+/* Passwort (25.09.2026): Textknoepfe („Passwort vergessen?", „Passwörter
+   anzeigen") sehen aus wie Links; Hinweis und Fehler stehen direkt am Feld,
+   ein Fehler ist leer unsichtbar. Die Anmeldeadresse der Passwortkarte ist
+   nur zum Lesen da (Passwortmanager brauchen sie im selben Formular). */
+.partner-textknopf {
+  justify-self: start;
+  padding: 0;
+  border: none;
+  border-bottom: 1px solid var(--border-2);
+  background: none;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.partner-textknopf:hover:not(:disabled),
+.partner-textknopf[aria-pressed="true"] { color: var(--text); border-color: var(--text); }
+.partner-textknopf:disabled { opacity: 0.45; cursor: not-allowed; }
+.field .partner-hinweis { font-size: 0.86rem; }
+.feld-fehler:empty { display: none; }
+.field input[aria-invalid="true"] { border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
+.field input[readonly] { color: var(--muted); }
+
 /* Partnerseite (partner.html): Karte mit den Daten, darunter der VIP-Kasten.
    Der Kasten ist bewusst rot — die einzige Farbe der Seite — und die Adresse
    darin steht verdeckt, bis der Partner sie aufdeckt. */

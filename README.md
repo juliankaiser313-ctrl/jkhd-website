@@ -129,7 +129,15 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
 
 Der Kasten „Nur für Partner" auf `kontakt.html` / `en/contact.html` (ein
 Knopf „Anmelden", in Tinte gesetzt) führt den Ablauf **E-Mail eingeben → Code
-per E-Mail → Code eingeben → weiter auf `partner.html`**. Die Partnerseite
+per E-Mail → Code eingeben → weiter auf `partner.html`**. Seit 25.09.2026 steht
+im selben Formular ein freiwilliges Passwortfeld: leer = genau der Code-Weg von
+vorher, gefüllt = `POST {api}/passwort_login`. „Passwort vergessen?" ist der
+Code-Weg mit einem Merker (Modulvariable, kein Speicher), danach öffnet
+`partner.html#neues-passwort` die Passwortkarte oben. Festlegen, ändern und
+entfernen geschieht auf der Partnerseite (Karte „Anmeldung"); ohne das bisherige
+Passwort nur in den ersten 15 Minuten nach einer Anmeldung per Code.
+`kontakt.html#partner-passwort` öffnet den Kasten mit gesetztem Merker (dorthin
+führt „Abmelden und Code anfordern" von der Partnerseite). Die Partnerseite
 (`partner.html` / `en/partner.html`, `noindex`, nicht im Menü und nicht in der
 Sitemap) zeigt die hinterlegten Daten und darunter in einem roten Kasten die
 **VIP-E-Mail-Adresse** — verdeckt, bis der Partner sie aufdeckt. Die Adresse
@@ -163,22 +171,39 @@ Der Server dazu liegt im eigenen (nicht veröffentlichten) Repo
 20.09.2026). Steht `data-api` leer, wird nichts gesendet und der Kasten sagt
 das dem Besucher offen.
 
-Schnittstelle (so gebaut, Stand 20.09.2026):
+Schnittstelle (so gebaut, Stand 25.09.2026 — Einzelheiten im README des Server-Repos):
 
 - `POST {api}/code` mit `{"email": "…"}` — prüft die Adresse gegen die
   Partnerliste, erzeugt einen kurzlebigen Code (z. B. 6 Ziffern, 10 Minuten,
-  einmal gültig), schickt ihn von der Partner-Adresse und antwortet **immer** mit
-  `204` — auch für unbekannte Adressen, damit niemand ausprobieren kann, wer
-  Partner ist. Anfragen pro Adresse und IP begrenzen.
+  einmal gültig), schickt ihn von der Partner-Adresse und antwortet mit `204` —
+  auch für unbekannte Adressen, damit niemand ausprobieren kann, wer Partner
+  ist. Nur wenn die Grenze des eigenen Netzes voll ist: `429 {"grenze": "netz"}`
+  (hängt nicht an der Adresse; die Seite sagt dann, dass auch kein Code käme).
 - `POST {api}/login` mit `{"email": "…", "code": "…"}` — bei gültigem Code
   `200` mit `{"token": "…"}` (64 Hex-Zeichen, eine Stunde gültig), sonst `401`;
   `429`, wenn die IP-Grenze erreicht ist. Das Zeichen liegt im Browser nur im
   `sessionStorage` (`jkhd-partner`).
+- `POST {api}/passwort_login` mit `{"email": "…", "passwort": "…"}` — `200`
+  `{"token"}`; `401 {"fehler": "falsch"}` für unbekannte Adresse, Partner ohne
+  Passwort und falsches Passwort gleichermaßen, `401 {"fehler": "bestaetigen"}`
+  wenn die letzte Code-Anmeldung über 180 Tage her ist; `429 {"grenze": "netz" |
+  "konto" | "last"}`. Außer bei `netz` bietet die Seite immer „Code per E-Mail
+  schicken" an.
 - `POST {api}/daten` mit `{"token": "…"}` — `200` mit `{"name": "…",
-  "felder": [{"label": "…", "wert": "…"}, …], "vip": "…", "module": [...],
-  "freigaben": ["…"]}`, sonst `401`; `429`, wenn unbekannte Zeichen die
+  "email": "…", "felder": [{"label": "…", "wert": "…"}, …], "vip": "…",
+  "module": [...], "freigaben": ["…"], "dateien": [...], "ansicht": {...},
+  "passwort": {"gesetzt", "seit", "ohne_altes_bis"} | null}`, sonst `401`; `429`, wenn unbekannte Zeichen die
   IP-Grenze erreicht haben. Was in `felder` und `freigaben` steht, pflegt
   Julian je Partner; `module` ist der Katalog aus `vip.json`.
+- `POST {api}/passwort_setzen` mit `{"token", "passwort", "altes_passwort"?}` —
+  `200 {"ok", "passwort"}`; `400 {"fehler": zu_kurz|zu_lang|zu_einfach|
+  gleich_adresse|ungueltig}`, `403 {"fehler": neu_anmelden|altes_passwort_noetig|
+  altes_passwort_falsch}`, `409 {"fehler": "geaendert"}`, `429 {"grenze":
+  aenderung|konto|last|netz}`, `401`. `POST {api}/passwort_entfernen` mit
+  `{"token", "altes_passwort"?}` — `200 {"entfernt", "passwort"}`, Fehler ebenso.
+  Die Passwortregeln (10–128 Zeichen nach NFC, nicht nur Leerraum, nicht ein
+  Zeichen wiederholt, nicht in der kleinen Liste, nicht die eigene Adresse)
+  prüft `passwortRegel()` in `js/main.js` genau wie der Server.
 - `POST {api}/abmelden` mit `{"token": "…"}` — `204`, Zeichen ist weg
   (`429` wie bei /daten).
 - `POST {api}/anfrage` mit `{name, email, rolle, anliegen, profil, nachricht,

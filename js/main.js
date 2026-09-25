@@ -609,7 +609,7 @@ if (siteHeader) {
   });
 })();
 
-// ---------- Partnerzugang: E-Mail -> Code -> Anmeldung ----------
+// ---------- Partnerzugang: E-Mail + Passwort oder Code -> Anmeldung ----------
 // Das Anmeldezeichen lebt nur im Sitzungsspeicher des Tabs: weg, sobald der
 // Tab zu ist. Der Server kennt es nur als Hash (siehe README).
 const PartnerSitzung = {
@@ -619,11 +619,34 @@ const PartnerSitzung = {
   vergiss() { try { sessionStorage.removeItem(this.SCHLUESSEL); } catch (e) {} },
 };
 
+// Fuer beide Partner-Abschnitte: den JSON-Koerper einer Antwort lesen. Leer
+// oder kaputt ergibt {} -- dann zaehlt der Statuscode allein.
+async function antwortKoerper(r) {
+  try {
+    const d = await r.json();
+    return d && typeof d === "object" ? d : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+// 429 {"grenze":"netz"}: aus diesem Netz kamen zu viele Anmeldeversuche. Dann
+// kaeme auch ein Code nicht an -- deshalb steht bei diesem Text nie der
+// Knopf „Code per E-Mail schicken".
+const NETZ_VOLL = () => T(
+  "Von Ihrem Internetanschluss kamen in der letzten Stunde zu viele Anmeldeversuche. Bitte in einer Stunde erneut — auch ein Code käme bis dahin nicht an.",
+  "Too many sign-in attempts came from your internet connection in the last hour. Please try again in an hour — until then, a code would not arrive either."
+);
+
 // Der Kasten auf der Kontaktseite. data-api am .partner-Element nennt den
 // Server (https://api.jkhd.de); steht es leer, wird nichts gesendet und der
 // Kasten sagt das offen. Schnittstelle (siehe README, Abschnitt Partnerzugang):
-//   POST {api}/code   {"email": "..."}                 -> 204, immer (verraet nicht, wer Partner ist)
+//   POST {api}/code   {"email": "..."}                 -> 204, immer (verraet nicht, wer Partner ist);
+//                                                        429 {"grenze":"netz"}, wenn das Netz voll ist
 //   POST {api}/login  {"email": "...", "code": "..."}  -> 200 {"token": "..."}, 401 bei falschem oder abgelaufenem Code
+//   POST {api}/passwort_login {"email": "...", "passwort": "..."}
+//                                                     -> 200 {"token": "..."}, 401 {"fehler": "falsch"|"bestaetigen"},
+//                                                        429 {"grenze": "netz"|"konto"|"last"}
 //   POST {api}/anfrage {name, email, rolle, anliegen, profil, nachricht, sprache}
 //                                                     -> 200 {"ok":true}, 429 zu oft, 400 Eingabe
 //   Danach geht es auf partner.html; die holt mit dem Zeichen POST {api}/daten.
@@ -644,7 +667,15 @@ const PartnerSitzung = {
     "mailto:" + an + "?subject=" + encodeURIComponent(betreff) + "&body=" + encodeURIComponent(text.replace(/\r?\n/g, "\r\n"));
 
   const api = (box.dataset.api || "").replace(/\/+$/, "");
+  const post = (pfad, daten) =>
+    fetch(api + pfad, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(daten) });
   const startHtml = koerper.innerHTML;
+
+  // Merker „neues Passwort festlegen" (von „Passwort vergessen?" oder
+  // kontakt.html#partner-passwort): nach der Anmeldung geht es dann auf
+  // partner.html#neues-passwort. Bewusst nur eine Variable, kein
+  // Sitzungsspeicher; „Abbrechen" nimmt ihn zurueck.
+  let neuesPasswort = false;
 
   const OHNE_SERVER = () => T(
     "Der Partnerzugang wird gerade eingerichtet — es wurde nichts gesendet. Bis dahin erreichen Sie uns unter <a href=\"mailto:kontakt@jkhd.de\">kontakt@jkhd.de</a>.",
@@ -705,6 +736,7 @@ const PartnerSitzung = {
 
   function zurueck() {
     neuerLauf();
+    neuesPasswort = false;
     box.classList.remove("is-anfrage");
     koerper.innerHTML = startHtml;
     koerper.querySelector('[data-partner="start"]').addEventListener("click", start);
@@ -746,52 +778,159 @@ const PartnerSitzung = {
     });
   }
 
-  // Schritt 1: E-Mail-Adresse
-  function mailSchritt() {
+  // Schritt 1: E-Mail-Adresse und, falls festgelegt, Passwort -- EIN Formular
+  // mit festem Knopf „Anmelden". Welcher Weg laeuft, entscheidet erst das
+  // Absenden: Passwortfeld leer = Code per E-Mail genau wie bisher, sonst
+  // /passwort_login. Ob eine Adresse ein Passwort hat, fragt die Seite nie ab.
+  // `status` steht als Hinweis ueber den Feldern (kontakt.html#partner-passwort).
+  function mailSchritt(status) {
     const meins = neuerLauf();
     koerper.innerHTML =
-      `<form class="partner-form" novalidate>
+      `<form class="partner-form" method="post" novalidate>
+         ${status ? hinweis(status) : ""}
          <div class="field">
            <label for="partner-mail">${T("Ihre E-Mail-Adresse", "Your e-mail address")}</label>
-           <input id="partner-mail" name="email" type="email" required autocomplete="email" inputmode="email">
+           <input id="partner-mail" name="email" type="email" required autocomplete="username" inputmode="email">
          </div>
-         ${aktionen(T("Code anfordern", "Request code"), T("Abbrechen", "Cancel"), "zurueck")}
+         <div class="field">
+           <label for="partner-passwort">${T("Passwort (falls festgelegt)", "Password (if you set one)")}</label>
+           <input id="partner-passwort" type="password" autocomplete="current-password" aria-describedby="partner-passwort-hinweis">
+           <p class="partner-hinweis" id="partner-passwort-hinweis">${T(
+             "Noch kein Passwort? Feld leer lassen — wir schicken Ihnen einen Code. Ein Passwort legen Sie nach der Anmeldung auf Ihrer Partnerseite fest.",
+             "No password yet? Leave this field empty — we will send you a code. You can set a password on your partner page after signing in."
+           )}</p>
+           <button type="button" class="partner-textknopf" data-partner="vergessen">${T("Passwort vergessen?", "Forgot password?")}</button>
+         </div>
+         ${aktionen(T("Anmelden", "Sign in"), T("Abbrechen", "Cancel"), "zurueck")}
          <div class="partner-meldung"></div>
        </form>`;
+    // Der Zuhoerer kommt vor allem anderen: bricht danach etwas ab, schickt
+    // der Browser das Formular sonst selbst ab (das Passwortfeld traegt
+    // deshalb auch keinen name).
     const form = koerper.querySelector("form");
-    const eingabe = form.querySelector("input");
+    form.addEventListener("submit", (e) => { e.preventDefault(); absenden(); });
+    const mail = form.querySelector("#partner-mail");
+    const passwort = form.querySelector("#partner-passwort");
     const meldung = form.querySelector(".partner-meldung");
     form.querySelector('[data-partner="zurueck"]').addEventListener("click", zurueck);
+    form.querySelector('[data-partner="vergessen"]').addEventListener("click", vergessen);
     fokus();
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = eingabe.value.trim();
-      if (!eingabe.checkValidity() || !email) {
-        meldung.innerHTML = hinweis(T("Bitte eine gültige E-Mail-Adresse angeben.", "Please enter a valid e-mail address."), true);
-        return;
-      }
+    // Die eingetippte Adresse -- oder "" mit Fehlermeldung
+    function adresse() {
+      const email = mail.value.trim();
+      if (mail.checkValidity() && email) return email;
+      meldung.innerHTML = hinweis(T("Bitte eine gültige E-Mail-Adresse angeben.", "Please enter a valid e-mail address."), true);
+      mail.focus();
+      return "";
+    }
+
+    // Einen Code anfordern: vom leeren Passwortfeld, vom Knopf „Code per
+    // E-Mail schicken" oder von „Passwort vergessen?".
+    async function codeAnfordern(email, text) {
       if (!api) { ohneServer(); return; }
-      meldung.innerHTML = hinweis(T("Code wird angefordert …", "Requesting code …"));
+      meldung.innerHTML = hinweis(text);
       gesperrt(form, true);
       try {
-        const r = await fetch(api + "/code", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        });
+        const r = await post("/code", { email });
         if (veraltet(meins)) return;
+        if (r.status === 429) {
+          gesperrt(form, false);
+          meldung.innerHTML = hinweis(NETZ_VOLL(), true);
+          meldung.querySelector(".partner-hinweis").focus();   // der Knopf, der den Fokus hatte, ist weg
+          return;
+        }
         if (!r.ok) throw new Error(String(r.status));
         codeSchritt(email);
       } catch (err) {
         if (veraltet(meins)) return;
         gesperrt(form, false);
         meldung.innerHTML = hinweis(T("Das hat gerade nicht geklappt. Bitte später erneut versuchen oder an kontakt@jkhd.de schreiben.", "That did not work just now. Please try again later or write to kontakt@jkhd.de."), true);
+        meldung.querySelector(".partner-hinweis").focus();
       }
-    });
+    }
+
+    // Die Anmeldung mit Passwort ging nicht durch: der Hinweis und -- ausser
+    // bei vollem Netz -- der Knopf, der fuer die eingetippte Adresse einen
+    // Code holt. Von selbst schickt die Seite nie einen Code.
+    function ohnePasswort(text, mitCode) {
+      gesperrt(form, false);
+      meldung.innerHTML = hinweis(text, true) + (mitCode
+        ? `<button type="button" class="btn btn-ghost btn-sm" data-partner="code">${T("Code per E-Mail schicken", "Send code by e-mail")}</button>`
+        : "");
+      const knopf = meldung.querySelector('[data-partner="code"]');
+      if (knopf) {
+        knopf.addEventListener("click", () => {
+          const email = adresse();
+          if (email) codeAnfordern(email, T("Code wird angefordert …", "Requesting code …"));
+        });
+      }
+      (knopf || meldung.querySelector(".partner-hinweis")).focus();
+    }
+
+    async function absenden() {
+      const email = adresse();
+      if (!email) return;
+      if (!api) { ohneServer(); return; }
+      // Nie trimmen: Leerzeichen gehoeren zum Passwort, wie auf dem Server
+      const pw = passwort.value;
+      if (!pw) {
+        codeAnfordern(email, T("Kein Passwort eingegeben — wir schicken Ihnen einen Code …", "No password entered — we are sending you a code …"));
+        return;
+      }
+      meldung.innerHTML = hinweis(T("Wird geprüft …", "Checking …"));
+      gesperrt(form, true);
+      try {
+        const r = await post("/passwort_login", { email, passwort: pw });
+        if (veraltet(meins)) return;
+        if (r.ok) { angemeldet(await r.json()); return; }
+        const d = await antwortKoerper(r);
+        if (veraltet(meins)) return;
+        if (r.status === 401 && d.fehler === "bestaetigen") {
+          ohnePasswort(T(
+            "Ihr Passwort stimmt. Zur Sicherheit bitte einmal mit einem Code per E-Mail anmelden — danach gilt es wieder ein halbes Jahr.",
+            "Your password is correct. For security, please sign in once with a code by e-mail — after that it is valid for another six months."
+          ), true);
+        } else if (r.status === 401) {
+          ohnePasswort(T(
+            "Mit diesem Passwort hat es nicht geklappt: Adresse oder Passwort stimmt nicht, oder für diese Adresse ist noch kein Passwort festgelegt. Mit einem Code per E-Mail kommen Sie immer hinein.",
+            "That password did not work: the address or the password is wrong, or no password has been set for this address yet. With a code by e-mail you can always sign in."
+          ), true);
+          passwort.focus();
+          passwort.select();
+        } else if (r.status === 429 && d.grenze === "netz") {
+          ohnePasswort(NETZ_VOLL(), false);
+        } else if (r.status === 429) {
+          ohnePasswort(T(
+            "Die Anmeldung mit Passwort ist für diese Adresse gerade gesperrt oder der Server ist ausgelastet — mit einem Code per E-Mail kommen Sie sofort hinein.",
+            "Signing in with a password is blocked for this address right now, or the server is busy — with a code by e-mail you can sign in right away."
+          ), true);
+        } else {
+          throw new Error(String(r.status));
+        }
+      } catch (err) {
+        if (veraltet(meins)) return;
+        // 404 (Server ohne die neue Route), 5xx, Netzfehler: der Code-Weg bleibt
+        ohnePasswort(T(
+          "Das hat gerade nicht geklappt — mit einem Code per E-Mail kommen Sie sofort hinein.",
+          "That did not work just now — with a code by e-mail you can sign in right away."
+        ), true);
+      }
+    }
+
+    // „Passwort vergessen?": ein Code wie sonst auch -- nur steht danach der
+    // Merker, und die Partnerseite zeigt die Passwortkarte ganz oben.
+    function vergessen() {
+      const email = adresse();
+      if (!email) return;
+      neuesPasswort = true;
+      codeAnfordern(email, T("Code wird angefordert …", "Requesting code …"));
+    }
   }
 
-  // Schritt 2: Code aus der E-Mail
+  // Schritt 2: Code aus der E-Mail. Nach „Passwort vergessen?" sagt ein
+  // Zusatzsatz, dass die Code-Mail die richtige ist -- gesucht wird im
+  // Postfach sonst nach „Passwort".
   function codeSchritt(email) {
     const meins = neuerLauf();
     koerper.innerHTML =
@@ -799,7 +938,10 @@ const PartnerSitzung = {
          ${hinweis(T(
            "Wenn diese Adresse bei uns als Partner hinterlegt ist, haben wir Ihnen gerade einen Code geschickt. Er gilt zehn Minuten und nur einmal.",
            "If this address is registered with us as a partner, we have just sent you a code. It is valid for ten minutes and can be used once."
-         ))}
+         ) + (neuesPasswort ? " " + T(
+           `Geben Sie den Code aus der E-Mail „Ihr Code für den JKHD-Partnerzugang" ein. Danach legen Sie auf Ihrer Partnerseite ein neues Passwort fest; ein bisheriges gilt weiter, bis Sie das tun.`,
+           `Enter the code from the e-mail "Ihr Code für den JKHD-Partnerzugang". Then set a new password on your partner page; any previous one stays valid until you do.`
+         ) : ""))}
          <div class="field">
            <label for="partner-code">${T("Code aus der E-Mail", "Code from the e-mail")}</label>
            <input id="partner-code" name="code" type="text" required autocomplete="one-time-code" inputmode="numeric" maxlength="12">
@@ -810,7 +952,7 @@ const PartnerSitzung = {
     const form = koerper.querySelector("form");
     const eingabe = form.querySelector("input");
     const meldung = form.querySelector(".partner-meldung");
-    form.querySelector('[data-partner="mail"]').addEventListener("click", mailSchritt);
+    form.querySelector('[data-partner="mail"]').addEventListener("click", () => mailSchritt());
     fokus();
 
     form.addEventListener("submit", async (e) => {
@@ -823,11 +965,7 @@ const PartnerSitzung = {
       meldung.innerHTML = hinweis(T("Wird geprüft …", "Checking …"));
       gesperrt(form, true);
       try {
-        const r = await fetch(api + "/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, code }),
-        });
+        const r = await post("/login", { email, code });
         if (veraltet(meins)) return;
         if (r.status === 401) {
           gesperrt(form, false);
@@ -845,6 +983,7 @@ const PartnerSitzung = {
   }
 
   // Schritt 3: angemeldet — das Zeichen merken, weiter zur Partnerseite
+  // (mit dem Merker direkt zur Passwortkarte)
   function angemeldet(daten) {
     const token = daten && typeof daten.token === "string" ? daten.token : "";
     if (!token || !PartnerSitzung.merke(token)) {
@@ -862,7 +1001,7 @@ const PartnerSitzung = {
       return;
     }
     koerper.innerHTML = hinweis(T("Angemeldet — einen Moment …", "Signed in — one moment …"));
-    window.location.href = "partner.html";
+    window.location.href = neuesPasswort ? "partner.html#neues-passwort" : "partner.html";
   }
 
   // Anfrage: ein fester Fragebogen. „Senden" schickt die Antworten an den
@@ -1086,6 +1225,24 @@ const PartnerSitzung = {
     const kopf = box.querySelector(".partner-kopf");
     if (kopf) kopf.insertAdjacentHTML("beforeend", hinweis(OHNE_SERVER()));
   }
+
+  // Von der Partnerseite („Abmelden und Code anfordern"): der Kasten steht
+  // gleich offen wie nach „Anmelden", der Merker ist gesetzt. Die Adresse
+  // traegt der Link bewusst nicht mit -- die fuellt das Autofill. Der Anker
+  // verschwindet sofort: er heisst wie das Passwortfeld, und der Browser
+  // setzte den Fokus sonst dorthin statt auf die Adresse.
+  if (window.location.hash === "#partner-passwort" && !PartnerSitzung.lies()) {
+    neuesPasswort = true;
+    history.replaceState(null, "", location.pathname + location.search);
+    if (!api) {
+      ohneServer();
+    } else {
+      mailSchritt(T(
+        `Neues Passwort festlegen: E-Mail-Adresse eingeben und „Passwort vergessen?" wählen.`,
+        `Set a new password: enter your e-mail address and choose "Forgot password?".`
+      ));
+    }
+  }
 })();
 
 // ---------- Partnerseite: die Daten und die VIP-Adresse, nur angemeldet ----------
@@ -1104,11 +1261,20 @@ const PartnerSitzung = {
 // Server gar nicht erst. VORSCHAU: die Partner-App laedt diese Seite auf
 // 127.0.0.1 mit window.JKHD_VORSCHAU = true und schickt die Daten per
 // postMessage (nur vom eigenen Ursprung) -- auf www.jkhd.de gibt es das nie.
+// Seit 25.09.2026 ausserdem die Passwortkarte: /daten liefert „email" (wie in
+// partner.json) und „passwort" {gesetzt, seit: "JJJJ-MM-TT"|"", ohne_altes_bis:
+// Unix-Sekunden|0}; fehlt „passwort", gibt es keine Karte.
+//   POST {api}/passwort_setzen    {token, passwort, altes_passwort?} -> 200 {ok, passwort} | 400 {fehler} | 401
+//                                  | 403 {fehler} | 409 {fehler: "geaendert"} | 429 {grenze}
+//   POST {api}/passwort_entfernen {token, altes_passwort?}           -> 200 {entfernt, passwort} | sonst wie oben ohne 400
 (function () {
   const seite = document.querySelector(".partner-seite");
   if (!seite) return;
   const api = (seite.dataset.api || "").replace(/\/+$/, "");
   const VORSCHAU = window.JKHD_VORSCHAU === true;
+  // Nach „Passwort vergessen?" kommt der Partner mit #neues-passwort: dann
+  // steht die Passwortkarte ganz oben, solange diese Seite offen ist.
+  const passwortOben = window.location.hash === "#neues-passwort";
 
   const esc = (s) =>
     String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1164,6 +1330,11 @@ const PartnerSitzung = {
        </div>`;
     const kopf = seite.querySelector("h2");
     if (kopf) kopf.focus();
+  }
+
+  function abgelaufen() {
+    PartnerSitzung.vergiss();
+    nichtAngemeldet(T("Ihre Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an.", "Your sign-in has expired. Please sign in again."));
   }
 
   // Die goldene Krone ueber jedem VIP-Kaestchen (Julians Wunsch); Inline-SVG,
@@ -1243,8 +1414,7 @@ const PartnerSitzung = {
     try {
       const r = await post("/datei", { token, id: datei.id });
       if (r.status === 401) {
-        PartnerSitzung.vergiss();
-        nichtAngemeldet(T("Ihre Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an.", "Your sign-in has expired. Please sign in again."));
+        abgelaufen();
         return;
       }
       if (r.status === 404) {
@@ -1275,6 +1445,313 @@ const PartnerSitzung = {
     }
   }
 
+  // ---- Passwort ----
+  // Dieselben Regeln prueft der Server (JKHD-Partner-Server, api/index.php):
+  // erst NFC, nie trimmen, Laenge in Codepunkten. Die Liste steht klein
+  // geschrieben. Die Seite prueft nur vorab, massgeblich ist der Server.
+  const PASSWORT_ZU_EINFACH = new Set((
+    "passwort123 passwort1234 passwort12345 password123 password1234 password12345 1234567890 12345678910 " +
+    "0123456789 0987654321 qwertz1234 qwertzuiop qwerty1234 qwertyuiop 1q2w3e4r5t asdfghjkl1 abcdefghij " +
+    "jkhd123456 jkhdjkhd12 partner123 partner1234 willkommen1 willkommen123 hallo12345 geheim1234 sommer2026"
+  ).split(" "));
+
+  // "" = in Ordnung, sonst der Fehlercode, den auch der Server schicken wuerde.
+  // gleich_adresse prueft der Server gegen den Anmeldeschluessel, die Seite
+  // nur gegen die Adresse aus /daten.
+  function passwortRegel(pw, email) {
+    const n = pw.normalize("NFC");
+    const zeichen = [...n];
+    if (zeichen.length < 10) return "zu_kurz";
+    if (zeichen.length > 128) return "zu_lang";
+    if (/^\s*$/u.test(n) || zeichen.every((z) => z === zeichen[0]) || PASSWORT_ZU_EINFACH.has(n.toLowerCase())) return "zu_einfach";
+    if (email && n.toLowerCase() === email.toLowerCase()) return "gleich_adresse";
+    return "";
+  }
+
+  const PASSWORT_TEXT = {
+    zu_kurz: T("Bitte mindestens 10 Zeichen.", "Please use at least 10 characters."),
+    zu_lang: T("Höchstens 128 Zeichen.", "At most 128 characters."),
+    zu_einfach: T("Dieses Passwort ist zu leicht zu erraten — bitte ein anderes.", "This password is too easy to guess — please choose another one."),
+    gleich_adresse: T("Bitte nicht Ihre E-Mail-Adresse als Passwort.", "Please do not use your e-mail address as the password."),
+    ungueltig: T("Dieses Passwort enthält Zeichen, die wir nicht verarbeiten können.", "This password contains characters we cannot process."),
+  };
+
+  // 429 der Passwort-Wege: welche Grenze voll ist, sagt der Koerper
+  const PASSWORT_GRENZE = {
+    konto: T("Zu viele falsche Versuche — bitte in einer Stunde erneut oder mit einem Code per E-Mail anmelden.", "Too many wrong attempts — please try again in an hour or sign in with a code by e-mail."),
+    aenderung: T("Zu viele Änderungen in der letzten Stunde — bitte später erneut.", "Too many changes in the last hour — please try again later."),
+    last: T("Der Server ist gerade ausgelastet — bitte gleich noch einmal.", "The server is busy right now — please try again in a moment."),
+    netz: NETZ_VOLL(),
+  };
+
+  // 1790000000 -> "14:05"; "2026-09-25" -> "25.09.2026" (EN "25/09/2026").
+  // Das Datum wird zerlegt statt geparst: new Date("2026-09-25") ist UTC und
+  // waere westlich von Greenwich schon der Vortag.
+  const uhrzeit = (sek) => new Date(sek * 1000).toLocaleTimeString(IST_EN ? "en-GB" : "de-DE", { hour: "2-digit", minute: "2-digit" });
+  const tag = (iso) => {
+    const t = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+    return t ? (IST_EN ? `${t[3]}/${t[2]}/${t[1]}` : `${t[3]}.${t[2]}.${t[1]}`) : "";
+  };
+
+  // Ein Passwortfeld ohne name. Der Fehlertext darunter ist von Anfang an per
+  // aria-describedby verbunden und bleibt unsichtbar, solange er leer ist.
+  const passwortFeld = (id, label, auto, regel) => `<div class="field">
+       <label for="${id}">${label}</label>
+       <input id="${id}" type="password" autocomplete="${auto}" autocapitalize="off" spellcheck="false" aria-describedby="${regel ? id + "-regel " : ""}${id}-fehler">
+       ${regel ? `<p class="partner-hinweis" id="${id}-regel">${regel}</p>` : ""}
+       <p class="partner-hinweis is-error feld-fehler" id="${id}-fehler" role="alert"></p>
+     </div>`;
+
+  // Laeuft ohne_altes_bis ab, zeichnet sich die Karte selbst neu.
+  let passwortUhr = 0;
+
+  // Zeichnet die Passwortkarte an die Stelle von `alt` -- immer als neues
+  // Element mit neuem Formular: erst wenn das alte aus dem Dokument
+  // verschwindet, bietet der Browser an, das Passwort zu speichern.
+  // `meldung` (fertiges hinweis()-HTML) steht unter der Ueberschrift und
+  // bekommt den Fokus. Drei Zustaende: A kein Passwort, frisch per Code
+  // angemeldet (festlegen); B kein Passwort, Fenster zu (erst neu mit Code
+  // anmelden); C Passwort gesetzt (aendern/entfernen, ausserhalb des
+  // Fensters nur mit dem bisherigen).
+  function passwortKarte(alt, stand, email, meldung) {
+    clearTimeout(passwortUhr);
+    const fokusDrin = alt.contains(document.activeElement);
+    const bis = Number(stand.ohne_altes_bis) || 0;
+    // Wie lange das Fenster ohne altes Passwort noch offen ist, sagt der Server
+    // als Restzeit (ohne_altes_rest). Gemessen wird ab Empfang mit der Uhr
+    // dieses Browsers, nie gegen dessen Datum: eine vorgehende Uhr schloesse das
+    // Fenster sonst vorzeitig oder nie (Pruefung 25.09.2026). ohne_altes_bis ist
+    // nur fuer „bis HH:MM Uhr". Die Frist reist mit `stand` in jedes Neuzeichnen.
+    if (stand.frist === undefined) {
+      const rest = stand.ohne_altes_rest !== undefined
+        ? Number(stand.ohne_altes_rest) || 0
+        : Math.max(0, bis - Date.now() / 1000);   // Server ohne Restzeit (alte Fassung)
+      stand = { ...stand, frist: rest > 0 ? Date.now() + rest * 1000 : 0 };
+    }
+    const frisch = stand.frist > Date.now();
+    const gesetzt = stand.gesetzt === true;
+    const seit = tag(typeof stand.seit === "string" ? stand.seit : "");
+
+    let text;
+    if (gesetzt) {
+      text = (seit ? T(`Ihr Passwort ist festgelegt (seit ${seit}).`, `Your password is set (since ${seit}).`) : T("Ihr Passwort ist festgelegt.", "Your password is set."))
+        + (frisch ? " " + T(`Bis ${uhrzeit(bis)} Uhr können Sie ohne das bisherige Passwort ein neues festlegen.`, `Until ${uhrzeit(bis)} you can set a new one without the previous password.`) : "");
+    } else if (frisch) {
+      text = T(
+        `Sie melden sich zurzeit mit einem Code per E-Mail an. Mit einem Passwort geht es künftig ohne Code. Festlegen können Sie es bis ${uhrzeit(bis)} Uhr.`,
+        `You currently sign in with a code by e-mail. With a password you will not need a code in future. You can set it until ${uhrzeit(bis)}.`
+      );
+    } else {
+      text = T(
+        "Sie melden sich mit einem Code per E-Mail an. Ein Passwort legen Sie direkt nach einer Anmeldung mit Code fest.",
+        "You sign in with a code by e-mail. You set a password right after signing in with a code."
+      );
+    }
+
+    const karte = document.createElement("section");
+    karte.className = "partner-karte partner-passwort";
+    karte.setAttribute("aria-labelledby", "passwort-titel");
+    karte.innerHTML =
+      `<span class="kachel-label">${T("Anmeldung", "Sign-in")}</span>
+       <h2 id="passwort-titel" tabindex="-1">${T("Passwort", "Password")}</h2>
+       ${meldung || ""}
+       <p>${text}</p>` +
+      (gesetzt || frisch
+        ? `<form class="partner-form" method="post" novalidate>
+             <div class="field">
+               <label for="passwort-adresse">${T("Ihre Anmeldeadresse", "Your sign-in address")}</label>
+               <input id="passwort-adresse" type="email" autocomplete="username" readonly value="${esc(email)}">
+             </div>
+             ${gesetzt && !frisch ? passwortFeld("passwort-alt", T("Bisheriges Passwort", "Current password"), "current-password", "") : ""}
+             ${passwortFeld("passwort-neu", T("Neues Passwort", "New password"), "new-password",
+               T("Mindestens 10 Zeichen — am einfachsten ein Satz aus vier Wörtern.", "At least 10 characters — easiest is a sentence of four words."))}
+             <button type="button" class="partner-textknopf" data-passwort="anzeigen" aria-pressed="false">${T("Passwörter anzeigen", "Show passwords")}</button>
+             <div class="partner-aktionen">
+               <button type="submit" class="btn btn-primary">${gesetzt ? T("Passwort ändern", "Change password") : T("Passwort festlegen", "Set password")}</button>
+               ${gesetzt ? `<button type="button" class="btn btn-ghost" data-passwort="entfernen">${T("Passwort entfernen", "Remove password")}</button>` : ""}
+             </div>
+             <div class="partner-meldung"></div>
+           </form>`
+        : `<div class="partner-aktionen">
+             <button type="button" class="btn btn-ghost" data-passwort="code">${T("Abmelden und Code anfordern", "Sign out and request a code")}</button>
+           </div>
+           <div class="partner-meldung"></div>`);
+    // Wie im Anmeldekasten: der submit-Zuhoerer haengt vor allem anderen
+    const form = karte.querySelector("form");
+    if (form) form.addEventListener("submit", (e) => { e.preventDefault(); festlegen(); });
+
+    const knopf = (name) => karte.querySelector(`[data-passwort="${name}"]`);
+    const ausgang = karte.querySelector(".partner-meldung");
+    const bisher = karte.querySelector("#passwort-alt");
+    const neu = karte.querySelector("#passwort-neu");
+    const anzeigen = knopf("anzeigen");
+
+    const zeigen = (ja) => {
+      karte.querySelectorAll("#passwort-alt, #passwort-neu").forEach((f) => { f.type = ja ? "text" : "password"; });
+      if (anzeigen) anzeigen.setAttribute("aria-pressed", String(ja));
+    };
+    if (anzeigen) anzeigen.addEventListener("click", () => zeigen(anzeigen.getAttribute("aria-pressed") !== "true"));
+
+    function feldFehler(feld, fehlertext) {
+      feld.setAttribute("aria-invalid", "true");
+      karte.querySelector(`#${feld.id}-fehler`).textContent = fehlertext;
+      feld.focus();
+    }
+    // Vor jedem Versuch: alte Fehler weg, alle Felder wieder verdeckt (ein
+    // Feld, das beim Senden Klartext zeigt, erkennen manche Passwortmanager nicht)
+    function neuerVersuch() {
+      karte.querySelectorAll("[aria-invalid]").forEach((f) => f.removeAttribute("aria-invalid"));
+      karte.querySelectorAll(".feld-fehler").forEach((p) => { p.textContent = ""; });
+      ausgang.innerHTML = "";
+      zeigen(false);
+    }
+    const bisherFehlt = () => {
+      if (!bisher || bisher.value) return false;
+      feldFehler(bisher, T("Bitte Ihr bisheriges Passwort eingeben.", "Please enter your current password."));
+      return true;
+    };
+    // In der Vorschau der Partner-App bleiben alle Knoepfe ohne Wirkung -- nie ein fetch
+    const vorschau = () => {
+      ausgang.innerHTML = hinweis(T("Vorschau: Sein Passwort verwaltet nur der Partner selbst.", "Preview: only the partner manages their own password."));
+    };
+
+    function festlegen() {
+      neuerVersuch();
+      if (VORSCHAU) { vorschau(); return; }
+      if (bisherFehlt()) return;
+      const regel = passwortRegel(neu.value, email);
+      if (regel) { feldFehler(neu, PASSWORT_TEXT[regel]); return; }
+      const daten = { passwort: neu.value };
+      if (bisher) daten.altes_passwort = bisher.value;
+      senden("/passwort_setzen", daten, () => T(
+        "Ihr Passwort ist festgelegt. Ab jetzt melden Sie sich mit E-Mail-Adresse und Passwort an; ein Code per E-Mail geht weiterhin. Andere Anmeldungen wurden beendet, eine Bestätigung ist per E-Mail unterwegs.",
+        "Your password is set. From now on you sign in with your e-mail address and password; a code by e-mail still works. Other sign-ins have been ended, and a confirmation is on its way by e-mail."
+      ));
+    }
+
+    // „Passwort entfernen": erst die Rueckfrage in der Karte, dann senden
+    const entfernen = knopf("entfernen");
+    if (entfernen) {
+      entfernen.addEventListener("click", () => {
+        neuerVersuch();
+        if (VORSCHAU) { vorschau(); return; }
+        if (bisherFehlt()) return;
+        ausgang.innerHTML =
+          hinweis(T("Passwort wirklich entfernen? Danach melden Sie sich wieder mit einem Code an.", "Really remove your password? After that you sign in with a code again.")) +
+          `<div class="partner-aktionen">
+             <button type="button" class="btn btn-primary btn-sm" data-passwort="ja">${T("Entfernen", "Remove")}</button>
+             <button type="button" class="btn btn-ghost btn-sm" data-passwort="nein">${T("Abbrechen", "Cancel")}</button>
+           </div>`;
+        knopf("nein").addEventListener("click", () => { ausgang.innerHTML = ""; entfernen.focus(); });
+        knopf("ja").addEventListener("click", () => {
+          neuerVersuch();
+          if (bisherFehlt()) return;
+          senden("/passwort_entfernen", bisher ? { altes_passwort: bisher.value } : {}, (d) => d.entfernt === false
+            ? T("Es war kein Passwort mehr festgelegt. Sie melden sich mit einem Code per E-Mail an.", "No password was set any more. You sign in with a code by e-mail.")
+            : T("Ihr Passwort ist entfernt. Sie melden sich jetzt wieder mit einem Code per E-Mail an. Eine Bestätigung ist per E-Mail unterwegs.",
+                "Your password has been removed. You now sign in with a code by e-mail again. A confirmation is on its way by e-mail."));
+        });
+        ausgang.querySelector(".partner-hinweis").focus();
+      });
+    }
+
+    // Zustand B: abmelden wie mit dem Knopf unten, dann zum Anmeldekasten --
+    // dort steht der Merker schon, der Code fuehrt zurueck zu dieser Karte.
+    const code = knopf("code");
+    if (code) {
+      code.addEventListener("click", async () => {
+        if (VORSCHAU) { vorschau(); return; }
+        await abmelden();
+        window.location.href = T("kontakt.html#partner-passwort", "contact.html#partner-passwort");
+      });
+    }
+
+    // Senden. Erfolg zeichnet die Karte neu; bei einem Fehler bleibt das
+    // Formular samt Inhalt stehen. 403 (Fenster zu) und 409 (anderswo
+    // geaendert): der Stand auf dem Server ist ein anderer -- neu laden.
+    // Solange eine Anfrage laeuft, zeichnet die Uhr nicht neu: die Antwort
+    // ginge sonst verloren, auch ein Erfolg in der letzten Sekunde.
+    let unterwegs = false;
+    async function senden(pfad, daten, erfolg) {
+      ausgang.innerHTML = hinweis(T("Einen Moment …", "One moment …"));
+      const knoepfe = [...form.querySelectorAll("button")];
+      knoepfe.forEach((b) => { b.disabled = true; });
+      unterwegs = true;
+      const freigeben = () => {
+        unterwegs = false;
+        knoepfe.forEach((b) => { b.disabled = false; });
+        ausgang.innerHTML = "";
+      };
+      const fehlschlag = (fehlertext) => {
+        freigeben();
+        ausgang.innerHTML = hinweis(fehlertext, true);
+        ausgang.querySelector(".partner-hinweis").focus();
+      };
+      try {
+        const r = await post(pfad, { token: PartnerSitzung.lies(), ...daten });
+        if (!karte.isConnected) return;
+        if (r.status === 401) { abgelaufen(); return; }
+        const d = await antwortKoerper(r);
+        if (!karte.isConnected) return;
+        if (r.ok) {
+          if (d.passwort && typeof d.passwort === "object") passwortKarte(karte, d.passwort, email, hinweis(erfolg(d)));
+          else await passwortNeuLaden(erfolg(d));
+          return;
+        }
+        // Nur eigene Texte: ein unbekannter Code faellt auf den allgemeinen zurueck
+        const eigen = (tabelle, schluessel) => (Object.prototype.hasOwnProperty.call(tabelle, schluessel) ? tabelle[schluessel] : "");
+        if (r.status === 400) {
+          freigeben();
+          feldFehler(neu, eigen(PASSWORT_TEXT, d.fehler) || PASSWORT_TEXT.ungueltig);
+          return;
+        }
+        if (r.status === 403 && d.fehler === "altes_passwort_falsch" && bisher) {
+          freigeben();
+          feldFehler(bisher, T("Das bisherige Passwort stimmt nicht.", "The current password is not correct."));
+          return;
+        }
+        if (r.status === 403 || r.status === 409) {
+          await passwortNeuLaden(r.status === 409
+            ? T("Ihr Passwort wurde inzwischen an anderer Stelle geändert. Die Karte zeigt jetzt den aktuellen Stand.",
+                "Your password was changed elsewhere in the meantime. The card now shows the current state.")
+            : T("Die Zeit nach der Anmeldung mit Code ist abgelaufen. Die Karte zeigt jetzt, wie es weitergeht.",
+                "The time after signing in with a code has run out. The card now shows how to continue."));
+          return;
+        }
+        if (r.status === 429 && eigen(PASSWORT_GRENZE, d.grenze)) { fehlschlag(eigen(PASSWORT_GRENZE, d.grenze)); return; }
+        throw new Error(String(r.status));
+      } catch (err) {
+        if (karte.isConnected) fehlschlag(T("Das hat gerade nicht geklappt. Bitte später erneut versuchen.", "That did not work just now. Please try again later."));
+      }
+    }
+
+    alt.replaceWith(karte);
+    if (meldung) karte.querySelector(".partner-hinweis").focus();
+    else if (fokusDrin) karte.querySelector("h2").focus();
+    if (frisch) {
+      // Laeuft gerade eine Anfrage, fragt die Uhr eine Sekunde spaeter nach;
+      // zeichnet deren Antwort die Karte neu, raeumt das die Uhr mit ab.
+      const ablauf = () => {
+        if (!karte.isConnected) return;
+        if (unterwegs) passwortUhr = setTimeout(ablauf, 1000);
+        else passwortKarte(karte, stand, email, "");
+      };
+      // Gekappt, weil setTimeout mit 32 Bit rechnet: eine unsinnig lange
+      // Restzeit liefe sonst sofort ab und zeichnete die Karte endlos neu.
+      passwortUhr = setTimeout(ablauf, Math.min(stand.frist - Date.now() + 1000, 2147483647));
+    }
+  }
+
+  // Nach 403/409 oder einer unerwarteten Erfolgsantwort: alles neu holen wie
+  // nach einer entfernten Datei, dann den Hinweis in die neue Karte.
+  async function passwortNeuLaden(text) {
+    await laden();
+    const m = seite.querySelector(".partner-passwort .partner-meldung");
+    if (!m) return;
+    m.innerHTML = hinweis(text);
+    m.firstElementChild.focus();
+  }
+
   function zeige(daten) {
     const ansicht = daten.ansicht && typeof daten.ansicht === "object" ? daten.ansicht : {};
     const gruss = typeof ansicht.begruessung === "string" ? ansicht.begruessung.trim() : "";
@@ -1286,7 +1763,12 @@ const PartnerSitzung = {
     const waehlbar = vip !== "" && module.some((m) => !frei.has(m.id) && m.status !== "bald");
     // Ist alles ausgeblendet und nichts hinterlegt, sieht der Partner trotzdem eine Karte statt einer leeren Seite.
     const leer = !gruss && ansicht.daten === false && !dateien.length && !module.length && !vip;
+    // Die Passwortkarte: hier nur ihr Platz, passwortKarte() zeichnet sie
+    // gleich darauf hinein. Normal nach Begruessung und Daten, sonst ganz oben.
+    const passwort = daten.passwort && typeof daten.passwort === "object" ? daten.passwort : null;
+    const passwortPlatz = passwort ? `<section class="partner-karte partner-passwort"></section>` : "";
     seite.innerHTML =
+      (passwortOben ? passwortPlatz : "") +
       (leer ? `<div class="partner-karte">
          <span class="kachel-label">${T("Angemeldet", "Signed in")}</span>
          ${daten.name ? `<h2>${esc(daten.name)}</h2>` : ""}
@@ -1302,6 +1784,7 @@ const PartnerSitzung = {
          <h2>${esc(daten.name || "")}</h2>
          <dl>${felder.map((f) => `<dt>${esc(f.label)}</dt><dd>${esc(f.wert)}</dd>`).join("")}</dl>
        </div>`) +
+      (passwortOben ? "" : passwortPlatz) +
       (dateien.length ? dateienHtml(dateien) : "") +
       (module.length ? `<section class="partner-karte vip-bereich" aria-labelledby="vip-bereich-titel">
          ${KRONE}
@@ -1381,6 +1864,15 @@ const PartnerSitzung = {
       });
     }
     seite.querySelector('[data-partner="abmelden"]').addEventListener("click", abmelden);
+
+    if (passwort) passwortKarte(seite.querySelector(".partner-passwort"), passwort, typeof daten.email === "string" ? daten.email : "", "");
+    // Einmal nach „Passwort vergessen?": Fokus auf die Karte, dann den Anker
+    // weg -- neu geladen zeigt die Seite wieder die gewohnte Reihenfolge.
+    if (window.location.hash === "#neues-passwort") {
+      const kopf = seite.querySelector("#passwort-titel");
+      if (kopf) kopf.focus();
+      history.replaceState(null, "", location.pathname + location.search);
+    }
   }
 
   async function abmelden() {
@@ -1400,8 +1892,7 @@ const PartnerSitzung = {
     try {
       const r = await post("/daten", { token });
       if (r.status === 401) {
-        PartnerSitzung.vergiss();
-        nichtAngemeldet(T("Ihre Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an.", "Your sign-in has expired. Please sign in again."));
+        abgelaufen();
         return;
       }
       if (!r.ok) throw new Error(String(r.status));

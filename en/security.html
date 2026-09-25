@@ -32,8 +32,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/sicherheit.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/security.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/sicherheit.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20260925a">
-  <link rel="stylesheet" href="../css/style.css?v=20260925a">
+  <link rel="stylesheet" href="../css/fonts.css?v=20260925b">
+  <link rel="stylesheet" href="../css/style.css?v=20260925b">
 </head>
 <body>
 
@@ -300,8 +300,8 @@
           <p>What a partner has given us stays as long as they are a partner.
              Everything the sign-in itself produces expires by itself.</p>
           <ul class="guard-list">
-            <li>On the contact page there are two fields: the address for the code — that one goes to the access — and a questionnaire that only fills your own mail program</li>
-            <li>A code is stored only as a checksum with a random addition, never in clear text, and is valid briefly and exactly once</li>
+            <li>On the contact page there are two forms: the sign-in — address and, if set, password go to the access — and a questionnaire that also goes to the access and only fills your own mail program if the access cannot be reached</li>
+            <li>Neither code nor password is kept in clear text: a code only as a checksum with a random addition, valid briefly and exactly once; an optional password only as an Argon2id hash, failed attempts are throttled per address, and every change announces itself by e-mail</li>
             <li>An open sign-in ends with the browser tab, expires by itself anyway, and signing out ends it immediately; here only a checksum of it is kept</li>
             <li>The access is reachable only encrypted — an unencrypted call is redirected, and the browser is told not to try it any other way in future</li>
             <li>Partner data does not sit in the area the web server delivers, and is barred by rule on top of that — two locks, checked</li>
@@ -447,6 +447,6 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20260925a"></script>
+  <script src="../js/main.js?v=20260925b"></script>
 </body>
 </html>

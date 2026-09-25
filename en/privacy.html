@@ -25,8 +25,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/datenschutz.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/privacy.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/datenschutz.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20260925a">
-  <link rel="stylesheet" href="../css/style.css?v=20260925a">
+  <link rel="stylesheet" href="../css/fonts.css?v=20260925b">
+  <link rel="stylesheet" href="../css/style.css?v=20260925b">
 </head>
 <body>
 
@@ -100,11 +100,13 @@
       <h2>Principle</h2>
       <p>This website uses no cookies, no trackers and no analytics services.
          All fonts and content are loaded locally from this domain — no
-         third-party content is fetched. Only your choice of appearance is
-         stored on your device; see the following section. The questions
-         helper at the bottom right also works without a server: the answers
-         are built into the page, and your clicks are neither stored nor
-         transmitted.</p>
+         third-party content is fetched. On your device, only your choice of
+         appearance is stored (see the following section) and, after you sign
+         in to partner access, a sign-in token in the session storage of the
+         browser tab until the tab is closed (see "Partner access"). The
+         questions helper at the bottom right also works without a server:
+         the answers are built into the page, and your clicks are neither
+         stored nor transmitted.</p>
       <h2>Setting stored on your device</h2>
       <p>This website can be switched between a light and a dark appearance. If
          you operate that switch, your choice is stored in your browser's local
@@ -131,20 +133,49 @@
          under the EU-US Data Privacy Framework.</p>
       <h2>Partner access</h2>
       <p>The "Partners only" box on the contact page is intended solely for
-         people registered with us as partners. If you enter your e-mail
-         address there and request a code, the address is transmitted in
-         encrypted form to our server at api.jkhd.de (web space hosted by
-         IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, Germany). If the
-         address is registered as a partner, we send a six-digit code by
+         people registered with us as partners. There you sign in either with
+         a code we send you by e-mail or with a password you have chosen to
+         set. The e-mail address you enter and, where applicable, the password
+         are transmitted in encrypted form to our server at api.jkhd.de (web
+         space hosted by IONOS SE, Elgendorfer Str. 57, 56410 Montabaur,
+         Germany). If you request a code and the address is registered as a
+         partner, we send a six-digit code by
          e-mail. The code is stored with us only as a checksum, becomes
          invalid after ten minutes or after its first use and is deleted at
-         the latest during the next request. After you enter the code, your
+         the latest on the following day. After you sign in, your
          browser receives a random sign-in token valid for at most one hour;
          it is kept only in your browser's session storage and with us only
-         as a checksum. The "Partner" page
-         uses it to show the details we hold about you as a partner and the
-         contact address for partners. "Sign out" deletes the token in the
-         browser and with us.</p>
+         as a checksum. For this session the server records the kind of
+         sign-in (code or password) and its time; once it has expired, the
+         session, including your address and this record, is deleted at the
+         latest on the following day. The "Partner" page
+         uses it to show the details we hold about you as a partner, your
+         e-mail address, whether a password is set, the files stored for you
+         and the contact address for partners. "Sign out" deletes the token
+         in the browser and with us.</p>
+      <p><b>Password.</b> Setting a password is optional; you set it on the
+         partner page, where you can also change or remove it. We store it
+         only as a non-reversible Argon2id hash — never in clear text and never
+         in a log — together with the time at which you set it and the time of
+         your last sign-in with a code; JKHD sees the date of each in its
+         partner administration. If your last sign-in with a code was more than 180
+         days ago, we ask you to sign in once with a code before the password
+         is valid again. When you set, change or remove a password, we send an
+         e-mail to your address that does not contain the password, and your
+         other sign-ins end. The password is deleted when you or we remove it
+         or when your partner entry or your registered address ceases to
+         exist — at the latest on the following day. The legal basis for the
+         password and the notification is Art. 6 (1) (b) GDPR (performance of
+         the partnership), for the notification additionally (f) GDPR
+         (protecting your access from use by others).</p>
+      <p>The server counts failed sign-in attempts with a password per
+         address entered, even if that address is not registered as a
+         partner, and likewise changes and removals of a password per access.
+         For this it stores only a SHA-256 checksum of the address with the
+         times; it is no longer taken into account after one hour and is
+         deleted at the latest on the following day. The legal basis is
+         Art. 6 (1) (f) GDPR (protection against password guessing and
+         abuse).</p>
       <p><b>Enquiry via the questionnaire.</b> The "Enquiry" button in the
          same box opens a questionnaire. With "Send", the details you entered
          — name, e-mail address, the choices for role and subject, optionally a
@@ -167,12 +198,15 @@
          address. Nothing is transmitted to our server and nothing is stored in
          the browser.</p>
       <p>To prevent abuse, the server keeps a checksum of your network, of
-         the e-mail address entered and of its domain for one hour in order to
-         limit the number of requests; plain-text addresses are not logged. The legal
+         the e-mail address entered and of its domain in order to limit the
+         number of requests; it is no longer taken into account after one hour
+         and is deleted at the latest on the following day. Plain-text
+         addresses are not logged. The legal
          basis is Art. 6 (1) (b) GDPR (performance of the partnership) or
          (f) GDPR (protection against abuse). No e-mail is sent to addresses
-         not registered as partners; for them only the checksum mentioned
-         above is kept, for one hour.</p>
+         not registered as partners; for them only the checksums mentioned
+         above are kept, which are no longer taken into account after one
+         hour and are deleted at the latest on the following day.</p>
       <h2>Contact by e-mail</h2>
       <p>If you contact us by e-mail, we process your details exclusively in
          order to deal with your enquiry (Art. 6 (1) (b) or (f) GDPR). The data
@@ -186,7 +220,7 @@
          competent authority is the State Commissioner for Data Protection and
          Freedom of Information of Baden-Württemberg.</p>
       <h2>Version</h2>
-      <p>24 September 2026 (enquiry via the questionnaire added). If the technology behind this website changes,
+      <p>25 September 2026 (sign-in with a password added, files on the partner page added). If the technology behind this website changes,
          this statement will be updated; the version published here is the
          authoritative one.</p>
     </div>
@@ -212,6 +246,6 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20260925a"></script>
+  <script src="../js/main.js?v=20260925b"></script>
 </body>
 </html>

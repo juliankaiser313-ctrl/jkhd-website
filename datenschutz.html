@@ -26,8 +26,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/datenschutz.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/privacy.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/datenschutz.html">
-  <link rel="stylesheet" href="css/fonts.css?v=20260925a">
-  <link rel="stylesheet" href="css/style.css?v=20260925a">
+  <link rel="stylesheet" href="css/fonts.css?v=20260925b">
+  <link rel="stylesheet" href="css/style.css?v=20260925b">
 </head>
 <body>
 
@@ -103,10 +103,13 @@
       <h2>Grundsatz</h2>
       <p>Diese Webseite verwendet keine Cookies, keine Tracker und keine
          Analyse-Dienste. Alle Schriften und Inhalte werden lokal von dieser Domain
-         geladen — es werden keine Inhalte von Drittanbietern nachgeladen. Lediglich
-         Ihre Wahl der Darstellung wird auf Ihrem Gerät gespeichert; Näheres im
-         folgenden Abschnitt. Auch die Fragen-Hilfe unten rechts arbeitet ohne
-         Server: Die Antworten sind fest in der Seite hinterlegt, Ihre Klicks
+         geladen — es werden keine Inhalte von Drittanbietern nachgeladen. Auf
+         Ihrem Gerät wird nur Ihre Wahl der Darstellung gespeichert (Näheres im
+         folgenden Abschnitt) und, nach einer Anmeldung im Partnerzugang, ein
+         Anmeldezeichen im Sitzungsspeicher des Browser-Tabs, bis der Tab
+         geschlossen wird (Näheres unter „Partnerzugang"). Auch die
+         Fragen-Hilfe unten rechts arbeitet ohne Server: Die Antworten sind
+         fest in der Seite hinterlegt, Ihre Klicks
          werden weder gespeichert noch übertragen.</p>
       <h2>Einstellung auf Ihrem Gerät</h2>
       <p>Diese Webseite lässt sich zwischen heller und dunkler Darstellung
@@ -136,21 +139,52 @@
          dem EU-US Data Privacy Framework zertifiziert.</p>
       <h2>Partnerzugang</h2>
       <p>Der Kasten „Nur für Partner" auf der Kontaktseite ist ausschließlich
-         für Personen gedacht, die bei uns als Partner hinterlegt sind. Wenn
-         Sie dort Ihre E-Mail-Adresse eingeben und einen Code anfordern, wird
-         die Adresse verschlüsselt an unseren Server unter api.jkhd.de
+         für Personen gedacht, die bei uns als Partner hinterlegt sind. Sie
+         melden sich dort wahlweise mit einem Code an, den wir Ihnen per
+         E-Mail schicken, oder mit einem Passwort, das Sie freiwillig
+         festgelegt haben. Die eingegebene E-Mail-Adresse und gegebenenfalls
+         das Passwort werden verschlüsselt an unseren Server unter api.jkhd.de
          übermittelt (Webspace bei IONOS SE, Elgendorfer Str. 57, 56410
-         Montabaur, Deutschland). Ist die Adresse als Partner hinterlegt,
-         senden wir einen sechsstelligen Code per E-Mail. Der Code wird bei
+         Montabaur, Deutschland). Fordern Sie einen Code an und ist die
+         Adresse als Partner hinterlegt, senden wir einen sechsstelligen Code
+         per E-Mail. Der Code wird bei
          uns nur als Prüfsumme gespeichert, ist nach zehn Minuten oder nach
-         der ersten Verwendung ungültig und wird spätestens beim nächsten
-         Vorgang gelöscht. Nach der Eingabe des Codes erhält Ihr Browser ein
+         der ersten Verwendung ungültig und wird spätestens am folgenden Tag
+         gelöscht. Nach der Anmeldung erhält Ihr Browser ein
          zufälliges Anmeldezeichen, das höchstens eine Stunde gilt; es liegt
          nur im Sitzungsspeicher Ihres Browsers und bei uns nur als
-         Prüfsumme. Die Seite „Partner"
+         Prüfsumme. Zu dieser Sitzung vermerkt der Server die Art der
+         Anmeldung (Code oder Passwort) und ihren Zeitpunkt; nach Ablauf wird
+         die Sitzung samt Ihrer Adresse und diesem Vermerk spätestens am
+         folgenden Tag gelöscht. Die Seite „Partner"
          zeigt damit die Angaben, die wir zu Ihnen als Partner hinterlegt
-         haben, sowie die Kontaktadresse für Partner. „Abmelden" löscht das
-         Zeichen im Browser und bei uns.</p>
+         haben, Ihre E-Mail-Adresse, ob ein Passwort festgelegt ist, die für
+         Sie hinterlegten Dateien sowie die Kontaktadresse für Partner.
+         „Abmelden" löscht das Zeichen im Browser und bei uns.</p>
+      <p><b>Passwort.</b> Ein Passwort legen Sie freiwillig auf der
+         Partnerseite fest; dort können Sie es auch ändern oder entfernen. Wir
+         speichern es nur als nicht umkehrbaren Argon2id-Hash — nie im
+         Klartext und nie in einem Protokoll —, dazu den Zeitpunkt, zu dem Sie es
+         festgelegt haben, und den Zeitpunkt Ihrer letzten Anmeldung per Code;
+         JKHD sieht davon in der Partnerverwaltung jeweils das Datum. Liegt Ihre letzte
+         Anmeldung per Code mehr als 180 Tage zurück, bitten wir Sie, sich
+         einmal mit einem Code anzumelden, bevor das Passwort wieder gilt.
+         Beim Festlegen, Ändern oder Entfernen schicken wir eine E-Mail an Ihre
+         Adresse, die das Passwort nicht enthält, und Ihre anderen Anmeldungen
+         enden. Das Passwort wird gelöscht, wenn Sie oder wir es entfernen oder
+         wenn Ihr Partnereintrag bzw. Ihre hinterlegte Adresse wegfällt —
+         spätestens am folgenden Tag. Rechtsgrundlage für Passwort und
+         Benachrichtigung ist Art. 6 Abs. 1 lit. b DSGVO (Durchführung der
+         Partnerschaft), für die Benachrichtigung zusätzlich lit. f DSGVO
+         (Schutz Ihres Zugangs vor fremder Nutzung).</p>
+      <p>Fehlgeschlagene Anmeldeversuche mit Passwort zählt der Server je
+         eingegebener Adresse, auch wenn diese nicht als Partner hinterlegt
+         ist, ebenso Änderungen und Entfernungen eines Passworts je Zugang.
+         Gespeichert wird dafür nur eine SHA-256-Prüfsumme der Adresse mit den
+         Zeitpunkten; sie wird nach einer Stunde nicht mehr berücksichtigt und
+         spätestens am folgenden Tag gelöscht. Rechtsgrundlage ist Art. 6
+         Abs. 1 lit. f DSGVO (Schutz vor dem Erraten von Passwörtern und vor
+         Missbrauch).</p>
       <p><b>Anfrage über den Fragebogen.</b> Der Knopf „Anfrage" im selben
          Kasten öffnet einen Fragebogen. Mit „Senden" werden die Angaben, die
          Sie eingetragen haben — Name, E-Mail-Adresse, Auswahl zu Rolle und
@@ -173,14 +207,16 @@
          gewählten Zugänge werden nur in eine vorbereitete E-Mail an unsere
          Partner-Adresse geschrieben. An unseren Server wird dabei nichts
          übertragen, im Browser wird nichts gespeichert.</p>
-      <p>Zum Schutz vor Missbrauch speichert der Server für eine Stunde eine
-         Prüfsumme Ihres Netzes, der eingegebenen E-Mail-Adresse und ihrer
-         Domain, um die Zahl der Anfragen zu begrenzen; Klartext-Adressen
-         werden nicht protokolliert. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO
+      <p>Zum Schutz vor Missbrauch speichert der Server eine Prüfsumme Ihres
+         Netzes, der eingegebenen E-Mail-Adresse und ihrer Domain, um die Zahl
+         der Anfragen zu begrenzen; sie wird nach einer Stunde nicht mehr
+         berücksichtigt und spätestens am folgenden Tag gelöscht.
+         Klartext-Adressen werden nicht protokolliert. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO
          (Durchführung der Partnerschaft) bzw. lit. f DSGVO (Schutz vor
          Missbrauch). An Adressen, die nicht als Partner hinterlegt sind, wird
-         keine E-Mail versandt; gespeichert wird für sie nur die genannte
-         Prüfsumme für eine Stunde.</p>
+         keine E-Mail versandt; gespeichert werden für sie nur die genannten
+         Prüfsummen, die nach einer Stunde nicht mehr berücksichtigt und
+         spätestens am folgenden Tag gelöscht werden.</p>
       <h2>Kontakt per E-Mail</h2>
       <p>Wenn Sie uns per E-Mail kontaktieren, verarbeiten wir Ihre Angaben
          ausschließlich zur Bearbeitung der Anfrage (Art. 6 Abs. 1 lit. b bzw.
@@ -194,7 +230,7 @@
          der Landesbeauftragte für den Datenschutz und die Informationsfreiheit
          Baden-Württemberg.</p>
       <h2>Stand</h2>
-      <p>24. September 2026 (Anfrage über den Fragebogen ergänzt). Ändert sich die Technik dieser Webseite, wird
+      <p>25. September 2026 (Anmeldung mit Passwort ergänzt, Dateien auf der Partnerseite nachgetragen). Ändert sich die Technik dieser Webseite, wird
          diese Erklärung angepasst; maßgeblich ist die hier veröffentlichte
          Fassung.</p>
     </div>
@@ -220,6 +256,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20260925a"></script>
+  <script src="js/main.js?v=20260925b"></script>
 </body>
 </html>

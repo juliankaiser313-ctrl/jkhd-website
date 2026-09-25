@@ -32,8 +32,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/kontakt.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/contact.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/kontakt.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20260925a">
-  <link rel="stylesheet" href="../css/style.css?v=20260925a">
+  <link rel="stylesheet" href="../css/fonts.css?v=20260925b">
+  <link rel="stylesheet" href="../css/style.css?v=20260925b">
 </head>
 <body>
 
@@ -119,20 +119,24 @@
       </div>
 
       <!-- ================= PARTNERS =================
-           The flow (e-mail -> code -> sign-in) lives in js/main.js and talks
-           to data-api (IONOS webspace, repo JKHD-Partner-Server); afterwards
-           it goes to partner.html. Empty data-api = no server, and the box
-           says so openly. The partner address is deliberately nowhere here —
-           it appears only on the partner page. "Enquiry" is a questionnaire
-           that in the end only opens the e-mail program. -->
+           The flow (e-mail + password -> sign-in, without a password e-mail
+           -> code -> sign-in) lives in js/main.js and talks to data-api
+           (IONOS webspace, repo JKHD-Partner-Server); afterwards it goes to
+           partner.html. Empty data-api = no server, and the box says so
+           openly. The partner address is deliberately nowhere here — it
+           appears only on the partner page. #partner-passwort opens the box
+           straight away for setting a password. "Enquiry" is a questionnaire
+           that goes to the server; only if the server cannot be reached does
+           the e-mail program open. -->
       <section class="partner" id="partner" data-api="https://api.jkhd.de" aria-labelledby="partner-titel">
         <div class="partner-kopf">
           <span class="kachel-label">Partners only</span>
           <h2 id="partner-titel">Partner access</h2>
           <p>For partners of JKHD. You sign in with your e-mail address and a
-             code we send you — then the partner page shows what we hold
-             about you. Not a partner yet? "Enquiry" reaches us with a few
-             questions — at the end your e-mail program opens.</p>
+             code we send you — or with your password, if you have set one.
+             Then the partner page shows what we hold about you. Not a partner
+             yet? "Enquiry" reaches us with a few questions — we confirm
+             receipt by e-mail.</p>
         </div>
         <div class="partner-koerper">
           <button type="button" class="btn btn-primary" data-partner="start">Sign in</button>
@@ -193,6 +197,6 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20260925a"></script>
+  <script src="../js/main.js?v=20260925b"></script>
 </body>
 </html>
