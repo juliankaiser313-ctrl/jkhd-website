@@ -1790,7 +1790,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   background: linear-gradient(180deg, var(--panel), var(--panel-2));
 }
 .partner-karte h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); letter-spacing: -0.02em; }
-.partner-karte p { max-width: 52ch; color: var(--muted); }
+.partner-karte p { max-width: 52ch; color: var(--muted); overflow-wrap: anywhere; }   /* lange Adressen sprengen sonst das Handy */
 .partner-karte .btn { justify-self: start; }
 
 .partner-daten dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 24px; margin-top: 6px; }
@@ -1839,6 +1839,34 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   color: var(--muted);
 }
 .partner-daten dd { color: var(--text); overflow-wrap: anywhere; }
+
+/* Begruessung und Dateien (seit 25.09.2026, gepflegt in der Partner-App).
+   Der Begruessungstext behaelt seine Zeilenumbrueche. */
+.partner-gruss p { max-width: 60ch; color: var(--text); white-space: pre-line; overflow-wrap: anywhere; }
+.dateien { display: grid; gap: 12px; margin: 6px 0 0; padding: 0; list-style: none; }
+.datei {
+  display: grid;
+  gap: 8px;
+  padding: 16px 20px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-lg);
+  background: var(--panel);
+}
+.datei-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.datei-typ {
+  padding: 1px 7px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  font-family: var(--mono);
+  font-size: var(--caption);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.datei-name { font-family: var(--serif); font-size: 1.1rem; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.partner-karte .datei p { max-width: none; font-size: 0.95rem; overflow-wrap: anywhere; }
+.datei-fuss { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+.datei-info { font-family: var(--mono); font-size: var(--caption); letter-spacing: 0.06em; color: var(--muted); }
 
 .vip {
   display: grid;

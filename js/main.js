@@ -1098,10 +1098,17 @@ const PartnerSitzung = {
 // „module" ist der VIP-Katalog (api-daten/vip.json, pflegt Julian), „freigaben"
 // die Modul-IDs, die fuer diesen Partner freigeschaltet sind. Anfordern =
 // Auswahl per Haekchen, dann mailto an die VIP-Adresse; an den Server geht nichts.
+// Seit 25.09.2026 zusaetzlich (Partner-App): „dateien" [{id, name, typ, groesse,
+// datum, text}] -- Download ueber POST {api}/datei {token, id} -- und „ansicht"
+// {begruessung, daten, dateien, module, vip}: was ausgeblendet ist, schickt der
+// Server gar nicht erst. VORSCHAU: die Partner-App laedt diese Seite auf
+// 127.0.0.1 mit window.JKHD_VORSCHAU = true und schickt die Daten per
+// postMessage (nur vom eigenen Ursprung) -- auf www.jkhd.de gibt es das nie.
 (function () {
   const seite = document.querySelector(".partner-seite");
   if (!seite) return;
   const api = (seite.dataset.api || "").replace(/\/+$/, "");
+  const VORSCHAU = window.JKHD_VORSCHAU === true;
 
   const esc = (s) =>
     String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1169,15 +1176,17 @@ const PartnerSitzung = {
 
   // Ein Modul des VIP-Katalogs: freigeschaltet (mit Link), auf Anfrage
   // (auswaehlbar) oder bald.
-  function modulHtml(m, frei) {
+  // Ohne VIP-Adresse (Ansicht „vip" aus) gibt es weder den Hinweis auf sie noch
+  // Haekchen zum Anfordern -- angefordert wird ja per Mail an genau diese Adresse.
+  function modulHtml(m, frei, vip) {
     const lage = m.status === "bald" ? "bald" : (frei.has(m.id) ? "frei" : "anfrage");
     const kurz = T(m.kurz || "", m.kurz_en || m.kurz || "");
     const status = { frei: T("Freigeschaltet", "Unlocked"), bald: T("Bald", "Soon"), anfrage: T("Auf Anfrage", "On request") }[lage];
     const aktion = lage === "frei"
       ? (m.link
           ? `<a class="btn btn-ghost btn-sm" href="${esc(m.link)}" rel="noopener">${T("Öffnen", "Open")}</a>`
-          : `<span class="modul-hinweis">${T("Zugang per E-Mail an die VIP-Adresse unten.", "Access by e-mail to the VIP address below.")}</span>`)
-      : lage === "anfrage"
+          : (vip ? `<span class="modul-hinweis">${T("Zugang per E-Mail an die VIP-Adresse unten.", "Access by e-mail to the VIP address below.")}</span>` : ""))
+      : (lage === "anfrage" && vip)
         ? `<label class="modul-wahl"><input type="checkbox" name="modul" value="${esc(m.id)}"> ${T("Auswählen", "Select")}</label>`
         : "";
     return `<div class="modul is-${lage}">
@@ -1191,18 +1200,109 @@ const PartnerSitzung = {
        </div>`;
   }
 
+  // 1234567 -> "1,2 MB"
+  const groesse = (b) => {
+    const n = Number(b) || 0;
+    const zahl = (x) => x.toLocaleString(IST_EN ? "en-GB" : "de-DE", { maximumFractionDigits: 1 });
+    return n >= 1048576 ? zahl(n / 1048576) + " MB" : n >= 1024 ? zahl(n / 1024) + " KB" : n + " B";
+  };
+
+  function dateienHtml(dateien) {
+    return `<section class="partner-karte partner-dateien" aria-labelledby="dateien-titel">
+         <span class="kachel-label">${T("Für Sie hinterlegt", "Stored for you")}</span>
+         <h2 id="dateien-titel">${T("Dateien", "Files")}</h2>
+         <ul class="dateien">
+           ${dateien.map((d) => `<li class="datei">
+             <div class="datei-kopf">
+               <span class="datei-typ">${esc(d.typ || "")}</span>
+               <span class="datei-name">${esc(d.name)}</span>
+             </div>
+             ${d.text ? `<p>${esc(d.text)}</p>` : ""}
+             <div class="datei-fuss">
+               <span class="datei-info">${groesse(d.groesse)}${d.datum ? " · " + esc(d.datum) : ""}</span>
+               <button type="button" class="btn btn-ghost btn-sm" data-datei="${esc(d.id)}">${T("Herunterladen", "Download")}</button>
+             </div>
+           </li>`).join("")}
+         </ul>
+         <div class="partner-meldung" data-dateien-meldung></div>
+       </section>`;
+  }
+
+  // Download: mit dem Anmeldezeichen holen, als Datei speichern. Der Name kommt
+  // aus der Liste (nicht aus einem Kopf der Antwort -- den liest fetch quer
+  // ueber Herkunftsgrenzen ohnehin nicht).
+  async function herunterladen(knopf, datei, meldung) {
+    if (VORSCHAU) {
+      meldung.innerHTML = hinweis(T("Vorschau: Herunterladen kann nur der Partner selbst.", "Preview: only the partner can download."));
+      return;
+    }
+    const token = PartnerSitzung.lies();
+    const text = knopf.textContent;
+    knopf.disabled = true;
+    knopf.textContent = T("Lädt …", "Loading …");
+    try {
+      const r = await post("/datei", { token, id: datei.id });
+      if (r.status === 401) {
+        PartnerSitzung.vergiss();
+        nichtAngemeldet(T("Ihre Anmeldung ist abgelaufen. Bitte melden Sie sich erneut an.", "Your sign-in has expired. Please sign in again."));
+        return;
+      }
+      if (r.status === 404) {
+        // Die Datei ist nicht mehr fuer ihn da (entfernt oder ausgeblendet): Liste neu holen statt „spaeter nochmal".
+        await laden();
+        const m = seite.querySelector("[data-dateien-meldung]");
+        const text = T("Diese Datei ist nicht mehr für Sie hinterlegt. Die Liste wurde aktualisiert.",
+                       "This file is no longer available to you. The list has been updated.");
+        if (m) m.innerHTML = hinweis(text, true);
+        else seite.insertAdjacentHTML("afterbegin", hinweis(text, true));
+        return;
+      }
+      if (!r.ok) throw new Error(String(r.status));
+      const url = URL.createObjectURL(await r.blob());
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = datei.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      meldung.innerHTML = "";
+    } catch (err) {
+      meldung.innerHTML = hinweis(T("Die Datei ließ sich gerade nicht laden. Bitte später noch einmal versuchen.", "The file could not be loaded just now. Please try again later."), true);
+    } finally {
+      knopf.disabled = false;
+      knopf.textContent = text;
+    }
+  }
+
   function zeige(daten) {
-    const felder = Array.isArray(daten.felder) ? daten.felder : [];
-    const vip = typeof daten.vip === "string" ? daten.vip : "";
-    const module = (Array.isArray(daten.module) ? daten.module : []).filter((m) => m && typeof m.id === "string" && typeof m.name === "string");
+    const ansicht = daten.ansicht && typeof daten.ansicht === "object" ? daten.ansicht : {};
+    const gruss = typeof ansicht.begruessung === "string" ? ansicht.begruessung.trim() : "";
+    const felder = ansicht.daten === false ? [] : (Array.isArray(daten.felder) ? daten.felder : []);
+    const vip = ansicht.vip === false ? "" : (typeof daten.vip === "string" ? daten.vip : "");
+    const module = ansicht.module === false ? [] : (Array.isArray(daten.module) ? daten.module : []).filter((m) => m && typeof m.id === "string" && typeof m.name === "string");
+    const dateien = ansicht.dateien === false ? [] : (Array.isArray(daten.dateien) ? daten.dateien : []).filter((d) => d && typeof d.id === "string" && typeof d.name === "string");
     const frei = new Set(Array.isArray(daten.freigaben) ? daten.freigaben : []);
     const waehlbar = vip !== "" && module.some((m) => !frei.has(m.id) && m.status !== "bald");
+    // Ist alles ausgeblendet und nichts hinterlegt, sieht der Partner trotzdem eine Karte statt einer leeren Seite.
+    const leer = !gruss && ansicht.daten === false && !dateien.length && !module.length && !vip;
     seite.innerHTML =
-      `<div class="partner-karte partner-daten">
+      (leer ? `<div class="partner-karte">
+         <span class="kachel-label">${T("Angemeldet", "Signed in")}</span>
+         ${daten.name ? `<h2>${esc(daten.name)}</h2>` : ""}
+         <p>${T("Zurzeit ist hier nichts für Sie hinterlegt. Sobald etwas bereitliegt, erscheint es auf dieser Seite.",
+                "Nothing is stored for you here at the moment. As soon as something is ready, it will appear on this page.")}</p>
+       </div>` : "") +
+      (gruss ? `<div class="partner-karte partner-gruss">
+         <span class="kachel-label">${T("Willkommen", "Welcome")}</span>
+         <p>${esc(gruss)}</p>
+       </div>` : "") +
+      (ansicht.daten === false ? "" : `<div class="partner-karte partner-daten">
          <span class="kachel-label">${T("Ihre Daten bei JKHD", "Your data at JKHD")}</span>
          <h2>${esc(daten.name || "")}</h2>
          <dl>${felder.map((f) => `<dt>${esc(f.label)}</dt><dd>${esc(f.wert)}</dd>`).join("")}</dl>
-       </div>` +
+       </div>`) +
+      (dateien.length ? dateienHtml(dateien) : "") +
       (module.length ? `<section class="partner-karte vip-bereich" aria-labelledby="vip-bereich-titel">
          ${KRONE}
          <span class="kachel-label">VIP</span>
@@ -1212,7 +1312,7 @@ const PartnerSitzung = {
            "What is unlocked for you — and what you can request. Select and press \"Request selection\": your e-mail program opens with the finished text."
          ) : T("Was für Sie freigeschaltet ist.", "What is unlocked for you.")}</p>
          <form class="module" novalidate>
-           ${module.map((m) => modulHtml(m, frei)).join("")}
+           ${module.map((m) => modulHtml(m, frei, vip)).join("")}
            ${waehlbar ? `<div class="partner-aktionen">
              <button type="submit" class="btn btn-primary" data-partner="anfordern" disabled>${T("Auswahl anfordern", "Request selection")}</button>
              <span class="partner-hinweis modul-zaehler" aria-live="polite"></span>
@@ -1263,6 +1363,12 @@ const PartnerSitzung = {
       });
     }
 
+    const dateiMeldung = seite.querySelector("[data-dateien-meldung]");
+    seite.querySelectorAll("[data-datei]").forEach((k) => {
+      const datei = dateien.find((d) => d.id === k.dataset.datei);
+      if (datei) k.addEventListener("click", () => herunterladen(k, datei, dateiMeldung));
+    });
+
     const wert = seite.querySelector("[data-vip]");
     const knopf = seite.querySelector('[data-partner="aufdecken"]');
     if (wert && knopf) {
@@ -1278,6 +1384,7 @@ const PartnerSitzung = {
   }
 
   async function abmelden() {
+    if (VORSCHAU) return;   // in der Vorschau gibt es keine Sitzung
     const token = PartnerSitzung.lies();
     PartnerSitzung.vergiss();
     if (api && token) {
@@ -1312,6 +1419,16 @@ const PartnerSitzung = {
     }
   }
 
+  if (VORSCHAU) {
+    // Nur Daten aus dem eigenen Fenster (der Partner-App) -- nie von einer fremden Herkunft.
+    seite.innerHTML = hinweis(T("Vorschau wird geladen …", "Loading preview …"));
+    window.addEventListener("message", (ev) => {
+      if (ev.origin !== window.location.origin || !ev.data || ev.data.typ !== "jkhd-vorschau") return;
+      zeige(ev.data.daten || {});
+    });
+    if (window.parent !== window) window.parent.postMessage({ typ: "jkhd-vorschau-bereit" }, window.location.origin);
+    return;
+  }
   laden();
   // Aus dem Zurueck-Cache: die Sitzung neu pruefen, die Adresse ist dann wieder verdeckt
   window.addEventListener("pageshow", (e) => { if (e.persisted) laden(); });
