@@ -99,24 +99,179 @@
       <div class="statement">
         <p class="kicker">// What we do</p>
         <h1 class="statement-lead">
-          JKHD develops quantitative systems — for its own use.
+          JKHD builds quantitative systems — and runs them itself.
         </h1>
         <p class="statement-more">
-          We build these systems ourselves and run them ourselves too. That
-          includes everything such a system needs: collecting real market
-          data, searching it for patterns, testing every idea against chance,
-          setting loss limits, running the systems around the clock and
-          keeping watch over them. We sell nothing: no tips, no software,
-          no advice. Anyone who is passionate about the same thing is
-          welcome to write to us.
+          “Quantitative” means working with numbers. A quantitative system is a
+          program that decides by fixed rules, not by feel. A rule sets in
+          advance, for example, when the program enters and when it exits
+          again. Entering means counting on a price to move in a particular
+          direction. Our work includes everything such a system needs. We
+          collect real market data and search it for patterns. We test every
+          idea against chance and set loss limits. And we run the systems
+          around the clock and keep watch over them. The systems work for us
+          alone.
         </p>
       </div>
 
       <div class="note">
-        <b>What is missing from this page — on purpose:</b> which patterns
-        the program trades, which numbers it uses and where exactly its
-        limits are. That is our recipe. Like a baker's recipe, it is not on
-        display in the shop window.
+        <b>What is missing from this page — on purpose:</b> exactly which
+        patterns our systems use, which numbers they calculate with and where
+        exactly their limits are. That is our recipe. Like a baker's recipe, it
+        is not on display in the shop window.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PATH OF AN IDEA ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Path of an idea</p>
+        <h2>From a hunch to monitored operation.</h2>
+        <p>Along the way, any test is allowed to stop an idea. That is not a
+           setback but the point of the exercise — the earlier, the
+           cheaper.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step-row">
+          <div class="step-num">01</div>
+          <div>
+            <h3>A hunch</h3>
+            <p>It starts with an assumption about why a price moves. We work on
+               patterns in how prices move. Put simply: “What moves often keeps
+               moving.” And: “A spike up or down usually comes back.” “Often”
+               and “usually” mean: not always. The
+               “<a href="system.html">System</a>” page shows which basic kinds
+               of system there are and where each one fails.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">02</div>
+          <div>
+            <h3>Search and confirm, separately</h3>
+            <p>We search in data from one period of the past. Whether a find
+               holds up, we check on data from another period that stays
+               untouched during the search. Otherwise you only confirm what you
+               already saw while searching.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">03</div>
+          <div>
+            <h3>Better than chance?</h3>
+            <p>Test a hundred variants and you are guaranteed to find good ones
+               — by chance alone. So we count the trials honestly, the discarded
+               ones too. Then we ask: is the result better than what chance
+               delivers anyway across that many trials? Most ideas fail on this
+               question. As a check, the same search also runs over data in
+               which there is deliberately nothing to find, and over data with a
+               pattern built in. That shows us how often it is fooled by chance
+               — and whether it finds anything at all.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">04</div>
+          <div>
+            <h3>Counting the costs</h3>
+            <p>Every entry and exit costs something. On top of that, the price a
+               program gets in the end can differ from the price at which it
+               decided. If either is left out of the test, the system has not
+               been tested.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">05</div>
+          <div>
+            <h3>First without money</h3>
+            <p>Whatever gets this far first runs without money: the program
+               decides as it would for real, but no money is behind it. We call
+               this shadow operation. The same locks apply as with money; only
+               the limits on money fall away, because none is at stake. If a
+               single lock were missing, entries would appear that could never
+               have happened with money at stake, and the verdict would rest on
+               false numbers.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">06</div>
+          <div>
+            <h3>Watched, even without money</h3>
+            <p>The fact that a program has started does not prove it is
+               working. So it regularly reports that it is still alive. If it
+               stalls, a watchdog ends it and only then restarts it, rather than
+               letting two copies run at once. Nobody sits at a screen around
+               the clock. Automatic watchdogs raise an alarm — that reaches
+               somebody, but it does not replace standby duty. And we rehearse
+               failures in advance: we break things on purpose and write down
+               what has to happen then.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LOCKS ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Locks</p>
+        <h2>Locks that are set in advance.</h2>
+        <p>Every system is wrong sometimes. Limits set in advance how much a
+           mistake may cost — not after it has happened. The aim behind them:
+           that no program and no slip of the hand moves money nobody meant to
+           move. Here is a selection of the locks for that; more of them are
+           on the “<a href="security.html">Security</a>” page.</p>
+      </div>
+
+      <div class="creed">
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">01</span>
+            <h3>Without limits, nothing starts</h3>
+            <p class="creed-say">Before every new entry, the system adds up
+               what is at stake in all open entries, meaning those not yet
+               ended. It checks that total against an upper limit. If that limit
+               is missing, nothing starts — the system does not invent one of
+               its own.</p>
+          </div>
+        </div>
+
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">02</span>
+            <h3>The kill switch shuts the door, not the window</h3>
+            <p class="creed-say">Once it is pulled, no new entries come
+               about; whatever is already open runs out rather than being
+               hastily thrown onto the market. It opens again only when a person
+               releases it with a note — and that state survives every
+               restart.</p>
+          </div>
+        </div>
+
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">03</span>
+            <h3>Not knowing means not entering</h3>
+            <p class="creed-say">What the system cannot read unambiguously does
+               not count as permission. If our instruction to the system is
+               unclear, it starts but allows no new entries.</p>
+          </div>
+        </div>
+
+        <div class="creed-cell">
+          <div class="creed-inner">
+            <span class="creed-mark" aria-hidden="true">04</span>
+            <h3>By hand, only more careful</h3>
+            <p class="creed-say">An intervention by hand can make the system
+               more careful, but never bolder than it is set to be. And nobody
+               can add an entry of their own by hand, bypassing the system — we
+               cannot either. Otherwise what the program did and what a person
+               did could no longer be told apart. Then the system could no
+               longer be tested.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
