@@ -293,6 +293,8 @@ Erledigt:
 - [x] Englische Fassung unter /en/ mit hreflang
 
 Offen:
-- [ ] Telefonnummer und USt-IdNr im Impressum
-- [ ] Fotos für „Einblicke" auf der Unternehmensseite (bis dahin Platzhalter)
+- [ ] USt-IdNr. bzw. Wirtschafts-Identifikationsnummer (§ 139c AO) ins Impressum, SOBALD eine
+      zugeteilt ist (§ 5 Abs. 1 Nr. 6 DDG) — Julian prüft ELSTER-Postfach/BZSt-Post; die W-IdNr.
+      kommt ohne Antrag. Zweiter Kontaktweg steht seit 26.09.2026 (Anfrageformular)
+- [ ] Fotos für die Unternehmensseite — der Platzhalter-Abschnitt „Einblicke" ist seit 26.09.2026 weg
 - [ ] `holding/` verweist auf `css/…` statt `../css/…` — dort fehlt das Design
