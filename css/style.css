@@ -1634,6 +1634,31 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .field input::placeholder,
 .field textarea::placeholder { color: var(--muted); opacity: 0.7; }
 
+/* Passwort zeigen/verbergen: Augen-Knopf rechts im Feld (js/main.js, pwZeigenKnopf) */
+.pw-feld { position: relative; }
+.field .pw-feld input { padding-right: 48px; }
+.pw-feld input::-ms-reveal,
+.pw-feld input::-ms-clear { display: none; }
+.pw-zeigen {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  color: var(--muted);
+  cursor: pointer;
+}
+.pw-zeigen:hover { color: var(--text); }
+.pw-zeigen:focus-visible { outline: 1px solid var(--text); outline-offset: -4px; }
+.pw-zeigen svg { width: 18px; height: 18px; }
+
 /* Pfeil des Auswahlfeldes in beiden Themen sichtbar halten */
 .field select {
   appearance: none;

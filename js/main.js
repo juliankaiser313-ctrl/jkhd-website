@@ -898,6 +898,35 @@ const PartnerSitzung = {
   vergiss() { try { sessionStorage.removeItem(this.SCHLUESSEL); } catch (e) {} },
 };
 
+// Passwort zeigen/verbergen (Julian 26.09.2026: „manchmal vertippt man sich und will
+// wissen wo"). Ein Augen-Knopf rechts im Feld schaltet type password <-> text; die
+// Tastatur auf dem Handy bleibt dabei offen (pointerdown ohne Fokuswechsel). Vor jedem
+// Absenden wird das Feld wieder verdeckt: Browser erkennen ein Passwort nur an
+// type="password" und bieten es sonst nicht zum Speichern an.
+const PW_AUGE_PFAD = '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>';
+const pwAuge = (offen) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PW_AUGE_PFAD}${offen ? '<path d="M3 3l18 18"/>' : ""}</svg>`;
+const pwZeigenKnopf = (id) =>
+  `<button type="button" class="pw-zeigen" data-pw-zeigen="${id}" aria-controls="${id}" aria-pressed="false" aria-label="${T("Passwort anzeigen", "Show password")}">${pwAuge(false)}</button>`;
+function pwSichtbar(knopf, zeigen) {
+  const feld = document.getElementById(knopf.dataset.pwZeigen);
+  if (!feld) return;
+  feld.type = zeigen ? "text" : "password";
+  knopf.setAttribute("aria-pressed", String(zeigen));
+  knopf.setAttribute("aria-label", zeigen ? T("Passwort verbergen", "Hide password") : T("Passwort anzeigen", "Show password"));
+  knopf.innerHTML = pwAuge(zeigen);
+}
+document.addEventListener("pointerdown", (e) => {
+  if (e.target.closest && e.target.closest("[data-pw-zeigen]")) e.preventDefault();
+});
+document.addEventListener("click", (e) => {
+  const knopf = e.target.closest && e.target.closest("[data-pw-zeigen]");
+  if (knopf) pwSichtbar(knopf, knopf.getAttribute("aria-pressed") !== "true");
+});
+document.addEventListener("submit", (e) => {
+  e.target.querySelectorAll("[data-pw-zeigen]").forEach((knopf) => pwSichtbar(knopf, false));
+}, true);
+
 // Fuer beide Partner-Abschnitte und die Fragen-Blase weiter oben (als
 // Funktionsdeklaration dort schon bekannt): den JSON-Koerper einer Antwort
 // lesen. Leer oder kaputt ergibt {} -- dann zaehlt der Statuscode allein.
@@ -1077,7 +1106,10 @@ const NETZ_VOLL = () => T(
          </div>
          <div class="field">
            <label for="partner-passwort">${T("Passwort (falls festgelegt)", "Password (if you set one)")}</label>
-           <input id="partner-passwort" type="password" autocomplete="current-password" aria-describedby="partner-passwort-hinweis">
+           <div class="pw-feld">
+             <input id="partner-passwort" type="password" autocomplete="current-password" aria-describedby="partner-passwort-hinweis">
+             ${pwZeigenKnopf("partner-passwort")}
+           </div>
            <p class="partner-hinweis" id="partner-passwort-hinweis">${T(
              "Noch kein Passwort? Feld leer lassen — wir schicken Ihnen einen Code. Ein Passwort legen Sie nach der Anmeldung auf Ihrer Partnerseite fest.",
              "No password yet? Leave this field empty — we will send you a code. You can set a password on your partner page after signing in."
