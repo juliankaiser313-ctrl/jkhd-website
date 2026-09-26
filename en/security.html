@@ -32,8 +32,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/sicherheit.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/security.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/sicherheit.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20260926e">
-  <link rel="stylesheet" href="../css/style.css?v=20260926e">
+  <link rel="stylesheet" href="../css/fonts.css?v=20260926f">
+  <link rel="stylesheet" href="../css/style.css?v=20260926f">
 </head>
 <body>
 
@@ -285,13 +285,14 @@
         <article class="guard">
           <span class="guard-label">01</span>
           <h3>This website</h3>
-          <p>Static pages, nothing more.</p>
+          <p>Static pages. Input only goes to our server when you send something yourself.</p>
           <ul class="guard-list">
             <li>No cookies, no trackers, no counting pixels</li>
             <li>All that stays on the device is the choice of light or dark — and only once the switch is used</li>
-            <li>No content from other servers — fonts and images live here</li>
-            <li>No contact form on the text pages: whoever writes, writes an e-mail</li>
-            <li>What the web server logs is stated in the privacy notice</li>
+            <li>Your browser loads nothing from other servers — fonts, images and scripts live here</li>
+            <li>No contact form on the text pages: whoever wants to write to us writes an e-mail — the AI question field does not reach a person</li>
+            <li>Questions to the AI go through our server to a language model at OVHcloud (in France, according to OVHcloud); your browser never connects to OVHcloud itself, and we store neither questions nor answers</li>
+            <li>What the web servers log is stated in the privacy notice</li>
           </ul>
         </article>
 
@@ -301,7 +302,7 @@
           <p>What a partner has given us stays as long as they are a partner.
              Everything the sign-in itself produces expires by itself.</p>
           <ul class="guard-list">
-            <li>On the partner access and contact pages there are two forms each: the sign-in — address and, if set, password go to the access — and a questionnaire that also goes to the access and only fills your own mail program if the access cannot be reached</li>
+            <li>On the partner access and contact pages there are two forms each for the access: the sign-in — address and, if set, password go to the access — and a questionnaire that also goes to the access and only fills your own mail program if the access cannot be reached</li>
             <li>Neither code nor password is kept in clear text: a code only as a checksum with a random addition, valid briefly and exactly once; an optional password only as an Argon2id hash, failed attempts are throttled per address, and every change announces itself by e-mail</li>
             <li>An open sign-in ends with the browser tab, expires by itself anyway, and signing out ends it immediately; here only a checksum of it is kept</li>
             <li>The access is reachable only encrypted — an unencrypted call is redirected, and the browser is told not to try it any other way in future</li>
@@ -449,6 +450,6 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20260926e"></script>
+  <script src="../js/main.js?v=20260926f"></script>
 </body>
 </html>

@@ -131,6 +131,12 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
 - **Nach Änderungen an `css/style.css` oder `js/main.js`** den Versionsstempel
   `?v=...` in allen HTML-Dateien hochzählen, sonst bekommen wiederkehrende
   Besucher die alte Datei aus dem Browser-Cache.
+- **Die KI der Fragen-Blase kennt Texte dieser Website wörtlich** (Startseite,
+  Was wir machen, System, Unternehmen, Partnerzugang, Kontakt, Impressum — je
+  DE/EN — und die festen Antworten in `js/main.js`). Nach Textänderungen dort das
+  Wissen im Repo JKHD-Partner-Server neu bauen (`pruefung/wissen_bauen.py`, siehe
+  dessen README, Abschnitt „KI-Fragen") und `api/ki_wissen.md` hochladen — sonst
+  antwortet die KI mit dem alten Stand.
 
 ## Partnerzugang — Server läuft unter https://api.jkhd.de
 

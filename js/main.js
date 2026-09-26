@@ -484,7 +484,7 @@ if (siteHeader) {
     },
     {
       f: "How do I reach you?",
-      a: "By e-mail to kontakt@jkhd.de or via the contact page. One sentence is enough \u2014 a person answers.",
+      a: "By e-mail to kontakt@jkhd.de or via the contact page. E-mails are answered by a person.",
       link: { text: "Contact", href: "contact.html" },
     },
   ];
@@ -513,7 +513,7 @@ if (siteHeader) {
     },
     {
       f: "Wie erreiche ich Sie?",
-      a: "Per E-Mail an kontakt@jkhd.de oder \u00fcber die Kontaktseite. Ein Satz gen\u00fcgt \u2014 es antwortet ein Mensch.",
+      a: "Per E-Mail an kontakt@jkhd.de oder \u00fcber die Kontaktseite. Auf E-Mails antwortet ein Mensch.",
       link: { text: "Zur Kontaktseite", href: "kontakt.html" },
     },
   ];
@@ -523,8 +523,9 @@ if (siteHeader) {
   // Wohin die Fehlertexte verweisen -- relativ wie die Links der festen Antworten
   const KONTAKT = T("kontakt.html", "contact.html");
 
-  // Der KI-Hinweis steht fest direkt ueber dem Eingabefeld (Art. 50 KI-VO) und
-  // ist zugleich dessen Beschreibung fuer Bildschirmleser. Der Knopf traegt
+  // Der KI-Hinweis steht fest direkt ueber dem Eingabefeld (Art. 50 KI-VO): sichtbar
+  // immer die Zeile <summary>, der volle Text klappt auf und ist zugleich die
+  // Beschreibung des Felds fuer Bildschirmleser. Der Knopf traegt
   // einen eigenen Namen: auf dem Handy ist sein Text ausgeblendet (style.css),
   // und display:none zaehlt fuer den Namen nicht mit.
   const html = `
@@ -597,10 +598,10 @@ if (siteHeader) {
     faq.innerHTML =
       '<p class="helper-intro">' +
       T(
-        "Am schnellsten geht es per E-Mail \u2014 wir antworten pers\u00f6nlich. " +
-          "Diese Fragen beantworte ich Ihnen aber sofort:",
-        "E-mail is the quickest way \u2014 we answer personally. " +
-          "These questions I can answer for you right away:"
+        "Diese Fragen sind sofort beantwortet. " +
+          "Alles andere k\u00f6nnen Sie unten die KI fragen \u2014 oder per E-Mail einen Menschen.",
+        "These questions are answered right away. " +
+          "Anything else you can ask the AI below \u2014 or a person by e-mail."
       ) +
       "</p>" +
       '<ul class="helper-list">' +
