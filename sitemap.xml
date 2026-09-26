@@ -64,6 +64,13 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/contact.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/kontakt.html"/>
   </url>
+  <url>
+    <loc>https://www.jkhd.de/partnerzugang.html</loc>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/partnerzugang.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/partner-access.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/partnerzugang.html"/>
+  </url>
 
   <url>
     <loc>https://www.jkhd.de/en/index.html</loc>
@@ -113,5 +120,12 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/kontakt.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/contact.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/kontakt.html"/>
+  </url>
+  <url>
+    <loc>https://www.jkhd.de/en/partner-access.html</loc>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/partnerzugang.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/partner-access.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/partnerzugang.html"/>
   </url>
 </urlset>

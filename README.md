@@ -20,6 +20,9 @@ sicherheit.html    Sicherheit am EIGENEN System: 7 Sperren am Geldweg, 3 Karten 
 mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
 unternehmen.html   Wer wir sind, Auf einen Blick, Einblicke, der Gründer
 kontakt.html       Drei Kacheln (kontakt@ / service@ / info@) + Partnerzugang (siehe unten)
+partnerzugang.html Partnerzugang als eigene Seite (26.09.2026): wofür, Mindestvoraussetzungen,
+                   unten derselbe Anmeldekasten; im Menü hinter dem Knopf (breit) bzw. in
+                   der Liste (Handy), in Fußzeile und Sitemap
 partner.html       Partnerseite: nur nach Anmeldung, noindex, nicht im Menü (siehe unten)
 impressum.html     Impressum (§ 5 DDG)
 datenschutz.html   Datenschutzerklärung
@@ -34,6 +37,7 @@ en/security.html   "There are no client files here"
 en/mathematics.html
 en/company.html
 en/contact.html
+en/partner-access.html
 en/imprint.html    Servicefassung, deutsche Fassung ist maßgeblich
 en/privacy.html    Servicefassung, deutsche Fassung ist maßgeblich
 
@@ -106,6 +110,7 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
   `sicherheit.html ↔ en/security.html`,
   `mathematik.html ↔ en/mathematics.html`,
   `unternehmen.html ↔ en/company.html`, `kontakt.html ↔ en/contact.html`,
+  `partnerzugang.html ↔ en/partner-access.html`,
   `impressum.html ↔ en/imprint.html`, `datenschutz.html ↔ en/privacy.html`,
   `index.html` und `system.html` heißen in beiden Sprachen gleich.
 - **hreflang:** drei `<link rel="alternate">` im `<head>` jeder Seite
@@ -125,9 +130,13 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
   `?v=...` in allen HTML-Dateien hochzählen, sonst bekommen wiederkehrende
   Besucher die alte Datei aus dem Browser-Cache.
 
-## Partnerzugang (Kontaktseite) — Server läuft unter https://api.jkhd.de
+## Partnerzugang — Server läuft unter https://api.jkhd.de
 
-Der Kasten „Nur für Partner" auf `kontakt.html` / `en/contact.html` (ein
+Der Kasten „Nur für Partner" steht auf `partnerzugang.html` /
+`en/partner-access.html` (eigene Seite seit 26.09.2026, unten nach
+„Mindestvoraussetzungen") und weiter auf `kontakt.html` / `en/contact.html` —
+beide Male dasselbe Markup, `js/main.js` bedient, was die Seite trägt. Wer schon
+angemeldet ist, sieht statt „Anmelden" den Knopf „Zur Partnerseite". Der Kasten (ein
 Knopf „Anmelden", in Tinte gesetzt) führt den Ablauf **E-Mail eingeben → Code
 per E-Mail → Code eingeben → weiter auf `partner.html`**. Seit 25.09.2026 steht
 im selben Formular ein freiwilliges Passwortfeld: leer = genau der Code-Weg von
@@ -136,7 +145,7 @@ Code-Weg mit einem Merker (Modulvariable, kein Speicher), danach öffnet
 `partner.html#neues-passwort` die Passwortkarte oben. Festlegen, ändern und
 entfernen geschieht auf der Partnerseite (Karte „Anmeldung"); ohne das bisherige
 Passwort nur in den ersten 15 Minuten nach einer Anmeldung per Code.
-`kontakt.html#partner-passwort` öffnet den Kasten mit gesetztem Merker (dorthin
+`partnerzugang.html#partner-passwort` öffnet den Kasten mit gesetztem Merker (dorthin
 führt „Abmelden und Code anfordern" von der Partnerseite). Die Partnerseite
 (`partner.html` / `en/partner.html`, `noindex`, nicht im Menü und nicht in der
 Sitemap) zeigt die hinterlegten Daten und darunter in einem roten Kasten die

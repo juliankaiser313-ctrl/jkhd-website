@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact — JKHD</title>
-  <meta name="description" content="Get in touch with JKHD: three addresses — kontakt@ to get in touch, service@ for enquiries, info@ for everything else. Partners sign in with e-mail and code.">
+  <title>Partner access — JKHD</title>
+  <meta name="description" content="JKHD partner access: what it is for, what you need, and sign-in with e-mail and code or password.">
   <meta name="theme-color" content="#f7f6f3">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="JKHD">
   <meta property="og:locale" content="en_GB">
   <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
-  <meta property="og:url" content="https://www.jkhd.de/en/contact.html">
-  <link rel="canonical" href="https://www.jkhd.de/en/contact.html">
-  <meta property="og:title" content="Contact — JKHD">
-  <meta property="og:description" content="Three addresses: kontakt@ to get in touch, service@ for enquiries, info@ for everything else.">
+  <meta property="og:url" content="https://www.jkhd.de/en/partner-access.html">
+  <link rel="canonical" href="https://www.jkhd.de/en/partner-access.html">
+  <meta property="og:title" content="Partner access — JKHD">
+  <meta property="og:description" content="The area for partners of JKHD — what it is for and what you need.">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -29,9 +29,9 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="alternate" hreflang="de" href="https://www.jkhd.de/kontakt.html">
-  <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/contact.html">
-  <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/kontakt.html">
+  <link rel="alternate" hreflang="de" href="https://www.jkhd.de/partnerzugang.html">
+  <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/partner-access.html">
+  <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/partnerzugang.html">
   <link rel="stylesheet" href="../css/fonts.css?v=20260926a">
   <link rel="stylesheet" href="../css/style.css?v=20260926a">
 </head>
@@ -74,7 +74,7 @@
           <div class="nav-lang">
             <span class="nav-lang-label">Languages</span>
             <div class="lang-switch" role="group" aria-label="Sprache / Language">
-              <a href="../kontakt.html" hreflang="de" lang="de" aria-label="Auf Deutsch anzeigen">DE</a>
+              <a href="../partnerzugang.html" hreflang="de" lang="de" aria-label="Auf Deutsch anzeigen">DE</a>
               <span class="lang-current" aria-current="true">EN</span>
             </div>
           </div>
@@ -94,50 +94,89 @@
 
   <main id="main">
 
-  <section class="page-head">
+  <!-- ================= WHAT FOR ================= -->
+  <section class="section">
     <div class="container">
-      <p class="kicker">// Contact</p>
-      <h1>Let's talk directly</h1>
+      <div class="statement">
+        <p class="kicker">// Partner access</p>
+        <h1 class="statement-lead">
+          The area for partners of JKHD.
+        </h1>
+        <p class="statement-more">
+          This is where partners of JKHD sign in. Afterwards your partner page
+          shows what we hold about you: your details, files we have provided
+          for you and — depending on what we have unlocked for you — your
+          access and a dedicated contact address for partners. You only see
+          what belongs to you.
+        </p>
+        <p class="statement-aktion"><a class="btn btn-primary" href="#partner">Go to sign-in</a></p>
+      </div>
     </div>
   </section>
 
-  <!-- ================= THREE WAYS ================= -->
+  <!-- ================= MINIMUM REQUIREMENTS ================= -->
   <section class="section">
     <div class="container">
-      <div class="kacheln">
-        <a class="kachel" href="mailto:kontakt@jkhd.de">
-          <span class="kachel-label">Get in touch</span>
-          <span class="kachel-mail">kontakt@jkhd.de</span>
-        </a>
-        <a class="kachel" href="mailto:service@jkhd.de">
-          <span class="kachel-label">Enquiries</span>
-          <span class="kachel-mail">service@jkhd.de</span>
-        </a>
-        <a class="kachel" href="mailto:info@jkhd.de">
-          <span class="kachel-label">Everything else</span>
-          <span class="kachel-mail">info@jkhd.de</span>
-        </a>
+      <div class="section-head">
+        <p class="kicker">// Minimum requirements</p>
+        <h2>What you need for access.</h2>
       </div>
 
-      <!-- ================= PARTNERS =================
-           The flow (e-mail + password -> sign-in, without a password e-mail
-           -> code -> sign-in) lives in js/main.js and talks to data-api
-           (IONOS webspace, repo JKHD-Partner-Server); afterwards it goes to
-           partner.html. Empty data-api = no server, and the box says so
-           openly. The partner address is deliberately nowhere here — it
-           appears only on the partner page. #partner-passwort opens the box
-           straight away for setting a password. "Enquiry" is a questionnaire
-           that goes to the server; only if the server cannot be reached does
-           the e-mail program open. -->
+      <div class="steps">
+        <div class="step-row">
+          <div class="step-num">01</div>
+          <div>
+            <h3>You are a partner of JKHD</h3>
+            <p>Your e-mail address is registered with us as a partner. You
+               cannot sign up yourself — we add partners ourselves. Not a
+               partner yet? Write to us below via "Enquiry".</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">02</div>
+          <div>
+            <h3>Access to your mailbox</h3>
+            <p>We send the sign-in code to this address. It is also how you
+               reset a forgotten password, and where we tell you when
+               something changes about your password.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">03</div>
+          <div>
+            <h3>A current browser with JavaScript</h3>
+            <p>On a computer or a phone, for example Chrome, Edge, Firefox or
+               Safari. Without JavaScript, sign-in does not work.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="note">
+        <b>Optional: a password of your own.</b> At least ten characters. You
+        can set it on the partner page right after signing in with a code.
+        From then on, e-mail address and password are enough. At least every
+        180 days we ask you to sign in once with a code.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SIGN-IN =================
+       The same box as on contact.html: the flow lives in js/main.js (see
+       there and the README, section Partnerzugang). Anyone already signed in
+       sees "To the partner page" instead of "Sign in". #partner-passwort
+       opens the box straight away for setting a password — "Forgot
+       password" on the partner page leads there. -->
+  <section class="section">
+    <div class="container">
       <section class="partner" id="partner" data-api="https://api.jkhd.de" aria-labelledby="partner-titel">
         <div class="partner-kopf">
           <span class="kachel-label">Partners only</span>
-          <h2 id="partner-titel">Partner access</h2>
-          <p>For partners of JKHD. You sign in with your e-mail address and a
-             code we send you — or with your password, if you have set one.
-             Then the partner page shows what we hold about you. Not a partner
-             yet? "Enquiry" reaches us with a few questions — we confirm
-             receipt by e-mail.</p>
+          <h2 id="partner-titel">Sign in</h2>
+          <p>"Sign in" asks for your e-mail address. If you have set a
+             password, enter it as well; otherwise leave the field empty and we
+             send you a code. Forgot your password? Then sign in with a code
+             and set a new one. Not a partner yet? "Enquiry" reaches us with a
+             few questions — we confirm receipt by e-mail.</p>
         </div>
         <div class="partner-koerper">
           <button type="button" class="btn btn-primary" data-partner="start">Sign in</button>

@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kontakt — JKHD</title>
-  <meta name="description" content="Kontakt zu JKHD: drei Adressen — kontakt@ zum Kennenlernen, service@ für Anfragen, info@ für alles andere. Partner melden sich mit E-Mail und Code an.">
+  <title>Partnerzugang — JKHD</title>
+  <meta name="description" content="Der Partnerzugang von JKHD: wofür er da ist, was Sie dafür brauchen, und die Anmeldung mit E-Mail und Code oder Passwort.">
   <meta name="theme-color" content="#f7f6f3">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="JKHD">
   <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
-  <meta property="og:url" content="https://www.jkhd.de/kontakt.html">
-  <link rel="canonical" href="https://www.jkhd.de/kontakt.html">
-  <meta property="og:title" content="Kontakt — JKHD">
-  <meta property="og:description" content="Drei Adressen: kontakt@ zum Kennenlernen, service@ für Anfragen, info@ für alles andere.">
+  <meta property="og:url" content="https://www.jkhd.de/partnerzugang.html">
+  <link rel="canonical" href="https://www.jkhd.de/partnerzugang.html">
+  <meta property="og:title" content="Partnerzugang — JKHD">
+  <meta property="og:description" content="Der Bereich für Partner von JKHD — wofür er da ist und was Sie dafür brauchen.">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -30,9 +30,9 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="alternate" hreflang="de" href="https://www.jkhd.de/kontakt.html">
-  <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/contact.html">
-  <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/kontakt.html">
+  <link rel="alternate" hreflang="de" href="https://www.jkhd.de/partnerzugang.html">
+  <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/partner-access.html">
+  <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/partnerzugang.html">
   <link rel="stylesheet" href="css/fonts.css?v=20260926a">
   <link rel="stylesheet" href="css/style.css?v=20260926a">
 </head>
@@ -76,7 +76,7 @@
             <span class="nav-lang-label">Sprachen</span>
             <div class="lang-switch" role="group" aria-label="Sprache / Language">
               <span class="lang-current" aria-current="true">DE</span>
-              <a href="en/contact.html" hreflang="en" lang="en" aria-label="Switch to English">EN</a>
+              <a href="en/partner-access.html" hreflang="en" lang="en" aria-label="Switch to English">EN</a>
             </div>
           </div>
           <div class="nav-theme">
@@ -95,51 +95,93 @@
 
   <main id="main">
 
-  <section class="page-head">
+  <!-- ================= WOFUER ================= -->
+  <section class="section">
     <div class="container">
-      <p class="kicker">// Kontakt</p>
-      <h1>Sprechen wir direkt</h1>
+      <div class="statement">
+        <p class="kicker">// Partnerzugang</p>
+        <h1 class="statement-lead">
+          Der Bereich für Partner von JKHD.
+        </h1>
+        <p class="statement-more">
+          Hier melden sich Partner von JKHD an. Danach sehen Sie auf Ihrer
+          Partnerseite, was bei uns zu Ihnen hinterlegt ist: Ihre Angaben,
+          Dateien, die wir für Sie bereitgestellt haben, und — je nachdem, was
+          wir für Sie freigeschaltet haben — Ihre Zugänge und eine eigene
+          Kontaktadresse für Partner. Sie sehen dort nur, was zu Ihnen gehört.
+        </p>
+        <p class="statement-aktion"><a class="btn btn-primary" href="#partner">Zur Anmeldung</a></p>
+      </div>
     </div>
   </section>
 
-  <!-- ================= DREI WEGE ================= -->
+  <!-- ================= MINDESTVORAUSSETZUNGEN ================= -->
   <section class="section">
     <div class="container">
-      <div class="kacheln">
-        <a class="kachel" href="mailto:kontakt@jkhd.de">
-          <span class="kachel-label">Kontakt aufnehmen</span>
-          <span class="kachel-mail">kontakt@jkhd.de</span>
-        </a>
-        <a class="kachel" href="mailto:service@jkhd.de">
-          <span class="kachel-label">Anfragen</span>
-          <span class="kachel-mail">service@jkhd.de</span>
-        </a>
-        <a class="kachel" href="mailto:info@jkhd.de">
-          <span class="kachel-label">Alles andere</span>
-          <span class="kachel-mail">info@jkhd.de</span>
-        </a>
+      <div class="section-head">
+        <p class="kicker">// Mindestvoraussetzungen</p>
+        <h2>Was Sie für den Zugang brauchen.</h2>
       </div>
 
-      <!-- ================= PARTNER =================
-           Der Ablauf (E-Mail + Passwort -> Anmeldung, ohne Passwort E-Mail ->
-           Code -> Anmeldung) steckt in js/main.js und spricht mit data-api
-           (IONOS-Webspace, Repo JKHD-Partner-Server); danach geht es auf
-           partner.html. Leeres data-api = kein Server, der Kasten sagt das
-           dann offen. Die Partner-Adresse steht hier bewusst nirgends — sie
-           erscheint erst auf der Partnerseite. #partner-passwort oeffnet den
-           Kasten gleich zum Festlegen eines Passworts. „Anfrage" ist ein
-           Fragebogen, der an den Server geht; nur wenn der nicht erreichbar
-           ist, oeffnet sich das E-Mail-Programm. -->
+      <div class="steps">
+        <div class="step-row">
+          <div class="step-num">01</div>
+          <div>
+            <h3>Sie sind Partner von JKHD</h3>
+            <p>Ihre E-Mail-Adresse ist bei uns als Partner hinterlegt. Selbst
+               registrieren kann man sich nicht — Partner tragen wir selbst
+               ein. Noch kein Partner? Schreiben Sie uns unten über
+               „Anfrage“.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">02</div>
+          <div>
+            <h3>Zugriff auf Ihr Postfach</h3>
+            <p>An diese Adresse schicken wir den Anmeldecode. Über sie setzen
+               Sie auch ein vergessenes Passwort zurück, und dorthin melden
+               wir, wenn sich an Ihrem Passwort etwas ändert.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">03</div>
+          <div>
+            <h3>Ein aktueller Browser mit JavaScript</h3>
+            <p>Auf dem Computer oder dem Handy, zum Beispiel Chrome, Edge,
+               Firefox oder Safari. Ohne JavaScript funktioniert die Anmeldung
+               nicht.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="note">
+        <b>Freiwillig: ein eigenes Passwort.</b> Mindestens zehn Zeichen.
+        Festlegen können Sie es auf der Partnerseite, direkt nachdem Sie sich
+        mit einem Code angemeldet haben. Danach genügen E-Mail-Adresse und
+        Passwort. Spätestens alle 180 Tage bitten wir Sie einmal um eine
+        Anmeldung mit Code.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ANMELDUNG =================
+       Derselbe Kasten wie auf kontakt.html: der Ablauf steckt in js/main.js
+       (siehe dort und README, Abschnitt Partnerzugang). Wer schon angemeldet
+       ist, sieht statt „Anmelden" den Knopf „Zur Partnerseite".
+       #partner-passwort oeffnet den Kasten gleich zum Festlegen eines
+       Passworts — dorthin fuehrt „Passwort vergessen" auf der Partnerseite. -->
+  <section class="section">
+    <div class="container">
       <section class="partner" id="partner" data-api="https://api.jkhd.de" aria-labelledby="partner-titel">
         <div class="partner-kopf">
           <span class="kachel-label">Nur für Partner</span>
-          <h2 id="partner-titel">Partnerzugang</h2>
-          <p>Für Partner von JKHD. Sie melden sich mit Ihrer E-Mail-Adresse und
-             einem Code an, den wir Ihnen schicken — oder mit Ihrem Passwort,
-             falls Sie eines festgelegt haben. Danach sehen Sie auf der
-             Partnerseite, was bei uns zu Ihnen hinterlegt ist. Noch kein
-             Partner? Über „Anfrage" erreichen Sie uns mit ein paar Fragen —
-             den Eingang bestätigen wir per E-Mail.</p>
+          <h2 id="partner-titel">Anmelden</h2>
+          <p>Mit „Anmelden“ geben Sie Ihre E-Mail-Adresse ein. Haben Sie ein
+             Passwort festgelegt, tragen Sie es dazu ein; sonst lassen Sie das
+             Feld leer, und wir schicken Ihnen einen Code. Passwort vergessen?
+             Dann melden Sie sich mit einem Code an und legen ein neues fest.
+             Noch kein Partner? Über „Anfrage“ erreichen Sie uns mit ein paar
+             Fragen — den Eingang bestätigen wir per E-Mail.</p>
         </div>
         <div class="partner-koerper">
           <button type="button" class="btn btn-primary" data-partner="start">Anmelden</button>

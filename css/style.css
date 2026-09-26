@@ -1674,6 +1674,9 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 .statement + .note { margin-top: 44px; }
 
+/* Partnerzugang: Sprungknopf zum Anmeldekasten unten auf der Seite */
+.statement-aktion { margin-top: 34px; }
+
 @media (max-width: 560px) {
   .statement-more { font-size: 1rem; }
 }

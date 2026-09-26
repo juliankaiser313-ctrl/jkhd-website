@@ -638,7 +638,7 @@ const NETZ_VOLL = () => T(
   "Too many sign-in attempts came from your internet connection in the last hour. Please try again in an hour — until then, a code would not arrive either."
 );
 
-// Der Kasten auf der Kontaktseite. data-api am .partner-Element nennt den
+// Der Kasten auf partnerzugang.html (und kontakt.html). data-api am .partner-Element nennt den
 // Server (https://api.jkhd.de); steht es leer, wird nichts gesendet und der
 // Kasten sagt das offen. Schnittstelle (siehe README, Abschnitt Partnerzugang):
 //   POST {api}/code   {"email": "..."}                 -> 204, immer (verraet nicht, wer Partner ist);
@@ -669,10 +669,13 @@ const NETZ_VOLL = () => T(
   const api = (box.dataset.api || "").replace(/\/+$/, "");
   const post = (pfad, daten) =>
     fetch(api + pfad, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(daten) });
+  // Schon angemeldet: der Knopf fuehrt ohnehin gleich auf die Partnerseite
+  // (siehe start()) -- dann soll er das auch sagen.
+  if (api && PartnerSitzung.lies()) startKnopf.textContent = T("Zur Partnerseite", "To the partner page");
   const startHtml = koerper.innerHTML;
 
   // Merker „neues Passwort festlegen" (von „Passwort vergessen?" oder
-  // kontakt.html#partner-passwort): nach der Anmeldung geht es dann auf
+  // partnerzugang.html#partner-passwort): nach der Anmeldung geht es dann auf
   // partner.html#neues-passwort. Bewusst nur eine Variable, kein
   // Sitzungsspeicher; „Abbrechen" nimmt ihn zurueck.
   let neuesPasswort = false;
@@ -782,7 +785,7 @@ const NETZ_VOLL = () => T(
   // mit festem Knopf „Anmelden". Welcher Weg laeuft, entscheidet erst das
   // Absenden: Passwortfeld leer = Code per E-Mail genau wie bisher, sonst
   // /passwort_login. Ob eine Adresse ein Passwort hat, fragt die Seite nie ab.
-  // `status` steht als Hinweis ueber den Feldern (kontakt.html#partner-passwort).
+  // `status` steht als Hinweis ueber den Feldern (partnerzugang.html#partner-passwort).
   function mailSchritt(status) {
     const meins = neuerLauf();
     koerper.innerHTML =
@@ -1326,7 +1329,7 @@ const NETZ_VOLL = () => T(
            "Diese Seite zeigt Partnern von JKHD, was bei uns zu ihnen hinterlegt ist. Melden Sie sich über den Partnerzugang an.",
            "This page shows JKHD partners what we hold about them. Sign in via partner access."
          )}</p>
-         <a class="btn btn-primary" href="${T("kontakt.html#partner", "contact.html#partner")}">${T("Zum Partnerzugang", "To partner access")}</a>
+         <a class="btn btn-primary" href="${T("partnerzugang.html#partner", "partner-access.html#partner")}">${T("Zum Partnerzugang", "To partner access")}</a>
        </div>`;
     const kopf = seite.querySelector("h2");
     if (kopf) kopf.focus();
@@ -1662,7 +1665,7 @@ const NETZ_VOLL = () => T(
       code.addEventListener("click", async () => {
         if (VORSCHAU) { vorschau(); return; }
         await abmelden();
-        window.location.href = T("kontakt.html#partner-passwort", "contact.html#partner-passwort");
+        window.location.href = T("partnerzugang.html#partner-passwort", "partner-access.html#partner-passwort");
       });
     }
 
