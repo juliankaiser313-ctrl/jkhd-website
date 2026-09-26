@@ -51,6 +51,28 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/mathematik.html"/>
   </url>
   <url>
+    <loc>https://www.jkhd.de/mathematik-grundlagen.html</loc>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/mathematik-grundlagen.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/mathematics-basics.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/mathematik-grundlagen.html"/>
+  </url>
+  <url>
+    <loc>https://www.jkhd.de/en/mathematics-basics.html</loc>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/mathematik-grundlagen.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/mathematics-basics.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/mathematik-grundlagen.html"/>
+  </url>
+  <url>
+    <loc>https://www.jkhd.de/quant-formelsammlung.html</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.jkhd.de/monster-formelsammlung.html</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://www.jkhd.de/unternehmen.html</loc>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/unternehmen.html"/>

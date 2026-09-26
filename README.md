@@ -137,6 +137,14 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
   Wissen im Repo JKHD-Partner-Server neu bauen (`pruefung/wissen_bauen.py`, siehe
   dessen README, Abschnitt „KI-Fragen") und `api/ki_wissen.md` hochladen — sonst
   antwortet die KI mit dem alten Stand.
+- **`mathematik-grundlagen.html`, `en/mathematics-basics.html`, `quant-formelsammlung.html`
+  und `monster-formelsammlung.html` werden gebaut**, ebenso die Formeln im Hintergrund des
+  Seitenkopfs von `mathematik.html` / `en/mathematics.html` (zwischen den Marken
+  `<!-- FORMELHINTERGRUND -->`) — nicht von Hand bearbeitet: Quellen und `bauen.js` liegen in `C:\Quant Arbeit\JKHD-Formeln`
+  (README dort). Die Formeln sind mit KaTeX vorgerendert; `css/katex/` (Stil, woff2-
+  Schriften, MIT-LICENSE) gehört dazu und wird vom Bau mitkopiert. Nach einem neuen
+  Versionsstempel die beiden Seiten neu bauen (sie übernehmen Stempel, Kopf und Fuß aus
+  `mathematik.html`). Nur Deutsch; `en/mathematics.html#formula-collections` verlinkt sie.
 
 ## Partnerzugang — Server läuft unter https://api.jkhd.de
 

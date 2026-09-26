@@ -1736,6 +1736,150 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .formula-label { font-size: 1.02rem; letter-spacing: 0.08em; }
 }
 
+/* ---------- Formelsammlungen (quant-/monster-formelsammlung.html) ----------
+   Gebaut mit JKHD-Formeln/bauen.js; Formeln mit KaTeX vorgerendert (css/katex/, selbst gehostet,
+   kein JavaScript). Schwarz-weiss wie die ganze Seite: Kastenkopf in Tinte, im Dunkeln umgekehrt. */
+.fs-spalte { max-width: 880px; }
+.page-head .kicker a { color: inherit; border-bottom: 1px solid var(--border-2); }
+.fs-stand {
+  font-family: var(--mono);
+  font-size: 0.8rem !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.fs-vorspann { padding: 56px 0 8px; }
+.fs-inhalt {
+  margin-top: 28px;
+  padding: 22px 26px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  background: var(--panel);
+}
+.fs-inhalt-titel {
+  margin-bottom: 12px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.fs-inhalt ol { list-style: none; display: grid; gap: 8px; }
+.fs-inhalt a { color: var(--text); border-bottom: 1px solid transparent; }
+.fs-inhalt a:hover { border-bottom-color: var(--text); }
+.fs-nr { margin-right: 0.55em; font-family: var(--mono); color: var(--muted); }
+.fs-kapitel { padding: 64px 0; border-top: 1px solid var(--border); }
+.section.fs-kapitel h2 { margin-bottom: 8px; font-size: clamp(1.5rem, 3vw, 2.1rem); }
+.fs-box {
+  margin: 30px 0 16px;
+  border: 1px solid var(--text);
+  border-radius: var(--r-sm);
+  background: var(--panel);
+}
+.fs-box-titel {
+  margin: 0;
+  padding: 9px 16px;
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+.fs-formel { padding: 6px 16px; overflow-x: auto; overflow-y: hidden; color: var(--text); }
+.fs-formel .katex-display { margin: 0.75em 0; }
+/* Mehrere Formeln einer Zeile: nebeneinander, auf schmalen Schirmen untereinander (bauen.js, teile) */
+.fs-zeile { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; column-gap: 2.4em; }
+.fs-zeile > .katex-display { margin: 0.6em 0; }
+.fs-formel .katex { font-size: 1.12em; }
+.fs-frei { margin: 18px 0; border-left: 2px solid var(--border-2); }
+.fs-absatz { margin-top: 12px; line-height: 1.7; }
+.fs-marke { font-weight: 700; }
+.fs-absatz .katex,
+.fs-liste .katex,
+.fs-box-titel .katex,
+.fs-inhalt .katex,
+.fs-kapitel h2 .katex { font-size: 1.05em; }
+.fs-liste { margin: 12px 0 0 1.25em; list-style: disc; line-height: 1.7; }
+.fs-liste li { margin-top: 6px; }
+.fs-unterkapitel { margin-top: 34px; font-size: 1.15rem; font-weight: 700; }
+.fs-oben {
+  margin-top: 30px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.fs-oben a { color: var(--muted); }
+.fs-oben a:hover { color: var(--text); }
+/* Seitenkopf von mathematik.html / en/mathematics.html: die grossen Formeln blass im Hintergrund
+   (Dekoration, aria-hidden; bauen.js setzt sie zwischen die Marken FORMELHINTERGRUND). Links, wo der
+   Text steht, dämpft eine Maske sie etwas; rechts treten sie deutlicher hervor. Julian 27.09.: sie
+   müssen klar zu sehen sein -- auch in schmalen Fenstern (vorher 9 % Deckkraft, praktisch unsichtbar). */
+.fs-buehne { position: relative; overflow: hidden; }
+.fs-buehne > .container { position: relative; z-index: 1; }
+.fs-hintergrund {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  color: var(--text);
+  opacity: 0.2;
+  -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.75) 38%, #000 65%);
+          mask-image: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.75) 38%, #000 65%);
+}
+[data-theme="dark"] .fs-hintergrund { opacity: 0.24; }
+.fs-hf {
+  position: absolute;
+  white-space: nowrap;
+  font-size: calc(var(--g) * 1em);
+  transform: rotate(var(--r));
+  transform-origin: left center;
+}
+.fs-hf .katex { font-size: 1em; }
+@media (max-width: 760px) {
+  .fs-hf-weit { display: none; }
+  .fs-hf { font-size: calc(var(--g) * 0.8em); }
+  .fs-hintergrund {
+    opacity: 0.17;
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+  [data-theme="dark"] .fs-hintergrund { opacity: 0.21; }
+}
+
+/* Drei Kaesten (Grundlagen und die zwei Sammlungen) als Links */
+.fs-einstieg { padding-bottom: 48px; }
+.formulas.fs-karten { grid-template-columns: repeat(3, 1fr); }
+.fs-karten .formula:nth-child(even) { border-left: none; }
+.fs-karten .formula + .formula { border-left: 1px solid var(--border); }
+@media (max-width: 940px) {
+  .formulas.fs-karten { grid-template-columns: 1fr; }
+  .fs-karten .formula + .formula { border-left: none; }
+}
+.fs-nachspann { padding-top: 0; }
+a.fs-karte { color: inherit; transition: background 0.2s; }
+a.fs-karte:hover { background: var(--wash-1); }
+a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px; }
+.fs-karte-los {
+  margin-top: auto;
+  padding-top: 18px;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+@media (max-width: 560px) {
+  .fs-kapitel { padding: 44px 0; }
+  .fs-inhalt { padding: 18px 18px; }
+  .fs-box-titel { padding: 8px 12px; font-size: 0.9rem; }
+  .fs-formel { padding: 4px 12px; }
+  .fs-formel .katex { font-size: 0.92em; }
+}
+
 /* ---------- Unternehmensseite: Beschreibung und Eckdaten ---------- */
 
 .about { display: grid; grid-template-columns: 1fr 380px; gap: 64px; align-items: start; }
