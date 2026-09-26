@@ -18,7 +18,9 @@ sicherheit.html    Sicherheit am EIGENEN System: 7 Sperren am Geldweg, 3 Karten 
                    3 Karten „Daten", 5 Karten „Was wir nicht vorweisen können" —
                    kein Mandanten-, NDA- oder Übergabe-Bezug mehr (23.09.2026)
 mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
-unternehmen.html   Wer wir sind, Auf einen Blick, Einblicke, der Gründer
+unternehmen.html   Seit 26.09.2026 ohne altes Angebot: Julians Satz als Überschrift, Profil +
+                   Auf einen Blick, „Was JKHD nicht tut", Austausch, 4 Grundsätze (.creed),
+                   Gründer, Kontakt; die leeren Bildkästen („Einblicke") sind weg
 kontakt.html       Drei Kacheln (kontakt@ / service@ / info@) + Partnerzugang (siehe unten)
 partnerzugang.html Partnerzugang als eigene Seite (26.09.2026): wofür, Mindestvoraussetzungen,
                    unten derselbe Anmeldekasten; im Menü hinter dem Knopf (breit) bzw. in

@@ -1555,6 +1555,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .about-text p + p { margin-top: 16px; }
 .about-text .founder-subhead { margin-top: 32px; }
 
+/* Verweise im Fliesstext (Unternehmen, 26.09.2026): wie im Band oben mit feiner Linie */
+.about-text a, .note a { color: var(--text); border-bottom: 1px solid var(--border-2); }
+.about-text a:hover, .note a:hover { border-bottom-color: var(--text); }
+
 .about-lead {
   font-family: var(--serif);
   font-size: clamp(1.2rem, 2.2vw, 1.5rem);
