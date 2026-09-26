@@ -298,3 +298,51 @@ Offen:
       kommt ohne Antrag. Zweiter Kontaktweg steht seit 26.09.2026 (Anfrageformular)
 - [ ] Fotos für die Unternehmensseite — der Platzhalter-Abschnitt „Einblicke" ist seit 26.09.2026 weg
 - [ ] `holding/` verweist auf `css/…` statt `../css/…` — dort fehlt das Design
+
+## Belege zur Datenschutzerklärung: KI-Fragen und Zugriffsprotokolle (26.09.2026)
+
+Stand aus den früheren HTML-Kommentaren von `datenschutz.html` / `en/privacy.html` — hier statt
+im Quelltext, weil GitHub Pages Kommentare öffentlich mit ausliefert. **Offen:** im Verzeichnis
+`logs/` des IONOS-Webspace prüfen, ob die IP-Adressen dort wirklich gekürzt sind und wie weit die
+Protokolle zurückreichen (der Text sagt „Laut IONOS“ und stützt sich auf deren Hilfeseite).
+
+```
+<!-- Zugriffsprotokolle von api.jkhd.de (Zweig ki-chat, 26.09.2026). Die
+           Angaben stammen aus der IONOS-Hilfe „Datenverarbeitung durch Webhosting
+           Produkte" (https://www.ionos.com/help/data-protection/data-processing-of-website-visitors-of-your-ionos-product/data-processing-by-web-hosting-products/,
+           abgerufen 26.09.2026), nicht aus einer eigenen Messung. Vor dem
+           Livegang im Verzeichnis logs/ des Webspace nachsehen, ob die
+           IP-Adressen dort wirklich gekuerzt sind und wie weit die Protokolle
+           zurueckreichen; weicht etwas ab, diesen Absatz und en/privacy.html
+           anpassen. -->
+```
+
+```
+<!-- Fragen an die KI (Stand 26.09.2026). Anbieter: OVHcloud AI Endpoints.
+           Belege, alle abgerufen am 26.09.2026:
+           - OVH GmbH, Oskar-Jaeger-Str. 173/K6, 50825 Koeln: AGB Stand 17.01.2025,
+             Abschnitt „Vertragsgegenstand" und Widerrufsformular in 12.4
+             (https://contract.eu.ovhapis.com/1.0/pdf/contrat_genServices-de.pdf).
+           - Auftragsverarbeitung: AVV Version 17.10.2025
+             (https://contract.eu.ovhapis.com/1.0/pdf/OVH_Data_Protection_Agreement-de.pdf),
+             nach den AGB Teil jedes Vertrags.
+           - Vertragsbedingungen: Besondere Vertragsbedingungen Public Cloud,
+             Stand 26.08.2026, Anhang 10
+             (https://contract.eu.ovhapis.com/1.0/pdf/Conditions_particulieres_OVH_Stack-de.pdf).
+             Nr. 5 im Wortlaut: „OVHcloud hat keine Kenntnis von den Inputs und
+             Outputs und verwendet diese in keiner Weise weiter. OVHcloud führt
+             kein Backup der Inputs oder Outputs durch." Nr. 2 im Wortlaut:
+             „Der AI Endpoints Dienst beinhaltet keine Backups oder Storages,
+             auch nicht für kurze Zeit". Beides gilt nicht fuer die
+             „AI Endpoint Batch API", die der Server nicht nutzt.
+           - Weder gespeichert noch weitergegeben, Standort Gravelines:
+             https://docs.ovhcloud.com/en/guides/public-cloud/ai-machine-learning/ai-endpoints-capabilities
+             („Data is not stored or shared during or after model use";
+             „Our infrastructure, located in Gravelines, France").
+           - Nur Abrechnungsdaten, nie Training:
+             https://www.ovhcloud.com/de/public-cloud/ai-endpoints/
+           Weitere Hinweise: README des Repos JKHD-Partner-Server, Abschnitt
+           „KI-Fragen". Jeder Satz hier haengt an api/index.php (Aktion frage,
+           Repo JKHD-Partner-Server) und js/main.js -- wer dort etwas aendert,
+           prueft diesen Abschnitt und en/privacy.html mit. -->
+```

@@ -25,8 +25,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/datenschutz.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/privacy.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/datenschutz.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20260926c">
-  <link rel="stylesheet" href="../css/style.css?v=20260926c">
+  <link rel="stylesheet" href="../css/fonts.css?v=20260926d">
+  <link rel="stylesheet" href="../css/style.css?v=20260926d">
 </head>
 <body>
 
@@ -105,9 +105,12 @@
          appearance is stored (see the following section) and, after you sign
          in to partner access, a sign-in token in the session storage of the
          browser tab until the tab is closed (see "Partner access"). The
-         questions helper at the bottom right also works without a server:
-         the answers are built into the page, and your clicks are neither
-         stored nor transmitted.</p>
+         questions helper at the bottom right answers the frequent questions
+         without a server: the answers are built into the page, and your
+         clicks on them are neither stored nor transmitted. Only a question
+         you write and send there yourself goes to our server and, as a rule,
+         from there to an AI service of OVHcloud (see "Questions to the
+         AI").</p>
       <h2>Setting stored on your device</h2>
       <p>This website can be switched between a light and a dark appearance. If
          you operate that switch, your choice is stored in your browser's local
@@ -198,16 +201,88 @@
          chosen items are only written into a prepared e-mail to our partner
          address. Nothing is transmitted to our server and nothing is stored in
          the browser.</p>
-      <p>To prevent abuse, the server keeps a checksum of your network, of
-         the e-mail address entered and of its domain in order to limit the
-         number of requests; it is no longer taken into account after one hour
-         and is deleted at the latest on the following day. Plain-text
+      <p>To prevent abuse, the server keeps a checksum of your IP address
+         (for IPv6, of your network), of the e-mail address entered and of
+         its domain in order to limit the number of requests; it is no longer
+         taken into account after one hour and is deleted at the latest on
+         the following day. Plain-text
          addresses are not logged. The legal
          basis is Art. 6 (1) (b) GDPR (performance of the partnership) or
          (f) GDPR (protection against abuse). No e-mail is sent to addresses
          not registered as partners; for them only the checksums mentioned
          above are kept, which are no longer taken into account after one
          hour and are deleted at the latest on the following day.</p>
+      <h2>Access logs of api.jkhd.de</h2>
+      <p>Our server at api.jkhd.de runs on web space at IONOS SE in Germany
+         (see "Partner access"). According to IONOS, the web space logs every
+         request — from partner access as well as from the questions helper —
+         with the IP address only in anonymised form, together with the time,
+         the address requested, browser, operating system, device type and
+         referring page; these logs are kept for eight weeks, serve the
+         security and stability of the server and are not passed on to third
+         parties. They do not contain the text of your questions to the AI: it
+         is transmitted in the body of the request, not in the address
+         requested. The legal basis is Art. 6 (1) (f) GDPR (secure and stable
+         operation of the server).</p>
+      <h2>Questions to the AI</h2>
+      <p>In the questions helper at the bottom right you can also ask a
+         question of your own; the answer is generated automatically by an AI
+         system. Only when you send a question does your browser transmit, in
+         encrypted form, to our server at api.jkhd.de (web space at IONOS SE in
+         Germany, see "Partner access"): the text of your question, the
+         language of the page and — so that the answer can follow on from the
+         conversation so far — up to three earlier questions and answers from
+         the same conversation, each question-and-answer pair with a check
+         signature by which our server recognises that it issued that pair itself. As with any request,
+         the server receives your IP address in the process (for the logs, see
+         "Access logs of api.jkhd.de"). The conversation is held only in the
+         memory of the open page; it is neither saved in the browser nor stored
+         with us and is gone as soon as you reload or close the page.</p>
+      <p>Our server forwards your question and the conversation, together with
+         fixed instructions and texts from this website about JKHD, in
+         encrypted form to the "AI Endpoints" service of OVHcloud, where a
+         language model generates the answer. The provider is OVH GmbH,
+         Oskar-Jäger-Str. 173/K6, 50825 Köln (Cologne), Germany. It processes
+         the data as our processor (Art. 28 GDPR); the data processing
+         agreement is a fixed part of the contract with OVHcloud. According to
+         OVHcloud, the technology behind this service is located in Gravelines
+         (France), i.e. in the European Union. In its contract terms for this
+         service, OVHcloud states that it has no knowledge of the inputs and
+         outputs, does not use them further in any way and makes no backups
+         of them. According to its service description, the data is neither
+         stored nor shared during or after processing; OVHcloud keeps only the
+         data required for billing and never uses the data to train or
+         improve AI models. These are statements made by OVHcloud; we cannot
+         verify them ourselves. We do not pass on your IP address. If our server recognises that a
+         question asks for an investment recommendation or
+         a price forecast, or whether a person is answering here, it answers
+         itself with a fixed text; if a limit has been reached — questions
+         per IP address or network and hour, all questions together per hour
+         or day, the estimated costs of the month or the number of questions
+         being processed at the same time — it declines the question. In both
+         cases nothing is transmitted to OVHcloud.</p>
+      <p>Your questions and the answers are neither stored nor logged by us;
+         our server holds them only in memory while it processes your request.
+         To prevent abuse and to limit costs, the server counts questions per
+         IP address, for IPv6 per network. For this it stores only a checksum
+         of your IP address (for IPv6, of your network) with the times; it is
+         no longer taken into account after one hour and is deleted at the
+         latest on the following day. In addition, the server
+         keeps daily and monthly totals of the answers generated and of the
+         amount of text processed (tokens), with no link to individual
+         persons.</p>
+      <p>The legal basis is Art. 6 (1) (f) GDPR. Our legitimate interest lies
+         in answering questions about JKHD promptly and without the detour of
+         an e-mail, and in protecting the service against abuse and
+         uncontrolled costs. Using it is voluntary; the frequent questions and
+         our e-mail addresses remain open to you without the AI.</p>
+      <p><b>No personal data, please.</b> Please do not enter personal data in
+         your questions — neither about yourself nor about others. For personal
+         matters, write to us at
+         <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>.
+         <b>No advice.</b> The answers are generated automatically, may contain
+         errors and are not advice, in particular not investment advice. They
+         are marked accordingly in the questions helper.</p>
       <h2>Contact by e-mail</h2>
       <p>If you contact us by e-mail, we process your details exclusively in
          order to deal with your enquiry (Art. 6 (1) (b) or (f) GDPR). The data
@@ -220,8 +295,16 @@
          lodge a complaint with a data protection supervisory authority — the
          competent authority is the State Commissioner for Data Protection and
          Freedom of Information of Baden-Württemberg.</p>
+      <p><b>Right to object (Art. 21 GDPR).</b> Where we process data on the
+         basis of Art. 6 (1) (f) GDPR, you may object to this processing at
+         any time on grounds relating to your particular situation. We will
+         then no longer process the data unless we can demonstrate compelling
+         legitimate grounds for the processing which override your interests,
+         rights and freedoms, or the processing serves the establishment,
+         exercise or defence of legal claims. An informal objection to the
+         e-mail address given above is sufficient.</p>
       <h2>Version</h2>
-      <p>26 September 2026 (partner access as its own page; on 25 September sign-in with a password added, files on the partner page added). If the technology behind this website changes,
+      <p>26 September 2026 (questions to the AI and access logs of api.jkhd.de added; partner access as its own page; on 25 September sign-in with a password added, files on the partner page added). If the technology behind this website changes,
          this statement will be updated; the version published here is the
          authoritative one.</p>
     </div>
@@ -247,6 +330,6 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20260926c"></script>
+  <script src="../js/main.js?v=20260926d"></script>
 </body>
 </html>

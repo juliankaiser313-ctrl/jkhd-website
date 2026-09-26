@@ -1329,8 +1329,11 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .helper-panel { pointer-events: auto; }
 
 .helper-panel {
-  width: min(380px, calc(100vw - 48px));
-  max-height: min(560px, calc(100vh - 140px));
+  width: min(400px, calc(100vw - 48px));
+  max-height: min(620px, calc(100vh - 140px));
+  /* Auf dem Handy ist 100vh hoeher als der sichtbare Teil (Adressleiste);
+     dvh zaehlt nur, was zu sehen ist. Wer dvh nicht kennt, nimmt die Zeile darueber. */
+  max-height: min(620px, calc(100dvh - 140px));
   display: flex;
   flex-direction: column;
   background: var(--panel);
@@ -1369,7 +1372,9 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 .helper-close:hover { color: var(--text); }
 
-.helper-body { padding: 18px; overflow-y: auto; }
+/* Die Mitte rollt, Kopf, Eingabe und Fuss bleiben stehen. contain: am Ende
+   des Verlaufs rollt nicht die Seite dahinter weiter. */
+.helper-body { flex: 1 1 auto; min-height: 0; padding: 18px; overflow-y: auto; overscroll-behavior: contain; }
 
 .helper-intro { color: var(--muted); font-size: 0.86rem; margin-bottom: 14px; }
 
@@ -1412,6 +1417,134 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 .helper-link:hover { color: var(--text); border-bottom-color: var(--text); }
 
+/* Unter den festen Fragen: der Verlauf mit der KI */
+.helper-chat { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+.helper-abschnitt,
+.helper-marke {
+  font-family: var(--mono);
+  font-size: var(--label);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.helper-abschnitt { margin-bottom: 12px; }
+
+.helper-log { display: grid; gap: 10px; }
+
+.helper-system,
+.helper-schreibt { font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
+
+/* "KI schreibt ..." atmet leise; bei reduzierter Bewegung steht es still (Regel oben) */
+.helper-schreibt { animation: helper-atmen 1.4s ease-in-out infinite; }
+@keyframes helper-atmen { 50% { opacity: 0.4; } }
+
+.helper-nachricht {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  /* Modelltext kann lange Adressen oder Woerter enthalten: umbrechen, statt
+     das Feld auf dem Handy seitlich zu sprengen */
+  overflow-wrap: anywhere;
+}
+.helper-nachricht p + p { margin-top: 8px; }
+.helper-marke { display: block; margin-bottom: 4px; }
+
+/* Die eigene Frage eingerueckt und getoent, die Antwort mit Tintenkante;
+   eine feste Antwort des Servers (Sperre) mit grauer Kante */
+.helper-nachricht.is-frage { margin-left: 28px; background: var(--wash-3); }
+.helper-nachricht.is-antwort { margin-right: 28px; background: var(--panel); border-left: 2px solid var(--text); }
+.helper-nachricht.is-sperre { border-left-color: var(--border-2); }
+
+.helper-meldung:empty { display: none; }
+.helper-fehler {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-left: 2px solid var(--text);
+  background: var(--wash-1);
+  font-size: 0.86rem;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.helper-fehler a {
+  font-family: var(--mono);
+  font-size: var(--caption);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-2);
+}
+.helper-fehler a:hover { border-bottom-color: var(--text); }
+
+/* Eingabe: bleibt unten stehen, auch wenn der Verlauf darueber rollt */
+.helper-form {
+  flex-shrink: 0;
+  display: grid;
+  gap: 8px;
+  padding: 12px 18px 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* Der KI-Hinweis (Art. 50 KI-VO): immer sichtbar, direkt ueber dem Feld,
+   mit vollem Kontrast der Nebenschrift -- kein Kleingedrucktes */
+.helper-hinweis {
+  padding: 8px 10px;
+  border-left: 2px solid var(--border-2);
+  background: var(--wash-1);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* Modell und Lizenzhinweis („Built with Llama", Pflicht der Llama-Lizenz) als eigene
+   Zeile im KI-Hinweis -- sichtbar, aber ruhiger als der Hinweis selbst */
+.helper-modell { display: block; margin-top: 4px; font-size: 0.72rem; opacity: 0.85; }
+
+/* Hoehe waechst per Skript mit dem Text bis max-height, danach rollt das Feld */
+.helper-eingabe {
+  width: 100%;
+  min-height: 64px;
+  max-height: 150px;
+  padding: 10px 12px;
+  background: var(--panel);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  resize: none;
+  overflow-y: auto;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.helper-eingabe:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 1px var(--text); }
+/* Voll deckend: der Platzhalter ist die einzige sichtbare Beschriftung des
+   Feldes, und --muted erreicht nur ungedaempft 4,5:1 (hell ~6,2, dunkel ~6,9).
+   opacity ausdruecklich 1, weil Firefox Platzhalter sonst selbst abschwaecht. */
+.helper-eingabe::placeholder { color: var(--muted); opacity: 1; }
+
+.helper-zeile { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+.helper-zaehler { font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
+.helper-zaehler.is-knapp { color: var(--text); font-weight: 700; }
+
+.helper-senden {
+  padding: 9px 18px;
+  background: var(--text);
+  color: var(--bg);
+  border: 1px solid var(--text);
+  border-radius: var(--r-sm);
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.helper-senden:hover { opacity: 0.86; }
+.helper-senden:disabled { opacity: 0.45; cursor: default; }
+
 .helper-foot {
   display: flex;
   flex-wrap: wrap;
@@ -1429,12 +1562,25 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 @media (max-width: 560px) {
   .helper { right: 16px; bottom: 16px; left: 16px; align-items: stretch; }
-  .helper-panel { width: 100%; max-height: calc(100vh - 120px); }
+  .helper-panel { width: 100%; max-height: calc(100vh - 120px); max-height: calc(100dvh - 120px); }
+  .helper-body { padding: 16px; }
+  .helper-form { padding: 10px 16px 12px; }
+  /* 16 px: darunter zoomt Safari auf dem iPhone beim Antippen ins Feld */
+  .helper-eingabe { font-size: 16px; min-height: 60px; max-height: 110px; }
+  .helper-nachricht.is-frage { margin-left: 16px; }
+  .helper-nachricht.is-antwort { margin-right: 16px; }
 
   /* Nur das Symbol: die breite Blase hat sonst Knoepfe darunter verdeckt */
   .helper-btn { align-self: flex-end; width: 50px; height: 50px; padding: 0; gap: 0; }
   .helper-btn-text { display: none; }
   .helper-btn-icon svg { width: 21px; height: 21px; }
+}
+
+/* Niedrige Fenster (Handy quer): Mitte, Eingabe und Fuss passen nicht mehr
+   untereinander -- dann rollt das ganze Feld statt nur der Mitte. */
+@media (max-height: 540px) {
+  .helper-panel { overflow-y: auto; overscroll-behavior: contain; }
+  .helper-body { flex: none; overflow: visible; }
 }
 
 /* ---------- Anfrage-Formular ---------- */

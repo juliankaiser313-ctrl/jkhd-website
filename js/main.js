@@ -433,12 +433,32 @@ if (siteHeader) {
   targets.forEach((el) => io.observe(el));
 })();
 
-// ---------- Assistent: haeufige Fragen, sonst an den Menschen ----------
-// Bewusst ohne Sprachmodell: kein API-Schluessel im Browser, keine laufenden
-// Kosten, keine Datenuebertragung — und keine Maschine, die Preise oder
-// Zusagen erfindet. Die Antworten stehen hier, sonst nirgends.
+// ---------- Assistent: haeufige Fragen, darunter Fragen an die KI ----------
+// Oben die sechs festen Antworten: Sie stehen hier, sonst nirgends, und kommen
+// sofort, ohne Server. Darunter kann man eine eigene Frage stellen. Die geht an
+// unseren eigenen Server (KI_API, JKHD-Partner-Server), und erst der fragt das
+// Sprachmodell (OVHcloud AI Endpoints; Rechenzentrum laut OVH-Doku, 26.09.2026, in
+// Frankreich -- schriftlich noch nicht bestaetigt, README des Servers). Im Browser
+// liegt kein Schluessel und laeuft kein fremdes Script; der Server deckelt Zahl
+// und Kosten und sperrt Anlagefragen vor und nach dem Modell.
+// Was vom Modell kommt, ist fremde Eingabe: Es geht NUR per textContent ins
+// Dokument, nie per innerHTML. Nichts davon landet im localStorage oder
+// sessionStorage -- der Verlauf lebt nur, solange die Seite offen ist.
+// Schnittstelle (README des Servers, Abschnitt KI-Fragen):
+//   POST {KI_API}/frage {frage, sprache: "de"|"en", verlauf: [{frage, antwort, sig}]}
+//     (Rumpf hoechstens KI_ANFRAGE_BYTES in UTF-8, sonst 400)
+//     -> 200 {antwort, art: "ki", ki_generiert: true, sig}
+//        200 {antwort, art: "sperre", ki_generiert: false}   feste Antwort des Servers
+//        429 {grenze}, 503 {fehler: "aus"}, 502 {fehler: "modell"}, 400 {fehler: "frage"}
 (function () {
   if (document.querySelector(".helper")) return;
+
+  // Der Server der Fragen. Die lokale Uebungsumgebung ersetzt genau diesen Text.
+  const KI_API = "https://api.jkhd.de";
+  const KI_FRAGE_MAX = 500;     // wie KI_FRAGE_MAX auf dem Server
+  const KI_VERLAUF_MAX = 3;     // so viele fruehere Paare nimmt der Server hoechstens an
+  const KI_ANFRAGE_BYTES = 8192; // wie KI_ANFRAGE_BYTES auf dem Server: groesserer Rumpf -> 400
+  const KI_WARTEN_MS = 30000;   // danach gilt der Server als nicht erreichbar (beide Versuche zusammen)
 
   const FRAGEN_EN = [
     {
@@ -500,18 +520,50 @@ if (siteHeader) {
 
   const FRAGEN = IST_EN ? FRAGEN_EN : FRAGEN_DE;
 
+  // Wohin die Fehlertexte verweisen -- relativ wie die Links der festen Antworten
+  const KONTAKT = T("kontakt.html", "contact.html");
+
+  // Der KI-Hinweis steht fest direkt ueber dem Eingabefeld (Art. 50 KI-VO) und
+  // ist zugleich dessen Beschreibung fuer Bildschirmleser. Der Knopf traegt
+  // einen eigenen Namen: auf dem Handy ist sein Text ausgeblendet (style.css),
+  // und display:none zaehlt fuer den Namen nicht mit.
   const html = `
-    <button class="helper-btn" type="button" aria-expanded="false" aria-controls="helper-panel">
+    <button class="helper-btn" type="button" aria-expanded="false" aria-controls="helper-panel"
+            aria-label="${T("Fragen und KI-Assistent", "Questions and AI assistant")}">
       <span class="helper-btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.6a8.2 8.2 0 0 1-8.8 8.2 8.6 8.6 0 0 1-3.1-.7L3.5 20.5l1.4-5a8.2 8.2 0 0 1-.9-3.7 8.2 8.2 0 0 1 8.2-8.2h.5a8.2 8.2 0 0 1 7.8 7.8z"/><path d="M10.2 9.6a1.9 1.9 0 0 1 3.7.6c0 1.3-1.9 1.9-1.9 1.9"/><path d="M12 15.4h.01"/></svg></span>
       <span class="helper-btn-text">${T("Fragen", "Questions")}</span>
     </button>
     <div class="helper-panel" id="helper-panel" role="dialog" aria-modal="false"
-         aria-label="${T("H\u00e4ufige Fragen", "Frequently asked questions")}" hidden>
+         aria-label="${T("Fragen und KI-Assistent", "Questions and AI assistant")}" hidden>
       <div class="helper-head">
         <span class="helper-title">${T("H\u00e4ufige Fragen", "Frequent questions")}</span>
         <button class="helper-close" type="button" aria-label="${T("Schlie\u00dfen", "Close")}">&times;</button>
       </div>
-      <div class="helper-body"></div>
+      <div class="helper-body">
+        <div class="helper-faq"></div>
+        <div class="helper-chat">
+          <p class="helper-abschnitt" id="helper-abschnitt">${T("Frage an die KI", "Ask the AI")}</p>
+          <div class="helper-log" role="log" aria-live="polite" aria-labelledby="helper-abschnitt"></div>
+          <div class="helper-meldung"></div>
+        </div>
+      </div>
+      <form class="helper-form" novalidate>
+        <p class="helper-hinweis" id="helper-hinweis">${T(
+          "Sie schreiben mit einem KI-System. Die Antworten entstehen automatisch, k\u00f6nnen Fehler enthalten und sind keine Beratung. Bitte geben Sie keine pers\u00f6nlichen Daten ein.",
+          "You are writing to an AI system. The answers are generated automatically, may contain errors and are not advice. Please do not enter any personal data."
+        )} <span class="helper-modell">${T("Sprachmodell: Llama 3.3 bei OVHcloud (Frankreich). Built with Llama.", "Language model: Llama 3.3 at OVHcloud (France). Built with Llama.")}</span></p>
+        <label class="nur-vorlesen" for="helper-eingabe">${T(
+          `Ihre Frage an die KI, h\u00f6chstens ${KI_FRAGE_MAX} Zeichen`,
+          `Your question to the AI, at most ${KI_FRAGE_MAX} characters`
+        )}</label>
+        <textarea class="helper-eingabe" id="helper-eingabe" rows="2" maxlength="${KI_FRAGE_MAX}"
+                  autocomplete="off" enterkeyhint="send" aria-describedby="helper-hinweis"
+                  placeholder="${T("Ihre Frage \u2026", "Your question \u2026")}"></textarea>
+        <div class="helper-zeile">
+          <span class="helper-zaehler" aria-hidden="true">0 / ${KI_FRAGE_MAX}</span>
+          <button class="helper-senden" type="submit">${T("Senden", "Send")}</button>
+        </div>
+      </form>
       <div class="helper-foot">
         <span>${T("Frage nicht dabei?", "Question not listed?")}</span>
         <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
@@ -527,10 +579,19 @@ if (siteHeader) {
   const btn = wrap.querySelector(".helper-btn");
   const panel = wrap.querySelector(".helper-panel");
   const body = wrap.querySelector(".helper-body");
+  const faq = wrap.querySelector(".helper-faq");
   const close = wrap.querySelector(".helper-close");
+  const log = wrap.querySelector(".helper-log");
+  const meldung = wrap.querySelector(".helper-meldung");
+  const form = wrap.querySelector(".helper-form");
+  const feld = wrap.querySelector(".helper-eingabe");
+  const zaehler = wrap.querySelector(".helper-zaehler");
+  const senden = wrap.querySelector(".helper-senden");
 
+  // Die festen Fragen bauen nur ihren eigenen Teil neu auf -- der Verlauf mit
+  // der KI darunter bleibt stehen.
   function liste() {
-    body.innerHTML =
+    faq.innerHTML =
       '<p class="helper-intro">' +
       T(
         "Am schnellsten geht es per E-Mail \u2014 wir antworten pers\u00f6nlich. " +
@@ -547,7 +608,7 @@ if (siteHeader) {
 
   function antwort(i) {
     const q = FRAGEN[i];
-    body.innerHTML =
+    faq.innerHTML =
       '<button class="helper-back" type="button">&larr; ' +
       T("Alle Fragen", "All questions") +
       "</button>" +
@@ -557,6 +618,207 @@ if (siteHeader) {
     body.scrollTop = 0;
   }
 
+  // ---- Fragen an die KI ----
+  // Gemerkt werden nur Paare, deren Antwort vom Modell kam und die der Server
+  // signiert hat: Die gehen beim naechsten Mal als Verlauf mit. Eine erfundene
+  // "fruehere Antwort" faellt dort an der Signatur durch.
+  const verlauf = [];
+  let laeuft = false;
+
+  const FEHLER_LAST = T(
+    "Die KI ist gerade ausgelastet. Bitte versuchen Sie es sp\u00e4ter noch einmal \u2014 oder schreiben Sie uns.",
+    "The AI is busy right now. Please try again later \u2014 or write to us."
+  );
+  const FEHLER_AUS = T(
+    "KI-Antworten sind gerade ausgeschaltet. Die h\u00e4ufigen Fragen oben gehen weiterhin \u2014 alles andere beantworten wir gern pers\u00f6nlich.",
+    "AI answers are switched off right now. The frequent questions above still work \u2014 anything else we are glad to answer personally."
+  );
+  const FEHLER_FRAGE = T(
+    `Diese Frage konnte so nicht gesendet werden. Bitte fassen Sie sie in h\u00f6chstens ${KI_FRAGE_MAX} Zeichen.`,
+    `This question could not be sent as it is. Please keep it to at most ${KI_FRAGE_MAX} characters.`
+  );
+  const FEHLER_WEG = T(
+    "Die KI ist gerade nicht erreichbar. Bitte versuchen Sie es sp\u00e4ter noch einmal \u2014 oder schreiben Sie uns.",
+    "The AI cannot be reached right now. Please try again later \u2014 or write to us."
+  );
+
+  // Der Rumpf einer Anfrage, hoechstens KI_ANFRAGE_BYTES in UTF-8. Drei lange
+  // Paare in nicht-lateinischer Schrift (3 Bytes je Zeichen) reissen die
+  // Grenze -- dann fallen die aeltesten Paare weg, bis er passt. Die Frage
+  // allein passt immer: 500 Zeichen sind auch als \uXXXX hoechstens 3000 Bytes.
+  const utf8 = new TextEncoder();
+  function rumpfFuer(frage, mitVerlauf) {
+    const r = { frage, sprache: IST_EN ? "en" : "de", verlauf: mitVerlauf ? verlauf.slice(-KI_VERLAUF_MAX) : [] };
+    while (r.verlauf.length && utf8.encode(JSON.stringify(r)).length > KI_ANFRAGE_BYTES) r.verlauf.shift();
+    return r;
+  }
+
+  // Ein Aufruf von /frage. Wirft nie: status 0 heisst kein Netz, abgebrochen
+  // oder vom Browser verweigert. antwortKoerper liest mit demselben Signal und
+  // liefert {} statt zu werfen.
+  async function schicken(rumpf, signal) {
+    try {
+      const r = await fetch(KI_API + "/frage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(rumpf),
+        signal,
+      });
+      return { status: r.status, d: await antwortKoerper(r) };
+    } catch (e) {
+      return { status: 0, d: {} };
+    }
+  }
+
+  // Ans Ende des Verlaufs rollen. In niedrigen Fenstern rollt statt der Mitte
+  // das ganze Feld (siehe style.css) -- dann eben das.
+  function ansEnde() {
+    body.scrollTop = body.scrollHeight;
+    panel.scrollTop = panel.scrollHeight;
+  }
+
+  // Ein Eintrag im Verlauf: oben die Marke, darunter der Text -- als Text, nie
+  // als HTML. Absaetze entstehen an den Zeilenumbruechen.
+  function eintrag(klasse, marke, text) {
+    const el = document.createElement("div");
+    el.className = "helper-nachricht " + klasse;
+    const m = document.createElement("span");
+    m.className = "helper-marke";
+    m.textContent = marke;
+    el.appendChild(m);
+    for (const absatz of text.split("\n")) {
+      if (!absatz.trim()) continue;
+      const p = document.createElement("p");
+      p.textContent = absatz.trim();
+      el.appendChild(p);
+    }
+    log.appendChild(el);
+    ansEnde();
+    return el;
+  }
+
+  // Die erste Zeile beim ersten Oeffnen: Hier antwortet eine Maschine.
+  function begruessen() {
+    if (log.firstChild) return;
+    const p = document.createElement("p");
+    p.className = "helper-system";
+    p.textContent = T("Hier antwortet ein KI-System.", "An AI system answers here.");
+    log.appendChild(p);
+  }
+
+  // Fehler: ein verstaendlicher Satz und der Weg zum Menschen. Steht ausserhalb
+  // des Verlaufs, damit Bildschirmleser ihn einmal (als Alarm) vorlesen und
+  // nicht zweimal.
+  function fehler(text) {
+    const p = document.createElement("p");
+    p.className = "helper-fehler";
+    p.setAttribute("role", "alert");
+    p.textContent = text + " ";
+    const a = document.createElement("a");
+    a.href = KONTAKT;
+    a.textContent = T("Zur Kontaktseite", "Contact");
+    p.appendChild(a);
+    meldung.textContent = "";
+    meldung.appendChild(p);
+    ansEnde();
+  }
+
+  function zaehlen() {
+    const n = feld.value.length;
+    zaehler.textContent = `${n} / ${KI_FRAGE_MAX}`;
+    zaehler.classList.toggle("is-knapp", n > KI_FRAGE_MAX - 50);
+    // Mitwachsen bis zur Hoechsthoehe aus style.css. Bei geschlossenem Feld
+    // gibt es nichts zu messen (scrollHeight waere 0).
+    if (panel.hidden) return;
+    feld.style.height = "auto";
+    feld.style.height = feld.scrollHeight + (feld.offsetHeight - feld.clientHeight) + "px";
+  }
+
+  async function fragen() {
+    if (laeuft) return;
+    const frage = feld.value.trim();
+    feld.focus();
+    if (!frage) return;
+    if (frage.length > KI_FRAGE_MAX) { fehler(FEHLER_FRAGE); return; }
+
+    laeuft = true;
+    senden.disabled = true;
+    meldung.textContent = "";
+    const frageEl = eintrag("is-frage", T("Ihre Frage", "Your question"), frage);
+    feld.value = "";
+    zaehlen();
+    const schreibt = document.createElement("p");
+    schreibt.className = "helper-schreibt";
+    schreibt.textContent = T("KI schreibt \u2026", "AI is writing \u2026");
+    log.appendChild(schreibt);
+    ansEnde();
+
+    // Das Zeitlimit gilt fuer Anfrage UND Antwortkoerper, und fuer beide
+    // Versuche zusammen.
+    const abbruch = new AbortController();
+    const uhr = setTimeout(() => abbruch.abort(), KI_WARTEN_MS);
+    const rumpf = rumpfFuer(frage, true);
+    let { status, d } = await schicken(rumpf, abbruch.signal);
+    // Lehnt der Server den Rumpf trotzdem ab und ging Verlauf mit, dann einmal
+    // ohne. Kommt die Frage so durch, lag es am Verlauf -- der faellt dann weg,
+    // sonst scheiterte jede weitere Frage genauso. Eine 400 kostet dort nichts:
+    // sie faellt vor jeder Grenze und jeder Buchung.
+    if (status === 400 && rumpf.verlauf.length) {
+      ({ status, d } = await schicken(rumpfFuer(frage, false), abbruch.signal));
+      if (status !== 0 && status !== 400) verlauf.length = 0;
+    }
+    clearTimeout(uhr);
+    schreibt.remove();
+    laeuft = false;
+    senden.disabled = false;
+
+    if (status === 200 && typeof d.antwort === "string" && d.antwort.trim()) {
+      // Alles, was nicht ausdruecklich eine Sperre ist, traegt die KI-Marke --
+      // im Zweifel lieber einmal zu oft gekennzeichnet.
+      const sperre = d.art === "sperre";
+      const el = eintrag(
+        sperre ? "is-antwort is-sperre" : "is-antwort",
+        sperre ? T("Automatische Antwort", "Automatic answer") : T("KI-Antwort", "AI answer"),
+        d.antwort
+      );
+      el.dataset.kiGeneriert = sperre ? "false" : "true";
+      if (d.art === "ki" && typeof d.sig === "string" && /^[0-9a-f]{64}$/.test(d.sig)) {
+        verlauf.push({ frage, antwort: d.antwort, sig: d.sig });
+        if (verlauf.length > KI_VERLAUF_MAX) verlauf.shift();
+      }
+      return;
+    }
+
+    // Wie im Vertrag: nur 429 und 503 "aus" haben eigene Saetze, alles andere
+    // (auch eine 400, die nach dem Versuch ohne Verlauf bleibt) heisst "nicht
+    // erreichbar". FEHLER_FRAGE gilt nur fuer die Pruefung hier im Browser.
+    if (status === 429) fehler(FEHLER_LAST);
+    else if (status === 503 && d.fehler === "aus") fehler(FEHLER_AUS);
+    else fehler(FEHLER_WEG);
+    // Die Frage wandert zurueck ins Feld, damit sie nicht neu getippt werden
+    // muss -- aber nur, wenn dort inzwischen nichts Neues steht.
+    if (!feld.value) {
+      frageEl.remove();
+      feld.value = frage;
+      zaehlen();
+    }
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    fragen();
+  });
+
+  // Enter sendet, Umschalt+Enter macht eine neue Zeile. Waehrend einer
+  // Wortbildung (IME, z. B. Japanisch) gehoert Enter der Eingabehilfe.
+  feld.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" || e.shiftKey || e.isComposing || e.keyCode === 229) return;
+    e.preventDefault();
+    fragen();
+  });
+
+  feld.addEventListener("input", zaehlen);
+
   // fokus=false beim Schliessen von aussen: Wer daneben klickt, will dort
   // weiterlesen — dann darf der Knopf den Fokus nicht zurueckreiszen.
   function oeffnen(auf, fokus = true) {
@@ -565,7 +827,9 @@ if (siteHeader) {
     wrap.classList.toggle("is-open", auf);
     if (auf) {
       liste();
-      const erste = body.querySelector("button");
+      begruessen();
+      zaehlen();
+      const erste = faq.querySelector("button");
       if (erste) erste.focus();
     } else if (fokus) {
       btn.focus();
@@ -575,12 +839,22 @@ if (siteHeader) {
   btn.addEventListener("click", () => oeffnen(panel.hidden));
   close.addEventListener("click", () => oeffnen(false));
 
-  body.addEventListener("click", (e) => {
+  // Der angeklickte Knopf verschwindet beim Neuaufbau -- damit die Tastatur
+  // nicht im Nichts landet, bekommt der Gegenknopf den Fokus: in der Antwort
+  // "Alle Fragen", zurueck in der Liste die Frage, von der man kam.
+  let offen = 0;
+  faq.addEventListener("click", (e) => {
     const ziel = e.target.closest("button");
     if (!ziel) return;
-    if (ziel.classList.contains("helper-back")) liste();
-    else if (ziel.dataset.i) antwort(Number(ziel.dataset.i));
-    else if (ziel.dataset.i === "0") antwort(0);
+    if (ziel.classList.contains("helper-back")) {
+      liste();
+      const vorher = faq.querySelector(`[data-i="${offen}"]`);
+      if (vorher) vorher.focus();
+    } else if (ziel.dataset.i) {
+      offen = Number(ziel.dataset.i);
+      antwort(offen);
+      faq.querySelector(".helper-back").focus();
+    }
   });
 
   // Klick irgendwo daneben schliesst das Feld — wie beim Menue oben.
@@ -604,8 +878,9 @@ if (siteHeader) {
     vonInnen = false;
   });
 
+  // Escape waehrend einer Wortbildung bricht nur die ab, nicht das Feld
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !panel.hidden) oeffnen(false);
+    if (e.key === "Escape" && !e.isComposing && !panel.hidden) oeffnen(false);
   });
 })();
 
@@ -619,8 +894,9 @@ const PartnerSitzung = {
   vergiss() { try { sessionStorage.removeItem(this.SCHLUESSEL); } catch (e) {} },
 };
 
-// Fuer beide Partner-Abschnitte: den JSON-Koerper einer Antwort lesen. Leer
-// oder kaputt ergibt {} -- dann zaehlt der Statuscode allein.
+// Fuer beide Partner-Abschnitte und die Fragen-Blase weiter oben (als
+// Funktionsdeklaration dort schon bekannt): den JSON-Koerper einer Antwort
+// lesen. Leer oder kaputt ergibt {} -- dann zaehlt der Statuscode allein.
 async function antwortKoerper(r) {
   try {
     const d = await r.json();

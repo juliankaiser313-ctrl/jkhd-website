@@ -26,8 +26,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/datenschutz.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/privacy.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/datenschutz.html">
-  <link rel="stylesheet" href="css/fonts.css?v=20260926c">
-  <link rel="stylesheet" href="css/style.css?v=20260926c">
+  <link rel="stylesheet" href="css/fonts.css?v=20260926d">
+  <link rel="stylesheet" href="css/style.css?v=20260926d">
 </head>
 <body>
 
@@ -108,10 +108,13 @@
          Ihrem Gerät wird nur Ihre Wahl der Darstellung gespeichert (Näheres im
          folgenden Abschnitt) und, nach einer Anmeldung im Partnerzugang, ein
          Anmeldezeichen im Sitzungsspeicher des Browser-Tabs, bis der Tab
-         geschlossen wird (Näheres unter „Partnerzugang"). Auch die
-         Fragen-Hilfe unten rechts arbeitet ohne Server: Die Antworten sind
-         fest in der Seite hinterlegt, Ihre Klicks
-         werden weder gespeichert noch übertragen.</p>
+         geschlossen wird (Näheres unter „Partnerzugang"). Die häufigen Fragen
+         in der Fragen-Hilfe unten rechts beantwortet die Seite ohne Server:
+         Die Antworten sind fest in der Seite hinterlegt, Ihre Klicks darauf
+         werden weder gespeichert noch übertragen. Nur eine Frage, die Sie dort
+         selbst schreiben und absenden, geht an unseren Server und von dort in
+         der Regel an einen KI-Dienst von OVHcloud (Näheres unter „Fragen an
+         die KI").</p>
       <h2>Einstellung auf Ihrem Gerät</h2>
       <p>Diese Webseite lässt sich zwischen heller und dunkler Darstellung
          umschalten. Betätigen Sie diesen Schalter, wird Ihre Wahl in der lokalen
@@ -208,16 +211,93 @@
          gewählten Zugänge werden nur in eine vorbereitete E-Mail an unsere
          Partner-Adresse geschrieben. An unseren Server wird dabei nichts
          übertragen, im Browser wird nichts gespeichert.</p>
-      <p>Zum Schutz vor Missbrauch speichert der Server eine Prüfsumme Ihres
-         Netzes, der eingegebenen E-Mail-Adresse und ihrer Domain, um die Zahl
-         der Anfragen zu begrenzen; sie wird nach einer Stunde nicht mehr
-         berücksichtigt und spätestens am folgenden Tag gelöscht.
+      <p>Zum Schutz vor Missbrauch speichert der Server eine Prüfsumme Ihrer
+         IP-Adresse (bei IPv6 Ihres Netzes), der eingegebenen E-Mail-Adresse
+         und ihrer Domain, um die Zahl der Anfragen zu begrenzen; sie wird
+         nach einer Stunde nicht mehr berücksichtigt und spätestens am
+         folgenden Tag gelöscht.
          Klartext-Adressen werden nicht protokolliert. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO
          (Durchführung der Partnerschaft) bzw. lit. f DSGVO (Schutz vor
          Missbrauch). An Adressen, die nicht als Partner hinterlegt sind, wird
          keine E-Mail versandt; gespeichert werden für sie nur die genannten
          Prüfsummen, die nach einer Stunde nicht mehr berücksichtigt und
          spätestens am folgenden Tag gelöscht werden.</p>
+      <h2>Zugriffsprotokolle von api.jkhd.de</h2>
+      <p>Unser Server unter api.jkhd.de läuft auf einem Webspace der IONOS SE
+         in Deutschland (siehe „Partnerzugang"). Laut IONOS protokolliert der
+         Webspace jeden Aufruf — aus dem Partnerzugang ebenso wie aus der
+         Fragen-Hilfe — mit der IP-Adresse nur in anonymisierter Form, dazu
+         Zeitpunkt, aufgerufener Adresse, Browser, Betriebssystem, Gerätetyp und
+         verweisender Seite; diese Protokolle werden acht Wochen gespeichert,
+         dienen der Sicherheit und Stabilität des Servers und werden nicht an
+         Dritte weitergegeben. Den Text Ihrer Fragen an die KI enthalten sie
+         nicht: Er wird im Inhalt der Anfrage übertragen, nicht in der
+         aufgerufenen Adresse. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO
+         (sicherer und stabiler Betrieb des Servers).</p>
+      <h2>Fragen an die KI</h2>
+      <p>In der Fragen-Hilfe unten rechts können Sie auch eine eigene Frage
+         stellen; die Antwort erzeugt ein KI-System automatisch. Erst wenn Sie
+         eine Frage absenden, überträgt Ihr Browser verschlüsselt an unseren
+         Server unter api.jkhd.de (Webspace bei der IONOS SE in Deutschland,
+         siehe „Partnerzugang"): den Text Ihrer Frage, die Sprache der Seite
+         und — damit die Antwort an das bisherige Gespräch anknüpfen kann —
+         bis zu drei frühere Fragen und Antworten aus demselben Gespräch, jedes
+         Frage-Antwort-Paar mit einer Prüfsignatur, an der unser Server erkennt,
+         dass es von ihm stammt. Wie bei jedem Aufruf erhält der Server dabei Ihre
+         IP-Adresse (zu den Protokollen siehe „Zugriffsprotokolle von
+         api.jkhd.de"). Den Gesprächsverlauf hält nur die geöffnete Seite im
+         Arbeitsspeicher; er wird weder im Browser abgelegt noch bei uns
+         gespeichert und ist weg, sobald Sie die Seite neu laden oder
+         schließen.</p>
+      <p>Unser Server leitet Ihre Frage und den Gesprächsverlauf zusammen mit
+         festen Anweisungen und Texten dieser Website über JKHD verschlüsselt
+         an den Dienst „AI Endpoints" von OVHcloud weiter; dort erzeugt ein
+         Sprachmodell die Antwort. Anbieter ist die OVH GmbH, Oskar-Jäger-Str.
+         173/K6, 50825 Köln, Deutschland. Sie verarbeitet die Daten als unser
+         Auftragsverarbeiter (Art. 28 DSGVO); der Auftragsverarbeitungsvertrag
+         ist fester Bestandteil des Vertrags mit OVHcloud. Nach Angaben von
+         OVHcloud steht die Technik dieses Dienstes in Gravelines (Frankreich),
+         also in der Europäischen Union. In seinen Vertragsbedingungen für
+         diesen Dienst erklärt OVHcloud, von den Ein- und Ausgaben keine
+         Kenntnis zu haben, sie in keiner Weise weiterzuverwenden und keine
+         Sicherungskopien davon anzulegen. Laut seiner Dienstbeschreibung
+         werden die Daten während und nach der Verarbeitung weder gespeichert
+         noch weitergegeben; OVHcloud bewahrt nur die für die Abrechnung
+         nötigen Daten auf und verwendet die Daten nie, um KI-Modelle zu
+         trainieren oder zu verbessern. Das sind Angaben von OVHcloud; selbst
+         überprüfen können wir sie nicht. Ihre IP-Adresse geben wir dabei nicht
+         weiter.
+         Erkennt unser Server in einer Frage den Wunsch nach einer Anlageempfehlung
+         oder Kursprognose oder die Frage, ob hier ein Mensch antwortet,
+         antwortet er selbst mit einem festen Text; ist eine Höchstgrenze
+         erreicht — Fragen je IP-Adresse bzw. Netz und Stunde, alle Fragen
+         zusammen je Stunde oder Tag, die geschätzten Kosten des Monats oder
+         die Zahl gleichzeitig bearbeiteter Fragen —, lehnt er die Frage ab.
+         In beiden Fällen wird nichts an OVHcloud übertragen.</p>
+      <p>Ihre Fragen und die Antworten werden bei uns weder gespeichert noch
+         protokolliert; unser Server hält sie nur im Arbeitsspeicher, solange
+         er Ihre Anfrage bearbeitet. Zum Schutz vor Missbrauch und zur
+         Begrenzung der Kosten zählt der Server die Fragen je IP-Adresse, bei
+         IPv6 je Netz. Gespeichert wird dafür nur eine Prüfsumme Ihrer
+         IP-Adresse (bei IPv6 Ihres Netzes) mit den Zeitpunkten; sie
+         wird nach einer Stunde nicht mehr berücksichtigt und spätestens am
+         folgenden Tag gelöscht. Außerdem führt der Server Tages- und
+         Monatssummen der erzeugten Antworten und der verarbeiteten Textmenge
+         (Tokens), ohne Bezug zu einzelnen Personen.</p>
+      <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes
+         Interesse liegt darin, Fragen zu JKHD rasch und ohne den Umweg über
+         eine E-Mail zu beantworten und den Dienst vor Missbrauch und
+         unkontrollierten Kosten zu schützen. Die Nutzung ist freiwillig; die
+         häufigen Fragen und unsere E-Mail-Adressen stehen Ihnen auch ohne die
+         KI offen.</p>
+      <p><b>Keine persönlichen Daten.</b> Bitte geben Sie in Ihre Fragen keine
+         personenbezogenen Daten ein — weder über sich noch über andere. Für
+         persönliche Anliegen schreiben Sie uns an
+         <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>.
+         <b>Keine Beratung.</b> Die Antworten entstehen automatisch, können
+         Fehler enthalten und sind keine Beratung, insbesondere keine
+         Anlageberatung. In der Fragen-Hilfe sind sie entsprechend
+         gekennzeichnet.</p>
       <h2>Kontakt per E-Mail</h2>
       <p>Wenn Sie uns per E-Mail kontaktieren, verarbeiten wir Ihre Angaben
          ausschließlich zur Bearbeitung der Anfrage (Art. 6 Abs. 1 lit. b bzw.
@@ -230,8 +310,18 @@
          sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren — zuständig ist
          der Landesbeauftragte für den Datenschutz und die Informationsfreiheit
          Baden-Württemberg.</p>
+      <p><b>Widerspruchsrecht (Art. 21 DSGVO).</b> Soweit wir Daten auf
+         Grundlage von Art. 6 Abs. 1 lit. f DSGVO verarbeiten, können Sie
+         dieser Verarbeitung jederzeit aus Gründen, die sich aus Ihrer
+         besonderen Situation ergeben, widersprechen. Wir verarbeiten die
+         Daten dann nicht mehr, es sei denn, wir können zwingende
+         schutzwürdige Gründe für die Verarbeitung nachweisen, die Ihre
+         Interessen, Rechte und Freiheiten überwiegen, oder die Verarbeitung
+         dient der Geltendmachung, Ausübung oder Verteidigung von
+         Rechtsansprüchen. Ein formloser Widerspruch an die oben genannte
+         E-Mail-Adresse genügt.</p>
       <h2>Stand</h2>
-      <p>26. September 2026 (Partnerzugang als eigene Seite; am 25. September Anmeldung mit Passwort ergänzt, Dateien auf der Partnerseite nachgetragen). Ändert sich die Technik dieser Webseite, wird
+      <p>26. September 2026 (Fragen an die KI und Zugriffsprotokolle von api.jkhd.de ergänzt; Partnerzugang als eigene Seite; am 25. September Anmeldung mit Passwort ergänzt, Dateien auf der Partnerseite nachgetragen). Ändert sich die Technik dieser Webseite, wird
          diese Erklärung angepasst; maßgeblich ist die hier veröffentlichte
          Fassung.</p>
     </div>
@@ -257,6 +347,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20260926c"></script>
+  <script src="js/main.js?v=20260926d"></script>
 </body>
 </html>
