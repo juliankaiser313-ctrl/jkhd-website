@@ -1682,12 +1682,33 @@ const NETZ_VOLL = () => T(
        </section>`;
   }
 
+  // Eingebaute Browser von Apps (Instagram, Facebook, TikTok ...) laden keine Datei herunter,
+  // die die Seite selbst bereitstellt (Blob) -- es passiert einfach nichts (gemeldet: Instagram
+  // auf Android, 26.09.2026). Dann sagt die Seite das, statt still „Lädt …" zu zeigen.
+  // Name der App, "" fuer einen anderen eingebauten Browser (Android-WebView), sonst null.
+  function appBrowser() {
+    const ua = navigator.userAgent || "";
+    const apps = [[/Instagram/i, "Instagram"], [/FBAN|FBAV|FB_IAB|FBIOS/, "Facebook"], [/musical_ly|BytedanceWebview|TikTok/i, "TikTok"],
+      [/Snapchat/i, "Snapchat"], [/LinkedInApp/i, "LinkedIn"], [/Pinterest/i, "Pinterest"], [/\bLine\//, "LINE"], [/MicroMessenger/i, "WeChat"]];
+    for (const [muster, name] of apps) if (muster.test(ua)) return name;
+    return /; wv\)/.test(ua) ? "" : null;
+  }
+
   // Download: mit dem Anmeldezeichen holen, als Datei speichern. Der Name kommt
   // aus der Liste (nicht aus einem Kopf der Antwort -- den liest fetch quer
   // ueber Herkunftsgrenzen ohnehin nicht).
   async function herunterladen(knopf, datei, meldung) {
     if (VORSCHAU) {
       meldung.innerHTML = hinweis(T("Vorschau: Herunterladen kann nur der Partner selbst.", "Preview: only the partner can download."));
+      return;
+    }
+    const app = appBrowser();
+    if (app !== null) {
+      meldung.innerHTML = hinweis(T(
+        `Im ${app ? app + "-Browser" : "eingebauten Browser dieser App"} lassen sich keine Dateien herunterladen. Bitte öffnen Sie diese Seite in Chrome oder Safari – über das Menü oben rechts (⋮ oder …) „Im Browser öffnen“ – und melden Sie sich dort einmal neu an.`,
+        `Files cannot be downloaded in the ${app ? app + " browser" : "built-in browser of this app"}. Please open this page in Chrome or Safari – via the menu at the top right (⋮ or …) “Open in browser” – and sign in there once more.`
+      ), true);
+      meldung.querySelector(".partner-hinweis").focus();
       return;
     }
     const token = PartnerSitzung.lies();
