@@ -548,10 +548,13 @@ if (siteHeader) {
         </div>
       </div>
       <form class="helper-form" novalidate>
-        <p class="helper-hinweis" id="helper-hinweis">${T(
-          "Sie schreiben mit einem KI-System. Die Antworten entstehen automatisch, k\u00f6nnen Fehler enthalten und sind keine Beratung. Bitte geben Sie keine pers\u00f6nlichen Daten ein.",
-          "You are writing to an AI system. The answers are generated automatically, may contain errors and are not advice. Please do not enter any personal data."
-        )} <span class="helper-modell">${T("Sprachmodell: Llama 3.3 bei OVHcloud (Frankreich). Built with Llama.", "Language model: Llama 3.3 at OVHcloud (France). Built with Llama.")}</span></p>
+        <details class="helper-hinweis">
+          <summary>${T("KI-System \u00b7 Llama 3.3 \u00b7 Built with Llama", "AI system \u00b7 Llama 3.3 \u00b7 Built with Llama")}</summary>
+          <p id="helper-hinweis">${T(
+            "Sie schreiben mit einem KI-System. Die Antworten entstehen automatisch, k\u00f6nnen Fehler enthalten und sind keine Beratung. Bitte geben Sie keine pers\u00f6nlichen Daten ein. Sprachmodell: Llama 3.3 bei OVHcloud (Frankreich).",
+            "You are writing to an AI system. The answers are generated automatically, may contain errors and are not advice. Please do not enter any personal data. Language model: Llama 3.3 at OVHcloud (France)."
+          )}</p>
+        </details>
         <label class="nur-vorlesen" for="helper-eingabe">${T(
           `Ihre Frage an die KI, h\u00f6chstens ${KI_FRAGE_MAX} Zeichen`,
           `Your question to the AI, at most ${KI_FRAGE_MAX} characters`
