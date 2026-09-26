@@ -1722,12 +1722,24 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   color: var(--accent);
 }
 
-.kachel-mail {
+/* In den drei Kacheln ist die Zeile oben die Ueberschrift und die Adresse
+   darunter kleiner (Julian, 26.09.2026). .kachel-label bleibt ueberall sonst
+   (Partnerkasten, Partnerseite) die kleine Marke — deshalb nur mit .kachel. */
+.kachel .kachel-label {
   font-family: var(--serif);
-  font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
+  line-height: 1.2;
   letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--text);
+}
+
+.kachel-mail {
+  font-size: 1rem;
+  color: var(--muted);
   overflow-wrap: anywhere;
 }
+.kachel:hover .kachel-mail { color: var(--text); }
 
 .partner {
   --bg: #101012; --panel: #17171a; --panel-2: #1c1c1f;
