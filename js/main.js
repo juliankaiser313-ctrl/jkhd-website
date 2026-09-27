@@ -433,9 +433,11 @@ if (siteHeader) {
   targets.forEach((el) => io.observe(el));
 })();
 
-// ---------- Assistent: haeufige Fragen, darunter Fragen an die KI ----------
-// Oben die sechs festen Antworten: Sie stehen hier, sonst nirgends, und kommen
-// sofort, ohne Server. Darunter kann man eine eigene Frage stellen. Die geht an
+// ---------- Assistent: Fragen an die KI, bei Ausfall die haeufigen Fragen ----------
+// Die Blase ist ein Chat: Man stellt eine eigene Frage. Die sechs festen Antworten
+// (sofort, ohne Server) erscheinen nur, wenn die KI gerade nicht antwortet -- unter
+// der Fehlermeldung, bis zur naechsten Frage (Julian 27.09.2026: „die Standardfragen
+// nur, wenn die KI gerade nicht mehr geht"). Eine Frage geht an
 // unseren eigenen Server (KI_API, JKHD-Partner-Server), und erst der fragt das
 // Sprachmodell (OVHcloud AI Endpoints; Rechenzentrum laut OVH-Doku, 26.09.2026, in
 // Frankreich -- schriftlich noch nicht bestaetigt, README des Servers). Im Browser
@@ -534,19 +536,16 @@ if (siteHeader) {
       <span class="helper-btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.6a8.2 8.2 0 0 1-8.8 8.2 8.6 8.6 0 0 1-3.1-.7L3.5 20.5l1.4-5a8.2 8.2 0 0 1-.9-3.7 8.2 8.2 0 0 1 8.2-8.2h.5a8.2 8.2 0 0 1 7.8 7.8z"/><path d="M10.2 9.6a1.9 1.9 0 0 1 3.7.6c0 1.3-1.9 1.9-1.9 1.9"/><path d="M12 15.4h.01"/></svg></span>
       <span class="helper-btn-text">${T("Fragen", "Questions")}</span>
     </button>
-    <div class="helper-panel" id="helper-panel" role="dialog" aria-modal="false"
+    <div class="helper-panel" id="helper-panel" role="dialog" aria-modal="false" tabindex="-1"
          aria-label="${T("Fragen und KI-Assistent", "Questions and AI assistant")}" hidden>
       <div class="helper-head">
-        <span class="helper-title">${T("H\u00e4ufige Fragen", "Frequent questions")}</span>
+        <span class="helper-title" id="helper-titel">${T("KI-Assistent", "AI assistant")}</span>
         <button class="helper-close" type="button" aria-label="${T("Schlie\u00dfen", "Close")}">&times;</button>
       </div>
       <div class="helper-body">
-        <div class="helper-faq"></div>
-        <div class="helper-chat">
-          <p class="helper-abschnitt" id="helper-abschnitt">${T("Frage an die KI", "Ask the AI")}</p>
-          <div class="helper-log" role="log" aria-live="polite" aria-labelledby="helper-abschnitt"></div>
-          <div class="helper-meldung"></div>
-        </div>
+        <div class="helper-log" role="log" aria-live="polite" aria-labelledby="helper-titel"></div>
+        <div class="helper-meldung"></div>
+        <div class="helper-faq" hidden></div>
       </div>
       <form class="helper-form" novalidate>
         <details class="helper-hinweis">
@@ -569,7 +568,7 @@ if (siteHeader) {
         </div>
       </form>
       <div class="helper-foot">
-        <span>${T("Frage nicht dabei?", "Question not listed?")}</span>
+        <span>${T("Per E-Mail", "By e-mail")}</span>
         <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
         <a href="mailto:service@jkhd.de">service@jkhd.de</a>
       </div>
@@ -592,22 +591,51 @@ if (siteHeader) {
   const zaehler = wrap.querySelector(".helper-zaehler");
   const senden = wrap.querySelector(".helper-senden");
 
+  // Adressen, die es wirklich gibt. Nur die werden in einer Antwort markiert und
+  // anklickbar (Julian 27.09.2026: \u201ewenn die KI eine Mail nennt, dass man
+  // draufdruecken kann"). Eine Adresse, die sich das Modell ausgedacht hat, bleibt
+  // Text -- ein Link darauf saehe aus wie eine Zusage, dass dort jemand liest.
+  const ADRESSEN = ["kontakt@jkhd.de", "service@jkhd.de", "info@jkhd.de"];
+  // Ganze Adresse samt Domain, damit "kontakt@jkhd.de.example.com" nicht als
+  // "kontakt@jkhd.de" durchgeht; ein Punkt am Satzende gehoert nicht dazu.
+  const ADRESSE_MUSTER = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/g;
+
+  // Haengt text an el an -- als Textknoten, nie als HTML; bekannte Adressen als mailto-Link.
+  function mitAdressen(el, text) {
+    let pos = 0;
+    for (const m of text.matchAll(ADRESSE_MUSTER)) {
+      const adresse = m[0].toLowerCase();
+      if (!ADRESSEN.includes(adresse)) continue;
+      el.append(text.slice(pos, m.index));
+      const a = document.createElement("a");
+      a.className = "helper-mail";
+      a.href = "mailto:" + adresse;
+      a.textContent = m[0];
+      el.appendChild(a);
+      pos = m.index + m[0].length;
+    }
+    el.append(text.slice(pos));
+  }
+
+  // Rollt die Mitte (in niedrigen Fenstern das ganze Feld, siehe style.css) so,
+  // dass el oben steht, mit dem Innenabstand des Behaelters darueber. Ueber die
+  // Bildschirmlage gerechnet, weil el in beiden Faellen verschieden tief
+  // verschachtelt ist; ein Behaelter, der gerade nicht rollt, bleibt stehen.
+  function nachOben(el) {
+    for (const r of [body, panel]) {
+      const abstand = parseFloat(getComputedStyle(r).paddingTop) || 0;
+      r.scrollTop += el.getBoundingClientRect().top - r.getBoundingClientRect().top - abstand;
+    }
+  }
+
   // Die festen Fragen bauen nur ihren eigenen Teil neu auf -- der Verlauf mit
-  // der KI darunter bleibt stehen.
+  // der KI darueber bleibt stehen.
   function liste() {
     faq.innerHTML =
-      '<p class="helper-intro">' +
-      T(
-        "Diese Fragen sind sofort beantwortet. " +
-          "Alles andere k\u00f6nnen Sie unten die KI fragen \u2014 oder per E-Mail einen Menschen.",
-        "These questions are answered right away. " +
-          "Anything else you can ask the AI below \u2014 or a person by e-mail."
-      ) +
-      "</p>" +
+      `<p class="helper-abschnitt">${T("H\u00e4ufige Fragen", "Frequent questions")}</p>` +
       '<ul class="helper-list">' +
       FRAGEN.map((q, i) => `<li><button type="button" data-i="${i}">${q.f}</button></li>`).join("") +
       "</ul>";
-    body.scrollTop = 0;
   }
 
   function antwort(i) {
@@ -617,9 +645,18 @@ if (siteHeader) {
       T("Alle Fragen", "All questions") +
       "</button>" +
       `<p class="helper-q">${q.f}</p>` +
-      `<p class="helper-a">${q.a}</p>` +
+      '<p class="helper-a"></p>' +
       (q.link ? `<a class="helper-link" href="${q.link.href}">${q.link.text}</a>` : "");
-    body.scrollTop = 0;
+    mitAdressen(faq.querySelector(".helper-a"), q.a);
+    nachOben(faq);
+  }
+
+  // Die festen Fragen erscheinen nur, wenn die KI gerade nicht antwortet: unter
+  // der Fehlermeldung, bis zur naechsten Frage.
+  function festeFragen(zeigen) {
+    faq.hidden = !zeigen;
+    if (zeigen) liste();
+    else faq.textContent = "";
   }
 
   // ---- Fragen an die KI ----
@@ -634,8 +671,8 @@ if (siteHeader) {
     "The AI is busy right now. Please try again later \u2014 or write to us."
   );
   const FEHLER_AUS = T(
-    "KI-Antworten sind gerade ausgeschaltet. Die h\u00e4ufigen Fragen oben gehen weiterhin \u2014 alles andere beantworten wir gern pers\u00f6nlich.",
-    "AI answers are switched off right now. The frequent questions above still work \u2014 anything else we are glad to answer personally."
+    "KI-Antworten sind gerade ausgeschaltet. Die h\u00e4ufigen Fragen unten gehen weiterhin \u2014 alles andere beantworten wir gern pers\u00f6nlich.",
+    "AI answers are switched off right now. The frequent questions below still work \u2014 anything else we are glad to answer personally."
   );
   const FEHLER_FRAGE = T(
     `Diese Frage konnte so nicht gesendet werden. Bitte fassen Sie sie in h\u00f6chstens ${KI_FRAGE_MAX} Zeichen.`,
@@ -682,8 +719,9 @@ if (siteHeader) {
   }
 
   // Ein Eintrag im Verlauf: oben die Marke, darunter der Text -- als Text, nie
-  // als HTML. Absaetze entstehen an den Zeilenumbruechen.
-  function eintrag(klasse, marke, text) {
+  // als HTML. Absaetze entstehen an den Zeilenumbruechen. In Antworten werden
+  // unsere Adressen anklickbar (mitAdressen), in der eigenen Frage nicht.
+  function eintrag(klasse, marke, text, adressen = false) {
     const el = document.createElement("div");
     el.className = "helper-nachricht " + klasse;
     const m = document.createElement("span");
@@ -693,7 +731,8 @@ if (siteHeader) {
     for (const absatz of text.split("\n")) {
       if (!absatz.trim()) continue;
       const p = document.createElement("p");
-      p.textContent = absatz.trim();
+      if (adressen) mitAdressen(p, absatz.trim());
+      else p.textContent = absatz.trim();
       el.appendChild(p);
     }
     log.appendChild(el);
@@ -748,6 +787,7 @@ if (siteHeader) {
     laeuft = true;
     senden.disabled = true;
     meldung.textContent = "";
+    festeFragen(false);
     const frageEl = eintrag("is-frage", T("Ihre Frage", "Your question"), frage);
     feld.value = "";
     zaehlen();
@@ -783,7 +823,8 @@ if (siteHeader) {
       const el = eintrag(
         sperre ? "is-antwort is-sperre" : "is-antwort",
         sperre ? T("Automatische Antwort", "Automatic answer") : T("KI-Antwort", "AI answer"),
-        d.antwort
+        d.antwort,
+        true
       );
       el.dataset.kiGeneriert = sperre ? "false" : "true";
       if (d.art === "ki" && typeof d.sig === "string" && /^[0-9a-f]{64}$/.test(d.sig)) {
@@ -806,6 +847,10 @@ if (siteHeader) {
       feld.value = frage;
       zaehlen();
     }
+    // Die KI antwortet gerade nicht: darunter die festen Fragen, und die
+    // Meldung nach oben, damit beides zu sehen ist.
+    festeFragen(true);
+    nachOben(meldung);
   }
 
   form.addEventListener("submit", (e) => {
@@ -830,11 +875,12 @@ if (siteHeader) {
     btn.setAttribute("aria-expanded", String(auf));
     wrap.classList.toggle("is-open", auf);
     if (auf) {
-      liste();
       begruessen();
       zaehlen();
-      const erste = faq.querySelector("button");
-      if (erste) erste.focus();
+      // Am Rechner gleich ins Eingabefeld. Auf dem Handy wuerde das die Tastatur
+      // aufreissen und den halben Chat verdecken -- dort bekommt das Feld selbst
+      // den Fokus (Bildschirmleser nennen seinen Namen), getippt wird nach Antippen.
+      (matchMedia("(pointer: coarse)").matches ? panel : feld).focus();
     } else if (fokus) {
       btn.focus();
     }
@@ -852,8 +898,9 @@ if (siteHeader) {
     if (!ziel) return;
     if (ziel.classList.contains("helper-back")) {
       liste();
+      nachOben(faq);
       const vorher = faq.querySelector(`[data-i="${offen}"]`);
-      if (vorher) vorher.focus();
+      if (vorher) vorher.focus({ preventScroll: true });
     } else if (ziel.dataset.i) {
       offen = Number(ziel.dataset.i);
       antwort(offen);

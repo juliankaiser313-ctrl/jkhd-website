@@ -1328,12 +1328,14 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .helper-btn,
 .helper-panel { pointer-events: auto; }
 
+/* Julian, 27.09.2026: die Blase ist ein Chat und soll gross sein -- feste Hoehe statt
+   nur einer Obergrenze, damit sie nicht zu einem kleinen Kasten zusammenfaellt. */
 .helper-panel {
-  width: min(400px, calc(100vw - 48px));
-  max-height: min(620px, calc(100vh - 140px));
+  width: min(440px, calc(100vw - 48px));
+  height: min(640px, calc(100vh - 140px));
   /* Auf dem Handy ist 100vh hoeher als der sichtbare Teil (Adressleiste);
      dvh zaehlt nur, was zu sehen ist. Wer dvh nicht kennt, nimmt die Zeile darueber. */
-  max-height: min(620px, calc(100dvh - 140px));
+  height: min(640px, calc(100dvh - 140px));
   display: flex;
   flex-direction: column;
   background: var(--panel);
@@ -1343,6 +1345,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   overflow: hidden;
 }
 .helper-panel[hidden] { display: none; }
+/* Den Fokus bekommt das Feld nur beim Oeffnen auf dem Handy (main.js) -- ohne Rahmen */
+.helper-panel:focus { outline: none; }
 
 .helper-head {
   display: flex;
@@ -1376,7 +1380,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
    des Verlaufs rollt nicht die Seite dahinter weiter. */
 .helper-body { flex: 1 1 auto; min-height: 0; padding: 18px; overflow-y: auto; overscroll-behavior: contain; }
 
-.helper-intro { color: var(--muted); font-size: 0.86rem; margin-bottom: 14px; }
+/* Die festen Fragen: nur wenn die KI gerade nicht antwortet, unter der Meldung */
+.helper-faq { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
 
 .helper-list { list-style: none; display: grid; gap: 1px; background: var(--border); }
 .helper-list button {
@@ -1417,9 +1422,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 .helper-link:hover { color: var(--text); border-bottom-color: var(--text); }
 
-/* Unter den festen Fragen: der Verlauf mit der KI */
-.helper-chat { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
-
 .helper-abschnitt,
 .helper-marke {
   font-family: var(--mono);
@@ -1457,6 +1459,19 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .helper-nachricht.is-frage { margin-left: 28px; background: var(--wash-3); }
 .helper-nachricht.is-antwort { margin-right: 28px; background: var(--panel); border-left: 2px solid var(--text); }
 .helper-nachricht.is-sperre { border-left-color: var(--border-2); }
+
+/* Julian, 27.09.2026: nennt eine Antwort eine unserer Adressen, ist sie markiert
+   (umgekehrte Farben wie der Senden-Knopf: im Dunkeln weiss) und oeffnet die E-Mail */
+.helper-mail {
+  padding: 1px 6px;
+  border-radius: var(--r-sm);
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.helper-mail:hover { color: var(--bg); opacity: 0.86; }
+.helper-mail:focus-visible { outline: 1px solid var(--text); outline-offset: 2px; }
 
 .helper-meldung:empty { display: none; }
 .helper-fehler {
@@ -1580,7 +1595,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 @media (max-width: 560px) {
   .helper { right: 16px; bottom: 16px; left: 16px; align-items: stretch; }
-  .helper-panel { width: 100%; max-height: calc(100vh - 120px); max-height: calc(100dvh - 120px); }
+  .helper-panel { width: 100%; height: calc(100vh - 120px); height: calc(100dvh - 120px); }
   .helper-body { padding: 16px; }
   .helper-form { padding: 10px 16px 12px; }
   /* 16 px: darunter zoomt Safari auf dem iPhone beim Antippen ins Feld */
