@@ -21,6 +21,9 @@
 // Fassung: "die Formeln nicht so schnell; der PC soll an sein und die Formeln sollen
 // dort rechnen; bei den Planeten mehr Nebel; der Uebergang von der Milchstrasse auf
 // die Planeten echter, genauso der Uebergang zur Erde und vor allem auf die Erde."
+// Siebte Fassung: "zu gleichmaessig und zu schnell beim naechsten Planeten -- es soll
+// durchs Universum fliegen und nicht einfach so random; das Rechnen sieht man nur,
+// wenn man nicht mehr scrollt, das soll nicht sein; die fliegenden Formeln weg."
 //
 // Umsetzung ohne Bibliothek: eine Zeichenflaeche (canvas 2D) mit eigener
 // Perspektiv-Projektion; die Erde zeichnet ein kleines WebGL-Programm (eine Kugel je
@@ -31,16 +34,17 @@
 // #universum (die Buehne bleibt dabei stehen, sticky) treibt alles:
 //   0,00-0,10  die Milchstrasse liegt voraus und waechst, Sterne ringsum
 //   0,10-0,17  hinein: das Band, Nebel und Staub fuellen das Bild
-//   0,10-0,52  der Flug: die Planeten stehen fest im Raum, die Kamera fliegt an ihnen
-//              vorbei (sie kommen von vorn, wachsen, ziehen seitlich weg), durch
-//              Nebel und Staub; voraus waechst die Erde, mit dem Mond
-//   0,56-0,63  die Erde dreht sich nach Europa, der Flug geht ohne Halt in den Zoom ueber
-//   0,57-0,84  Zoom: in die Atmosphaere, durch die Wolken, Europa, Abend, die Lichter
+//   0,10-0,56  der Flug auf einer langen, kurvigen Bahn: die Planeten stehen fest im
+//              Raum, ungleich verteilt (mal nah, mal fern, mal oben, mal unten), die
+//              Kamera fliegt an ihnen vorbei, durch Nebel und Staub; voraus waechst
+//              die Erde, mit dem Mond
+//   0,60-0,67  die Erde dreht sich nach Europa, der Flug geht ohne Halt in den Zoom ueber
+//   0,61-0,82  Zoom: in die Atmosphaere, durch die Wolken, Europa, Abend, die Lichter
 //              einer Stadt -- dann ein Rechenzentrum: die Fahrt durch einen Gang
 //              zwischen Serverschraenken bis zum Tisch; der Monitor dort ist an
-//   0,85-0,88  das Gehaeuse des Computers wird durchsichtig: die Platine
-//   0,86-0,93  Formeln fliessen langsam von allen Seiten in den Prozessor; jede, die
-//              ankommt, rechnet der Monitor durch (Formel, dann das Ergebnis)
+//   0,83-0,86  das Gehaeuse des Computers wird durchsichtig: die Platine
+//   0,84-0,92  der Monitor rechnet die Formeln durch, Zeile fuer Zeile mit dem
+//              Scrollen (Formel, dann das Ergebnis, dessen Ziffern sich erst setzen)
 //   0,92-0,94  das Zeichen erscheint ploetzlich auf dem Monitor, dazu die Schrift
 //   0,95-0,98  alles wird schwarz
 //   0,97-1,00  "Nirgends und doch ueberall." (englisch: "Nowhere and yet everywhere.")
@@ -88,13 +92,13 @@
   const norm = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
 
   // ---- Die Bahn: Catmull-Rom durch Stuetzpunkte, die Kamera fliegt nach -z ----
-  const LAENGE = 8400;
-  const STUECKE = 14;
+  const LAENGE = 12000;
+  const STUECKE = 20;
   const STUETZEN = [];
   for (let i = 0; i <= STUECKE; i++) {
     const z = 300 - i * (LAENGE / STUECKE);
     const ruhe = i >= STUECKE - 1 ? 0 : 1;   // zum Ziel hin gerade
-    STUETZEN.push([Math.sin(i * 0.9) * 300 * ruhe, Math.sin(i * 0.7 + 1.2) * 180 * ruhe, z]);
+    STUETZEN.push([Math.sin(i * 0.9) * 520 * ruhe, Math.sin(i * 0.7 + 1.2) * 300 * ruhe, z]);
   }
   function bahn(u) {
     const n = STUETZEN.length - 1;
@@ -138,8 +142,8 @@
   }
 
   // ---- Zeitplan (Anteile am Scrollweg) ----
-  const FLUG = 0.56;                     // so viel gehoert dem Flug
-  const ZOOM_VON = 0.57, ZOOM_BIS = 0.84; // der Zoom von der Erde bis in die Halle ...
+  const FLUG = 0.6;                      // so viel gehoert dem Flug
+  const ZOOM_VON = 0.61, ZOOM_BIS = 0.82; // der Zoom von der Erde bis in die Halle ...
   const ZOOM_ENDE = 8;                   // ... ueber so viele e-fache Vergroesserungen
   const HALLE_VON = 5.2;                 // ab da faehrt die Kamera durch den Gang
   const ERDE_R = 110;                    // Radius der Erde in Einheiten der Bahn
@@ -274,14 +278,15 @@
   // Radius); die Kamera fliegt gerade an ihnen vorbei: sie kommen von vorn, wachsen
   // und ziehen am Rand des Bildes weg. Anderthalb Radien Abstand: dann fuellen sie
   // kurz vor dem Vorbeiflug ein gutes Viertel des Bildes
+  // (abst = Abstand von der Bahn in Radien: klein = dichter Vorbeiflug, gross = fern)
   const PLANETEN = [
-    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.34, seite: 1, hoch: 0.12, r: 600 },
-    { art: "ring", grund: [220, 200, 150], baender: [[230, 215, 170], [205, 185, 135], [225, 210, 165]], u: 0.47, seite: -1, hoch: -0.06, r: 560 },
-    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.59, seite: 1, hoch: 0.14, r: 420 },
-    { art: "fels", grund: [190, 105, 70], kappe: true, u: 0.7, seite: -1, hoch: 0.02, r: 260 },
-    { art: "mond", grund: [150, 150, 152], u: 0.81, seite: 1, hoch: -0.1, r: 190 },
+    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.27, seite: 1, hoch: 0.1, r: 650, abst: 2.0 },
+    { art: "ring", grund: [220, 200, 150], baender: [[230, 215, 170], [205, 185, 135], [225, 210, 165]], u: 0.46, seite: -1, hoch: -0.15, r: 520, abst: 1.35 },
+    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.58, seite: 1, hoch: 0.35, r: 400, abst: 2.6 },
+    { art: "fels", grund: [190, 105, 70], kappe: true, u: 0.72, seite: -1, hoch: -0.05, r: 240, abst: 1.4 },
+    { art: "mond", grund: [150, 150, 152], u: 0.83, seite: 1, hoch: 0.2, r: 170, abst: 1.6 },
   ];
-  const PLANET_ORTE = PLANETEN.map((pl) => neben(pl.u, pl.seite, pl.hoch, pl.r * 1.55, 0));
+  const PLANET_ORTE = PLANETEN.map((pl) => neben(pl.u, pl.seite, pl.hoch, pl.r * pl.abst, 0));
 
   // ---- Sprites: einmal gezeichnete Bilder, die dann nur noch kopiert werden ----
   function sprite(b, h) { const c = document.createElement("canvas"); c.width = b; c.height = h; return c; }
@@ -557,8 +562,8 @@
     const nebel = [];
     const wolke = (p, r, a, i) => nebel.push({ p, r, a, bild: NEBEL[i % 4], farbe: NEBEL_FARBEN[i % 4], dreh: z() * Math.PI * 2 });
     // entlang der Bahn
-    for (let i = 0; i < 14; i++) {
-      const u = 0.1 + i * 0.054 + (z() - 0.5) * 0.02;
+    for (let i = 0; i < 18; i++) {
+      const u = 0.1 + i * 0.042 + (z() - 0.5) * 0.02;
       const seite = i % 2 ? 1 : -1;
       wolke(neben(u, seite * Math.cos(z() * 1.2), (z() - 0.5) * 1.2, 350 + z() * 400, 0), 800 + z() * 500, 0.22 + z() * 0.16, i);
     }
@@ -574,12 +579,6 @@
         wolke([0, 1, 2].map((k) => m[k] + (rf.rechts[k] * Math.cos(w) + rf.oben[k] * Math.sin(w)) * d - rf.vorn[k] * pl.r * (0.8 + j)), pl.r * (1.8 + z() * 0.8), 0.2 + z() * 0.14, i + j);
       }
     });
-    // Die Formeln, die am Ende in den Prozessor fliessen: von allen Seiten, auf
-    // gebogenen Wegen, jede mit eigenem Takt
-    const fluss = FORMELN.slice(0, 16).map((text, i) => ({
-      text, winkel: (i / FORMELN.length) * Math.PI * 2 + z() * 0.3, weite: 0.75 + z() * 0.4,
-      bogen: (z() - 0.5) * 0.9, phase: z(), tempo: 0.045 + z() * 0.025, groesse: 0.7 + z() * 0.5,
-    }));
     // Planeten und der Mond der Erde -- ihre Sprites kommen nach und nach (siehe spritesBauen)
     const planeten = PLANETEN.map((pl, i) => ({ art: pl.art, p: PLANET_ORTE[i], r: pl.r, sp: null }));
     const erdeMond = { art: "mond", p: neben(0.97, -1, 0.3, 430, -250), r: 30, sp: null };
@@ -600,7 +599,7 @@
     for (let i = 0; i < 12; i++) kondensatoren.push([0.45 + z() * 0.34, 0.44 + z() * 0.06]);
     for (let i = 0; i < 6; i++) kondensatoren.push([0.74 + z() * 0.03, 0.5 + z() * 0.3]);
 
-    return { klein, sterne, bandGlut, bandStaub, staub, nebel, fluss, planeten, erdeMond, bahnen, kondensatoren, galaxie: null, erde: null };
+    return { klein, sterne, bandGlut, bandStaub, staub, nebel, planeten, erdeMond, bahnen, kondensatoren, galaxie: null, erde: null };
   }
   // Die Sprites (Galaxie, Planeten) kosten je einige Dutzend Millisekunden: eines nach
   // dem anderen, jeweils wenn der Browser Luft hat -- und in Reihenfolge des Auftritts
@@ -916,7 +915,7 @@ void main() {
 
     // Die Erde: wo sie im Bild steht und wie gross; beim Zoom wandert sie in die Mitte
     const erdeProj = projiziere(k, bahn(ZIEL_U), f);
-    const zurMitte = stueck(p, 0.56, 0.62);
+    const zurMitte = stueck(p, 0.6, 0.66);
     const fx = misch(erdeProj ? erdeProj.x : B / 2, B / 2, zurMitte);
     const fy = misch(erdeProj ? erdeProj.y : H / 2, H / 2, zurMitte);
     const R = (erdeProj ? (ERDE_R * f) / erdeProj.z : 1) * Math.exp(L);
@@ -1029,7 +1028,7 @@ void main() {
 
     // ---- Die Erde ----
     // Blick: erst ueber dem Atlantik, dann nach Europa
-    const dreh = stueck(p, 0.56, 0.63);
+    const dreh = stueck(p, 0.6, 0.67);
     const laenge0 = misch(-30 + 4 * Math.sin(zeit * 0.1), ZIEL_LAENGE, dreh);
     const breite0 = misch(14, ZIEL_BREITE, dreh);
     if (erdeSicht > 0 && R > 0.6) {
@@ -1318,11 +1317,11 @@ void main() {
   // Licht, Tastatur, Maus -- auf Holz, in einem Raum mit Farbe. m = Breite des
   // Monitorbilds in Bildpunkten, (ax, ay) = Fuss des Monitors.
   function computerZeichnen(ax, ay, m, sicht, p, zeit, still) {
-    const glas = stueck(p, 0.845, 0.875);      // das Gehaeuse wird durchsichtig
-    const fluss = stueck(p, 0.86, 0.885) * (1 - stueck(p, 0.918, 0.93));   // Formeln fliessen, bis das Zeichen da ist
-    const blitz = Math.sin(Math.PI * stueck(p, 0.916, 0.926));   // kurzes Aufleuchten
-    const logo = stueck(p, 0.918, 0.93);       // das Zeichen erscheint
-    const schrift = stueck(p, 0.926, 0.942);
+    const glas = stueck(p, 0.83, 0.855);       // das Gehaeuse wird durchsichtig
+    const fluss = stueck(p, 0.84, 0.86) * (1 - stueck(p, 0.918, 0.93));   // die Platine arbeitet, bis das Zeichen da ist
+    const blitz = Math.sin(Math.PI * stueck(p, 0.92, 0.928));   // kurzes Aufleuchten
+    const logo = stueck(p, 0.922, 0.934);      // das Zeichen erscheint
+    const schrift = stueck(p, 0.93, 0.945);
     const einzeln = m > 40;
     const hue = still ? 200 : (zeit * 35) % 360;   // das wandernde Farblicht im Gehaeuse
     const farblicht = (versatz, a) => `hsla(${(hue + versatz) % 360},85%,62%,${a.toFixed(3)})`;
@@ -1424,7 +1423,7 @@ void main() {
     g.addColorStop(0, "#101a30"); g.addColorStop(1, "#06080f");
     ctx.fillStyle = g;
     ctx.fillRect(sx - hb, sy - hh, 2 * hb, 2 * hh);
-    if (logo < 1 && einzeln) konsoleZeichnen(sx, sy, hb, hh, m, zeit, still, sicht * (1 - logo));
+    if (logo < 1 && einzeln) konsoleZeichnen(sx, sy, hb, hh, m, p, zeit, still, sicht * (1 - logo));
     if (blitz > 0) {
       ctx.globalAlpha = sicht * blitz * 0.9;
       ctx.fillStyle = "#dfe6f5";
@@ -1500,40 +1499,35 @@ void main() {
       ctx.fillRect(ax + 0.352 * m, ay + 0.028 * m, Math.max(1, 0.006 * m), Math.max(1, 0.006 * m));
     }
 
-    // ---- Die Formeln fliessen in den Prozessor ----
-    if (fluss > 0) {
-      const chipX = tx + dxT * 0.62, chipY = tb + dyT * 0.62 - th * 0.62;
-      formelnZeichnen(chipX, chipY, fluss * sicht, zeit, still, m);
-    }
   }
 
-  // Der Monitor rechnet: die Formeln, die zuletzt im Prozessor angekommen sind,
-  // stehen untereinander, die juengste mit dem Ergebnis, das sich erst noch
-  // einstellt (die Ziffern laufen, bis es steht); darunter blinkt die Marke
-  function konsoleZeichnen(sx, sy, hb, hh, m, zeit, still, sicht) {
+  // Der Monitor rechnet die Formeln durch -- im Takt des Scrollens: mit jedem Stueck
+  // Weg kommt eine Zeile dazu (Formel, Pfeil, Ergebnis); bei der juengsten laufen
+  // die Ziffern, bis sie sich gesetzt haben; darunter blinkt die Marke
+  const RECHNEN_VON = 0.84, RECHNEN_BIS = 0.918;
+  function konsoleZeichnen(sx, sy, hb, hh, m, p, zeit, still, sicht) {
     const g = Math.max(9, m * 0.026), zh = g * 1.75;
     const anzahl = Math.max(3, Math.floor((2 * hh - g * 1.6) / zh));
-    let zeilen;
-    if (still) zeilen = welt.fluss.slice(0, anzahl).map((fo, i) => ({ fo, i, seit: 9 }));
-    else {
-      zeilen = welt.fluss.map((fo, i) => { const n = Math.floor(zeit * fo.tempo + fo.phase); return { fo, i, seit: zeit - (n - fo.phase) / fo.tempo, n }; })
-        .filter((zl) => zl.n > 0).sort((a, b) => b.seit - a.seit).slice(-anzahl);
-    }
+    const lauf = still ? FORMELN.length : clamp((p - RECHNEN_VON) / (RECHNEN_BIS - RECHNEN_VON), 0, 1) * FORMELN.length;
+    const dran = Math.min(FORMELN.length - 1, Math.floor(lauf));   // diese Zeile rechnet gerade
+    const bruch = still ? 1 : lauf - Math.floor(lauf);
+    const zeilen = [];
+    for (let i = Math.max(0, dran - anzahl + 1); i <= dran; i++) zeilen.push(i);
     ctx.save();
     ctx.beginPath(); ctx.rect(sx - hb, sy - hh, 2 * hb, 2 * hh); ctx.clip();
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
     const links = sx - hb + g * 1.2;
-    zeilen.forEach((zl, k) => {
+    zeilen.forEach((i, k) => {
       const y = sy - hh + g * 1.3 + k * zh;
-      const fertig = clamp((zl.seit - 0.1) / 1.3, 0, 1);
-      ctx.globalAlpha = sicht * (0.55 + 0.45 * Math.min(1, zl.seit));
+      const fertig = i < dran ? 1 : clamp(bruch / 0.75, 0, 1);
+      ctx.globalAlpha = sicht;
       ctx.fillStyle = "#d8e2ff";
-      const breite = formelZeichnen(zl.fo.text, links + 100 * g, y, g * 1.05, true);
-      let wert = ERGEBNISSE[zl.i] || "";
+      const breite = formelZeichnen(FORMELN[i], links + 100 * g, y, g * 1.05, true);
+      let wert = ERGEBNISSE[i] || "";
       if (fertig < 1) {
-        // die Ziffern laufen noch
-        wert = wert.replace(/[0-9]/g, (d, j) => (j / wert.length < fertig ? d : String(Math.floor(((Math.sin(zeit * 41 + j * 7.3 + zl.i) + 1) * 5) % 10))));
+        // die Ziffern laufen noch, von links nach rechts setzen sie sich
+        wert = wert.replace(/[0-9]/g, (d, j) => (j / wert.length < fertig ? d : String(Math.floor(((Math.sin(zeit * 41 + j * 7.3 + i) + 1) * 5) % 10))));
       }
       ctx.font = `${g.toFixed(1)}px "Cascadia Code", Consolas, monospace`;
       ctx.fillStyle = fertig < 1 ? "#ffd27a" : "#9fe3b0";
@@ -1652,31 +1646,6 @@ void main() {
     const t = (s - bahn.laengen[i - 1]) / (bahn.laengen[i] - bahn.laengen[i - 1] || 1);
     const a = bahn.punkte[i - 1], b = bahn.punkte[i];
     return [misch(a[0], b[0], t), misch(a[1], b[1], t)];
-  }
-
-  // Die Formeln fliessen von allen Seiten des Bildes auf gebogenen Wegen in den
-  // Prozessor: sie kommen gross, werden kleiner und verloeschen, wo sie ankommen
-  function formelnZeichnen(cx, cy, staerke, zeit, still, m) {
-    ctx.globalCompositeOperation = "lighter";
-    ctx.textBaseline = "middle";
-    const gross = Math.min(26, B * 0.026) * (m / Math.max(1, Math.min(B * 0.56, H * 0.6)));
-    for (const fo of welt.fluss) {
-      const t = ((still ? 0.45 : zeit * fo.tempo) + fo.phase) % 1;
-      const x0 = B / 2 + Math.cos(fo.winkel) * B * 0.62 * fo.weite, y0 = H / 2 + Math.sin(fo.winkel) * H * 0.62 * fo.weite;
-      const mx = (x0 + cx) / 2 - (y0 - cy) * fo.bogen, my = (y0 + cy) / 2 + (x0 - cx) * fo.bogen;
-      const u = 1 - t;
-      const x = u * u * x0 + 2 * u * t * mx + t * t * cx, y = u * u * y0 + 2 * u * t * my + t * t * cy;
-      const g = gross * fo.groesse * (1 - 0.8 * t * t);
-      const a = staerke * Math.pow(Math.sin(Math.PI * t), 0.6) * (1 - stueck(t, 0.88, 1));
-      if (a < 0.02 || g < 5) continue;
-      ctx.globalAlpha = a * 0.3;
-      const r = g * 3;
-      ctx.drawImage(fleck("255,214,150"), x - r * 1.8, y - r * 0.5, r * 3.6, r);
-      ctx.globalAlpha = a;
-      ctx.fillStyle = "#ffe9c6";
-      formelZeichnen(fo.text, x, y, g);
-    }
-    ctx.globalCompositeOperation = "source-over";
   }
 
   // Text mit Zeichenabstand (em-Anteil), zentriert
