@@ -6,12 +6,17 @@
 // kommt es am Ziel an, und dort erscheint das Logo mit dem Spruch."
 // Am selben Abend das Ende neu: "nicht direkt das Logo, sondern die Erde, und die
 // zoomt immer naeher rein bis in einen Computer, dort sieht man, wie Stroeme in den
-// Bot fliessen, und am Ende auf dem Bildschirm das Logo". Und dann die dritte
-// Fassung: "die Erde echt machen, das Universum echter, echte Planeten im
-// Hintergrund, oben nicht so lange schwarz, der Uebergang auf den PC schoener. Es
-// soll so aussehen, als kaeme die Kamera in die Milchstrasse, dort schweben die
-// Formeln, dann rasen die mit der Kamera im Universum rum Richtung Erde, dann bis
-// in den PC."
+// Bot fliessen, und am Ende auf dem Bildschirm das Logo". Dritte Fassung: echte Erde,
+// echteres Universum, Planeten, Milchstrasse. Vierte Fassung (sein Wortlaut):
+// "die weissen Linien wegmachen; die Formeln sollen nicht ploetzlich alle vor der
+// Kamera sein, die sollen einfach zu sehen sein -- in der Milchstrasse sind doch
+// diese Schweife, dieser Nebel, genau dort drinnen sollen Formeln sein; die Kamera
+// soll von einem Planeten zum anderen, bis ploetzlich die Erde kommt, dann nach
+// Europa (dort kein Punkt), es zoomt auf eine Stadt, in ein Rechenzentrum, dort ist
+// ein Computer; auf einmal wird der Computer durchsichtig, man erkennt die Platine
+// und sieht die Stroeme hineinfliessen, dann erscheint das Logo ploetzlich am
+// Bildschirm -- die Platine ist nicht auf dem Bildschirm; es darf nicht laggen; und
+// das Schlussbild soll laenger stehen."
 //
 // Umsetzung ohne Bibliothek: eine Zeichenflaeche (canvas 2D) mit eigener
 // Perspektiv-Projektion; die Erde zeichnet ein kleines WebGL-Programm (eine Kugel je
@@ -22,21 +27,26 @@
 // #universum (die Buehne bleibt dabei stehen, sticky) treibt alles:
 //   0,00-0,10  die Milchstrasse liegt voraus und waechst, Sterne ringsum
 //   0,10-0,17  hinein: das Band, Nebel und Staub fuellen das Bild
-//   0,10-0,42  im Netz der Formeln (Knoten, Kanten, Lichtimpulse, Drahtmodelle)
-//   0,35-0,53  Rasen: die Formeln fliegen mit, Planeten ziehen vorbei, die Erde
-//              waechst voraus
-//   0,49-0,58  Ankunft: Lichtstroeme und Formeln fliessen in die Erde
-//   0,58-0,66  die Erde dreht sich nach Europa
-//   0,64-0,86  Zoom: Europa, Abend, Nachtlichter am Oberrhein, ein Licht wird zum
-//              Bildschirm, der Computer waechst daraus
-//   0,86-0,90  Stroeme fliessen ueber die Leitungen in den Chip (den Bot)
-//   0,89-0,94  aus dem Chip wird das Zeichen
-//   0,94-0,98  Wortmarke, "Quant Systems" und Spruch auf dem Bildschirm
-//   0,98-1,00  das Schlussbild steht
+//   0,10-0,48  von Planet zu Planet: die Kamera dreht sich zum naechsten, fliegt
+//              dicht vorbei, schwenkt weiter; in den Nebeln schweben Formeln
+//   0,47-0,52  ploetzlich die Erde, mit dem Mond
+//   0,56-0,62  die Erde dreht sich nach Europa
+//   0,60-0,84  Zoom: Europa, Abend, die Lichter einer Stadt -- dann ein Rechenzentrum:
+//              die Fahrt durch einen Gang zwischen Serverschraenken bis zum Tisch
+//   0,85-0,88  das Gehaeuse des Computers wird durchsichtig: die Platine
+//   0,86-0,90  Stroeme fliessen ueber die Leiterbahnen in den Prozessor
+//   0,90-0,93  das Zeichen erscheint ploetzlich auf dem Monitor, dazu die Schrift
+//   0,93-1,00  das Schlussbild steht
 // Alles ausser den Erdbildern wird hier erzeugt (feste Saat, jedes Mal gleich);
 // nichts wird gespeichert. Bei "reduzierter Bewegung" steht das Schlussbild still
-// da (der Computer mit dem Zeichen), ohne Scrollweg und ohne Bilder; ohne
-// JavaScript zeigt der Abschnitt das Zeichen auf Schwarz.
+// da, ohne Scrollweg und ohne Bilder; ohne JavaScript zeigt der Abschnitt das
+// Zeichen auf Schwarz.
+//
+// Gegen das Ruckeln: die Leinwand bleibt unter 2,4 Mio. Bildpunkten, die Erde wird
+// beim Zoom in halber Aufloesung gerechnet, bei Stillstand nur jedes zweite Bild
+// gezeichnet -- und die Schleife misst ihre eigene Bildfolge: dauern die Bilder zu
+// lange, schaltet sie die Aufloesung herunter (data-qualitaet an der Leinwand,
+// data-zeichenzeit = Millisekunden je Bild).
 (function () {
   const abschnitt = document.getElementById("universum");
   if (!abschnitt) return;
@@ -77,7 +87,7 @@
   for (let i = 0; i <= STUECKE; i++) {
     const z = 300 - i * (LAENGE / STUECKE);
     const ruhe = i >= STUECKE - 1 ? 0 : 1;   // zum Ziel hin gerade
-    STUETZEN.push([Math.sin(i * 0.9) * 360 * ruhe, Math.sin(i * 0.7 + 1.2) * 210 * ruhe, z]);
+    STUETZEN.push([Math.sin(i * 0.9) * 300 * ruhe, Math.sin(i * 0.7 + 1.2) * 180 * ruhe, z]);
   }
   function bahn(u) {
     const n = STUETZEN.length - 1;
@@ -98,14 +108,19 @@
     const oben = kreuz(rechts, vorn);
     return { vorn, rechts, oben };
   }
+  // Ein Ort neben der Bahn: bei u, seitlich (rechts) und hoch (oben) um die Weite, dazu voraus
+  function neben(u, seite, hoch, weite, voraus) {
+    const m = bahn(u), r = rahmen(u);
+    return [0, 1, 2].map((k) => m[k] + (r.rechts[k] * seite + r.oben[k] * hoch) * weite + r.vorn[k] * (voraus || 0));
+  }
   const ZIEL_U = 1;          // dort steht die Erde
   const KAMERA_ENDE = 0.955; // so weit fliegt die Kamera
 
   // Die Fahrt: Ort u auf der Bahn ueber dem Fortschritt q im Flug. Stueckweise kubisch
-  // (Hermite) durch [q, u, Steigung]: langsam im Netz, dann das Rasen, am Ende sanft
-  // bremsen. Die Steigungen liegen in der Schranke von Fritsch und Carlson, die Kurve
-  // geht also nie rueckwaerts.
-  const FAHRT = [[0, 0, 0.12], [0.6, 0.36, 0.5], [0.92, 0.92, 1.0], [1, KAMERA_ENDE, 0]];
+  // (Hermite) durch [q, u, Steigung]: gemaechlich in die Galaxie, dann stetig von
+  // Planet zu Planet, am Ende sanft bremsen. Die Steigungen liegen in der Schranke
+  // von Fritsch und Carlson, die Kurve geht also nie rueckwaerts.
+  const FAHRT = [[0, 0, 0.3], [0.2, 0.07, 0.6], [0.84, 0.86, 1.2], [1, KAMERA_ENDE, 0]];
   function fahrt(q) {
     q = clamp(q, 0, 1);
     let i = 0;
@@ -116,22 +131,18 @@
   }
 
   // ---- Zeitplan (Anteile am Scrollweg) ----
-  const FLUG = 0.58;                     // so viel gehoert dem Flug
-  const ZOOM_VON = 0.64, ZOOM_BIS = 0.86; // der Zoom von der Erde bis zum Computer ...
+  const FLUG = 0.56;                     // so viel gehoert dem Flug
+  const ZOOM_VON = 0.6, ZOOM_BIS = 0.84; // der Zoom von der Erde bis in die Halle ...
   const ZOOM_ENDE = 8;                   // ... ueber so viele e-fache Vergroesserungen
+  const HALLE_VON = 5.2;                 // ab da faehrt die Kamera durch den Gang
   const ERDE_R = 110;                    // Radius der Erde in Einheiten der Bahn
-  // Ziel des Zooms: Schliengen (Sitz laut Impressum); es steht nirgends angeschrieben
-  const ZIEL_LAENGE = 7.6, ZIEL_BREITE = 47.76;
+  // Ziel des Zooms: Freiburg im Breisgau, die naechste Stadt am Sitz (Julian: "es
+  // zoomt auf eine Stadt"); angeschrieben ist nichts
+  const ZIEL_LAENGE = 7.85, ZIEL_BREITE = 47.995;
   const GRAD = Math.PI / 180;
   const SONNE_WELT = norm([-0.5, 0.3, 0.8]);   // Licht von links oben, hinter der Kamera
   // Ausschnitte der NASA-Bilder: Laenge, Breite der linken unteren Ecke, Spannen (Grad)
   const EUROPA = [-14, 34, 50, 30], ZIEL_BOX = [4, 45, 7, 5.5];
-  // Der Computer in Einheiten der Schirmbreite, Ursprung in der Mitte des Schirms
-  const SCHIRM_H = 0.3125;                        // halbe Hoehe des Schirms (16:10)
-  const RAND = 0.022, KINN = 0.045, HALS = 0.15, FUSS = 0.02;
-  const MONITOR_HOEHE = RAND + 2 * SCHIRM_H + KINN + HALS + FUSS;
-  const CHIP_Y = -0.085, CHIP = 0.075;            // Mitte und halbe Kante des Chips (Bot)
-  const LOGO = 0.2;                               // Kantenlaenge des Zeichens auf dem Schirm
 
   // Landflaechen grob von Hand nachgezeichnet (Laenge, Breite in Grad, je Umriss eine
   // flache Liste) -- keine fremden Kartendaten. Fuer Punkte im Abstand von einem halben
@@ -198,7 +209,6 @@
     const cb = Math.cos(breite * GRAD);
     return [cb * Math.cos(laenge * GRAD), cb * Math.sin(laenge * GRAD), Math.sin(breite * GRAD)];
   }
-  const ZIEL = einheit(ZIEL_LAENGE, ZIEL_BREITE);
   function imUmriss(u, x, y) {
     let drin = false;
     for (let i = 0, j = u.length - 2; i < u.length; j = i, i += 2) {
@@ -228,8 +238,8 @@
     return false;
   }
 
-  // ---- Inhalt des Netzes ----
-  // Formeln als Text mit ^{...} (hoch) und _{...} (tief); Zeichen fuer die kleinen Knoten
+  // ---- Die Formeln in den Nebeln ----
+  // Text mit ^{...} (hoch) und _{...} (tief)
   const FORMELN = [
     "e^{iπ} + 1 = 0", "E = mc^{2}", "∇ · E = ρ / ε_{0}", "iħ ∂ψ/∂t = Ĥψ",
     "∫ e^{−x^{2}} dx = √π", "ζ(s) = Σ n^{−s}", "P(A|B) = P(B|A) P(A) / P(B)",
@@ -239,11 +249,23 @@
     "φ = (1 + √5) / 2", "Σ_{k=1}^{n} k = n(n + 1) / 2", "f̂(ξ) = ∫ f(x) e^{−2πixξ} dx",
     "∂L/∂q − d/dt ∂L/∂q̇ = 0", "f(x) = e^{−x^{2}/2} / √(2π)", "e^{x} = Σ x^{n} / n!",
     "∇ × B = μ_{0}J + μ_{0}ε_{0} ∂E/∂t", "∮ f(z) dz = 2πi Σ Res", "df = f′ dX + ½ f″ σ^{2} dt",
-    "det(A − λI) = 0",
+    "det(A − λI) = 0", "x = (−b ± √(b^{2} − 4ac)) / 2a", "∇^{2}φ = 0", "S = k log W", "F = G m_{1} m_{2} / r^{2}",
   ];
-  const ZEICHEN = ["π", "Σ", "∫", "∂", "∞", "λ", "μ", "σ", "∇", "φ", "ε", "Δ", "θ", "Ω", "√", "≈", "∮", "ℏ"];
   // Sternfarben nach Temperatur: blau-weiss bis rot
   const STERN_FARBEN = ["185,200,255", "222,230,255", "255,255,255", "255,244,222", "255,224,176", "255,192,150"];
+
+  // Die Planeten, an denen die Kamera vorbeifliegt: wo auf der Bahn (u), auf welcher
+  // Seite, wie hoch, Radius; die Kamera dreht sich jeweils zum naechsten hin
+  const PLANETEN = [
+    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.2, seite: 1, hoch: 0.15, r: 950 },
+    { art: "ring", grund: [220, 200, 150], baender: [[230, 215, 170], [205, 185, 135], [225, 210, 165]], u: 0.38, seite: -1, hoch: -0.1, r: 760 },
+    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.54, seite: 1, hoch: 0.2, r: 520 },
+    { art: "fels", grund: [190, 105, 70], kappe: true, u: 0.68, seite: -1, hoch: 0.05, r: 300 },
+    { art: "mond", grund: [150, 150, 152], u: 0.8, seite: 1, hoch: -0.15, r: 210 },
+  ];
+  // Orte der Planeten haengen nur an der Bahn, nicht an der Bildgroesse: die Kamera
+  // braucht sie auch, bevor die Welt gebaut ist
+  const PLANET_ORTE = PLANETEN.map((pl) => neben(pl.u, pl.seite, pl.hoch, pl.r * 2.6, 0));
 
   // ---- Sprites: einmal gezeichnete Bilder, die dann nur noch kopiert werden ----
   function sprite(b, h) { const c = document.createElement("canvas"); c.width = b; c.height = h; return c; }
@@ -348,81 +370,118 @@
     return c;
   }
 
-  // Planeten als Sprites: Baender, Flecken, Krater, Ringe; Licht von links oben vorn
-  const PLANETEN = [
-    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.5, winkel: 0.4, weite: 1700, r: 950 },
-    { art: "ring", grund: [220, 200, 150], baender: [[230, 215, 170], [205, 185, 135], [225, 210, 165]], u: 0.7, winkel: 3.6, weite: 1500, r: 760 },
-    { art: "fels", grund: [190, 105, 70], kappe: true, u: 0.33, winkel: 2.2, weite: 1500, r: 300 },
-    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.84, winkel: 5.2, weite: 1300, r: 520 },
-    { art: "mond", grund: [150, 150, 152], u: 0.61, winkel: 1.2, weite: 520, r: 210 },
-  ];
-  function planetBauen(pl, rausch) {
-    const R = 200, S = 512, B2 = pl.art === "ring" ? 1100 : S, cx = B2 / 2, cy = S / 2;
+  // Ein Rauschfeld (Wertrauschen, drei Oktaven) fuer die Oberflaechen der Planeten
+  function rauschFeld(saat) {
+    const z = zufall(saat), N = 32, gitter = [];
+    for (let o = 0; o < 3; o++) { const w = new Float32Array(N * N); for (let i = 0; i < N * N; i++) w[i] = z(); gitter.push(w); }
+    const wert = (w, x, y) => {
+      const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi;
+      const sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
+      const x0 = ((xi % N) + N) % N, x1 = (x0 + 1) % N, y0 = (((yi % N) + N) % N) * N, y1 = ((((yi + 1) % N) + N) % N) * N;
+      return misch(misch(w[y0 + x0], w[y0 + x1], sx), misch(w[y1 + x0], w[y1 + x1], sx), sy);
+    };
+    return (x, y) => 0.57 * wert(gitter[0], x, y) + 0.29 * wert(gitter[1], x * 2.1 + 7, y * 2.1 + 3) + 0.14 * wert(gitter[2], x * 4.3 + 11, y * 4.3 + 5);
+  }
+
+  // Planeten als Sprites, Bildpunkt fuer Bildpunkt: Baender mit Wirbeln (Gasriesen),
+  // Flecken und Kappen (Fels), Meere und Krater (Mond), dazu Ringe; Licht von links
+  // oben vorn
+  function planetBauen(pl) {
+    const R = 220, S = 560, B2 = pl.art === "ring" ? 1240 : S, cx = B2 / 2, cy = S / 2;
     const c = sprite(B2, S), g = c.getContext("2d"), z = zufall(pl.r);
+    const feld = rauschFeld(pl.r + 1), fein = rauschFeld(pl.r + 2);
     const rgb = (f, k) => `rgb(${Math.round(f[0] * (k || 1))},${Math.round(f[1] * (k || 1))},${Math.round(f[2] * (k || 1))})`;
     const ringe = (hinten) => {
       g.save();
       g.beginPath(); g.rect(0, hinten ? 0 : cy, B2, cy); g.clip();
       g.translate(cx, cy); g.scale(1, 0.24);
-      for (let i = 0; i < 40; i++) {
-        const rr = R * (1.35 + (i / 40) * 1.05);
-        const luecke = i > 24 && i < 28 ? 0.15 : 1;        // eine Teilung wie die Cassinische
-        g.globalAlpha = (0.25 + 0.55 * Math.abs(Math.sin(i * 0.9 + 1))) * luecke * (i > 34 ? 0.45 : 1);
-        g.strokeStyle = rgb([225, 212, 180], 0.75 + 0.25 * Math.sin(i * 0.5));
-        g.lineWidth = R * 0.028;
+      for (let i = 0; i < 48; i++) {
+        const rr = R * (1.3 + (i / 48) * 1.1);
+        const luecke = i > 30 && i < 34 ? 0.12 : i > 40 && i < 42 ? 0.5 : 1;
+        g.globalAlpha = (0.22 + 0.55 * Math.abs(Math.sin(i * 0.9 + 1))) * luecke * (i > 42 ? 0.4 : 1);
+        g.strokeStyle = rgb([228, 214, 184], 0.72 + 0.28 * Math.sin(i * 0.5));
+        g.lineWidth = R * 0.026;
         g.beginPath(); g.ellipse(0, 0, rr, rr, 0, 0, Math.PI * 2); g.stroke();
       }
       g.restore();
     };
     if (pl.art === "ring") ringe(true);
+    // Die Oberflaeche
+    const img = g.createImageData(2 * R, 2 * R), d = img.data;
+    const palette = pl.baender || [pl.grund];
+    for (let py = 0; py < 2 * R; py++) {
+      const y = (py - R + 0.5) / R;
+      for (let px = 0; px < 2 * R; px++) {
+        const x = (px - R + 0.5) / R;
+        const i = (py * 2 * R + px) * 4;
+        if (x * x + y * y > 1) { d[i + 3] = 0; continue; }
+        const lat = Math.asin(y);
+        const n1 = feld(px * 0.045, py * 0.045), n2 = fein(px * 0.012, py * 0.012);
+        let f;
+        if (pl.art === "gas" || pl.art === "ring" || pl.art === "eis") {
+          const wirbel = pl.art === "gas" ? 0.34 : pl.art === "ring" ? 0.14 : 0.08;
+          const l = lat + (n2 - 0.5) * wirbel + (n1 - 0.5) * wirbel * 0.4;
+          const bs = (Math.sin(l * 7) + 0.6 * Math.sin(l * 13 + 1.3) + 0.35 * Math.sin(l * 23 + 0.4)) * 0.26 + 0.5;
+          const t = clamp(bs, 0, 0.999) * (palette.length - 1), k = Math.floor(t), r = t - k;
+          f = [0, 1, 2].map((j) => misch(palette[k][j], palette[Math.min(palette.length - 1, k + 1)][j], r));
+          const hell = pl.art === "eis" ? 0.9 + 0.2 * n1 : 0.86 + 0.28 * n1;
+          f = f.map((v) => v * hell);
+        } else if (pl.art === "fels") {
+          const dunkel = clamp((0.56 - n2) * 4, 0, 1);
+          f = [misch(pl.grund[0], 95, dunkel * 0.7), misch(pl.grund[1], 45, dunkel * 0.7), misch(pl.grund[2], 30, dunkel * 0.7)].map((v) => v * (0.82 + 0.36 * n1));
+          const kappe = clamp((Math.abs(lat) - 1.25) * 5 + (n1 - 0.5) * 0.6, 0, 1);
+          f = f.map((v) => misch(v, 245, kappe));
+        } else {
+          const meer = clamp((0.5 - n2) * 6, 0, 1);
+          const grau = (0.78 + 0.44 * n1) * misch(1, 0.58, meer);
+          f = [pl.grund[0] * grau, pl.grund[1] * grau, pl.grund[2] * grau * 1.03];
+        }
+        d[i] = f[0]; d[i + 1] = f[1]; d[i + 2] = f[2]; d[i + 3] = 255;
+      }
+    }
+    const flaeche = sprite(2 * R, 2 * R);
+    flaeche.getContext("2d").putImageData(img, 0, 0);
     g.save();
     g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.clip();
-    g.fillStyle = rgb(pl.grund); g.fillRect(cx - R, cy - R, 2 * R, 2 * R);
-    if (pl.baender) {
-      const n = pl.baender.length;
-      for (let y = -R; y <= R; y++) {
-        const phi = Math.asin(clamp(y / R, -1, 1));
-        const s = (Math.sin(phi * 7) + 0.6 * Math.sin(phi * 13 + 1.3) + 0.35 * Math.sin(phi * 23 + 0.4)) * 0.26 + 0.5;
-        const f = clamp(s, 0, 0.999) * (n - 1), i = Math.floor(f), k = f - i;
-        g.fillStyle = rgb([0, 1, 2].map((j) => misch(pl.baender[i][j], pl.baender[i + 1][j], k)));
-        g.globalAlpha = pl.art === "eis" ? 0.5 : 0.9;
-        g.fillRect(cx - R, cy + y, 2 * R, 1.5);
+    g.drawImage(flaeche, cx - R, cy - R);
+    g.globalAlpha = 1;
+    if (pl.art === "gas") {
+      // der grosse Sturm und ein paar kleine
+      for (const st of [[0.3, 0.38, 0.26, 0.55, "200,90,60"], [-0.45, -0.3, 0.09, 0.5, "235,225,210"], [0.1, -0.58, 0.07, 0.5, "230,215,195"]]) {
+        g.save(); g.translate(cx + R * st[0], cy + R * st[1]); g.rotate(-0.08); g.scale(1, st[3]);
+        radial(g, 0, 0, R * st[2], [[0, `rgba(${st[4]},0.85)`], [0.55, `rgba(${st[4]},0.5)`], [1, `rgba(${st[4]},0)`]]);
+        g.restore();
       }
     }
-    g.globalAlpha = 1;
-    if (pl.fleck) {
-      g.save(); g.translate(cx + R * 0.3, cy + R * 0.35); g.rotate(-0.1); g.scale(1, 0.55);
-      radial(g, 0, 0, R * 0.26, [[0, "rgba(200,90,60,0.9)"], [0.6, "rgba(200,100,70,0.6)"], [1, "rgba(200,100,70,0)"]]);
+    if (pl.art === "eis") {
+      g.save(); g.translate(cx - R * 0.25, cy + R * 0.2); g.scale(1, 0.6);
+      radial(g, 0, 0, R * 0.16, [[0, "rgba(20,35,110,0.8)"], [1, "rgba(20,35,110,0)"]]);
       g.restore();
     }
-    if (pl.art === "mond") {
-      for (let i = 0; i < 7; i++) {
-        const w = z() * Math.PI * 2, d = z() * R * 0.7;
-        g.fillStyle = "rgba(40,40,52,0.28)";
-        g.beginPath(); g.ellipse(cx + Math.cos(w) * d, cy + Math.sin(w) * d, R * (0.15 + z() * 0.25), R * (0.1 + z() * 0.2), z() * 3, 0, Math.PI * 2); g.fill();
+    if (pl.art === "mond" || pl.art === "fels") {
+      // Krater: Boden dunkel, Rand zum Licht hin hell, vom Licht weg dunkel
+      const anzahl = pl.art === "mond" ? 200 : 60;
+      for (let i = 0; i < anzahl; i++) {
+        const w = z() * Math.PI * 2, dd = Math.sqrt(z()) * R * 0.98;
+        const x = cx + Math.cos(w) * dd, y = cy + Math.sin(w) * dd;
+        const gr = 1.2 + Math.pow(z(), 3.2) * (pl.art === "mond" ? 14 : 9);
+        g.fillStyle = pl.art === "mond" ? "rgba(0,0,0,0.2)" : "rgba(40,15,8,0.22)";
+        g.beginPath(); g.arc(x, y, gr, 0, Math.PI * 2); g.fill();
+        g.strokeStyle = "rgba(255,255,255,0.22)"; g.lineWidth = Math.max(0.8, gr * 0.12);
+        g.beginPath(); g.arc(x, y, gr, Math.PI * 0.85, Math.PI * 1.8); g.stroke();
+        g.strokeStyle = "rgba(0,0,0,0.35)";
+        g.beginPath(); g.arc(x, y, gr, Math.PI * -0.15, Math.PI * 0.8); g.stroke();
       }
     }
-    if (pl.art === "fels" || pl.art === "mond") {
-      for (let i = 0; i < 60; i++) {
-        const w = z() * Math.PI * 2, d = Math.sqrt(z()) * R * 0.97;
-        const x = cx + Math.cos(w) * d, y = cy + Math.sin(w) * d, gr = 2 + z() * z() * (pl.art === "mond" ? 18 : 28);
-        if (pl.art === "mond") {
-          g.fillStyle = "rgba(0,0,0,0.22)"; g.beginPath(); g.arc(x, y, gr, 0, Math.PI * 2); g.fill();
-          g.fillStyle = "rgba(255,255,255,0.16)"; g.beginPath(); g.arc(x - gr * 0.25, y - gr * 0.25, gr * 0.8, 0, Math.PI * 2); g.fill();
-          g.fillStyle = rgb(pl.grund, 0.92); g.beginPath(); g.arc(x - gr * 0.12, y - gr * 0.12, gr * 0.62, 0, Math.PI * 2); g.fill();
-        } else {
-          g.fillStyle = z() < 0.6 ? "rgba(60,25,15,0.18)" : "rgba(255,200,160,0.12)";
-          g.beginPath(); g.ellipse(x, y, gr * 1.6, gr, z() * 3, 0, Math.PI * 2); g.fill();
-        }
-      }
-      if (pl.kappe) { g.fillStyle = "rgba(255,255,255,0.85)"; g.beginPath(); g.ellipse(cx, cy - R * 0.93, R * 0.35, R * 0.1, 0, 0, Math.PI * 2); g.fill(); }
+    if (pl.art === "ring") {
+      // der Schatten der Ringe auf dem Planeten
+      g.save(); g.translate(cx, cy + R * 0.12); g.scale(1, 0.24);
+      g.strokeStyle = "rgba(0,0,0,0.45)"; g.lineWidth = R * 0.9;
+      g.beginPath(); g.ellipse(0, 0, R * 1.85, R * 1.85, 0, Math.PI * 0.05, Math.PI * 0.95); g.stroke();
+      g.restore();
     }
-    g.globalCompositeOperation = "soft-light";
-    g.globalAlpha = pl.art === "eis" ? 0.35 : 0.7;
-    g.drawImage(rausch, cx - R, cy - R, 2 * R, 2 * R);
-    g.drawImage(rausch, cx - R * 1.3, cy - R * 0.8, 2.3 * R, 1.3 * R);
+    // Schattierung: Licht von links oben vorn
     g.globalCompositeOperation = "multiply";
-    g.globalAlpha = 1;
     radial(g, cx - R * 0.45, cy - R * 0.4, R * 1.9, [[0, "rgb(255,255,255)"], [0.36, "rgb(240,240,245)"], [0.62, "rgb(90,90,110)"], [0.8, "rgb(12,12,20)"], [1, "rgb(0,0,0)"]]);
     if (pl.art !== "mond") {
       // Saum der Atmosphaere, nur auf der Lichtseite
@@ -450,7 +509,7 @@
       const w = z();
       sterne.push({ p, g, hell, band, farbe: w < 0.1 ? 0 : w < 0.3 ? 1 : w < 0.62 ? 2 : w < 0.84 ? 3 : w < 0.95 ? 4 : 5, phase: z() * Math.PI * 2 });
     };
-    const anzahlSterne = klein ? 1100 : 2600;
+    const anzahlSterne = klein ? 900 : 1800;
     for (let i = 0; i < anzahlSterne; i++) {
       const hell = 0.2 + 0.8 * Math.pow(z(), 2.4);   // wenige helle, viele schwache
       stern([(z() - 0.5) * 7000, (z() - 0.5) * 5000, 900 - z() * (LAENGE + 2600)], 0.5 + hell * 1.6, hell, false);
@@ -465,184 +524,80 @@
       const x = Math.cos(winkel) * radius, t = Math.sin(winkel) * radius;
       return [mitteBahn[0] + x, mitteBahn[1] + t * Math.sin(neigung) + quer * Math.cos(neigung), mitteBahn[2] + t * Math.cos(neigung) - quer * Math.sin(neigung)];
     };
-    const anzahlBand = klein ? 1300 : 3200;
+    const anzahlBand = klein ? 1000 : 2200;
     for (let i = 0; i < anzahlBand; i++) stern(aufScheibe(5200 + z() * 4200, gauss() * 470), 0.3 + z() * 0.9, 0.25 + z() * 0.45, true);
     const BAND_FARBEN = ["190,205,245", "235,225,205", "215,215,240", "255,235,210"];
     const bandGlut = [], bandStaub = [];
-    for (let i = 0; i < 90; i++) bandGlut.push({ p: aufScheibe(5600 + z() * 3400, gauss() * 420), r: 1500 + z() * 1100, a: 0.05 + z() * 0.06, farbe: BAND_FARBEN[i % 4] });
-    for (let i = 0; i < 30; i++) bandStaub.push({ p: aufScheibe(5800 + z() * 3000, gauss() * 140), r: 500 + z() * 600, a: 0.4 + z() * 0.3 });
-    // Staub nah an der Bahn: fliegt dicht an der Kamera vorbei und gibt Tempo
+    for (let i = 0; i < 48; i++) bandGlut.push({ p: aufScheibe(5600 + z() * 3400, gauss() * 420), r: 1700 + z() * 1300, a: 0.06 + z() * 0.07, farbe: BAND_FARBEN[i % 4] });
+    for (let i = 0; i < 20; i++) bandStaub.push({ p: aufScheibe(5800 + z() * 3000, gauss() * 140), r: 500 + z() * 600, a: 0.4 + z() * 0.3 });
+    // Staub nah an der Bahn: kurze helle Punkte, die an der Kamera vorbeiziehen
     const staub = [];
-    const anzahlStaub = klein ? 140 : 300;
-    for (let i = 0; i < anzahlStaub; i++) {
-      const u = z();
-      const mitte = bahn(u);
-      const r = rahmen(u);
-      const winkel = z() * Math.PI * 2;
-      const weite = 40 + z() * 260;
-      staub.push([0, 1, 2].map((k) => mitte[k] + (r.rechts[k] * Math.cos(winkel) + r.oben[k] * Math.sin(winkel)) * weite));
-    }
-    // Knoten in einer Roehre um die Bahn, die zum Ziel hin enger wird
-    const knoten = [];
-    const anzahlKnoten = klein ? 210 : 340;
-    for (let i = 0; i < anzahlKnoten; i++) {
-      const u = 0.03 + (i / anzahlKnoten) * 0.95 + (z() - 0.5) * 0.01;
-      const mitte = bahn(u);
-      const r = rahmen(u);
-      const weite = misch(620, 70, Math.pow(u, 1.6)) * (0.35 + z() * 0.9);
-      const winkel = z() * Math.PI * 2;
-      const pos = [0, 1, 2].map((k) => mitte[k] + (r.rechts[k] * Math.cos(winkel) + r.oben[k] * Math.sin(winkel)) * weite);
-      knoten.push({ p: pos, u, g: 1.2 + z() * 2.2, text: null, formel: false });
-    }
-    // Formeln auf Knoten nah an der Bahn, verteilt ueber den Teil des Wegs, den die
-    // Kamera langsam fliegt
-    FORMELN.forEach((f, j) => {
-      const u = 0.05 + (j / FORMELN.length) * 0.56;
-      const mitte = bahn(u);
-      const r = rahmen(u);
-      const weite = 150 + z() * 170;
-      const winkel = (j * 2.4) % (Math.PI * 2);
-      const pos = [0, 1, 2].map((k) => mitte[k] + (r.rechts[k] * Math.cos(winkel) + r.oben[k] * Math.sin(winkel) * 0.7) * weite);
-      knoten.push({ p: pos, u, g: 2.6, text: f, formel: true });
-    });
-    // Einzelne Zeichen auf jedem siebten gewoehnlichen Knoten
-    for (let i = 0; i < anzahlKnoten; i += 7) knoten[i].text = ZEICHEN[(i / 7) % ZEICHEN.length];
+    const anzahlStaub = klein ? 120 : 240;
+    for (let i = 0; i < anzahlStaub; i++) staub.push(neben(z(), Math.cos(z() * 6.3), Math.sin(z() * 6.3), 40 + z() * 260, 0));
 
-    // Kanten: jeder Knoten zu den zwei naechsten Knoten weiter vorn -- daran fliesst das Licht
-    knoten.sort((a, b) => a.u - b.u);
-    const kanten = [];
-    knoten.forEach((a, i) => {
-      const kandidaten = [];
-      for (let j = i + 1; j < Math.min(knoten.length, i + 40); j++) {
-        const b = knoten[j];
-        const d = Math.hypot(a.p[0] - b.p[0], a.p[1] - b.p[1], a.p[2] - b.p[2]);
-        if (d < 900) kandidaten.push({ j, d });
-      }
-      kandidaten.sort((x, y) => x.d - y.d);
-      kandidaten.slice(0, 2).forEach((k) => kanten.push({ a: i, b: k.j, phase: z(), tempo: 0.18 + z() * 0.22 }));
-    });
-
-    // Das Zeichen: drei Balken (Anteile seiner Kantenlaenge, wie im Logo)
-    const BALKEN = [{ x: 10, y: 22, b: 20, h: 56 }, { x: 40, y: 8, b: 20, h: 84 }, { x: 70, y: 22, b: 20, h: 56 }];
-    // Lichtstroeme am Ende des Flugs: kommen von ueberall am Rand her (Bildschirm-
-    // Einheiten relativ zur Mitte) und fliessen in die Erde (Ziel in Einheiten ihres
-    // Radius)
-    const strom = [];
-    const anzahlStrom = klein ? 220 : 380;
-    for (let i = 0; i < anzahlStrom; i++) {
-      const winkel = z() * Math.PI * 2;
-      const weite = 0.55 + z() * 0.45;
-      const r = Math.sqrt(z()) * 0.92, w = z() * Math.PI * 2;
-      strom.push({
-        ziel: [Math.cos(w) * r, Math.sin(w) * r],
-        start: [Math.cos(winkel) * weite, Math.sin(winkel) * weite],
-        verzug: z() * 0.5,
-      });
-    }
-    // Die Begleiter: Formeln, die beim Rasen mit der Kamera fliegen (Ort in Anteilen
-    // der halben Bildbreite und -hoehe, nicht in der Mitte, da waechst die Erde)
-    const BEGLEITER = ["E = mc^{2}", "e^{iπ} + 1 = 0", "a^{2} + b^{2} = c^{2}", "ζ(s) = Σ n^{−s}", "φ = (1 + √5) / 2", "det(A − λI) = 0",
-      "H = − Σ p_{i} log p_{i}", "∂u/∂t = α ∇^{2}u", "e^{x} = Σ x^{n} / n!", "σ^{2} = E[(X − μ)^{2}]", "f(x) = Σ a_{n} x^{n}", "iħ ∂ψ/∂t = Ĥψ"];
-    const begleiter = BEGLEITER.map((text, i) => {
-      // zwei Ringe um die Mitte (da waechst die Erde), auf dem Handy nur der aeussere
-      const w = (i / BEGLEITER.length) * Math.PI * 2 + 0.3;
-      const r = klein ? 0.78 : i % 2 ? 0.5 : 0.84;
-      return { text, x: Math.cos(w) * r * 1.1, y: Math.sin(w) * r, groesse: 0.75 + z() * 0.4, phase: z() * Math.PI * 2, verzug: z() };
-    });
-    // Nebel: grosse, leise Lichtwolken mit Struktur neben der Bahn
+    // Nebel: grosse Lichtwolken mit Struktur neben der Bahn, abwechselnd links und
+    // rechts -- und darin die Formeln (jeder Nebel traegt zwei bis drei)
     const NEBEL = [rauschen(3, 256, "120,150,230"), rauschen(4, 256, "170,130,220"), rauschen(5, 256, "110,190,210"), rauschen(6, 256, "235,150,185")];
-    const nebel = [];
-    for (let i = 0; i < 16; i++) {
-      const u = 0.05 + i * 0.058 + (z() - 0.5) * 0.03;
-      const mitte = bahn(u);
-      const r = rahmen(u);
-      const winkel = z() * Math.PI * 2;
-      const weite = 700 + z() * 900;
-      nebel.push({
-        p: [0, 1, 2].map((kk) => mitte[kk] + (r.rechts[kk] * Math.cos(winkel) + r.oben[kk] * Math.sin(winkel)) * weite - r.vorn[kk] * 400),
-        r: 1100 + z() * 1100,
-        a: 0.14 + z() * 0.16,
-        bild: NEBEL[i % NEBEL.length],
-        dreh: z() * Math.PI * 2,
-      });
-    }
-    // Koerper der Mathematik als Drahtmodelle, die langsam drehend neben der Bahn
-    // schweben (Koordinaten etwa in [-1, 1], jede Form eine Liste von Linienzuegen)
-    const FORMEN = [lorenz(), torus(), kugel(), spirale(), helix(), welle(), moebius(), achsen()];
-    const objekte = FORMEN.map((zuege, i) => {
-      const u = 0.1 + i * 0.1 + (z() - 0.5) * 0.03;
-      const mitte = bahn(u);
-      const r = rahmen(u);
-      const winkel = (i % 2 ? 0.15 : Math.PI - 0.15) + (z() - 0.5) * 1.1;
-      const weite = 620 + z() * 360;
-      return {
-        mitte: [0, 1, 2].map((k) => mitte[k] + (r.rechts[k] * Math.cos(winkel) + r.oben[k] * Math.sin(winkel)) * weite),
-        zuege,
-        groesse: 240 + z() * 170,
-        tempo: (0.05 + z() * 0.07) * (z() < 0.5 ? -1 : 1),
-        phase: z() * Math.PI * 2,
-        kipp: (z() - 0.5) * 1.2,
-        a: 0.28 + z() * 0.14,
-      };
-    });
-    // Planeten neben der Bahn
-    const rausch = rauschen(8, 256, null);
-    const planeten = PLANETEN.map((pl) => {
-      const mitte = bahn(pl.u);
-      const r = rahmen(pl.u);
-      return {
-        p: [0, 1, 2].map((k) => mitte[k] + (r.rechts[k] * Math.cos(pl.winkel) + r.oben[k] * Math.sin(pl.winkel)) * pl.weite),
-        r: pl.r,
-        sp: planetBauen(pl, rausch),
-      };
-    });
-
-    // Leitungen zum Computer (Einheiten der Schirmbreite, Ursprung in der Schirmmitte):
-    // von weit draussen hinter den Monitor, dann als Leiterbahn ueber den Schirm bis an
-    // den Chip -- links und rechts je fuenf, oben fuenf; unten bleibt Platz fuer die Schrift
-    const kurve = (a, c, b, n) => {
-      const zug = [];
-      for (let i = 0; i <= n; i++) {
-        const t = i / n, u = 1 - t;
-        zug.push([u * u * a[0] + 2 * u * t * c[0] + t * t * b[0], u * u * a[1] + 2 * u * t * c[1] + t * t * b[1]]);
+    const NEBEL_FARBEN = ["120,150,230", "170,130,220", "110,190,210", "235,150,185"];
+    const nebel = [], formeln = [];
+    for (let i = 0; i < 10; i++) {
+      const u = 0.1 + i * 0.076 + (z() - 0.5) * 0.02;
+      const seite = i % 2 ? 1 : -1;
+      const weite = 350 + z() * 400;
+      const r = 800 + z() * 500;
+      const mitte = neben(u, seite * Math.cos(z() * 1.2), (z() - 0.5) * 1.2, weite, 0);
+      nebel.push({ p: mitte, r, a: 0.22 + z() * 0.16, bild: NEBEL[i % 4], farbe: NEBEL_FARBEN[i % 4], dreh: z() * Math.PI * 2 });
+      const rf = rahmen(u);
+      const anzahl = i % 3 === 2 ? 2 : 3;
+      for (let j = 0; j < anzahl && formeln.length < FORMELN.length; j++) {
+        const w = z() * Math.PI * 2, d = (0.25 + z() * 0.45) * r;
+        formeln.push({
+          text: FORMELN[formeln.length],
+          p: [0, 1, 2].map((k) => mitte[k] + (rf.rechts[k] * Math.cos(w) + rf.oben[k] * Math.sin(w)) * d * 0.6 + rf.vorn[k] * (z() - 0.5) * r * 0.8),
+          groesse: 0.8 + z() * 0.5,
+          phase: z() * Math.PI * 2,
+        });
       }
-      return zug;
-    };
-    const leitungen = [];
-    const leitung = (aussen, innen) => {
-      const punkte = aussen.concat(innen.slice(1));
+    }
+    // Planeten und der Mond der Erde -- ihre Sprites kommen nach und nach (siehe spritesBauen)
+    const planeten = PLANETEN.map((pl, i) => ({ art: pl.art, p: PLANET_ORTE[i], r: pl.r, sp: null }));
+    const erdeMond = { art: "mond", p: neben(0.97, -1, 0.3, 430, -250), r: 30, sp: null };
+
+    // Die Platine im Computer: Leiterbahnen von den Raendern zum Prozessor (Einheiten
+    // der Glasscheibe: u quer, v hoch, der Prozessor bei 0,62/0,62)
+    const bahnen = [];
+    const bahnLegen = (punkte) => {
       const laengen = [0];
       for (let i = 1; i < punkte.length; i++) laengen.push(laengen[i - 1] + Math.hypot(punkte[i][0] - punkte[i - 1][0], punkte[i][1] - punkte[i - 1][1]));
-      leitungen.push({
-        punkte,
-        laengen,
-        laenge: laengen[laengen.length - 1],
-        grenze: aussen.length - 1,              // ab diesem Punkt liegt sie auf dem Schirm
-        grenzLaenge: laengen[aussen.length - 1],
-        impulse: [0, 1, 2].map((j) => ({ phase: (j + z()) / 3, tempo: 0.16 + z() * 0.08 })),
-      });
+      bahnen.push({ punkte, laengen, laenge: laengen[laengen.length - 1], impulse: [0, 1].map((j) => ({ phase: (j + z()) / 2, tempo: 0.22 + z() * 0.1 })) });
     };
-    for (const seite of [-1, 1]) {
-      for (let i = 0; i < 5; i++) {
-        const y = CHIP_Y + (i - 2) * 0.0225;
-        const x1 = CHIP + 0.035 + Math.abs(i - 2) * 0.012;
-        const y2 = CHIP_Y + (i - 2) * 0.06;
-        const x2 = x1 + Math.abs(y2 - y);
-        const rand = [seite * 0.5, y2];
-        leitung(kurve([seite * (1.2 + z() * 0.45), y2 * 2.4 + (z() - 0.5) * 0.5], [seite * (0.66 + z() * 0.16), y2 * 1.3], rand, 10),
-          [rand, [seite * x2, y2], [seite * x1, y], [seite * CHIP, y]]);
-      }
+    for (let i = 0; i < 5; i++) { const v = 0.3 + i * 0.1, knick = 0.3 + i * 0.05; bahnLegen([[0.13, v], [knick, v], [knick, 0.56 + i * 0.03], [0.52, 0.56 + i * 0.03]]); }
+    for (let i = 0; i < 4; i++) { const u = 0.4 + i * 0.07; bahnLegen([[u, 0.89], [u, 0.78 - i * 0.02], [0.55 + i * 0.035, 0.78 - i * 0.02], [0.55 + i * 0.035, 0.72]]); }
+    for (let i = 0; i < 3; i++) { const u = 0.56 + i * 0.05; bahnLegen([[0.3 + i * 0.1, 0.15], [0.3 + i * 0.1, 0.4 - i * 0.04], [u, 0.4 - i * 0.04], [u, 0.52]]); }
+    for (let i = 0; i < 2; i++) { const v = 0.6 + i * 0.07; bahnLegen([[0.89, v], [0.76 + i * 0.02, v], [0.76 + i * 0.02, 0.62 + i * 0.04], [0.72, 0.62 + i * 0.04]]); }
+    const kondensatoren = [];
+    for (let i = 0; i < 12; i++) kondensatoren.push([0.45 + z() * 0.34, 0.44 + z() * 0.06]);
+    for (let i = 0; i < 6; i++) kondensatoren.push([0.74 + z() * 0.03, 0.5 + z() * 0.3]);
+
+    return { klein, sterne, bandGlut, bandStaub, staub, nebel, formeln, planeten, erdeMond, bahnen, kondensatoren, galaxie: null, erde: null };
+  }
+  // Die Sprites (Galaxie, Planeten) kosten je einige Dutzend Millisekunden: eines nach
+  // dem anderen, jeweils wenn der Browser Luft hat -- und in Reihenfolge des Auftritts
+  function spritesBauen() {
+    if (!welt) return;
+    const w = welt;
+    let schritt = null;
+    if (!w.galaxie) schritt = () => { w.galaxie = galaxieBauen(); };
+    else {
+      const offen = w.planeten.concat([w.erdeMond]).find((pl) => !pl.sp);
+      if (offen) schritt = () => {
+        const vorhanden = w.planeten.find((pl) => pl.sp && pl.art === offen.art);
+        offen.sp = vorhanden ? vorhanden.sp : planetBauen(PLANETEN.find((pl) => pl.art === offen.art));
+      };
     }
-    for (let i = 0; i < 5; i++) {
-      const x = (i - 2) * 0.0225;
-      const y1 = CHIP_Y - CHIP - 0.035 - Math.abs(i - 2) * 0.01;
-      const x2 = (i - 2) * 0.06;
-      const y2 = y1 - Math.abs(x2 - x);
-      const rand = [x2, -SCHIRM_H];
-      leitung(kurve([x2 * 5 + (z() - 0.5) * 0.4, -1 - z() * 0.35], [x2 * 1.8, -0.62], rand, 10),
-        [rand, [x2, y2], [x, y1], [x, CHIP_Y - CHIP]]);
-    }
-    return { klein, sterne, bandGlut, bandStaub, staub, knoten, kanten, strom, begleiter, BALKEN, nebel, objekte, planeten, leitungen, galaxie: galaxieBauen(), erde: null };
+    if (!schritt) return;
+    const weiter = () => { if (welt !== w) return; schritt(); spritesBauen(); };
+    if (window.requestIdleCallback) window.requestIdleCallback(weiter, { timeout: 400 }); else setTimeout(weiter, 30);
   }
 
   // Die Erde aus Punkten (Ersatz ohne WebGL): Land auf einer Fibonacci-Kugel, dazu
@@ -668,103 +623,6 @@
       gradnetz.push(zug);
     }
     return { punkte, gradnetz };
-  }
-
-  // ---- Formen (Linienzuege in eigenen Koordinaten) ----
-  function lorenz() {
-    let x = 0.1, y = 0, z = 0;
-    const zug = [];
-    for (let i = 0; i < 1700; i++) {
-      const dt = 0.008;
-      const dx = 10 * (y - x), dy = x * (28 - z) - y, dz = x * y - (8 / 3) * z;
-      x += dx * dt; y += dy * dt; z += dz * dt;
-      if (i > 150 && i % 2 === 0) zug.push([x / 22, (z - 25) / 22, y / 22]);
-    }
-    return [zug];
-  }
-  function torus() {
-    const zuege = [];
-    const R = 0.68, r = 0.28;
-    for (let i = 0; i < 18; i++) {
-      const a = (i / 18) * Math.PI * 2, zug = [];
-      for (let j = 0; j <= 20; j++) { const b = (j / 20) * Math.PI * 2; zug.push([(R + r * Math.cos(b)) * Math.cos(a), r * Math.sin(b), (R + r * Math.cos(b)) * Math.sin(a)]); }
-      zuege.push(zug);
-    }
-    for (let j = 0; j < 6; j++) {
-      const b = (j / 6) * Math.PI * 2, zug = [];
-      for (let i = 0; i <= 40; i++) { const a = (i / 40) * Math.PI * 2; zug.push([(R + r * Math.cos(b)) * Math.cos(a), r * Math.sin(b), (R + r * Math.cos(b)) * Math.sin(a)]); }
-      zuege.push(zug);
-    }
-    return zuege;
-  }
-  function kugel() {
-    const zuege = [];
-    for (let i = 1; i < 8; i++) {
-      const t = (i / 8) * Math.PI, zug = [];
-      for (let j = 0; j <= 36; j++) { const a = (j / 36) * Math.PI * 2; zug.push([Math.sin(t) * Math.cos(a) * 0.9, Math.cos(t) * 0.9, Math.sin(t) * Math.sin(a) * 0.9]); }
-      zuege.push(zug);
-    }
-    for (let j = 0; j < 12; j++) {
-      const a = (j / 12) * Math.PI, zug = [];
-      for (let i = 0; i <= 24; i++) { const t = (i / 24) * Math.PI * 2; zug.push([Math.sin(t) * Math.cos(a) * 0.9, Math.cos(t) * 0.9, Math.sin(t) * Math.sin(a) * 0.9]); }
-      zuege.push(zug);
-    }
-    return zuege;
-  }
-  function spirale() {
-    // goldene Spirale r = a * phi^(2 theta / pi)
-    const zug = [];
-    const phi = (1 + Math.sqrt(5)) / 2;
-    for (let i = 0; i <= 260; i++) {
-      const t = (i / 260) * Math.PI * 4.5;
-      const r = 0.035 * Math.pow(phi, (2 * t) / Math.PI);
-      zug.push([r * Math.cos(t) - 0.2, r * Math.sin(t) - 0.1, 0]);
-    }
-    return [zug];
-  }
-  function helix() {
-    const zuege = [[], []];
-    for (let i = 0; i <= 120; i++) {
-      const t = (i / 120) * Math.PI * 6;
-      const y = (i / 120) * 2 - 1;
-      zuege[0].push([Math.cos(t) * 0.32, y, Math.sin(t) * 0.32]);
-      zuege[1].push([Math.cos(t + Math.PI) * 0.32, y, Math.sin(t + Math.PI) * 0.32]);
-      if (i % 6 === 0) zuege.push([[Math.cos(t) * 0.32, y, Math.sin(t) * 0.32], [Math.cos(t + Math.PI) * 0.32, y, Math.sin(t + Math.PI) * 0.32]]);
-    }
-    return zuege;
-  }
-  function welle() {
-    const zuege = [];
-    const n = 14;
-    for (let i = 0; i <= n; i++) {
-      const a = (i / n) * 2 - 1, zug1 = [], zug2 = [];
-      for (let j = 0; j <= 24; j++) {
-        const b = (j / 24) * 2 - 1;
-        zug1.push([a, 0.22 * Math.sin(3 * a) * Math.cos(3 * b), b]);
-        zug2.push([b, 0.22 * Math.sin(3 * b) * Math.cos(3 * a), a]);
-      }
-      zuege.push(zug1, zug2);
-    }
-    return zuege;
-  }
-  function moebius() {
-    const zuege = [];
-    const punkt = (u, v) => [(0.7 + v * Math.cos(u / 2)) * Math.cos(u), v * Math.sin(u / 2), (0.7 + v * Math.cos(u / 2)) * Math.sin(u)];
-    for (const v of [-0.28, -0.14, 0, 0.14, 0.28]) {
-      const zug = [];
-      for (let i = 0; i <= 60; i++) zug.push(punkt((i / 60) * Math.PI * 2, v));
-      zuege.push(zug);
-    }
-    for (let i = 0; i < 30; i++) { const u = (i / 30) * Math.PI * 2; zuege.push([punkt(u, -0.28), punkt(u, 0.28)]); }
-    return zuege;
-  }
-  function achsen() {
-    const zuege = [[[-1, 0, 0], [1, 0, 0]], [[0, -0.8, 0], [0, 0.8, 0]], [[0, 0, -0.8], [0, 0, 0.8]]];
-    for (let i = -4; i <= 4; i++) if (i) zuege.push([[i / 4.5, -0.03, 0], [i / 4.5, 0.03, 0]], [[-0.03, i / 5.6, 0], [0.03, i / 5.6, 0]]);
-    const sinus = [];
-    for (let i = 0; i <= 80; i++) { const x = (i / 80) * 2 - 1; sinus.push([x, 0.45 * Math.sin(x * Math.PI * 2), 0]); }
-    zuege.push(sinus);
-    return zuege;
   }
 
   // ---- Formel mit Hoch- und Tiefstellung zeichnen (zentriert) ----
@@ -910,7 +768,7 @@ void main() {
     erde.angestossen = true;
     if (!erdeStarten()) { erde.fehl = true; return; }
     const gl = erde.gl;
-    const klein = welt && welt.klein;
+    const klein = B < 700;
     ERDE_BILDER.forEach((name, i) => {
       const bild = new Image();
       bild.decoding = "async";
@@ -935,12 +793,17 @@ void main() {
   }
   function erdeGl(cx, cy, R, laenge0, breite0, sonne, e) {
     const gl = erde.gl, u = erde.u, c = erde.leinwand;
-    if (c.width !== leinwand.width || c.height !== leinwand.height) { c.width = leinwand.width; c.height = leinwand.height; }
-    gl.viewport(0, 0, c.width, c.height);
+    // fuellt die Erde das Bild, reicht die halbe Aufloesung (die Bilder sind dann
+    // ohnehin vergroessert) -- das spart drei Viertel der Rechenarbeit
+    const teil = R > Math.min(B, H) * 0.8 ? 0.5 : 1;
+    const bw = Math.round(leinwand.width * teil), bh = Math.round(leinwand.height * teil);
+    if (c.width !== bw || c.height !== bh) { c.width = bw; c.height = bh; }
+    const s = dpr * teil;
+    gl.viewport(0, 0, bw, bh);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.uniform2f(u.uMitte, cx * dpr, (H - cy) * dpr);
-    gl.uniform1f(u.uR, R * dpr);
+    gl.uniform2f(u.uMitte, cx * s, (H - cy) * s);
+    gl.uniform1f(u.uR, R * s);
     const cl = Math.cos(laenge0 * GRAD), sl = Math.sin(laenge0 * GRAD), cb = Math.cos(breite0 * GRAD), sb = Math.sin(breite0 * GRAD);
     // Spalten: Blick-x = Osten, Blick-y = Norden, Blick-z = Lot auf die Mitte
     gl.uniformMatrix3fv(u.uDreh, false, new Float32Array([-sl, cl, 0, -sb * cl, -sb * sl, cb, cb * cl, cb * sl, sb]));
@@ -962,30 +825,38 @@ void main() {
 
   // ---- Zeichnen ----
   let B = 0, H = 0, dpr = 1;
-  let kleben = 0;   // Abstand der klebenden Buehne vom oberen Rand (css: top)
+  let qualitaet = 1;   // Anteil der Aufloesung; die Schleife senkt ihn, wenn es ruckelt
+  let kleben = 0;      // Abstand der klebenden Buehne vom oberen Rand (css: top)
   function groesseAnpassen() {
     kleben = parseFloat(getComputedStyle(buehne).top) || 0;
     const r = buehne.getBoundingClientRect();
     B = Math.max(1, Math.round(r.width));
     H = Math.max(1, Math.round(r.height));
-    dpr = Math.min(window.devicePixelRatio || 1, B < 700 ? 1.5 : 2);
-    // grosse Schirme nicht ueber ~3 Mio. Bildpunkte
-    while (B * H * dpr * dpr > 3.2e6 && dpr > 1) dpr -= 0.25;
+    dpr = Math.min(window.devicePixelRatio || 1, 1.25) * qualitaet;
+    // nicht ueber ~2,4 Mio. Bildpunkte: das Bild ist weich, Fuellrate ist der Engpass
+    if (B * H * dpr * dpr > 2.4e6) dpr = Math.sqrt(2.4e6 / (B * H));
     leinwand.width = Math.round(B * dpr);
     leinwand.height = Math.round(H * dpr);
-    if (welt && welt.klein !== (B < 700)) welt = weltBauen(B < 700);
+    if (welt && welt.klein !== (B < 700)) { welt = weltBauen(B < 700); spritesBauen(); }
   }
   // Die Welt (mit allen Sprites) kostet etwa eine Zehntelsekunde: nicht beim Laden der
   // Seite, sondern wenn der Browser Luft hat -- spaetestens, wenn der Abschnitt dran ist
-  function weltSicher() { if (!welt) welt = weltBauen(B < 700); }
+  function weltSicher() { if (!welt) { welt = weltBauen(B < 700); spritesBauen(); } }
   if (window.requestIdleCallback) window.requestIdleCallback(weltSicher, { timeout: 2000 }); else setTimeout(weltSicher, 400);
 
+  // Die Kamera: faehrt die Bahn entlang und schaut nach vorn -- ausser ein Planet
+  // kommt: dann dreht sie sich zu ihm, haelt ihn im Blick, bis er vorbei ist, und
+  // schwenkt zurueck auf die Bahn, wo der naechste schon wartet
   function kamera(q) {
     const u = fahrt(q);
     const pos = bahn(u);
-    // ein wenig vorausschauen: die Kamera folgt dem Fluss
-    const blick = bahn(Math.min(ZIEL_U, u + 0.035));
-    const vorn = norm(sub(blick, pos));
+    let ziel = bahn(Math.min(ZIEL_U, u + 0.035));
+    for (let i = 0; i < PLANETEN.length; i++) {
+      const d = u - PLANETEN[i].u;
+      const w = stueck(d, -0.14, -0.06) * (1 - stueck(d, 0.01, 0.07));
+      if (w > 0) ziel = [misch(ziel[0], PLANET_ORTE[i][0], w), misch(ziel[1], PLANET_ORTE[i][1], w), misch(ziel[2], PLANET_ORTE[i][2], w)];
+    }
+    const vorn = norm(sub(ziel, pos));
     const rechts = norm(kreuz(vorn, [0, 1, 0]));
     const oben = kreuz(rechts, vorn);
     return { pos, vorn, rechts, oben, u };
@@ -999,11 +870,8 @@ void main() {
   }
 
   // Sichtbarkeit nach Tiefe: nah weich einblenden, fern im Dunst verschwinden
-  // (nah erst ab 60 und weich bis 300: was dicht an der Kamera vorbeizieht, wuerde
-  // sonst als riesige Linie quer durchs Bild schneiden)
   const tiefe = (z, fern) => clamp((z - 60) / 240, 0, 1) * clamp(1 - (z - 300) / fern, 0, 1);
 
-  let qAlt = 0;
   function bild(p, zeit, still) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.globalCompositeOperation = "source-over";
@@ -1016,32 +884,25 @@ void main() {
     const auftauchen = stueck(q, 0, 0.03);
     if (auftauchen <= 0) return;
 
-    // Zoom von der Erde bis zum Computer, in e-fachen Vergroesserungen
+    // Zoom von der Erde bis in die Halle, in e-fachen Vergroesserungen
     const L = ZOOM_ENDE * glatt(clamp((p - ZOOM_VON) / (ZOOM_BIS - ZOOM_VON), 0, 1));
     const k = kamera(q);
     const f = Math.min(B, H) * 0.95;
-    // Die Kamera kurz davor -- fuer die Schweife der Sterne, solange es vorwaerts geht
-    const dq = still ? 0 : q - qAlt;
-    qAlt = q;
-    const kS = !still && Math.abs(dq) > 1e-5 ? kamera(clamp(q - dq * 2.5, 0, 1)) : null;
     const innen = stueck(q, 0.16, 0.3);                       // in der Milchstrasse
-    const netzSicht = auftauchen * stueck(q, 0.17, 0.3) * (1 - stueck(q, 0.6, 0.72));
     const himmel = auftauchen * (1 - stueck(L, 1.4, 2.8));     // Sterne weichen, wenn die Erde das Bild fuellt
-    const masse = computerMasse();
+    const gross = Math.min(64, B * 0.06);                      // groesste Schrift einer Formel
 
-    // Die Erde: wo sie im Bild steht und wie gross; beim Zoom wandert der Brennpunkt
-    // in die Mitte und zuletzt an die Stelle des Chips auf dem Schirm
+    // Die Erde: wo sie im Bild steht und wie gross; beim Zoom wandert sie in die Mitte
     const erdeProj = projiziere(k, bahn(ZIEL_U), f);
-    const zurMitte = stueck(p, 0.58, 0.66), zumChip = stueck(p, 0.72, 0.8);
-    const ex = erdeProj ? erdeProj.x : B / 2, ey = erdeProj ? erdeProj.y : H / 2;
-    const fx = misch(misch(ex, B / 2, zurMitte), B / 2, zumChip);
-    const fy = misch(misch(ey, H / 2, zurMitte), masse.fy, zumChip);
+    const zurMitte = stueck(p, 0.56, 0.62);
+    const fx = misch(erdeProj ? erdeProj.x : B / 2, B / 2, zurMitte);
+    const fy = misch(erdeProj ? erdeProj.y : H / 2, H / 2, zurMitte);
     const R = (erdeProj ? (ERDE_R * f) / erdeProj.z : 1) * Math.exp(L);
-    const erdeSicht = stueck(q, 0.45, 0.56) * (1 - stueck(L, 5.0, 5.9));
+    const erdeSicht = stueck(q, 0.84, 0.9) * (1 - stueck(L, 5.0, 5.6));   // ploetzlich da
 
     // Die Milchstrasse voraus: waechst, bis sie das Bild fuellt, dann sind wir drin
     const galaxieSicht = auftauchen * (1 - stueck(q, 0.19, 0.3));
-    if (galaxieSicht > 0) {
+    if (galaxieSicht > 0 && welt.galaxie) {
       const gr = Math.min(B, H) * 0.2 * Math.exp(9.2 * q);
       ctx.save();
       ctx.translate(B / 2 + Math.sin(q * 3) * B * 0.04, H * 0.46);
@@ -1054,42 +915,34 @@ void main() {
 
     ctx.globalCompositeOperation = "lighter";
     if (himmel > 0) {
-      // Die Glut des Bandes und die Staubwolken darin
+      const rand = Math.max(B, H);
+      // Die Glut des Bandes
       if (innen > 0) {
         for (const w of welt.bandGlut) {
           const q1 = projiziere(k, w.p, f);
           if (!q1) continue;
-          const r = (w.r * f) / q1.z;
+          const r = Math.min((w.r * f) / q1.z, rand * 0.6);
           if (q1.x + r < 0 || q1.x - r > B || q1.y + r < 0 || q1.y - r > H) continue;
           ctx.globalAlpha = himmel * innen * w.a;
           ctx.drawImage(fleck(w.farbe), q1.x - r, q1.y - r, 2 * r, 2 * r);
         }
       }
-      // Sterne, gebuendelt nach Farbe und Helligkeit; mit Schweif, wenn es vorwaerts geht
-      const eimerR = [], eimerL = [];
-      for (let c = 0; c < STERN_FARBEN.length; c++) { eimerR.push([[], [], [], [], []]); eimerL.push([[], [], [], [], []]); }
+      // Sterne, gebuendelt nach Farbe und Helligkeit
+      const eimer = [];
+      for (let c = 0; c < STERN_FARBEN.length; c++) eimer.push([[], [], [], [], []]);
       const glanz = [];
       for (const s of welt.sterne) {
         const q1 = projiziere(k, s.p, f);
-        if (!q1 || q1.x < -6 || q1.x > B + 6 || q1.y < -6 || q1.y > H + 6) continue;
+        if (!q1 || q1.x < -4 || q1.x > B + 4 || q1.y < -4 || q1.y > H + 4) continue;
         const dichte = s.band ? innen : 0.55 + 0.45 * innen;
         const a = himmel * dichte * s.hell * tiefe(q1.z, s.band ? 14000 : 6500) * (0.72 + 0.28 * Math.sin(zeit * 1.3 + s.phase));
         if (a < 0.02) continue;
         const g = s.band ? clamp((s.g * 2200) / q1.z, 0.5, 1.6) : clamp((s.g * 260) / q1.z, 0.5, 2.6);
-        const stufe = Math.min(4, Math.floor(a * 5));
-        let schweif = false;
-        if (kS) {
-          const q0 = projiziere(kS, s.p, f);
-          if (q0) {
-            const l = Math.hypot(q0.x - q1.x, q0.y - q1.y);
-            if (l > 1.2 && l < Math.max(B, H) * 0.5) { eimerL[s.farbe][stufe].push(q0.x, q0.y, q1.x, q1.y); schweif = true; }
-          }
-        }
-        eimerR[s.farbe][stufe].push(q1.x, q1.y, g);
-        if (s.hell > 0.93 && g > 1.6 && !schweif) glanz.push(q1.x, q1.y, g, a, s.farbe);
+        eimer[s.farbe][Math.min(4, Math.floor(a * 5))].push(q1.x, q1.y, g);
+        if (s.hell > 0.93 && g > 1.6) glanz.push(q1.x, q1.y, g, a, s.farbe);
       }
       STERN_FARBEN.forEach((farbe, c) => {
-        eimerR[c].forEach((liste, st) => {
+        eimer[c].forEach((liste, st) => {
           if (!liste.length) return;
           ctx.fillStyle = `rgb(${farbe})`;
           ctx.globalAlpha = (st + 0.5) / 5;
@@ -1097,41 +950,26 @@ void main() {
           for (let i = 0; i < liste.length; i += 3) ctx.rect(liste[i] - liste[i + 2] / 2, liste[i + 1] - liste[i + 2] / 2, liste[i + 2], liste[i + 2]);
           ctx.fill();
         });
-        eimerL[c].forEach((liste, st) => {
-          if (!liste.length) return;
-          ctx.strokeStyle = `rgb(${farbe})`;
-          ctx.lineWidth = 1;
-          ctx.globalAlpha = ((st + 0.5) / 5) * 0.6;
-          ctx.beginPath();
-          for (let i = 0; i < liste.length; i += 4) { ctx.moveTo(liste[i], liste[i + 1]); ctx.lineTo(liste[i + 2], liste[i + 3]); }
-          ctx.stroke();
-        });
       });
-      // Die hellsten mit Hof und vier Strahlen
+      // Die hellsten mit einem Hof
       for (let i = 0; i < glanz.length; i += 5) {
-        const x = glanz[i], y = glanz[i + 1], g = glanz[i + 2], a = glanz[i + 3], farbe = STERN_FARBEN[glanz[i + 4]];
-        const r = g * 7;
-        ctx.globalAlpha = a * 0.5;
-        ctx.drawImage(fleck(farbe), x - r, y - r, 2 * r, 2 * r);
-        ctx.strokeStyle = `rgb(${farbe})`;
-        ctx.globalAlpha = a * 0.35;
-        ctx.lineWidth = 0.8;
-        const l = g * 6;
-        ctx.beginPath(); ctx.moveTo(x - l, y); ctx.lineTo(x + l, y); ctx.moveTo(x, y - l); ctx.lineTo(x, y + l); ctx.stroke();
+        const r = glanz[i + 2] * 7;
+        ctx.globalAlpha = glanz[i + 3] * 0.5;
+        ctx.drawImage(fleck(STERN_FARBEN[glanz[i + 4]]), glanz[i] - r, glanz[i + 1] - r, 2 * r, 2 * r);
       }
       if (innen > 0) {
+        // Staubwolken im Band: decken ab
         ctx.globalCompositeOperation = "source-over";
         for (const w of welt.bandStaub) {
           const q1 = projiziere(k, w.p, f);
           if (!q1) continue;
-          const r = (w.r * f) / q1.z;
+          const r = Math.min((w.r * f) / q1.z, rand * 0.4);
           if (q1.x + r < 0 || q1.x - r > B || q1.y + r < 0 || q1.y - r > H) continue;
           ctx.globalAlpha = himmel * innen * w.a;
           ctx.drawImage(fleck("3,3,8"), q1.x - r, q1.y - r, 2 * r, 2 * r);
         }
         ctx.globalCompositeOperation = "lighter";
       }
-
       // Staub dicht an der Bahn: kurze helle Punkte, die an der Kamera vorbeiziehen
       ctx.fillStyle = "#ffffff";
       for (const d of welt.staub) {
@@ -1141,21 +979,23 @@ void main() {
         if (a < 0.03) continue;
         const g = clamp(180 / q1.z, 0.6, 3);
         ctx.globalAlpha = a;
-        if (kS) {
-          const q0 = projiziere(kS, d, f);
-          if (q0) { ctx.strokeStyle = "#ffffff"; ctx.lineWidth = g; ctx.beginPath(); ctx.moveTo(q0.x, q0.y); ctx.lineTo(q1.x, q1.y); ctx.stroke(); continue; }
-        }
         ctx.fillRect(q1.x - g / 2, q1.y - g / 2, g, g);
       }
-
-      // Nebel: grosse, leise Lichtwolken mit Struktur -- geben dem Raum Tiefe
+      // Nebel: grosse Lichtwolken mit Struktur -- fuellt einer das ganze Bild, reicht
+      // eine Flaeche in seiner Farbe (ein Rechteck statt eines riesigen Bildes)
       for (const w of welt.nebel) {
         const q1 = projiziere(k, w.p, f);
-        if (!q1 || q1.z < 120) continue;
+        if (!q1 || q1.z < 100) continue;
         const r = (w.r * f) / q1.z;
         if (q1.x + r < 0 || q1.x - r > B || q1.y + r < 0 || q1.y - r > H) continue;
-        const a = himmel * innen * w.a * clamp(1 - (q1.z - 600) / 5200, 0, 1) * clamp((q1.z - 120) / 600, 0, 1);
+        const a = himmel * innen * w.a * clamp(1 - (q1.z - 600) / 5200, 0, 1) * clamp((q1.z - 100) / 500, 0, 1);
         if (a < 0.005) continue;
+        if (r > rand * 1.3) {
+          ctx.globalAlpha = a * 0.3;
+          ctx.fillStyle = `rgb(${w.farbe})`;
+          ctx.fillRect(0, 0, B, H);
+          continue;
+        }
         ctx.save();
         ctx.translate(q1.x, q1.y);
         ctx.rotate(w.dreh + zeit * 0.01);
@@ -1163,133 +1003,29 @@ void main() {
         ctx.drawImage(w.bild, -r, -r, 2 * r, 2 * r);
         ctx.restore();
       }
-    }
-
-    // Planeten: decken ab, was hinter ihnen liegt
-    ctx.globalCompositeOperation = "source-over";
-    for (const pl of welt.planeten) {
-      const m = projiziere(k, pl.p, f);
-      if (!m) continue;
-      const rad = (pl.r * f) / m.z;
-      const sk = rad / pl.sp.R;
-      if (m.x - pl.sp.cx * sk > B || m.x + (pl.sp.b - pl.sp.cx) * sk < 0 || m.y - pl.sp.cy * sk > H || m.y + (pl.sp.h - pl.sp.cy) * sk < 0) continue;
-      const a = himmel * stueck(q, 0.22, 0.36) * clamp((m.z - 40) / 120, 0, 1) * clamp(1 - (m.z - 2500) / 7000, 0, 1);
-      if (a < 0.02) continue;
-      ctx.globalAlpha = a;
-      ctx.drawImage(pl.sp.bild, m.x - pl.sp.cx * sk, m.y - pl.sp.cy * sk, pl.sp.b * sk, pl.sp.h * sk);
-    }
-    ctx.globalCompositeOperation = "lighter";
-
-    // Die Koerper der Mathematik: Drahtmodelle, die sich langsam drehen
-    ctx.strokeStyle = "#cfd8ea";
-    ctx.lineWidth = 1;
-    if (netzSicht > 0) {
-      for (const o of welt.objekte) {
-        const m = projiziere(k, o.mitte, f);
-        if (!m) continue;
-        const a = o.a * netzSicht * tiefe(m.z, 4200) * clamp((m.z - 250) / 500, 0, 1);
-        if (a < 0.02) continue;
-        const rad = (o.groesse * f) / m.z;
-        if (m.x + rad < 0 || m.x - rad > B || m.y + rad < 0 || m.y - rad > H) continue;
-        const w = zeit * o.tempo + o.phase, cw = Math.cos(w), sw = Math.sin(w), ck = Math.cos(o.kipp), sk = Math.sin(o.kipp);
-        ctx.globalAlpha = a;
-        ctx.beginPath();
-        for (const zug of o.zuege) {
-          let davor = false;
-          for (const pt of zug) {
-            const x1 = pt[0] * cw + pt[2] * sw, z1 = -pt[0] * sw + pt[2] * cw;
-            const y2 = pt[1] * ck - z1 * sk, z2 = pt[1] * sk + z1 * ck;
-            const q1 = projiziere(k, [o.mitte[0] + x1 * o.groesse, o.mitte[1] + y2 * o.groesse, o.mitte[2] + z2 * o.groesse], f);
-            if (!q1) { davor = false; continue; }
-            if (davor) ctx.lineTo(q1.x, q1.y); else ctx.moveTo(q1.x, q1.y);
-            davor = true;
-          }
-        }
-        ctx.stroke();
-      }
-
-      // Knoten projizieren (einmal je Bild)
-      const proj = welt.knoten.map((n) => projiziere(k, n.p, f));
-
-      // Kanten in Helligkeitsstufen gebuendelt zeichnen
-      const stufen = [[], [], [], [], []];
-      const lang = Math.max(B, H) * 0.7;
-      for (const e of welt.kanten) {
-        const a = proj[e.a], b = proj[e.b];
-        if (!a || !b) continue;
-        if (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) > lang) continue;
-        const h = Math.min(tiefe(a.z, 2600), tiefe(b.z, 2600)) * netzSicht;
-        if (h < 0.04) continue;
-        stufen[Math.min(4, Math.floor(h * 5))].push(a, b);
-      }
-      ctx.strokeStyle = "#dfe6f5";
-      ctx.lineWidth = 1;
-      stufen.forEach((liste, i) => {
-        if (!liste.length) return;
-        ctx.globalAlpha = 0.05 + i * 0.055;
-        ctx.beginPath();
-        for (let j = 0; j < liste.length; j += 2) { ctx.moveTo(liste[j].x, liste[j].y); ctx.lineTo(liste[j + 1].x, liste[j + 1].y); }
-        ctx.stroke();
-      });
-
-      // Lichtimpulse fliessen die Kanten entlang nach vorn -- mit Schweif, damit
-      // man das Fliessen sieht
-      ctx.fillStyle = "#ffffff";
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineCap = "round";
-      const punkt = (A, Bp, t) => [misch(A[0], Bp[0], t), misch(A[1], Bp[1], t), misch(A[2], Bp[2], t)];
-      for (const e of welt.kanten) {
-        const A = welt.knoten[e.a].p, Bp = welt.knoten[e.b].p;
-        const t = (zeit * e.tempo + e.phase) % 1;
-        const q1 = projiziere(k, punkt(A, Bp, t), f);
-        if (!q1) continue;
-        const h = tiefe(q1.z, 2400) * netzSicht * Math.sin(Math.PI * t);
-        if (h < 0.05) continue;
-        const g = clamp(640 / q1.z, 1, 5);
-        const hinten = projiziere(k, punkt(A, Bp, Math.max(0, t - 0.16)), f);
-        if (hinten) {
-          ctx.globalAlpha = h * 0.45;
-          ctx.lineWidth = g * 0.7;
-          ctx.beginPath(); ctx.moveTo(hinten.x, hinten.y); ctx.lineTo(q1.x, q1.y); ctx.stroke();
-        }
-        ctx.globalAlpha = h;
-        ctx.fillRect(q1.x - g / 2, q1.y - g / 2, g, g);
-        ctx.globalAlpha = h * 0.2;
-        ctx.fillRect(q1.x - g * 2, q1.y - g * 2, g * 4, g * 4);
-      }
-      ctx.lineWidth = 1;
-
-      // Knoten und ihre Beschriftung
+      // Die Formeln in den Nebeln: schweben, leuchten leise, ziehen vorbei
       ctx.textBaseline = "middle";
-      welt.knoten.forEach((n, i) => {
-        const q1 = proj[i];
-        if (!q1) return;
-        const h = tiefe(q1.z, n.formel ? 1900 : 2600) * netzSicht;
-        if (h < 0.03) return;
-        const r = clamp((n.g * 300) / q1.z, 0.8, 7);
-        ctx.fillStyle = "#ffffff";
-        ctx.globalAlpha = h * 0.85;
-        ctx.beginPath(); ctx.arc(q1.x, q1.y, r, 0, Math.PI * 2); ctx.fill();
-        ctx.globalAlpha = h * 0.12;
-        ctx.beginPath(); ctx.arc(q1.x, q1.y, r * 3.2, 0, Math.PI * 2); ctx.fill();
-        if (n.text) {
-          const g = ((n.formel ? 58 : 30) * f) / q1.z / 2.2;
-          // Was ganz nah vorbeizieht, blendet aus, statt riesig angeschnitten zu
-          // stehen -- die Grenze haengt an der Breite (Handy: kleiner)
-          const gross = Math.min(64, B * 0.06);
-          if (g < 8 || g > gross * 1.35) return;
-          ctx.globalAlpha = h * (n.formel ? 0.95 : 0.55) * clamp(1 - (g - gross) / (gross * 0.35), 0, 1);
-          ctx.fillStyle = "#f4f2ee";
-          if (n.formel) formelZeichnen(n.text, q1.x, q1.y - r - g * 0.9, g);
-          else { ctx.font = `italic 500 ${g.toFixed(1)}px "Playfair Display", Georgia, serif`; ctx.textAlign = "center"; ctx.fillText(n.text, q1.x, q1.y - r - g * 0.8); ctx.textAlign = "left"; }
-        }
-      });
+      for (const fo of welt.formeln) {
+        const q1 = projiziere(k, fo.p, f);
+        if (!q1) continue;
+        const g = ((62 * fo.groesse * f) / q1.z) / 2.2;
+        if (g < 7 || g > gross * 1.4) continue;
+        const a = himmel * innen * tiefe(q1.z, 2600) * clamp(1 - (g - gross) / (gross * 0.4), 0, 1) * (0.85 + 0.15 * Math.sin(zeit * 0.8 + fo.phase));
+        if (a < 0.03 || q1.x < -g * 8 || q1.x > B + g * 8 || q1.y < -g || q1.y > H + g) continue;
+        const y = q1.y + Math.sin(zeit * 0.5 + fo.phase) * g * 0.15;
+        ctx.globalAlpha = a * 0.22;
+        const r = g * 4;
+        ctx.drawImage(fleck("200,215,255"), q1.x - r * 1.8, y - r * 0.5, r * 3.6, r);
+        ctx.globalAlpha = a;
+        ctx.fillStyle = "#f4f2ee";
+        formelZeichnen(fo.text, q1.x, y, g);
+      }
     }
 
     // ---- Die Erde ----
-    // Blick: erst ueber dem Atlantik, beim Rasen dreht sie sich langsam, dann nach Europa
-    const dreh = stueck(p, 0.58, 0.66);
-    const laenge0 = misch(-42 + 30 * stueck(q, 0.5, 0.95) + 4 * Math.sin(zeit * 0.1), ZIEL_LAENGE, dreh);
+    // Blick: erst ueber dem Atlantik, dann nach Europa
+    const dreh = stueck(p, 0.56, 0.62);
+    const laenge0 = misch(-30 + 4 * Math.sin(zeit * 0.1), ZIEL_LAENGE, dreh);
     const breite0 = misch(14, ZIEL_BREITE, dreh);
     if (erdeSicht > 0 && R > 0.6) {
       if (erde.bereit) {
@@ -1302,9 +1038,9 @@ void main() {
           ziel: stueck(L, 3.0, 3.8),
           wolken: 1 - stueck(L, 1.5, 2.6),
           versatz: still ? 0 : zeit * 0.0012,
-          weich: stueck(L, 3.4, 5.2),
+          weich: stueck(L, 3.4, 5.0),
           nacht: 1 + 0.3 * stueck(L, 3, 4.6),
-          hell: 1 - 0.95 * stueck(L, 3.9, 5.2),
+          hell: 1 - 0.95 * stueck(L, 4.2, 5.2),
           atmo: 1 - stueck(L, 2, 3.5),
           alpha: erdeSicht,
         });
@@ -1313,79 +1049,29 @@ void main() {
       }
     }
 
-    // Lichtstroeme fliessen in die Erde, aus dem Flug kommend
-    const ziel = stueck(q, 0.84, 0.98), weg = stueck(q, 0.96, 1);
-    if (ziel > 0 && weg < 1) {
-      ctx.globalCompositeOperation = "lighter";
-      ctx.strokeStyle = "#ffffff";
-      ctx.fillStyle = "#ffffff";
-      ctx.lineCap = "round";
-      ctx.lineWidth = 1.4;
-      const weit = Math.max(B, H) * 0.75;
-      for (const st of welt.strom) {
-        const roh = clamp((ziel - st.verzug * 0.5) / 0.5, 0, 1);
-        if (roh <= 0 || roh >= 1) continue;
-        const ort = (t) => [misch(fx + st.start[0] * weit, fx + st.ziel[0] * R, t), misch(fy + st.start[1] * weit, fy + st.ziel[1] * R, t)];
-        const [x, y] = ort(glatt(roh));
-        const [hx, hy] = ort(glatt(Math.max(0, roh - 0.08)));
-        const h = Math.sin(Math.PI * roh) * (1 - weg);
-        ctx.globalAlpha = h * 0.55;
-        ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(x, y); ctx.stroke();
-        ctx.globalAlpha = h;
-        ctx.fillRect(x - 1, y - 1, 2, 2);
-      }
-    }
+    // Planeten und der Mond: decken ab, was hinter ihnen liegt
+    ctx.globalCompositeOperation = "source-over";
+    const planetZeichnen = (pl, a) => {
+      if (!pl.sp) return;
+      const m = projiziere(k, pl.p, f);
+      if (!m) return;
+      const sk = (pl.r * f) / m.z / pl.sp.R;
+      if (m.x - pl.sp.cx * sk > B || m.x + (pl.sp.b - pl.sp.cx) * sk < 0 || m.y - pl.sp.cy * sk > H || m.y + (pl.sp.h - pl.sp.cy) * sk < 0) return;
+      a *= clamp((m.z - 40) / 120, 0, 1) * clamp(1 - (m.z - 3000) / 7000, 0, 1);
+      if (a < 0.02) return;
+      ctx.globalAlpha = a;
+      ctx.drawImage(pl.sp.bild, m.x - pl.sp.cx * sk, m.y - pl.sp.cy * sk, pl.sp.b * sk, pl.sp.h * sk);
+    };
+    const planetenSicht = himmel * stueck(q, 0.22, 0.36);
+    if (planetenSicht > 0) for (const pl of welt.planeten) planetZeichnen(pl, planetenSicht);
+    const mondSicht = erdeSicht * (1 - stueck(L, 0, 0.5));
+    if (mondSicht > 0) planetZeichnen(welt.erdeMond, mondSicht);
 
-    // Die Begleiter: Formeln, die beim Rasen mit der Kamera fliegen und zuletzt in
-    // die Erde stuerzen
-    const begleiterSicht = stueck(q, 0.7, 0.78) * (1 - stueck(q, 0.93, 0.995));
-    if (begleiterSicht > 0) {
-      ctx.globalCompositeOperation = "lighter";
-      ctx.textBaseline = "middle";
-      ctx.fillStyle = "#f4f2ee";
-      const gross = Math.min(40, B * 0.032);
-      for (const b of welt.begleiter) {
-        const hinein = stueck(q, 0.86 + b.verzug * 0.06, 0.96 + b.verzug * 0.03);
-        const x0 = B / 2 + (b.x + 0.03 * Math.sin(zeit * 0.7 + b.phase)) * B * 0.5;
-        const y0 = H / 2 + (b.y + 0.025 * Math.cos(zeit * 0.9 + b.phase)) * H * 0.5;
-        const x = misch(x0, fx, glatt(hinein)), y = misch(y0, fy, glatt(hinein));
-        const g = gross * b.groesse * (1 - 0.9 * hinein);
-        if (g < 5) continue;
-        ctx.globalAlpha = begleiterSicht * (0.85 - 0.4 * hinein);
-        if (b.text.length > 1) formelZeichnen(b.text, x, y, g);
-        else { ctx.font = `italic 500 ${(g * 1.3).toFixed(1)}px "Playfair Display", Georgia, serif`; ctx.textAlign = "center"; ctx.fillText(b.text, x, y); ctx.textAlign = "left"; }
-      }
-    }
-
-    // Die Marke am Ziel: pulsiert, solange die Erde als Kugel dasteht
-    const marke = stueck(p, 0.6, 0.65) * (1 - stueck(L, 1.2, 2.2));
-    if (marke > 0) {
-      const e = blick(drehung(laenge0, breite0), ZIEL);
-      if (e[2] > 0) markeZeichnen(fx + R * e[0], fy - R * e[1], marke, zeit, still);
-    }
-
-    // Ein Licht wird zum Bildschirm: der Schein waechst mit dem Zoom, bis der
-    // Computer daraus hervortritt
-    const schein = stueck(L, 4.8, 5.8) * (1 - stueck(L, 7.4, 8));
-    if (schein > 0) {
-      ctx.globalCompositeOperation = "lighter";
-      const r = Math.max(8, masse.m * Math.exp(L - ZOOM_ENDE) * 0.8);
-      ctx.globalAlpha = schein * 0.9;
-      ctx.drawImage(fleck("190,210,255"), fx - r, fy - r, 2 * r, 2 * r);
-      ctx.globalAlpha = schein * 0.7;
-      ctx.drawImage(fleck("255,255,255"), fx - r * 0.3, fy - r * 0.3, r * 0.6, r * 0.6);
-    }
-    const computer = stueck(L, 5.6, 6.8);
-    if (computer > 0) computerZeichnen(fx, fy, masse.m * Math.exp(L - ZOOM_ENDE), computer, p, zeit, still);
+    // ---- Das Rechenzentrum und der Computer ----
+    const halle = stueck(L, 5.0, 5.6);
+    if (halle > 0) halleZeichnen(L, halle, p, zeit, still);
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
-  }
-
-  // Groesse des Computers im Schlussbild (m = Breite des Schirms) und wo dann der Chip steht
-  function computerMasse() {
-    const m = Math.min(B * (B < 700 ? 0.9 : 0.68), (H * 0.8) / MONITOR_HOEHE);
-    const oben = (H - MONITOR_HOEHE * m) / 2;
-    return { m, fy: oben + (RAND + SCHIRM_H + CHIP_Y) * m };
   }
 
   // Blick auf die Erde: die Stelle (laenge0, breite0) liegt in der Mitte der Scheibe;
@@ -1468,23 +1154,17 @@ void main() {
     });
   }
 
-  function markeZeichnen(x, y, sicht, zeit, still) {
-    ctx.globalCompositeOperation = "lighter";
-    ctx.globalAlpha = sicht * 0.8;
-    ctx.drawImage(fleck("235,242,255"), x - 22, y - 22, 44, 44);
-    ctx.fillStyle = "#ffffff";
-    ctx.globalAlpha = sicht;
-    ctx.beginPath(); ctx.arc(x, y, 2.6, 0, Math.PI * 2); ctx.fill();
-    if (still) return;
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1.2;
-    for (let i = 0; i < 2; i++) {
-      const t = (zeit * 0.6 + i * 0.5) % 1;
-      ctx.globalAlpha = sicht * (1 - t) * 0.6;
-      ctx.beginPath(); ctx.arc(x, y, 5 + t * 26, 0, Math.PI * 2); ctx.stroke();
-    }
+  // ---- Das Rechenzentrum: ein Gang zwischen Serverschraenken, am Ende der Tisch ----
+  // Eigene kleine Welt: x quer (die Schraenke stehen ab 0,9), y hoch (Boden -0,9,
+  // Decke 0,9), z in den Gang hinein; die Kamera faehrt von z = 0 bis vor den Tisch
+  const TISCH_Z = 14.6, TISCH_Y = -0.2, MONITOR_BREITE = 0.55;   // in Einheiten der Halle
+  function halleMasse() {
+    const m = Math.min(B * (B < 700 ? 0.6 : 0.56), H * 0.6);    // Monitorbreite am Ende (px)
+    const f2 = Math.min(B, H) * 0.9;
+    const dz = (f2 * MONITOR_BREITE) / m;                        // Abstand zum Tisch am Ende
+    const yKamera = TISCH_Y + (0.26 * H * dz) / f2;              // so liegt der Tisch bei 0,76 H
+    return { m, f2, dz, yKamera, zEnde: TISCH_Z - dz };
   }
-
   function rundRechteck(x, y, b, h, r) {
     ctx.beginPath();
     ctx.moveTo(x + r, y);
@@ -1494,237 +1174,330 @@ void main() {
     ctx.arcTo(x, y, x + b, y, r);
     ctx.closePath();
   }
-
-  // Ort auf einer Leitung nach der Strecke s (Einheiten der Schirmbreite)
-  function punktAuf(l, s) {
-    let i = 1;
-    while (i < l.laengen.length - 1 && l.laengen[i] < s) i++;
-    const t = (s - l.laengen[i - 1]) / (l.laengen[i] - l.laengen[i - 1] || 1);
-    const a = l.punkte[i - 1], b = l.punkte[i];
-    return [misch(a[0], b[0], t), misch(a[1], b[1], t)];
-  }
-  function linieZiehen(punkte, von, bis, P) {
-    for (let i = von; i < bis; i++) {
-      const [x, y] = P(punkte[i]);
-      if (i === von) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-  }
-  // Lichtimpulse auf den Leitungen, alle in Richtung Chip; aussen = der Teil hinter dem
-  // Monitor (wird vom Gehaeuse verdeckt), sonst der Teil auf dem Schirm
-  function impulseZeichnen(P, m, staerke, zeit, aussen) {
-    ctx.fillStyle = "#ffffff";
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineCap = "round";
-    const g = Math.max(1.5, m * 0.004);
-    for (const l of welt.leitungen) {
-      for (const im of l.impulse) {
-        const s = ((zeit * im.tempo + im.phase) % 1) * l.laenge;
-        if (s < l.grenzLaenge !== aussen) continue;
-        const [x, y] = P(punktAuf(l, s));
-        const [hx, hy] = P(punktAuf(l, Math.max(0, s - 0.07)));
-        const h = staerke * clamp(s / 0.25, 0, 1) * clamp((l.laenge - s) / 0.02, 0, 1);
-        if (h < 0.02) continue;
-        ctx.globalAlpha = h * 0.5;
-        ctx.lineWidth = g * 0.8;
-        ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(x, y); ctx.stroke();
-        ctx.globalAlpha = h;
-        ctx.fillRect(x - g / 2, y - g / 2, g, g);
-        ctx.globalAlpha = h * 0.2;
-        ctx.fillRect(x - g * 2, y - g * 2, g * 4, g * 4);
-      }
-    }
-  }
-
-  // Der Computer: ein Monitor mit Fuss auf einem Tisch in einem dunklen Raum, davor
-  // eine Tastatur; auf dem Schirm fuehren Leiterbahnen in einen Chip -- den Bot. Aus
-  // dem Chip wird das Zeichen, darunter die Schrift. m = Breite des Schirms in
-  // Bildpunkten, (fx, fy) = Mitte des Chips.
-  function computerZeichnen(fx, fy, m, sicht, p, zeit, still) {
-    const sx = fx, sy = fy - CHIP_Y * m;        // Mitte des Schirms
-    const P = (pt) => [sx + pt[0] * m, sy + pt[1] * m];
-    const hb = 0.5 * m, hh = SCHIRM_H * m;
-    const unten = sy + hh + KINN * m;           // Unterkante des Gehaeuses
-    const boden = unten + (HALS + FUSS) * m;    // darauf steht der Fuss
-    const fluss = stueck(p, 0.86, 0.9);          // die Stroeme in den Bot
-    const chipSicht = 1 - stueck(p, 0.9, 0.94);
-    const fuell = stueck(p, 0.89, 0.94);         // aus dem Chip wird das Zeichen
-    const schrift = stueck(p, 0.94, 0.975);      // danach steht das Schlussbild still
-    const einzeln = m > 24;                      // sonst zu klein fuer Einzelheiten
-
-    // Licht des Schirms im Raum, auf dem Tisch und an der Wand dahinter
-    ctx.globalCompositeOperation = "lighter";
-    ctx.globalAlpha = 1;
-    let g = ctx.createRadialGradient(sx, sy, 0, sx, sy, m * 1.1);
-    g.addColorStop(0, `rgba(150,175,230,${(0.07 * sicht).toFixed(3)})`);
-    g.addColorStop(1, "rgba(150,175,230,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(sx - m * 1.1, sy - m * 1.1, m * 2.2, m * 2.2);
-    ctx.save();
-    ctx.translate(sx, boden);
-    ctx.scale(1, 0.12);
-    g = ctx.createRadialGradient(0, 0, 0, 0, 0, m * 0.8);
-    g.addColorStop(0, `rgba(200,215,245,${(0.16 * sicht).toFixed(3)})`);
-    g.addColorStop(1, "rgba(200,215,245,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(-m * 0.8, -m * 0.8, m * 1.6, m * 1.6);
-    ctx.restore();
-    // Tischkante
-    g = ctx.createLinearGradient(sx - m, 0, sx + m, 0);
-    g.addColorStop(0, "rgba(207,216,234,0)");
-    g.addColorStop(0.5, `rgba(207,216,234,${(0.35 * sicht).toFixed(3)})`);
-    g.addColorStop(1, "rgba(207,216,234,0)");
-    ctx.strokeStyle = g;
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(sx - m, boden + 0.5); ctx.lineTo(sx + m, boden + 0.5); ctx.stroke();
-
-    // Leitungen draussen, hinter dem Monitor
-    if (einzeln) {
-      ctx.strokeStyle = "#cfd8ea";
-      ctx.globalAlpha = sicht * (0.12 + 0.14 * fluss);
-      ctx.beginPath();
-      for (const l of welt.leitungen) linieZiehen(l.punkte, 0, l.grenze + 1, P);
-      ctx.stroke();
-      if (!still && fluss > 0) impulseZeichnen(P, m, sicht * fluss, zeit, true);
-    }
-
-    // Gehaeuse und Fuss: decken ab, was dahinter liegt
+  function halleZeichnen(L, sicht, p, zeit, still) {
+    const hm = halleMasse();
+    const zc = misch(0, hm.zEnde, stueck(L, HALLE_VON, ZOOM_ENDE));
+    const P = (x, y, z) => { const dz = z - zc; if (dz < 0.05) return null; const s = hm.f2 / dz; return [B / 2 + x * s, H / 2 - (y - hm.yKamera) * s, s]; };
+    const viereck = (a, b, c, d) => { ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.lineTo(d[0], d[1]); ctx.closePath(); };
     ctx.globalCompositeOperation = "source-over";
-    ctx.globalAlpha = sicht;
-    ctx.fillStyle = "#000";
-    ctx.strokeStyle = "rgba(207,216,234,0.55)";
-    ctx.lineWidth = 1;
-    const hals = 0.035 * m;
-    ctx.beginPath();
-    ctx.moveTo(sx - hals, unten); ctx.lineTo(sx + hals, unten);
-    ctx.lineTo(sx + hals * 1.25, boden - FUSS * m); ctx.lineTo(sx - hals * 1.25, boden - FUSS * m);
-    ctx.closePath(); ctx.fill(); ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(sx - 0.15 * m, boden); ctx.lineTo(sx + 0.15 * m, boden);
-    ctx.lineTo(sx + 0.11 * m, boden - FUSS * m); ctx.lineTo(sx - 0.11 * m, boden - FUSS * m);
-    ctx.closePath(); ctx.fill(); ctx.stroke();
-    rundRechteck(sx - hb - RAND * m, sy - hh - RAND * m, 2 * hb + 2 * RAND * m, 2 * hh + RAND * m + KINN * m, 0.012 * m);
-    ctx.fill(); ctx.stroke();
-    g = ctx.createLinearGradient(0, sy - hh, 0, sy + hh);
-    g.addColorStop(0, "#070b14");
-    g.addColorStop(1, "#03050a");
+    // Boden und Decke
+    const horizont = H / 2;
+    let g = ctx.createLinearGradient(0, horizont, 0, H);
+    g.addColorStop(0, `rgba(10,13,20,${sicht.toFixed(3)})`);
+    g.addColorStop(1, `rgba(22,27,38,${sicht.toFixed(3)})`);
     ctx.fillStyle = g;
-    ctx.fillRect(sx - hb, sy - hh, 2 * hb, 2 * hh);
-    ctx.strokeStyle = "rgba(207,216,234,0.22)";
-    ctx.strokeRect(sx - hb + 0.5, sy - hh + 0.5, 2 * hb - 1, 2 * hh - 1);
-    ctx.fillStyle = "#cfd8ea";                       // Betriebslicht unten am Gehaeuse
-    ctx.globalAlpha = sicht * 0.7;
-    ctx.fillRect(sx - 1, sy + hh + KINN * m * 0.5 - 1, 2, 2);
-    // Tastatur vor dem Fuss, vom Schirm beleuchtet
-    if (einzeln) {
-      const tb = 0.56 * m, th = 0.055 * m, ty = boden + 0.035 * m;
-      ctx.globalAlpha = sicht;
-      ctx.fillStyle = "#050609";
-      ctx.strokeStyle = "rgba(207,216,234,0.3)";
-      rundRechteck(sx - tb / 2, ty, tb, th, 0.008 * m);
-      ctx.fill(); ctx.stroke();
-      ctx.strokeStyle = "rgba(207,216,234,0.14)";
-      ctx.beginPath();
-      for (let i = 1; i < 4; i++) { const y = ty + (th * i) / 4; ctx.moveTo(sx - tb / 2 + 0.01 * m, y); ctx.lineTo(sx + tb / 2 - 0.01 * m, y); }
-      for (let i = 1; i < 14; i++) { const x = sx - tb / 2 + (tb * i) / 14; ctx.moveTo(x, ty + 0.006 * m); ctx.lineTo(x, ty + th - 0.006 * m); }
-      ctx.stroke();
-    }
-
-    // Auf dem Schirm
-    ctx.save();
-    ctx.beginPath(); ctx.rect(sx - hb, sy - hh, 2 * hb, 2 * hh); ctx.clip();
-    ctx.globalCompositeOperation = "lighter";
-    const glut = 0.1 + 0.3 * fluss * (still ? 1 : 0.8 + 0.2 * Math.sin(zeit * 3.2));
-    g = ctx.createRadialGradient(fx, fy, 0, fx, fy, m * 0.4);
-    g.addColorStop(0, `rgba(170,195,245,${(glut * sicht).toFixed(3)})`);
-    g.addColorStop(1, "rgba(170,195,245,0)");
-    ctx.globalAlpha = 1;
+    ctx.fillRect(0, horizont, B, H - horizont);
+    g = ctx.createLinearGradient(0, 0, 0, horizont);
+    g.addColorStop(0, `rgba(8,10,16,${sicht.toFixed(3)})`);
+    g.addColorStop(1, `rgba(3,4,8,${sicht.toFixed(3)})`);
     ctx.fillStyle = g;
-    ctx.fillRect(fx - m * 0.4, fy - m * 0.4, m * 0.8, m * 0.8);
-    if (einzeln) {
-      ctx.strokeStyle = "#cfd8ea";
-      ctx.lineWidth = Math.max(1, m * 0.0018);
-      ctx.globalAlpha = sicht * (0.22 + 0.18 * fluss);
-      ctx.beginPath();
-      for (const l of welt.leitungen) linieZiehen(l.punkte, l.grenze, l.punkte.length, P);
-      ctx.stroke();
-      if (!still && fluss > 0) impulseZeichnen(P, m, sicht * fluss, zeit, false);
+    ctx.fillRect(0, 0, B, horizont);
+    // Lichtstreifen an der Decke, mit Spiegelung am Boden
+    for (let k = 0; k < 16; k++) {
+      const z0 = 0.6 + k, a = P(-0.14, 0.88, z0), b = P(0.14, 0.88, z0), c = P(0.14, 0.88, z0 + 0.45), d = P(-0.14, 0.88, z0 + 0.45);
+      if (!a || !b || !c || !d) continue;
+      const nebel = clamp(1 - (z0 - zc) / 11, 0.1, 1) * sicht;
+      ctx.fillStyle = `rgba(200,218,255,${(0.75 * nebel).toFixed(3)})`;
+      viereck(a, b, c, d); ctx.fill();
+      const a2 = P(-0.14, -0.9, z0), b2 = P(0.14, -0.9, z0), c2 = P(0.14, -0.9, z0 + 0.45), d2 = P(-0.14, -0.9, z0 + 0.45);
+      if (a2 && b2 && c2 && d2) { ctx.fillStyle = `rgba(150,170,210,${(0.1 * nebel).toFixed(3)})`; viereck(a2, b2, c2, d2); ctx.fill(); }
     }
-    // der Chip: Gehaeuse mit Beinchen, innen ein Kern, der leuchtet, je mehr hineinfliesst
-    if (chipSicht > 0) {
-      const c = CHIP * m;
-      ctx.globalAlpha = sicht * chipSicht;
-      ctx.strokeStyle = "#dfe6f5";
-      ctx.lineWidth = Math.max(1, m * 0.002);
-      ctx.beginPath();
-      for (let i = 0; i < 5; i++) {
-        const o = (i - 2) * 0.0225 * m, bein = 0.016 * m;
-        ctx.moveTo(fx - c, fy + o); ctx.lineTo(fx - c - bein, fy + o);
-        ctx.moveTo(fx + c, fy + o); ctx.lineTo(fx + c + bein, fy + o);
-        ctx.moveTo(fx + o, fy - c); ctx.lineTo(fx + o, fy - c - bein);
-        ctx.moveTo(fx + o, fy + c); ctx.lineTo(fx + o, fy + c + bein);
-      }
-      ctx.stroke();
-      ctx.globalCompositeOperation = "source-over";
-      ctx.fillStyle = "#05070c";
-      rundRechteck(fx - c, fy - c, 2 * c, 2 * c, 0.01 * m);
-      ctx.fill(); ctx.stroke();
-      ctx.strokeStyle = "rgba(223,230,245,0.35)";
-      rundRechteck(fx - c * 0.62, fy - c * 0.62, c * 1.24, c * 1.24, 0.006 * m);
-      ctx.stroke();
-      ctx.globalCompositeOperation = "lighter";
-      g = ctx.createRadialGradient(fx, fy, 0, fx, fy, c * 0.9);
-      g.addColorStop(0, `rgba(235,242,255,${(sicht * chipSicht * (0.15 + 0.6 * fluss)).toFixed(3)})`);
-      g.addColorStop(1, "rgba(235,242,255,0)");
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = g;
-      ctx.fillRect(fx - c, fy - c, 2 * c, 2 * c);
-    }
-    // das Zeichen: die drei Balken fuellen sich von unten, einer nach dem anderen
-    if (fuell > 0) {
-      const s = LOGO * m;
-      welt.BALKEN.forEach((b, j) => {
-        const t = glatt(clamp((fuell - j * 0.12) / 0.76, 0, 1));
-        if (t <= 0) return;
-        const x = fx + (b.x / 100 - 0.5) * s, w = (b.b / 100) * s;
-        const y = fy + (b.y / 100 - 0.5) * s, h = (b.h / 100) * s;
-        ctx.globalCompositeOperation = "source-over";
-        ctx.globalAlpha = sicht;
-        ctx.fillStyle = "#f4f2ee";
-        ctx.fillRect(x, y + h * (1 - t), w, h * t);
-        if (t < 1) {
-          // helle Kante, wo es gerade fuellt
-          ctx.globalCompositeOperation = "lighter";
-          ctx.globalAlpha = sicht * (1 - t);
-          ctx.fillStyle = "#ffffff";
-          ctx.fillRect(x - 2, y + h * (1 - t) - 1, w + 4, 2);
+    // Die Schraenke, von hinten nach vorn
+    for (let k = 14; k >= 0; k--) {
+      const z0 = 1.2 + k;
+      if (z0 + 0.85 < zc + 0.1) continue;
+      const nebel = clamp(1 - (z0 - zc) / 10, 0.12, 1) * sicht;
+      for (const s of [-1, 1]) {
+        const x1 = s * 0.9, x2 = s * 1.6;
+        const sa = P(x1, -0.9, z0 + 0.85), sb = P(x1, 0.78, z0 + 0.85), sc = P(x1, 0.78, z0), sd = P(x1, -0.9, z0);
+        if (sa && sb && sc && sd) {
+          ctx.fillStyle = `rgba(13,16,24,${nebel.toFixed(3)})`;
+          viereck(sa, sb, sc, sd); ctx.fill();
+          ctx.strokeStyle = `rgba(110,140,190,${(0.25 * nebel).toFixed(3)})`; ctx.lineWidth = 1; ctx.stroke();
         }
-      });
+        const fa = P(x1, -0.9, z0), fb = P(x1, 0.78, z0), fc = P(x2, 0.78, z0), fd = P(x2, -0.9, z0);
+        if (!fa || !fb || !fc || !fd) continue;
+        ctx.fillStyle = `rgba(9,11,17,${nebel.toFixed(3)})`;
+        viereck(fa, fb, fc, fd); ctx.fill();
+        ctx.strokeStyle = `rgba(110,140,190,${(0.35 * nebel).toFixed(3)})`; ctx.stroke();
+        // Die Geraete im Schrank: Hoeheneinheiten als Linien, Leuchten davor
+        const sk = fa[2];
+        if (sk > 22) {
+          ctx.strokeStyle = `rgba(110,140,190,${(0.14 * nebel).toFixed(3)})`;
+          ctx.beginPath();
+          for (let reihe = 0; reihe <= 8; reihe++) {
+            const y = -0.82 + reihe * 0.2;
+            const l1 = P(x1 + s * 0.03, y, z0 - 0.01), l2 = P(x2 - s * 0.03, y, z0 - 0.01);
+            if (l1 && l2) { ctx.moveTo(l1[0], l1[1]); ctx.lineTo(l2[0], l2[1]); }
+          }
+          ctx.stroke();
+          const gr = Math.max(1.5, sk * 0.018);
+          for (let reihe = 0; reihe < 8; reihe++) {
+            const y = -0.75 + reihe * 0.2;
+            for (let sp = 0; sp < 2; sp++) {
+              const x = s * (1.0 + sp * 0.22 + (s < 0 ? 0.25 : 0));
+              const an = still || Math.sin(zeit * 2.3 + k * 1.7 + reihe * 0.9 + sp * 2.1 + s) > -0.3;
+              if (!an) continue;
+              const q1 = P(x, y, z0 - 0.01);
+              if (!q1) continue;
+              const farbe = (reihe + sp + k) % 5 === 0 ? "255,190,90" : (reihe + k) % 2 ? "90,220,130" : "90,160,255";
+              ctx.fillStyle = `rgba(${farbe},${(0.9 * nebel).toFixed(3)})`;
+              ctx.fillRect(q1[0] - gr / 2, q1[1] - gr / 2, gr, gr);
+            }
+          }
+        }
+      }
     }
-    // Wortmarke, "Quant Systems" und Spruch
-    if (schrift > 0) {
-      const s = LOGO * m;
-      ctx.globalCompositeOperation = "source-over";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "alphabetic";
-      const wy = fy + s * 0.5 + Math.max(26, 0.075 * m);
-      ctx.globalAlpha = sicht * schrift;
-      ctx.fillStyle = "#f4f2ee";
-      gesperrt("JKHD", sx, wy, `800 ${Math.round(Math.max(17, m * 0.048))}px Manrope, "Segoe UI", sans-serif`, 0.34);
-      ctx.fillStyle = "#cfcdc8";
-      gesperrt("Quant Systems", sx, wy + Math.max(18, m * 0.042), `700 ${Math.round(Math.max(11, m * 0.022))}px Manrope, "Segoe UI", sans-serif`, 0.05);
-      ctx.fillStyle = "#9d9d99";
-      gesperrt("Just Know How to Dominate.", sx, wy + Math.max(34, m * 0.08), `${Math.round(Math.max(10, m * 0.019))}px "Cascadia Code", Consolas, monospace`, 0.03);
-    }
-    ctx.restore();
+    // Die Wand am Ende und der Tisch
+    const wa = P(-2, -0.9, TISCH_Z + 0.9), wb = P(2, -0.9, TISCH_Z + 0.9), wc = P(2, 0.9, TISCH_Z + 0.9), wd = P(-2, 0.9, TISCH_Z + 0.9);
+    if (wa && wb && wc && wd) { ctx.fillStyle = `rgba(6,8,12,${sicht.toFixed(3)})`; viereck(wa, wb, wc, wd); ctx.fill(); }
+    const anker = P(0, TISCH_Y, TISCH_Z);
+    if (!anker) return;
+    const m = (hm.f2 * MONITOR_BREITE) / (TISCH_Z - zc);
+    computerZeichnen(anker[0], anker[1], m, sicht, p, zeit, still);
+  }
 
-    // Glanz auf dem Glas
-    ctx.globalCompositeOperation = "lighter";
-    g = ctx.createLinearGradient(sx - hb, sy - hh, sx + hb * 0.2, sy + hh);
-    g.addColorStop(0, `rgba(255,255,255,${(0.035 * sicht).toFixed(3)})`);
-    g.addColorStop(0.45, "rgba(255,255,255,0)");
-    ctx.globalAlpha = 1;
+  // Der Computer auf dem Tisch: Monitor, daneben der Tower mit Glasseite, Tastatur,
+  // Maus. m = Breite des Monitorbilds in Bildpunkten, (ax, ay) = Fuss des Monitors.
+  function computerZeichnen(ax, ay, m, sicht, p, zeit, still) {
+    const glas = stueck(p, 0.845, 0.875);      // das Gehaeuse wird durchsichtig
+    const fluss = stueck(p, 0.86, 0.89);       // die Stroeme fliessen in die Platine
+    const blitz = Math.sin(Math.PI * stueck(p, 0.898, 0.908));   // kurzes Aufleuchten
+    const logo = stueck(p, 0.9, 0.912);        // das Zeichen erscheint
+    const schrift = stueck(p, 0.908, 0.925);   // danach steht das Schlussbild
+    const einzeln = m > 40;
+    ctx.globalCompositeOperation = "source-over";
+
+    // Licht von der Decke ueber dem Tisch
+    ctx.globalAlpha = sicht;
+    let g = ctx.createRadialGradient(ax, ay - 0.5 * m, 0, ax, ay - 0.5 * m, 1.6 * m);
+    g.addColorStop(0, "rgba(150,170,210,0.26)"); g.addColorStop(1, "rgba(150,170,210,0)");
+    ctx.fillStyle = g; ctx.fillRect(ax - 1.6 * m, ay - 2.1 * m, 3.2 * m, 3.2 * m);
+    // Der Tisch
+    const tisch = ctx.createLinearGradient(0, ay - 0.12 * m, 0, ay + 0.1 * m);
+    tisch.addColorStop(0, "#232630");
+    tisch.addColorStop(1, "#15171d");
+    ctx.fillStyle = tisch;
+    ctx.beginPath();
+    ctx.moveTo(ax - 1.45 * m, ay + 0.1 * m); ctx.lineTo(ax + 1.45 * m, ay + 0.1 * m);
+    ctx.lineTo(ax + 1.15 * m, ay - 0.12 * m); ctx.lineTo(ax - 1.15 * m, ay - 0.12 * m);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "rgba(200,210,230,0.18)"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(ax - 1.45 * m, ay + 0.1 * m + 0.5); ctx.lineTo(ax + 1.45 * m, ay + 0.1 * m + 0.5); ctx.stroke();
+    // Schatten unter Monitor und Tower
+    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    ctx.beginPath(); ctx.ellipse(ax, ay + 0.01 * m, 0.3 * m, 0.035 * m, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(ax + (B < 700 ? 0.5 : 0.62) * m, ay + 0.03 * m, 0.32 * m, 0.04 * m, 0, 0, Math.PI * 2); ctx.fill();
+
+    // ---- Der Tower rechts, mit Glasseite nach links: Vorderseite, Deckel, Glas ----
+    const tx = ax + (B < 700 ? 0.6 : 0.72) * m, tb = ay + 0.02 * m, th = 0.72 * m, tw = (B < 700 ? 0.18 : 0.24) * m;
+    const dxT = -(B < 700 ? 0.34 : 0.46) * m, dyT = -0.075 * m;     // die Tiefe des Gehaeuses, nach hinten links
+    ctx.globalAlpha = sicht;
+    // Deckel
+    ctx.fillStyle = "#0f1116";
+    ctx.beginPath(); ctx.moveTo(tx, tb - th); ctx.lineTo(tx + tw, tb - th); ctx.lineTo(tx + tw + dxT, tb - th + dyT); ctx.lineTo(tx + dxT, tb - th + dyT); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "rgba(200,210,230,0.3)"; ctx.stroke();
+    // Vorderseite mit Luftschlitzen, Knopf und Lichtern
+    ctx.fillStyle = "#0a0b0f";
+    ctx.fillRect(tx, tb - th, tw, th);
+    ctx.strokeStyle = "rgba(200,210,230,0.35)"; ctx.strokeRect(tx + 0.5, tb - th + 0.5, tw - 1, th - 1);
+    if (einzeln) {
+      ctx.strokeStyle = "rgba(200,210,230,0.1)";
+      ctx.beginPath();
+      for (let i = 0; i < 14; i++) { const y = tb - th * 0.78 + i * th * 0.04; ctx.moveTo(tx + tw * 0.15, y); ctx.lineTo(tx + tw * 0.85, y); }
+      ctx.stroke();
+      ctx.fillStyle = "#1c1f27";
+      ctx.beginPath(); ctx.arc(tx + tw * 0.5, tb - th * 0.9, tw * 0.07, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = `rgba(120,190,255,${(0.6 + 0.4 * fluss).toFixed(3)})`;
+      ctx.beginPath(); ctx.arc(tx + tw * 0.5, tb - th * 0.9, tw * 0.03, 0, Math.PI * 2); ctx.fill();
+    }
+    // Das Innere, durch das Glas: erst dunkel, dann die Platine
+    ctx.save();
+    ctx.transform(dxT, dyT, 0, -th, tx, tb);   // Einheiten der Glasscheibe: u quer, v hoch
+    ctx.fillStyle = "#05060a";
+    ctx.fillRect(0, 0, 1, 1);
+    if (glas > 0) platineZeichnen(glas, fluss, zeit, still);
+    ctx.restore();
+    // Die Glasscheibe
+    ctx.globalAlpha = sicht;
+    ctx.fillStyle = `rgba(8,10,14,${(0.97 - 0.86 * glas).toFixed(3)})`;
+    ctx.beginPath(); ctx.moveTo(tx, tb); ctx.lineTo(tx, tb - th); ctx.lineTo(tx + dxT, tb - th + dyT); ctx.lineTo(tx + dxT, tb + dyT); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "rgba(200,210,230,0.4)"; ctx.stroke();
+    const spiegel = ctx.createLinearGradient(tx + dxT, tb - th, tx, tb);
+    spiegel.addColorStop(0, "rgba(255,255,255,0)");
+    spiegel.addColorStop(0.4, `rgba(255,255,255,${(0.11 * sicht).toFixed(3)})`);
+    spiegel.addColorStop(0.5, "rgba(255,255,255,0)");
+    ctx.fillStyle = spiegel; ctx.fill();
+
+    // ---- Der Monitor ----
+    const sx = ax, hb = 0.5 * m, hh = 0.28 * m;
+    const unten = ay - 0.1 * m;                 // Unterkante des Gehaeuses
+    const sy = unten - 0.04 * m - 0.025 * m - hh;   // Mitte des Schirms
+    ctx.globalAlpha = sicht;
+    ctx.fillStyle = "#07080b";
+    ctx.beginPath(); ctx.ellipse(sx, ay, 0.17 * m, 0.032 * m, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "rgba(200,210,230,0.3)"; ctx.stroke();
+    ctx.fillStyle = "#0b0c10";
+    ctx.beginPath(); ctx.moveTo(sx - 0.03 * m, unten); ctx.lineTo(sx + 0.03 * m, unten); ctx.lineTo(sx + 0.035 * m, ay); ctx.lineTo(sx - 0.035 * m, ay); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#0a0b0e";
+    rundRechteck(sx - hb - 0.025 * m, sy - hh - 0.025 * m, 2 * hb + 0.05 * m, 2 * hh + 0.065 * m, 0.012 * m);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(200,210,230,0.4)"; ctx.stroke();
+    // der Schirm: aus, mit leisem Widerschein des Raums -- dann an
+    const an = Math.max(logo, blitz);
+    g = ctx.createLinearGradient(sx - hb, sy - hh, sx + hb, sy + hh);
+    g.addColorStop(0, "#0a0d14"); g.addColorStop(1, "#040508");
     ctx.fillStyle = g;
     ctx.fillRect(sx - hb, sy - hh, 2 * hb, 2 * hh);
+    if (an > 0) {
+      ctx.globalAlpha = sicht * an;
+      g = ctx.createRadialGradient(sx, sy, 0, sx, sy, hb * 1.1);
+      g.addColorStop(0, "#131926"); g.addColorStop(1, "#05070c");
+      ctx.fillStyle = g;
+      ctx.fillRect(sx - hb, sy - hh, 2 * hb, 2 * hh);
+      ctx.globalAlpha = sicht * blitz * 0.9;
+      ctx.fillStyle = "#dfe6f5";
+      ctx.fillRect(sx - hb, sy - hh, 2 * hb, 2 * hh);
+    }
+    // das Zeichen und die Schrift
+    if (logo > 0) {
+      const s = 0.26 * m, zx = sx, zy = sy - 0.06 * m;
+      ctx.globalAlpha = sicht * logo;
+      ctx.fillStyle = "#f4f2ee";
+      for (const b of [{ x: 10, y: 22, b: 20, h: 56 }, { x: 40, y: 8, b: 20, h: 84 }, { x: 70, y: 22, b: 20, h: 56 }]) {
+        ctx.fillRect(zx + (b.x / 100 - 0.5) * s, zy + (b.y / 100 - 0.5) * s, (b.b / 100) * s, (b.h / 100) * s);
+      }
+      if (schrift > 0) {
+        ctx.globalAlpha = sicht * schrift;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "alphabetic";
+        const wy = zy + s * 0.5 + Math.max(20, 0.07 * m);
+        ctx.fillStyle = "#f4f2ee";
+        gesperrt("JKHD", zx, wy, `800 ${Math.round(Math.max(15, m * 0.05))}px Manrope, "Segoe UI", sans-serif`, 0.34);
+        ctx.fillStyle = "#cfcdc8";
+        gesperrt("Quant Systems", zx, wy + Math.max(16, m * 0.045), `700 ${Math.round(Math.max(10, m * 0.023))}px Manrope, "Segoe UI", sans-serif`, 0.05);
+        ctx.fillStyle = "#9d9d99";
+        gesperrt("Just Know How to Dominate.", zx, wy + Math.max(30, m * 0.085), `${Math.round(Math.max(9, m * 0.02))}px "Cascadia Code", Consolas, monospace`, 0.03);
+      }
+    }
+    // Glanz auf dem Glas des Monitors, Betriebslicht
+    ctx.globalAlpha = sicht;
+    g = ctx.createLinearGradient(sx - hb, sy - hh, sx + hb * 0.3, sy + hh);
+    g.addColorStop(0, "rgba(255,255,255,0.05)"); g.addColorStop(0.45, "rgba(255,255,255,0)");
+    ctx.fillStyle = g; ctx.fillRect(sx - hb, sy - hh, 2 * hb, 2 * hh);
+    ctx.fillStyle = `rgba(160,200,255,${(0.5 + 0.5 * an).toFixed(3)})`;
+    ctx.fillRect(sx + hb - 0.03 * m, unten - 0.018 * m, Math.max(1.5, 0.006 * m), Math.max(1.5, 0.006 * m));
+    // Das Licht des Schirms faellt in den Raum, wenn er an ist
+    if (an > 0) {
+      ctx.globalCompositeOperation = "lighter";
+      ctx.globalAlpha = sicht * an;
+      g = ctx.createRadialGradient(sx, sy + hh, 0, sx, sy + hh, m * 1.2);
+      g.addColorStop(0, "rgba(120,150,210,0.14)"); g.addColorStop(1, "rgba(120,150,210,0)");
+      ctx.fillStyle = g; ctx.fillRect(sx - m * 1.2, sy - m * 0.4, m * 2.4, m * 1.8);
+      ctx.globalCompositeOperation = "source-over";
+    }
+
+    // ---- Tastatur und Maus ----
+    if (einzeln) {
+      ctx.globalAlpha = sicht;
+      const kb = 0.5 * m, kh = 0.05 * m, kx = ax - 0.3 * m, ky = ay + 0.025 * m;
+      ctx.fillStyle = "#0a0b0f";
+      ctx.beginPath(); ctx.moveTo(kx, ky); ctx.lineTo(kx + kb, ky); ctx.lineTo(kx + kb + 0.02 * m, ky + kh); ctx.lineTo(kx - 0.02 * m, ky + kh); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = "rgba(200,210,230,0.3)"; ctx.stroke();
+      ctx.strokeStyle = "rgba(200,210,230,0.12)";
+      ctx.beginPath();
+      for (let i = 1; i < 4; i++) { const y = ky + (kh * i) / 4; ctx.moveTo(kx + 0.01 * m, y); ctx.lineTo(kx + kb - 0.01 * m, y); }
+      for (let i = 1; i < 15; i++) { const x = kx + (kb * i) / 15; ctx.moveTo(x, ky + 0.005 * m); ctx.lineTo(x + 0.01 * m, ky + kh - 0.005 * m); }
+      ctx.stroke();
+      ctx.fillStyle = "#0b0c10";
+      rundRechteck(ax + 0.32 * m, ay + 0.02 * m, 0.07 * m, 0.05 * m, 0.025 * m); ctx.fill();
+      ctx.strokeStyle = "rgba(200,210,230,0.3)"; ctx.stroke();
+    }
+  }
+
+  // Die Platine im Gehaeuse (Einheiten der Glasscheibe, u quer 0..1, v hoch 0..1):
+  // Netzteil unten, Grafikkarte, der Prozessor mit Kuehler, Arbeitsspeicher, Chipsatz,
+  // Kondensatoren, Luefter vorn mit blauem Ring -- und die Leiterbahnen, auf denen
+  // die Stroeme in den Prozessor fliessen
+  function platineZeichnen(glas, fluss, zeit, still) {
+    ctx.globalAlpha = glas;
+    // Leiterplatte
+    ctx.fillStyle = "#143a2c";
+    ctx.fillRect(0.1, 0.1, 0.84, 0.82);
+    ctx.strokeStyle = "rgba(90,160,120,0.45)"; ctx.lineWidth = 0.004;
+    ctx.strokeRect(0.1, 0.1, 0.84, 0.82);
+    // Leiterbahnen in Kupfer
+    ctx.strokeStyle = `rgba(222,170,100,${(0.55 + 0.4 * fluss).toFixed(3)})`;
+    ctx.lineWidth = 0.005;
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    for (const bahn of welt.bahnen) bahn.punkte.forEach((pt, i) => { if (i) ctx.lineTo(pt[0], pt[1]); else ctx.moveTo(pt[0], pt[1]); });
+    ctx.stroke();
+    // Netzteil, Grafikkarte, Chipsatz, Arbeitsspeicher
+    ctx.fillStyle = "#0b0c10"; ctx.fillRect(0.12, 0.12, 0.3, 0.13);
+    ctx.strokeStyle = "rgba(200,210,230,0.25)"; ctx.lineWidth = 0.003; ctx.strokeRect(0.12, 0.12, 0.3, 0.13);
+    ctx.beginPath(); ctx.arc(0.27, 0.185, 0.045, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = "#14161c"; ctx.fillRect(0.15, 0.3, 0.42, 0.12);
+    ctx.strokeRect(0.15, 0.3, 0.42, 0.12);
+    ctx.beginPath(); ctx.arc(0.28, 0.36, 0.045, 0, Math.PI * 2); ctx.moveTo(0.495, 0.36); ctx.arc(0.45, 0.36, 0.045, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = "#22252c"; ctx.fillRect(0.6, 0.3, 0.08, 0.08);
+    for (let i = 0; i < 4; i++) {
+      ctx.fillStyle = "#1a1d25"; ctx.fillRect(0.76 + i * 0.03, 0.45, 0.02, 0.4);
+      ctx.fillStyle = `rgba(214,170,100,${(0.5 + 0.5 * fluss).toFixed(3)})`; ctx.fillRect(0.76 + i * 0.03, 0.45, 0.02, 0.015);
+    }
+    // Kondensatoren
+    ctx.fillStyle = "#3a3f4a";
+    for (const kd of welt.kondensatoren) { ctx.beginPath(); ctx.arc(kd[0], kd[1], 0.011, 0, Math.PI * 2); ctx.fill(); }
+    // Luefter vorn, mit blauem Ring
+    for (const v of [0.32, 0.64]) {
+      ctx.fillStyle = "#0c0d12"; ctx.beginPath(); ctx.arc(0.06, v, 0.1, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = `rgba(100,170,255,${(0.25 + 0.55 * fluss).toFixed(3)})`; ctx.lineWidth = 0.008;
+      ctx.beginPath(); ctx.arc(0.06, v, 0.085, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(200,210,230,0.25)"; ctx.lineWidth = 0.004;
+      const dreh = still ? 0 : zeit * 4;
+      ctx.beginPath();
+      for (let i = 0; i < 5; i++) { const w = dreh + (i / 5) * Math.PI * 2; ctx.moveTo(0.06, v); ctx.lineTo(0.06 + Math.cos(w) * 0.075, v + Math.sin(w) * 0.075); }
+      ctx.stroke();
+    }
+    // Der Prozessor mit Kuehler: Lamellen, darin der Kern, der glueht, je mehr hineinfliesst
+    ctx.fillStyle = "#2a2d33"; ctx.fillRect(0.52, 0.52, 0.2, 0.2);
+    ctx.strokeStyle = "rgba(200,210,230,0.35)"; ctx.lineWidth = 0.003; ctx.strokeRect(0.52, 0.52, 0.2, 0.2);
+    ctx.strokeStyle = "rgba(0,0,0,0.6)";
+    ctx.beginPath();
+    for (let i = 1; i < 8; i++) { const v = 0.52 + i * 0.025; ctx.moveTo(0.52, v); ctx.lineTo(0.72, v); }
+    ctx.stroke();
+    ctx.fillStyle = `rgba(255,220,170,${(0.15 + 0.85 * fluss).toFixed(3)})`;
+    ctx.fillRect(0.6, 0.6, 0.04, 0.04);
+    if (fluss > 0) {
+      ctx.globalCompositeOperation = "lighter";
+      const g = ctx.createRadialGradient(0.62, 0.62, 0, 0.62, 0.62, 0.28);
+      g.addColorStop(0, `rgba(255,210,150,${(0.75 * fluss * glas).toFixed(3)})`);
+      g.addColorStop(1, "rgba(255,210,150,0)");
+      ctx.fillStyle = g; ctx.fillRect(0.3, 0.3, 0.64, 0.64);
+      // Die Stroeme: warme Lichtpunkte mit kurzem Schweif, alle auf den Prozessor zu
+      ctx.fillStyle = "#ffe7c0";
+      ctx.strokeStyle = "#ffd9a0";
+      ctx.lineCap = "round";
+      for (const bahn of welt.bahnen) {
+        for (const im of bahn.impulse) {
+          const s = ((still ? 0.6 : zeit * im.tempo + im.phase) % 1) * bahn.laenge;
+          const xy = aufBahn(bahn, s), hxy = aufBahn(bahn, Math.max(0, s - 0.05));
+          const h = fluss * glas * clamp(s / 0.1, 0, 1);
+          ctx.globalAlpha = h * 0.5; ctx.lineWidth = 0.009;
+          ctx.beginPath(); ctx.moveTo(hxy[0], hxy[1]); ctx.lineTo(xy[0], xy[1]); ctx.stroke();
+          ctx.globalAlpha = h;
+          ctx.beginPath(); ctx.arc(xy[0], xy[1], 0.009, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      ctx.globalCompositeOperation = "source-over";
+    }
+  }
+  function aufBahn(bahn, s) {
+    let i = 1;
+    while (i < bahn.laengen.length - 1 && bahn.laengen[i] < s) i++;
+    const t = (s - bahn.laengen[i - 1]) / (bahn.laengen[i] - bahn.laengen[i - 1] || 1);
+    const a = bahn.punkte[i - 1], b = bahn.punkte[i];
+    return [misch(a[0], b[0], t), misch(a[1], b[1], t)];
   }
 
   // Text mit Zeichenabstand (em-Anteil), zentriert
@@ -1753,23 +1526,37 @@ void main() {
   let p = 0;            // gezeigter Fortschritt (folgt dem Scrollen weich nach)
   let laeuft = false;
   let letzte = 0;
-  // Messgeraet: mittlere Zeichenzeit je Bild (ms), einmal je Sekunde an der Leinwand
-  // als data-zeichenzeit -- so laesst sich auf jedem Geraet nachsehen, was es kostet
-  let messSumme = 0, messAnzahl = 0, messSeit = 0;
+  let bildNr = 0;
+  // Messgeraet: mittlere Zeichenzeit je Bild (ms) und der Abstand der Bilder; einmal je
+  // Sekunde an der Leinwand (data-zeichenzeit, data-qualitaet) -- und wenn die Bilder
+  // laenger als 24 ms auseinanderliegen, geht die Aufloesung eine Stufe herunter
+  let messSumme = 0, messAnzahl = 0, messSeit = 0, abstandMittel = 16, geprueft = 0;
   function schleife(jetzt) {
     if (!laeuft) return;
     const dt = Math.min(0.05, (jetzt - letzte) / 1000 || 0.016);
+    abstandMittel += ((jetzt - letzte) - abstandMittel) * 0.08;
     letzte = jetzt;
     const zielP = zielFortschritt();
     p += (zielP - p) * (1 - Math.exp(-dt * 6));   // weich, unabhaengig von der Bildrate
     if (Math.abs(zielP - p) < 0.0004) p = zielP;
-    const t0 = performance.now();
-    bild(p, jetzt / 1000, false);
-    messSumme += performance.now() - t0;
-    messAnzahl++;
+    const ruhig = Math.abs(zielP - p) < 0.00001;
+    bildNr++;
+    if (!ruhig || bildNr % 2 === 0) {   // bei Stillstand reicht jedes zweite Bild
+      const t0 = performance.now();
+      bild(p, jetzt / 1000, false);
+      messSumme += performance.now() - t0;
+      messAnzahl++;
+    }
     if (jetzt - messSeit > 1000) {
-      leinwand.dataset.zeichenzeit = (messSumme / messAnzahl).toFixed(1);
+      leinwand.dataset.zeichenzeit = messAnzahl ? (messSumme / messAnzahl).toFixed(1) : "";
+      leinwand.dataset.qualitaet = qualitaet.toFixed(2);
       messSumme = 0; messAnzahl = 0; messSeit = jetzt;
+      if (!ruhig && jetzt - geprueft > 2500 && abstandMittel > 24 && qualitaet > 0.55) {
+        qualitaet -= 0.15;
+        geprueft = jetzt;
+        abstandMittel = 16;
+        groesseAnpassen();
+      }
     }
     requestAnimationFrame(schleife);
   }
@@ -1778,6 +1565,7 @@ void main() {
     weltSicher();
     laeuft = true;
     letzte = performance.now();
+    geprueft = letzte;
     p = zielFortschritt();
     requestAnimationFrame(schleife);
   }
