@@ -13,7 +13,12 @@
 
   <meta name="theme-color" content="#f7f6f3" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)">
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <!-- Absolute Pfade: Im Offline-Betrieb liefert jede Adresse diese Seite aus
+       (404.html ist eine Kopie), auch /a/b/c -- relative Pfade liefen dort ins
+       Leere. Favicon und Schriften kopiert der Schritt "Platzhalter
+       vervollstaendigen" (README) in den Ordner; solange die Seite live ist,
+       liegen sie unter denselben Pfaden ohnehin im Wurzelverzeichnis. -->
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
   <script>
     // Laeuft absichtlich vor dem Stylesheet: verhindert das Aufblitzen der
@@ -30,39 +35,60 @@
   </script>
 
   <style>
-    /* Eigenstaendig: keine Schriften, keine Stylesheets, kein Skript von
-       aussen. Farben und Masze stammen aus css/style.css der richtigen
-       Seite, damit der Platzhalter nicht fremd wirkt. */
+    /* Eigenstaendig: kein Stylesheet und kein Skript von aussen. Farben,
+       Schriften und Masze stammen aus css/style.css der richtigen Seite
+       (Stand 10.10.2026: Kopfzeile, Kicker, schwarze Kopfbalken wie auf den
+       Formelseiten), damit der Platzhalter aussieht wie die Website. Die zwei
+       Schriften kommen vom eigenen Server; fehlen sie, greifen dieselben
+       Ersatzschriften wie auf der Website. */
+    @font-face {
+      font-family: "Manrope";
+      font-style: normal;
+      font-weight: 400 800;
+      font-display: swap;
+      src: url("/assets/fonts/Manrope-400.woff2") format("woff2");
+    }
+    @font-face {
+      font-family: "Playfair Display";
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url("/assets/fonts/PlayfairDisplay-500.woff2") format("woff2");
+    }
+
     :root {
       --bg: #f7f6f3;
       --panel: #fdfcfa;
       --border: #e2dfd8;
+      --border-2: #a9a69e;
       --text: #101012;
       --muted: #605f5b;
-      --rule-2: rgba(16, 16, 18, 0.28);
-      --rule-3: rgba(16, 16, 18, 0.1);
-      --shadow: rgba(16, 16, 18, 0.05);
+      --header-bg: rgba(247, 246, 243, 0.92);
+      --serif: "Playfair Display", "Palatino Linotype", Georgia, serif;
+      --sans: "Manrope", "Segoe UI", system-ui, sans-serif;
+      --mono: "Cascadia Code", Consolas, monospace;
+      --label: 0.64rem;
+      --label-ls: 0.2em;
+      --caption: 0.68rem;
     }
     :root[data-theme="dark"] {
       --bg: #0b0b0c;
       --panel: #121214;
       --border: #242426;
+      --border-2: #46464a;
       --text: #f4f2ee;
       --muted: #9d9d99;
-      --rule-2: rgba(244, 242, 238, 0.28);
-      --rule-3: rgba(244, 242, 238, 0.12);
-      --shadow: rgba(0, 0, 0, 0.35);
+      --header-bg: rgba(11, 11, 12, 0.92);
     }
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
         --bg: #0b0b0c;
         --panel: #121214;
         --border: #242426;
+        --border-2: #46464a;
         --text: #f4f2ee;
         --muted: #9d9d99;
-        --rule-2: rgba(244, 242, 238, 0.28);
-        --rule-3: rgba(244, 242, 238, 0.12);
-        --shadow: rgba(0, 0, 0, 0.35);
+        --header-bg: rgba(11, 11, 12, 0.92);
       }
     }
 
@@ -71,169 +97,188 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-family: var(--sans);
       font-size: 16px;
       line-height: 1.7;
       -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
-      padding: 32px 20px 56px;
+      flex-direction: column;
     }
 
-    a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--rule-2); }
+    a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--border-2); transition: border-color 0.2s; }
     a:hover { border-bottom-color: var(--text); }
     ::selection { background: var(--text); color: var(--bg); }
 
-    .sheet {
-      width: 100%;
-      max-width: 640px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      box-shadow: 0 1px 2px var(--shadow);
-      padding: 44px 36px 36px;
-    }
+    .container { width: 100%; max-width: 760px; margin: 0 auto; padding: 0 24px; }
 
-    /* --- Markenzeichen: dieselben drei Balken wie im Kopf der Seite --- */
+    /* --- Kopfzeile: das Lockup wie im Kopf der Website --- */
+    header {
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--border);
+    }
+    header .container { height: 74px; display: flex; align-items: center; }
     .brand { display: flex; align-items: center; gap: 12px; }
-    .brand svg { width: 26px; height: 26px; fill: var(--text); flex: none; }
+    .brand svg { width: 26px; height: 26px; fill: var(--text); flex-shrink: 0; }
     .brand-word {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: 0.16em;
+      font-size: 0.92rem;
+      font-weight: 800;
+      letter-spacing: 0.34em;
+      transform: translateX(0.17em);
     }
-    .brand-tag {
-      font-size: 0.64rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      border-left: 1px solid var(--border);
-      padding-left: 12px;
-      margin-left: 2px;
-    }
+    .brand-divider { width: 1px; height: 28px; background: var(--border-2); flex-shrink: 0; }
+    .brand-tag { display: flex; flex-direction: column; line-height: 1.3; }
+    .brand-line1 { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; }
+    .brand-line2 { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.03em; color: var(--muted); white-space: nowrap; }
 
-    hr {
-      border: 0;
-      height: 1px;
-      background: linear-gradient(to right, var(--rule-2), var(--rule-3));
-      margin: 28px 0;
-    }
+    main { flex: 1; padding: 72px 0 56px; }
 
-    .label {
-      font-family: Consolas, "Cascadia Code", monospace;
-      font-size: 0.64rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
+    .kicker {
       display: block;
-      margin-bottom: 12px;
+      font-family: var(--mono);
+      font-size: var(--label);
+      font-weight: 600;
+      letter-spacing: var(--label-ls);
+      text-transform: uppercase;
+      margin-bottom: 18px;
     }
 
     h1 {
-      font-family: "Palatino Linotype", Palatino, Georgia, serif;
-      font-size: 1.75rem;
-      font-weight: 400;
-      line-height: 1.28;
-      letter-spacing: -0.01em;
-      margin-bottom: 16px;
-    }
-
-    h2 {
-      font-family: "Palatino Linotype", Palatino, Georgia, serif;
-      font-size: 1.08rem;
-      font-weight: 400;
-      margin-bottom: 10px;
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: clamp(2rem, 4.4vw, 3rem);
+      line-height: 1.15;
+      letter-spacing: 0.002em;
+      text-wrap: balance;
+      margin-bottom: 22px;
     }
 
     p { color: var(--muted); margin-bottom: 14px; }
-    p.lead { color: var(--text); }
-    p:last-child { margin-bottom: 0; }
+    p.lead { color: var(--text); font-size: 1.08rem; }
 
-    .contact { margin-top: 22px; }
-    .contact a {
-      font-family: Consolas, "Cascadia Code", monospace;
-      font-size: 0.95rem;
-      letter-spacing: 0.02em;
+    .contact { margin-top: 26px; }
+    .contact a { font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.02em; }
+
+    /* --- Kasten mit schwarzem Kopfbalken, wie auf den Formelseiten --- */
+    .box {
+      margin-top: 44px;
+      border: 1px solid var(--text);
+      border-radius: 2px;
+      background: var(--panel);
     }
-
-    .en { margin-top: 4px; }
-
-    footer {
-      margin-top: 32px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-    footer h3 {
-      font-family: Consolas, "Cascadia Code", monospace;
-      font-size: 0.64rem;
-      font-weight: 400;
-      letter-spacing: 0.2em;
+    .box-titel {
+      padding: 9px 16px;
+      background: var(--text);
+      color: var(--bg);
+      font-family: var(--mono);
+      font-size: var(--label);
+      font-weight: 600;
+      letter-spacing: var(--label-ls);
       text-transform: uppercase;
-      color: var(--muted);
+    }
+    .box-inhalt { padding: 18px 16px 4px; }
+    .box-inhalt p { font-size: 0.95rem; }
+    .box h2 {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 1.35rem;
+      line-height: 1.3;
       margin-bottom: 10px;
     }
-    footer p { font-size: 0.82rem; margin-bottom: 12px; }
-    address { font-style: normal; }
+    address { font-style: normal; color: var(--text); margin-bottom: 14px; }
 
-    @media (max-width: 520px) {
-      .sheet { padding: 32px 22px 28px; }
-      h1 { font-size: 1.45rem; }
-      .brand-tag { display: none; }
+    footer { border-top: 1px solid var(--border); }
+    .footer-legal {
+      padding: 20px 0;
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.6;
+    }
+    .footer-legal p { margin-bottom: 8px; }
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 18px 0 24px;
+      font-family: var(--mono);
+      font-size: var(--caption);
+      color: var(--muted);
+    }
+
+    @media (max-width: 560px) {
+      .container { padding: 0 16px; }
+      main { padding: 48px 0 40px; }
+      .brand-tag, .brand-divider { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <main class="sheet">
-
-    <div class="brand">
-      <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
-      <span class="brand-word">JKHD</span>
-      <span class="brand-tag">Quant Systems</span>
+  <header>
+    <div class="container">
+      <div class="brand" aria-label="JKHD">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+        <span class="brand-word">JKHD</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-tag">
+          <span class="brand-line1">Quant Systems</span>
+          <span class="brand-line2">Just Know How to Dominate.</span>
+        </span>
+      </div>
     </div>
+  </header>
 
-    <hr>
+  <main>
+    <div class="container">
 
-    <span class="label">Vorübergehend offline</span>
-    <h1>Diese Webseite ist derzeit nicht erreichbar.</h1>
-    <p class="lead">Wir überarbeiten unseren Auftritt. Solange das dauert, sind
-      hier keine Inhalte abrufbar. Die Seite kommt zurück, sobald sie fertig
-      ist.</p>
-    <p>Nachrichten erreichen uns weiterhin per E-Mail — wir melden uns
-      zurück.</p>
+      <p class="kicker">// Vorübergehend offline</p>
+      <h1>Diese Webseite ist derzeit nicht erreichbar.</h1>
+      <p class="lead">Wir überarbeiten unseren Auftritt. Solange das dauert, sind
+        hier keine Inhalte abrufbar. Die Seite kommt zurück, sobald sie fertig
+        ist.</p>
+      <p>Nachrichten erreichen uns weiterhin per E-Mail — wir melden uns
+        zurück.</p>
 
-    <p class="contact"><a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a></p>
+      <p class="contact"><a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a></p>
 
-    <hr>
+      <section class="box" lang="en">
+        <p class="box-titel">English</p>
+        <div class="box-inhalt">
+          <h2>Temporarily offline</h2>
+          <p>This site is being rebuilt and is not available at the moment. It will
+            return once the work is done. We are not taking on work in the meantime;
+            enquiries by e-mail are welcome and will be answered.</p>
+        </div>
+      </section>
 
-    <section class="en" lang="en">
-      <h2>Temporarily offline</h2>
-      <p>This site is being rebuilt and is not available at the moment. It will
-        return once the work is done. We are not taking on work in the meantime;
-        enquiries by e-mail are welcome and will be answered.</p>
-    </section>
+      <section class="box">
+        <p class="box-titel">Angaben gemäß § 5 DDG</p>
+        <div class="box-inhalt">
+          <address>
+            Julian Lukas Kaiser<br>
+            Hohlebachstraße 31<br>
+            79418 Schliengen<br>
+            Deutschland<br>
+            E-Mail: <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+          </address>
+          <p>Verantwortlich für den Inhalt nach § 18 Abs. 2
+            MStV: Julian Lukas Kaiser, Anschrift wie oben.</p>
+        </div>
+      </section>
 
-    <footer>
-      <h3>Angaben gemäß § 5 DDG</h3>
-      <address>
-        Julian Lukas Kaiser<br>
-        Hohlebachstraße 31<br>
-        79418 Schliengen<br>
-        Deutschland<br>
-        E-Mail: <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
-      </address>
-      <p style="margin-top:12px">Verantwortlich für den Inhalt nach § 18 Abs. 2
-        MStV: Julian Lukas Kaiser, Anschrift wie oben.</p>
-      <p>JKHD entwickelt und betreibt quantitative Systeme für den
-        Eigenbedarf. Keine Anlageberatung, keine Anlagevermittlung,
-        keine Finanzportfolioverwaltung.</p>
-      <p>Diese Seite setzt keine Cookies, bindet nichts von fremden Servern ein
-        und wertet nichts aus.</p>
-    </footer>
-
+    </div>
   </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-legal">
+        <p>JKHD entwickelt und betreibt quantitative Systeme für den
+          Eigenbedarf. Keine Anlageberatung, keine Anlagevermittlung,
+          keine Finanzportfolioverwaltung.</p>
+        <p>Diese Seite setzt keine Cookies, bindet nichts von fremden Servern ein
+          und wertet nichts aus.</p>
+      </div>
+      <div class="footer-bottom">© 2026 JKHD — jkhd.de</div>
+    </div>
+  </footer>
 
 </body>
 </html>

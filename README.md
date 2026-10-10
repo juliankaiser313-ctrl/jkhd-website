@@ -32,7 +32,7 @@ impressum.html     Impressum (§ 5 DDG)
 datenschutz.html   Datenschutzerklärung
 404.html           Fehlerseite (zweisprachig)
 ueber/leistungen/projekte/technologie/ansatz.html   Weiterleitungen auf die neuen Seiten
-holding/           Eigenständige Holding-Variante, aus der Navigation nicht verlinkt
+holding/           Alte Deckseite (bis 20.09.2026); seit 10.10.2026 nur noch Weiterleitungen auf Startseite, Impressum, Datenschutz
 
 en/index.html      Englische Fassung der Startseite
 en/system.html     "How a system is built"
@@ -319,18 +319,21 @@ damit die Seite jederzeit wieder abgeschaltet werden kann.
 
 So ist das gemacht:
 
-- `offline/index.html` — der Platzhalter. Eigenständig: eigene Farben und
-  Maße inline, keine Schriften, keine Stylesheets, kein Skript von außen.
-  Enthält das Impressum nach § 5 DDG, damit die Pflichtangaben trotz
+- `offline/index.html` — der Platzhalter. Eigenständig: Farben, Maße und
+  Gestaltung der Website inline (seit 10.10.2026 im Stil der Website:
+  Kopfzeile mit Lockup, Kicker, Kästen mit schwarzem Kopfbalken), kein
+  Stylesheet und kein Skript von außen; die zwei Schriften (Manrope,
+  Playfair Display) und das Favicon kommen über absolute Pfade vom eigenen
+  Server. Enthält das Impressum nach § 5 DDG, damit die Pflichtangaben trotz
   abgeschalteter `impressum.html` erreichbar bleiben.
 - `offline/robots.txt` — erlaubt Crawlen **absichtlich weiter**. Nur so lesen
   Suchmaschinen das `noindex` des Platzhalters und den 404 der alten Adressen
   und nehmen die Seite aus dem Index. Ein `Disallow: /` würde das verhindern
   und die alten Treffer länger stehen lassen.
 - `.github/workflows/pages.yml` — lädt `./offline` hoch statt `.` und kopiert
-  vorher `CNAME`, `favicon.svg` und `index.html` → `404.html` hinein. Dadurch
-  bleibt die Domain am Repository und jede beliebige Adresse zeigt den
-  Platzhalter.
+  vorher `CNAME`, `favicon.svg`, die zwei Schriften und `index.html` →
+  `404.html` hinein. Dadurch bleibt die Domain am Repository und jede
+  beliebige Adresse zeigt den Platzhalter.
 
 **Wieder offline:** im Workflow `path: .` auf `path: ./offline` setzen und davor
 diesen Schritt einsetzen, dann auf `main` pushen:
@@ -340,6 +343,8 @@ diesen Schritt einsetzen, dann auf `main` pushen:
         run: |
           cp CNAME       offline/CNAME          # Domain bleibt am Repository
           cp favicon.svg offline/favicon.svg
+          mkdir -p offline/assets/fonts           # Schriften unter demselben Pfad wie live
+          cp assets/fonts/Manrope-400.woff2 assets/fonts/PlayfairDisplay-500.woff2 offline/assets/fonts/
           cp offline/index.html offline/404.html  # jede Adresse zeigt den Platzhalter
 ```
 
@@ -367,7 +372,7 @@ Offen:
       zugeteilt ist (§ 5 Abs. 1 Nr. 6 DDG) — Julian prüft ELSTER-Postfach/BZSt-Post; die W-IdNr.
       kommt ohne Antrag. Zweiter Kontaktweg steht seit 26.09.2026 (Anfrageformular)
 - [ ] Fotos für die Unternehmensseite — der Platzhalter-Abschnitt „Einblicke" ist seit 26.09.2026 weg
-- [ ] `holding/` verweist auf `css/…` statt `../css/…` — dort fehlt das Design
+- [x] `holding/` verwies auf `css/…` statt `../css/…` (ohne Design) und beschrieb das alte Modell — seit 10.10.2026 Weiterleitungen, 404.html und sitemap.xml dort entfernt
 
 ## Belege zur Datenschutzerklärung: KI-Fragen und Zugriffsprotokolle (26.09.2026)
 
