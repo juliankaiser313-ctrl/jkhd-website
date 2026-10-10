@@ -31,7 +31,9 @@
 // einfach nix; und wenn man ins Universum kommt, sollen die Punkte nicht einfach
 // verschwinden -- echter und schoener." Zehnte Fassung: "auf dem Handy sieht das
 // Ganze viel schoener aus als auf dem Laptop; und die Kamera soll sich nicht so wild
-// umherdrehen, eher waagerecht bleiben und nur nach links oder rechts gehen."
+// umherdrehen, eher waagerecht bleiben und nur nach links oder rechts gehen." Dazu:
+// "die grossen Planeten sind immer noch zu nah und springen ploetzlich, das darf
+// nicht passieren."
 //
 // Umsetzung ohne Bibliothek: eine Zeichenflaeche (canvas 2D) mit eigener
 // Perspektiv-Projektion; die Erde zeichnet ein kleines WebGL-Programm (eine Kugel je
@@ -47,7 +49,8 @@
 //   0,20-0,70  der Flug auf einer sehr langen, kurvigen Bahn durch die Galaxie: ein
 //              dichtes Sternfeld, das Band mit Glut und Staub, Nebel, ferne Galaxien
 //              -- und vier Planeten, die fest im Raum stehen (echte Kugeln aus WebGL
-//              mit Karte, Licht und Drehung), weit auseinander, mal nah, mal fern;
+//              mit Karte, Licht und Drehung), weit auseinander: sie kommen von weit
+//              her langsam naeher und ziehen in Abstand seitlich vorbei;
 //              voraus waechst die Erde, mit Mond
 //   0,70-0,77  die Erde dreht sich nach Europa, der Flug geht ohne Halt in den Zoom ueber
 //   0,71-0,86  Zoom: in die Atmosphaere, durch die Wolken, Europa, Abend, die Lichter
@@ -167,7 +170,9 @@
   // zoomt auf eine Stadt"); angeschrieben ist nichts
   const ZIEL_LAENGE = 7.85, ZIEL_BREITE = 47.995;
   const GRAD = Math.PI / 180;
-  const SONNE_WELT = norm([-0.5, 0.3, 0.8]);   // Licht von links oben, hinter der Kamera
+  // Licht von schraeg hinter der Kamera, etwas links und oben: so zeigen die Planeten
+  // beim Vorbeiflug ihre Tagseite, und keine dunkle Nachtseite schiebt sich ins Bild
+  const SONNE_WELT = norm([-0.25, 0.35, 0.9]);
   // Ausschnitte der NASA-Bilder: Laenge, Breite der linken unteren Ecke, Spannen (Grad)
   const EUROPA = [-14, 34, 50, 30], ZIEL_BOX = [4, 45, 7, 5.5];
   // Der Spruch am Ende, in der Sprache der Seite (wie in der Fusszeile)
@@ -291,20 +296,24 @@
   const STERN_FARBEN = ["185,200,255", "222,230,255", "255,255,255", "255,244,222", "255,224,176", "255,192,150"];
 
   // Die Planeten stehen fest im Raum, seitlich neben der Bahn (u = wo, Seite, Hoehe,
-  // Radius); die Kamera fliegt gerade an ihnen vorbei: sie kommen von vorn, wachsen
-  // und ziehen am Rand des Bildes weg. Anderthalb Radien Abstand: dann fuellen sie
-  // kurz vor dem Vorbeiflug ein gutes Viertel des Bildes
-  // (abst = Abstand von der Bahn in Radien: klein = dichter Vorbeiflug, gross = fern;
-  // saum = Farbe und Staerke der Atmosphaere am Rand; glanz = Glanzlicht; tempo =
-  // Eigendrehung, neigung = Achsneigung)
+  // Radius); die Kamera fliegt gerade an ihnen vorbei: sie kommen von weit her als
+  // schwacher Punkt, wachsen langsam und ziehen seitlich aus dem Bild. Der Abstand
+  // (abst, in Radien) bestimmt, wie gross ein Planet hoechstens wird, wenn seine
+  // Mitte den Bildrand erreicht: der Radius ist dann 1 / (2 abst) der Bildbreite --
+  // bei 5 Radien ein Zehntel, Julian: "zu nah, das darf nicht passieren". Kleine
+  // zuerst, die grossen zuletzt (auf dem Handy, mit schmalerem Blick, etwas naeher:
+  // siehe planetOrt). sicht = ab dieser Entfernung kommt er aus dem Dunst (gestaffelt,
+  // damit sie nacheinander auftauchen); saum = Farbe und Staerke der Atmosphaere am
+  // Rand; glanz = Glanzlicht; tempo = Eigendrehung, neigung = Achsneigung
   const PLANETEN = [
-    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.4, seite: 1, hoch: 0.1, r: 650, abst: 1.5, saum: [1.0, 0.9, 0.75], saumStaerke: 0.5, glanz: 0.12, tempo: 3, neigung: 8 },
-    { art: "ring", grund: [220, 200, 150], baender: [[230, 215, 170], [205, 185, 135], [225, 210, 165]], u: 0.58, seite: -1, hoch: -0.15, r: 520, abst: 1.35, saum: [1.0, 0.95, 0.8], saumStaerke: 0.45, glanz: 0.1, tempo: 4, neigung: 22 },
-    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.74, seite: 1, hoch: 0.2, r: 400, abst: 1.7, saum: [0.55, 0.7, 1.0], saumStaerke: 0.7, glanz: 0.25, tempo: 5, neigung: 28 },
-    { art: "fels", grund: [190, 105, 70], kappe: true, u: 0.88, seite: -1, hoch: -0.05, r: 240, abst: 1.4, saum: [1.0, 0.75, 0.6], saumStaerke: 0.25, glanz: 0.04, tempo: 2.5, neigung: 25 },
+    { art: "fels", grund: [190, 105, 70], kappe: true, u: 0.6, seite: -1, hoch: -0.05, r: 240, abst: 3.5, sicht: 6000, saum: [1.0, 0.75, 0.6], saumStaerke: 0.25, glanz: 0.04, tempo: 2.5, neigung: 25 },
+    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.72, seite: 1, hoch: 0.15, r: 400, abst: 4.0, sicht: 6500, saum: [0.55, 0.7, 1.0], saumStaerke: 0.7, glanz: 0.25, tempo: 5, neigung: 28 },
+    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.84, seite: -1, hoch: 0.1, r: 650, abst: 5.0, sicht: 7500, saum: [1.0, 0.9, 0.75], saumStaerke: 0.5, glanz: 0.12, tempo: 3, neigung: 8 },
+    { art: "ring", grund: [220, 200, 150], baender: [[230, 215, 170], [205, 185, 135], [225, 210, 165]], u: 0.96, seite: 1, hoch: -0.1, r: 520, abst: 5.5, sicht: 7500, saum: [1.0, 0.95, 0.8], saumStaerke: 0.45, glanz: 0.1, tempo: 4, neigung: 22 },
   ];
   const MOND = { art: "mond", grund: [150, 150, 152], r: 30, saum: [0.8, 0.8, 0.8], saumStaerke: 0.0, glanz: 0.02, tempo: 0.5, neigung: 6 };
-  const PLANET_ORTE = PLANETEN.map((pl) => neben(pl.u, pl.seite, pl.hoch, pl.r * pl.abst, 0));
+  // Der Ort eines Planeten; nah < 1 rueckt ihn an die Bahn heran (Handy)
+  const planetOrt = (pl, nah) => neben(pl.u, pl.seite, pl.hoch, pl.r * pl.abst * nah, 0);
 
   // ---- Sprites: einmal gezeichnete Bilder, die dann nur noch kopiert werden ----
   function sprite(b, h) { const c = document.createElement("canvas"); c.width = b; c.height = h; return c; }
@@ -489,27 +498,37 @@
     }
     return c;
   }
-  // Die Ringe (in Bildkoordinaten um die Kugel): hinten die obere Haelfte, vorn die untere
-  // (eine Flaeche mit einem Verlauf, dessen Stufen die Baender und Luecken sind -- so
-  // kostet sie auch riesig nur einen Fuellvorgang)
-  function ringeZeichnen(cx, cy, R, hinten, a, neigung) {
-    ctx.save();
-    ctx.beginPath(); ctx.rect(0, hinten ? 0 : cy, B, hinten ? cy : H - cy); ctx.clip();
-    ctx.translate(cx, cy); ctx.rotate(neigung); ctx.scale(1, 0.26);
-    const r0 = R * 1.3, r1 = R * 2.4;
-    const g = ctx.createRadialGradient(0, 0, r0, 0, 0, r1);
+  // Die Ringe: einmal als Bild gezeichnet (siehe spritesBauen) -- eine Flaeche mit
+  // einem Verlauf, dessen Stufen die Baender und Luecken sind. Den Verlauf in jedem
+  // Bild neu zu zeichnen liess den Browser beim ersten Mal ein eigenes Schattierungs-
+  // programm uebersetzen: 150 ms, ein Ruckler, wenn der Saturn auftaucht
+  const RING_INNEN = 1.3, RING_AUSSEN = 2.4;   // in Radien der Kugel
+  function ringBauen() {
+    const S = 1024, c = sprite(S, S), g2 = c.getContext("2d");
+    const r1 = S / 2, r0 = (r1 * RING_INNEN) / RING_AUSSEN;
+    const g = g2.createRadialGradient(r1, r1, r0, r1, r1, r1);
     for (let i = 0; i <= 48; i++) {
       const luecke = i > 30 && i < 34 ? 0.12 : i > 40 && i < 42 ? 0.5 : 1;
       const al = (0.22 + 0.55 * Math.abs(Math.sin(i * 0.9 + 1))) * luecke * (i > 42 ? 0.4 : 1);
       const k = 0.72 + 0.28 * Math.sin(i * 0.5);
       g.addColorStop(i / 48, `rgba(${Math.round(228 * k)},${Math.round(214 * k)},${Math.round(184 * k)},${al.toFixed(3)})`);
     }
+    g2.fillStyle = g;
+    g2.beginPath();
+    g2.ellipse(r1, r1, r1, r1, 0, 0, Math.PI * 2);
+    g2.ellipse(r1, r1, r0, r0, 0, 0, Math.PI * 2, true);
+    g2.fill("evenodd");
+    return c;
+  }
+  // (in Bildkoordinaten um die Kugel: hinten die obere Haelfte, vorn die untere)
+  function ringeZeichnen(cx, cy, R, hinten, a, neigung) {
+    if (!welt || !welt.ring) return;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, hinten ? 0 : cy, B, hinten ? cy : H - cy); ctx.clip();
+    ctx.translate(cx, cy); ctx.rotate(neigung); ctx.scale(1, 0.26);
+    const r1 = R * RING_AUSSEN;
     ctx.globalAlpha = a;
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, r1, r1, 0, 0, Math.PI * 2);
-    ctx.ellipse(0, 0, r0, r0, 0, 0, Math.PI * 2, true);
-    ctx.fill("evenodd");
+    ctx.drawImage(welt.ring, -r1, -r1, 2 * r1, 2 * r1);
     ctx.restore();
   }
 
@@ -572,17 +591,18 @@
     // am Eintritt in die Galaxie: dichte Wolken, durch die die Kamera fliegt
     for (let i = 0; i < 4; i++) wolke(neben(0.04 + i * 0.03, Math.cos(i * 1.9), Math.sin(i * 1.9) * 0.6, 180 + z() * 220, 0), 700 + z() * 400, 0.3 + z() * 0.12, i + 1);
     // um jeden Planeten herum, hinter ihm und daneben
+    const orte = PLANETEN.map((pl) => planetOrt(pl, klein ? 0.55 : 1));
     PLANETEN.forEach((pl, i) => {
       for (let j = 0; j < 1; j++) {
         const w = z() * Math.PI * 2;
-        const m = PLANET_ORTE[i];
+        const m = orte[i];
         const rf = rahmen(pl.u);
         const d = pl.r * (1.6 + z() * 0.8);
         wolke([0, 1, 2].map((k) => m[k] + (rf.rechts[k] * Math.cos(w) + rf.oben[k] * Math.sin(w)) * d - rf.vorn[k] * pl.r * (0.8 + j)), pl.r * (1.8 + z() * 0.8), 0.2 + z() * 0.14, i + j);
       }
     });
     // Planeten und der Mond der Erde -- ihre Karten kommen nach und nach (siehe spritesBauen)
-    const planeten = PLANETEN.map((pl, i) => ({ art: pl.art, pl, p: PLANET_ORTE[i], r: pl.r, phase: z() * 360, karte: null }));
+    const planeten = PLANETEN.map((pl, i) => ({ art: pl.art, pl, p: orte[i], r: pl.r, phase: z() * 360, karte: null }));
     const erdeMond = { art: "mond", pl: MOND, p: neben(0.97, -1, 0.3, 430, -250), r: MOND.r, phase: 40, karte: null };
     // Ferne Galaxien, weit neben der Bahn: kleine Scheiben, schraeg, die langsam vorbeiziehen
     const galaxien = [];
@@ -607,9 +627,9 @@
     for (let i = 0; i < 12; i++) kondensatoren.push([0.45 + z() * 0.34, 0.44 + z() * 0.06]);
     for (let i = 0; i < 6; i++) kondensatoren.push([0.74 + z() * 0.03, 0.5 + z() * 0.3]);
 
-    return { klein, dichte, sterne, bandGlut, bandStaub, staub, nebel, planeten, erdeMond, galaxien, bahnen, kondensatoren, galaxie: null, erde: null };
+    return { klein, dichte, sterne, bandGlut, bandStaub, staub, nebel, planeten, erdeMond, galaxien, bahnen, kondensatoren, galaxie: null, ring: null, erde: null };
   }
-  // Die Galaxie und die Karten der Planeten kosten je einige Dutzend Millisekunden: eines
+  // Die Galaxie, die Ringe und die Karten der Planeten kosten je einige Dutzend Millisekunden: eines
   // nach dem anderen, jeweils wenn der Browser Luft hat -- in Reihenfolge des Auftritts.
   // Jede Karte wird gleich als Textur in WebGL abgelegt (ohne WebGL bleibt sie leer).
   function spritesBauen() {
@@ -617,6 +637,7 @@
     const w = welt;
     let schritt = null;
     if (!w.galaxie) schritt = () => { w.galaxie = galaxieBauen(); };
+    else if (!w.ring) schritt = () => { w.ring = ringBauen(); };
     else {
       const offen = w.planeten.concat([w.erdeMond]).find((pl) => !pl.karte);
       if (offen) schritt = () => {
@@ -1159,16 +1180,18 @@ void main() {
         if (q1.x + r < 0 || q1.x - r > B || q1.y + r < 0 || q1.y - r > H) continue;
         const a = himmel * innen * w.a * clamp(1 - (q1.z - 600) / 7000, 0, 1) * clamp((q1.z - 100) / 500, 0, 1);
         if (a < 0.005) continue;
-        if (r > rand * 0.6) {
-          ctx.globalAlpha = a * 0.3;
+        // (der Wechsel vom Bild zur Flaeche ist ein Uebergang, kein Sprung)
+        const flaeche = stueck(r, rand * 0.45, rand * 0.6);
+        if (flaeche > 0) {
+          ctx.globalAlpha = a * 0.3 * flaeche;
           ctx.fillStyle = `rgb(${w.farbe})`;
           ctx.fillRect(0, 0, B, H);
-          continue;
+          if (flaeche >= 1) continue;
         }
         ctx.save();
         ctx.translate(q1.x, q1.y);
         ctx.rotate(w.dreh + zeit * 0.01);
-        ctx.globalAlpha = a;
+        ctx.globalAlpha = a * (1 - flaeche);
         ctx.drawImage(w.bild, -r, -r, 2 * r, 2 * r);
         ctx.restore();
       }
@@ -1228,9 +1251,10 @@ void main() {
       }
     }
 
-    // Planeten und der Mond: echte Kugeln (WebGL) -- fern liegt Dunst davor, der mit
-    // der Naehe weicht; sie drehen sich langsam um die eigene Achse, das Licht kommt
-    // von der Sonne hinter der Kamera, beim Vorbeiflug wandert es ueber die Kugel
+    // Planeten und der Mond: echte Kugeln (WebGL). Ab der Sichtweite kommt ein Planet
+    // als schwacher Punkt aus dem Dunst, der ueber die ganze Strecke weicht -- nichts
+    // taucht ploetzlich auf. Sie drehen sich langsam um die eigene Achse, das Licht
+    // kommt von der Sonne hinter der Kamera, beim Vorbeiflug wandert es ueber die Kugel
     ctx.globalCompositeOperation = "source-over";
     const sonneSicht = [dot(SONNE_WELT, k.rechts), dot(SONNE_WELT, k.oben), -dot(SONNE_WELT, k.vorn)];
     const planetZeichnen = (pl, a) => {
@@ -1238,8 +1262,9 @@ void main() {
       if (!m) return;
       const R = (pl.r * f) / m.z;
       if (R < 0.8 || m.x + R * 2.6 < 0 || m.x - R * 2.6 > B || m.y + R * 2.6 < 0 || m.y - R * 2.6 > H) return;
-      const dunst = pl.r > 60 ? clamp((m.z - 1500) / 2500, 0, 1) : clamp((m.z - 3000) / 7000, 0, 1);
-      a *= clamp((m.z - 40) / 120, 0, 1) * (1 - stueck(dunst, 0.8, 1));
+      const sichtweite = pl.pl.sicht || 10000;
+      const dunst = clamp((m.z - 2500) / (sichtweite - 2500), 0, 1);
+      a *= clamp((m.z - 40) / 120, 0, 1) * (1 - stueck(dunst, 0.5, 1));   // ueber die ferne Haelfte der Sichtweite einblenden
       if (a < 0.02) return;
       const laenge0 = pl.phase + (still ? 0 : zeit * pl.pl.tempo), breite0 = pl.pl.neigung;
       const kipp = pl.art === "ring" ? -0.18 : 0;
@@ -1260,13 +1285,14 @@ void main() {
       if (pl.art === "ring") ringeZeichnen(m.x, m.y, R, false, a, kipp);
       if (dunst > 0.02) {
         ctx.globalCompositeOperation = "source-over";
-        ctx.globalAlpha = a * dunst * 0.85;
+        ctx.globalAlpha = a * dunst * 0.7;
         const r = R * (pl.art === "ring" ? 2.6 : 1.3);
         ctx.drawImage(fleck("8,10,18"), m.x - r, m.y - r, 2 * r, 2 * r);
       }
     };
-    // erst, wenn die Kamera in der Galaxie ist -- ein Planet ausserhalb kann nicht sein
-    const planetenSicht = himmel * stueck(q, 0.3, 0.38);
+    // erst, wenn die Kamera in der Galaxie ist und deren Bild (bis q 0,46) verschwunden
+    // -- ein Planet ausserhalb der Milchstrasse kann nicht sein
+    const planetenSicht = himmel * stueck(q, 0.44, 0.52);
     if (planetenSicht > 0) for (const pl of welt.planeten) planetZeichnen(pl, planetenSicht);
     const mondSicht = erdeSicht * (1 - stueck(L, 0, 0.5));
     if (mondSicht > 0) planetZeichnen(welt.erdeMond, mondSicht);
