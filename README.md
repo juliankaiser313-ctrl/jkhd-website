@@ -54,7 +54,7 @@ css/style.css      Gesamtes Design (Farben oben als CSS-Variablen)
 js/main.js         Mobile-Nav, Hell/Dunkel, Fragen-Blase, Partnerzugang
 js/spiel-motor.js  Spielmotor der Simulation (Regeln, Markt, Konten, JKHD-Algo), ohne DOM
 js/spiel.js        Oberfläche der Simulation (nur auf simulation.html / en/simulation.html)
-js/zeichen.js      Startseite: beim Scrollen wird das Zeichen zum Chart und wieder zum Zeichen (nur index.html / en/index.html)
+js/universum.js    Startseite: beim Scrollen ein Flug durch ein Netz aus Mathematik, am Ziel das Zeichen mit dem Spruch (nur index.html / en/index.html)
 favicon.svg        Browser-Tab-Icon (drei Balken)
 ```
 
