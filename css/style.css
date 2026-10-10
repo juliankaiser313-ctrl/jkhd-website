@@ -563,29 +563,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 .hero-actions { margin-top: 38px; display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
 
-/* ---------- Ticker ---------- */
-
-.ticker {
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  background: var(--panel);
-  overflow: hidden;
-  padding: 13px 0;
-}
-
-.ticker-track { display: flex; width: max-content; animation: tickerScroll 46s linear infinite; }
-.ticker-group { display: flex; gap: 64px; padding-right: 64px; }
-.ticker-group span {
-  font-family: var(--mono);
-  font-size: var(--label);
-  letter-spacing: var(--label-ls);
-  text-transform: uppercase;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
-@keyframes tickerScroll { to { transform: translateX(-50%); } }
-
 /* ---------- Sektionen ---------- */
 
 .section { padding: 110px 0; }
@@ -1997,10 +1974,6 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
    tut, und erklaert darunter in einfachen Worten alles in einem Topf.
    Monochrom wie der Rest, Lebendigkeit nur aus der Typografie. */
 
-/* Die Laufleiste ist bewusst leer (Inhalt entscheidet Julian); die Hoehe
-   der frueheren Textzeile bleibt, damit nichts springt. */
-.ticker { min-height: 42px; }
-
 /* --- Kurz gesagt --- */
 
 .statement { max-width: 920px; }
@@ -2910,7 +2883,11 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
    steht das Zeichen auf Schwarz; bei reduzierter Bewegung (.ist-still) das Schlussbild
    ohne Scrollweg. */
 .universum { position: relative; background: #000; }
-.universum.ist-aktiv { height: 520vh; }
+.universum.ist-aktiv { height: 760vh; }
+/* Weicher Uebergang vom Startbildschirm (Papier bzw. Nacht) ins Schwarz -- an
+   der Stelle stand bis 10.10.2026 die leere Laufleiste (Julian: "diesen
+   Uebergangsbalken wegmachen"). js/universum.js zaehlt erst nach ihm. */
+.universum-uebergang { height: 36vh; background: linear-gradient(to bottom, var(--bg), #000); }
 .universum-buehne {
   position: sticky;
   top: var(--header-h);
@@ -2938,5 +2915,5 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .universum.ist-still { height: auto; }
 .universum.ist-still .universum-buehne { position: relative; top: 0; height: 72vh; min-height: 420px; }
 @media (max-width: 560px) {
-  .universum.ist-aktiv { height: 440vh; }
+  .universum.ist-aktiv { height: 640vh; }
 }

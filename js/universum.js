@@ -49,12 +49,15 @@
   const norm = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
 
   // ---- Die Bahn: Catmull-Rom durch Stuetzpunkte, die Kamera fliegt nach -z ----
-  const LAENGE = 5200;
+  // (10.10.2026 abends, Julian: "die Animation etwas laenger, mit mehr Details im
+  // Hintergrund" -- Bahn von 5200 auf 8400, 14 statt 10 Stuecke)
+  const LAENGE = 8400;
+  const STUECKE = 14;
   const STUETZEN = [];
-  for (let i = 0; i <= 10; i++) {
-    const z = 300 - i * (LAENGE / 10);
-    const ruhe = i >= 9 ? 0 : 1;   // zum Ziel hin gerade
-    STUETZEN.push([Math.sin(i * 0.9) * 340 * ruhe, Math.sin(i * 0.7 + 1.2) * 190 * ruhe, z]);
+  for (let i = 0; i <= STUECKE; i++) {
+    const z = 300 - i * (LAENGE / STUECKE);
+    const ruhe = i >= STUECKE - 1 ? 0 : 1;   // zum Ziel hin gerade
+    STUETZEN.push([Math.sin(i * 0.9) * 360 * ruhe, Math.sin(i * 0.7 + 1.2) * 210 * ruhe, z]);
   }
   function bahn(u) {
     const n = STUETZEN.length - 1;
@@ -86,6 +89,10 @@
     "dS_{t} = μS_{t} dt + σS_{t} dW_{t}", "σ^{2} = E[(X − μ)^{2}]", "R_{μν} − ½ R g_{μν} = 8πG T_{μν}",
     "∮ F · dr = ∬ (∇ × F) · dA", "f(x) = Σ a_{n} x^{n}", "a^{2} + b^{2} = c^{2}", "lim_{n→∞} (1 + 1/n)^{n} = e",
     "H = − Σ p_{i} log p_{i}", "∂u/∂t = α ∇^{2}u",
+    "φ = (1 + √5) / 2", "Σ_{k=1}^{n} k = n(n + 1) / 2", "f̂(ξ) = ∫ f(x) e^{−2πixξ} dx",
+    "∂L/∂q − d/dt ∂L/∂q̇ = 0", "f(x) = e^{−x^{2}/2} / √(2π)", "e^{x} = Σ x^{n} / n!",
+    "∇ × B = μ_{0}J + μ_{0}ε_{0} ∂E/∂t", "∮ f(z) dz = 2πi Σ Res", "df = f′ dX + ½ f″ σ^{2} dt",
+    "det(A − λI) = 0",
   ];
   const ZEICHEN = ["π", "Σ", "∫", "∂", "∞", "λ", "μ", "σ", "∇", "φ", "ε", "Δ", "θ", "Ω", "√", "≈", "∮", "ℏ"];
 
@@ -93,17 +100,48 @@
   function weltBauen(klein) {
     const z = zufall(20261010);
     const sterne = [];
-    const anzahlSterne = klein ? 700 : 1500;
+    const anzahlSterne = klein ? 900 : 2000;
     for (let i = 0; i < anzahlSterne; i++) {
       sterne.push({
-        p: [(z() - 0.5) * 6000, (z() - 0.5) * 4200, 900 - z() * (LAENGE + 2600)],
+        p: [(z() - 0.5) * 7000, (z() - 0.5) * 5000, 900 - z() * (LAENGE + 2600)],
         g: 0.4 + z() * 1.3,
+        hell: 0.6 + z() * 0.4,
         phase: z() * Math.PI * 2,
       });
     }
+    // Ein Band wie die Milchstrasse: viele schwache Sterne auf einer grossen, schraeg
+    // liegenden Scheibe um die Mitte der Bahn -- es zieht sich quer ueber den Himmel
+    const mitteBahn = bahn(0.55);
+    const neigung = 0.42;
+    const anzahlBand = klein ? 1100 : 2800;
+    for (let i = 0; i < anzahlBand; i++) {
+      const winkel = z() * Math.PI * 2;
+      const radius = 5200 + z() * 4200;
+      const quer = (z() + z() + z() - 1.5) * 700;   // grob normalverteilt: dichte Mitte
+      const x = Math.cos(winkel) * radius;
+      const t = Math.sin(winkel) * radius;
+      sterne.push({
+        p: [mitteBahn[0] + x, mitteBahn[1] + t * Math.sin(neigung) + quer * Math.cos(neigung), mitteBahn[2] + t * Math.cos(neigung) - quer * Math.sin(neigung)],
+        g: 0.3 + z() * 0.9,
+        hell: 0.25 + z() * 0.45,
+        phase: z() * Math.PI * 2,
+        band: true,
+      });
+    }
+    // Staub nah an der Bahn: fliegt dicht an der Kamera vorbei und gibt Tempo
+    const staub = [];
+    const anzahlStaub = klein ? 140 : 300;
+    for (let i = 0; i < anzahlStaub; i++) {
+      const u = z();
+      const mitte = bahn(u);
+      const r = rahmen(u);
+      const winkel = z() * Math.PI * 2;
+      const weite = 40 + z() * 260;
+      staub.push([0, 1, 2].map((k) => mitte[k] + (r.rechts[k] * Math.cos(winkel) + r.oben[k] * Math.sin(winkel)) * weite));
+    }
     // Knoten in einer Roehre um die Bahn, die zum Ziel hin enger wird
     const knoten = [];
-    const anzahlKnoten = klein ? 150 : 240;
+    const anzahlKnoten = klein ? 210 : 340;
     for (let i = 0; i < anzahlKnoten; i++) {
       const u = 0.03 + (i / anzahlKnoten) * 0.95 + (z() - 0.5) * 0.01;
       const mitte = bahn(u);
@@ -160,8 +198,8 @@
     // Nebel: wenige grosse Lichtwolken neben der Bahn, kuehle Grautoene
     const FARBEN = ["170,185,215", "190,180,215", "160,200,215", "205,205,215"];
     const nebel = [];
-    for (let i = 0; i < 9; i++) {
-      const u = 0.06 + i * 0.105 + (z() - 0.5) * 0.04;
+    for (let i = 0; i < 14; i++) {
+      const u = 0.05 + i * 0.066 + (z() - 0.5) * 0.03;
       const mitte = bahn(u);
       const r = rahmen(u);
       const winkel = z() * Math.PI * 2;
@@ -173,7 +211,123 @@
         farbe: FARBEN[i % FARBEN.length],
       });
     }
-    return { klein, sterne, knoten, kanten, strom, BALKEN, nebel };
+    // Koerper der Mathematik als Drahtmodelle, die langsam drehend neben der Bahn
+    // schweben (Koordinaten etwa in [-1, 1], jede Form eine Liste von Linienzuegen)
+    const FORMEN = [lorenz(), torus(), kugel(), spirale(), helix(), welle(), moebius(), achsen()];
+    const objekte = FORMEN.map((zuege, i) => {
+      const u = 0.1 + i * 0.1 + (z() - 0.5) * 0.03;
+      const mitte = bahn(u);
+      const r = rahmen(u);
+      const winkel = (i % 2 ? 0.15 : Math.PI - 0.15) + (z() - 0.5) * 1.1;
+      const weite = 620 + z() * 360;
+      return {
+        mitte: [0, 1, 2].map((k) => mitte[k] + (r.rechts[k] * Math.cos(winkel) + r.oben[k] * Math.sin(winkel)) * weite),
+        zuege,
+        groesse: 240 + z() * 170,
+        tempo: (0.05 + z() * 0.07) * (z() < 0.5 ? -1 : 1),
+        phase: z() * Math.PI * 2,
+        kipp: (z() - 0.5) * 1.2,
+        a: 0.28 + z() * 0.14,
+      };
+    });
+    return { klein, sterne, staub, knoten, kanten, strom, BALKEN, nebel, objekte };
+  }
+
+  // ---- Formen (Linienzuege in eigenen Koordinaten) ----
+  function lorenz() {
+    let x = 0.1, y = 0, z = 0;
+    const zug = [];
+    for (let i = 0; i < 1700; i++) {
+      const dt = 0.008;
+      const dx = 10 * (y - x), dy = x * (28 - z) - y, dz = x * y - (8 / 3) * z;
+      x += dx * dt; y += dy * dt; z += dz * dt;
+      if (i > 150 && i % 2 === 0) zug.push([x / 22, (z - 25) / 22, y / 22]);
+    }
+    return [zug];
+  }
+  function torus() {
+    const zuege = [];
+    const R = 0.68, r = 0.28;
+    for (let i = 0; i < 18; i++) {
+      const a = (i / 18) * Math.PI * 2, zug = [];
+      for (let j = 0; j <= 20; j++) { const b = (j / 20) * Math.PI * 2; zug.push([(R + r * Math.cos(b)) * Math.cos(a), r * Math.sin(b), (R + r * Math.cos(b)) * Math.sin(a)]); }
+      zuege.push(zug);
+    }
+    for (let j = 0; j < 6; j++) {
+      const b = (j / 6) * Math.PI * 2, zug = [];
+      for (let i = 0; i <= 40; i++) { const a = (i / 40) * Math.PI * 2; zug.push([(R + r * Math.cos(b)) * Math.cos(a), r * Math.sin(b), (R + r * Math.cos(b)) * Math.sin(a)]); }
+      zuege.push(zug);
+    }
+    return zuege;
+  }
+  function kugel() {
+    const zuege = [];
+    for (let i = 1; i < 8; i++) {
+      const t = (i / 8) * Math.PI, zug = [];
+      for (let j = 0; j <= 36; j++) { const a = (j / 36) * Math.PI * 2; zug.push([Math.sin(t) * Math.cos(a) * 0.9, Math.cos(t) * 0.9, Math.sin(t) * Math.sin(a) * 0.9]); }
+      zuege.push(zug);
+    }
+    for (let j = 0; j < 12; j++) {
+      const a = (j / 12) * Math.PI, zug = [];
+      for (let i = 0; i <= 24; i++) { const t = (i / 24) * Math.PI * 2; zug.push([Math.sin(t) * Math.cos(a) * 0.9, Math.cos(t) * 0.9, Math.sin(t) * Math.sin(a) * 0.9]); }
+      zuege.push(zug);
+    }
+    return zuege;
+  }
+  function spirale() {
+    // goldene Spirale r = a * phi^(2 theta / pi)
+    const zug = [];
+    const phi = (1 + Math.sqrt(5)) / 2;
+    for (let i = 0; i <= 260; i++) {
+      const t = (i / 260) * Math.PI * 4.5;
+      const r = 0.035 * Math.pow(phi, (2 * t) / Math.PI);
+      zug.push([r * Math.cos(t) - 0.2, r * Math.sin(t) - 0.1, 0]);
+    }
+    return [zug];
+  }
+  function helix() {
+    const zuege = [[], []];
+    for (let i = 0; i <= 120; i++) {
+      const t = (i / 120) * Math.PI * 6;
+      const y = (i / 120) * 2 - 1;
+      zuege[0].push([Math.cos(t) * 0.32, y, Math.sin(t) * 0.32]);
+      zuege[1].push([Math.cos(t + Math.PI) * 0.32, y, Math.sin(t + Math.PI) * 0.32]);
+      if (i % 6 === 0) zuege.push([[Math.cos(t) * 0.32, y, Math.sin(t) * 0.32], [Math.cos(t + Math.PI) * 0.32, y, Math.sin(t + Math.PI) * 0.32]]);
+    }
+    return zuege;
+  }
+  function welle() {
+    const zuege = [];
+    const n = 14;
+    for (let i = 0; i <= n; i++) {
+      const a = (i / n) * 2 - 1, zug1 = [], zug2 = [];
+      for (let j = 0; j <= 24; j++) {
+        const b = (j / 24) * 2 - 1;
+        zug1.push([a, 0.22 * Math.sin(3 * a) * Math.cos(3 * b), b]);
+        zug2.push([b, 0.22 * Math.sin(3 * b) * Math.cos(3 * a), a]);
+      }
+      zuege.push(zug1, zug2);
+    }
+    return zuege;
+  }
+  function moebius() {
+    const zuege = [];
+    const punkt = (u, v) => [(0.7 + v * Math.cos(u / 2)) * Math.cos(u), v * Math.sin(u / 2), (0.7 + v * Math.cos(u / 2)) * Math.sin(u)];
+    for (const v of [-0.28, -0.14, 0, 0.14, 0.28]) {
+      const zug = [];
+      for (let i = 0; i <= 60; i++) zug.push(punkt((i / 60) * Math.PI * 2, v));
+      zuege.push(zug);
+    }
+    for (let i = 0; i < 30; i++) { const u = (i / 30) * Math.PI * 2; zuege.push([punkt(u, -0.28), punkt(u, 0.28)]); }
+    return zuege;
+  }
+  function achsen() {
+    const zuege = [[[-1, 0, 0], [1, 0, 0]], [[0, -0.8, 0], [0, 0.8, 0]], [[0, 0, -0.8], [0, 0, 0.8]]];
+    for (let i = -4; i <= 4; i++) if (i) zuege.push([[i / 4.5, -0.03, 0], [i / 4.5, 0.03, 0]], [[-0.03, i / 5.6, 0], [0.03, i / 5.6, 0]]);
+    const sinus = [];
+    for (let i = 0; i <= 80; i++) { const x = (i / 80) * 2 - 1; sinus.push([x, 0.45 * Math.sin(x * Math.PI * 2), 0]); }
+    zuege.push(sinus);
+    return zuege;
   }
 
   // ---- Formel mit Hoch- und Tiefstellung zeichnen (zentriert) ----
@@ -270,9 +424,20 @@
     for (const s of welt.sterne) {
       const q = projiziere(k, s.p, f);
       if (!q || q.x < -4 || q.x > B + 4 || q.y < -4 || q.y > H + 4) continue;
-      const a = auftauchen * tiefe(q.z, 6500) * (0.55 + 0.45 * Math.sin(zeit * 1.3 + s.phase));
+      const a = auftauchen * s.hell * tiefe(q.z, s.band ? 14000 : 6500) * (0.6 + 0.4 * Math.sin(zeit * 1.3 + s.phase));
       if (a < 0.02) continue;
-      const g = clamp((s.g * 260) / q.z, 0.5, 2.4);
+      const g = s.band ? clamp((s.g * 2200) / q.z, 0.5, 1.6) : clamp((s.g * 260) / q.z, 0.5, 2.4);
+      ctx.globalAlpha = a;
+      ctx.fillRect(q.x - g / 2, q.y - g / 2, g, g);
+    }
+
+    // Staub dicht an der Bahn: kurze helle Punkte, die an der Kamera vorbeiziehen
+    for (const d of welt.staub) {
+      const q = projiziere(k, d, f);
+      if (!q || q.z > 1400 || q.x < 0 || q.x > B || q.y < 0 || q.y > H) continue;
+      const a = auftauchen * clamp((q.z - 20) / 120, 0, 1) * clamp(1 - q.z / 1400, 0, 1) * 0.7;
+      if (a < 0.03) continue;
+      const g = clamp(180 / q.z, 0.6, 3);
       ctx.globalAlpha = a;
       ctx.fillRect(q.x - g / 2, q.y - g / 2, g, g);
     }
@@ -308,6 +473,34 @@
       ctx.globalAlpha = 1;
       ctx.fillStyle = g;
       ctx.fillRect(kern.x - r, kern.y - r, r * 2, r * 2);
+    }
+
+    // Die Koerper der Mathematik: Drahtmodelle, die sich langsam drehen
+    ctx.strokeStyle = "#cfd8ea";
+    ctx.lineWidth = 1;
+    for (const o of welt.objekte) {
+      const m = projiziere(k, o.mitte, f);
+      if (!m) continue;
+      const a = o.a * netzSicht * tiefe(m.z, 4200) * clamp((m.z - 250) / 500, 0, 1);
+      if (a < 0.02) continue;
+      // grob unsichtbar: Mittelpunkt weit ausserhalb des Bildes
+      const rad = (o.groesse * f) / m.z;
+      if (m.x + rad < 0 || m.x - rad > B || m.y + rad < 0 || m.y - rad > H) continue;
+      const w = zeit * o.tempo + o.phase, cw = Math.cos(w), sw = Math.sin(w), ck = Math.cos(o.kipp), sk = Math.sin(o.kipp);
+      ctx.globalAlpha = a;
+      ctx.beginPath();
+      for (const zug of o.zuege) {
+        let davor = false;
+        for (const pt of zug) {
+          const x1 = pt[0] * cw + pt[2] * sw, z1 = -pt[0] * sw + pt[2] * cw;
+          const y2 = pt[1] * ck - z1 * sk, z2 = pt[1] * sk + z1 * ck;
+          const q = projiziere(k, [o.mitte[0] + x1 * o.groesse, o.mitte[1] + y2 * o.groesse, o.mitte[2] + z2 * o.groesse], f);
+          if (!q) { davor = false; continue; }
+          if (davor) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y);
+          davor = true;
+        }
+      }
+      ctx.stroke();
     }
 
     // Knoten projizieren (einmal je Bild)
@@ -380,8 +573,8 @@
           // Was ganz nah vorbeizieht, blendet aus, statt riesig angeschnitten zu
           // stehen -- die Grenze haengt an der Breite (Handy: kleiner)
           const gross = Math.min(64, B * 0.06);
-          if (g < 8 || g > gross * 1.6) return;
-          ctx.globalAlpha = h * (n.formel ? 0.95 : 0.55) * clamp(1 - (g - gross) / (gross * 0.6), 0, 1);
+          if (g < 8 || g > gross * 1.35) return;
+          ctx.globalAlpha = h * (n.formel ? 0.95 : 0.55) * clamp(1 - (g - gross) / (gross * 0.35), 0, 1);
           ctx.fillStyle = "#f4f2ee";
           if (n.formel) formelZeichnen(n.text, q.x, q.y - r - g * 0.9, g);
           else { ctx.font = `italic 500 ${g.toFixed(1)}px "Playfair Display", Georgia, serif`; ctx.textAlign = "center"; ctx.fillText(n.text, q.x, q.y - r - g * 0.8); ctx.textAlign = "left"; }
@@ -459,11 +652,15 @@
   }
 
   // ---- Fortschritt, Schleife ----
+  // Vor der Buehne liegt der weiche Uebergang vom Startbildschirm ins Schwarz
+  // (.universum-uebergang); gezaehlt wird erst ab da, wo die Buehne stehen bleibt
+  const uebergang = abschnitt.querySelector(".universum-uebergang");
   function zielFortschritt() {
     const r = abschnitt.getBoundingClientRect();
-    const weg = abschnitt.offsetHeight - buehne.offsetHeight;
+    const vorlauf = uebergang ? uebergang.offsetHeight : 0;
+    const weg = abschnitt.offsetHeight - vorlauf - buehne.offsetHeight;
     if (weg <= 0) return 1;
-    return clamp(-r.top / weg, 0, 1);
+    return clamp((-r.top - vorlauf) / weg, 0, 1);
   }
 
   let p = 0;            // gezeigter Fortschritt (folgt dem Scrollen weich nach)
