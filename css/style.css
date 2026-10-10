@@ -2902,3 +2902,34 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   .sp-start-tasten,
   .sp-schutz-tasten { display: none; }
 }
+
+/* ---------- Startseite: das Zeichen wird zum Chart (js/zeichen.js) ----------
+   Julian, 10.10.2026. Der Abschnitt ist der Scrollweg; die Buehne bleibt dabei
+   stehen (sticky), und js/zeichen.js zeichnet nach dem Fortschritt. Ohne
+   JavaScript (keine Klasse .ist-aktiv) steht nur das Zeichen da; bei
+   reduzierter Bewegung (.ist-still) das fertige Chart, ohne Scrollweg. */
+.zeichen { position: relative; }
+.zeichen.ist-aktiv { height: 320vh; }
+.zeichen-buehne {
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  height: calc(100svh - var(--header-h));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: hidden;
+}
+.zeichen-svg { display: block; width: 100%; max-width: 1100px; max-height: 100%; height: auto; }
+.zeichen:not(.ist-aktiv) .zeichen-buehne { position: static; height: auto; padding: 72px 24px; }
+.zeichen:not(.ist-aktiv) .zeichen-svg { max-width: 96px; }
+.zeichen-statisch rect { fill: var(--text); }
+.zeichen-balken { fill: var(--text); }
+.zeichen-kerze { fill: var(--text); stroke: var(--text); stroke-width: 2; }
+.zeichen-docht { stroke: var(--text); stroke-width: 1.6; opacity: 0; }
+.zeichen-linie { fill: none; stroke: var(--text); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; opacity: 0; }
+.zeichen-wort { font-family: var(--sans); font-weight: 800; font-size: 34px; letter-spacing: 0.34em; fill: var(--text); text-anchor: middle; opacity: 0; }
+.zeichen-zeile { font-family: var(--mono); font-size: 15px; letter-spacing: 0.03em; fill: var(--muted); text-anchor: middle; opacity: 0; }
+.zeichen.ist-still { height: auto; }
+.zeichen.ist-still .zeichen-buehne { position: static; height: auto; padding: 64px 24px; }
