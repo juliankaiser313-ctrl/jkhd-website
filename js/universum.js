@@ -24,22 +24,27 @@
 // Siebte Fassung: "zu gleichmaessig und zu schnell beim naechsten Planeten -- es soll
 // durchs Universum fliegen und nicht einfach so random; das Rechnen sieht man nur,
 // wenn man nicht mehr scrollt, das soll nicht sein; die fliegenden Formeln weg."
+// Achte Fassung: "ein Planet ausserhalb der Milchstrasse kann nicht sein; zwischen den
+// Planeten soll es laenger gehen und mehr Universum zu sehen sein; die Planeten sollen
+// vor allem dreidimensional sein."
 //
 // Umsetzung ohne Bibliothek: eine Zeichenflaeche (canvas 2D) mit eigener
 // Perspektiv-Projektion; die Erde zeichnet ein kleines WebGL-Programm (eine Kugel je
 // Bildpunkt, mit Tag- und Nachtseite, Wolken, Atmosphaere und Glanz auf dem Meer)
 // aus NASA-Aufnahmen in assets/erde/ -- gemeinfrei, liegen bei uns, kein fremder
-// Server. Ohne WebGL steht an ihrer Stelle eine Erde aus Punkten (Landumrisse von
-// Hand nachgezeichnet, weiter unten). Der Scrollfortschritt p durch den Abschnitt
+// Server. Die Planeten zeichnet ein zweites WebGL-Programm genauso als Kugeln, ihre
+// Karten entstehen hier aus Rauschen. Ohne WebGL steht an ihrer Stelle eine Erde aus
+// Punkten (Landumrisse von Hand nachgezeichnet, weiter unten) und die Planeten sind
+// schattierte Scheiben. Der Scrollfortschritt p durch den Abschnitt
 // #universum (die Buehne bleibt dabei stehen, sticky) treibt alles:
 //   0,00-0,10  die Milchstrasse liegt voraus und waechst, Sterne ringsum
 //   0,10-0,17  hinein: das Band, Nebel und Staub fuellen das Bild
-//   0,10-0,56  der Flug auf einer langen, kurvigen Bahn: die Planeten stehen fest im
-//              Raum, ungleich verteilt (mal nah, mal fern, mal oben, mal unten), die
-//              Kamera fliegt an ihnen vorbei, durch Nebel und Staub; voraus waechst
-//              die Erde, mit dem Mond
-//   0,60-0,67  die Erde dreht sich nach Europa, der Flug geht ohne Halt in den Zoom ueber
-//   0,61-0,82  Zoom: in die Atmosphaere, durch die Wolken, Europa, Abend, die Lichter
+//   0,10-0,60  der Flug auf einer langen, kurvigen Bahn durch die Galaxie: Sterne,
+//              Staub, Nebel, das Band, ferne Galaxien -- und vier Planeten, die fest
+//              im Raum stehen (echte Kugeln aus WebGL mit Karte, Licht und Drehung),
+//              ungleich verteilt, mal nah, mal fern; voraus waechst die Erde, mit Mond
+//   0,62-0,69  die Erde dreht sich nach Europa, der Flug geht ohne Halt in den Zoom ueber
+//   0,63-0,83  Zoom: in die Atmosphaere, durch die Wolken, Europa, Abend, die Lichter
 //              einer Stadt -- dann ein Rechenzentrum: die Fahrt durch einen Gang
 //              zwischen Serverschraenken bis zum Tisch; der Monitor dort ist an
 //   0,83-0,86  das Gehaeuse des Computers wird durchsichtig: die Platine
@@ -142,8 +147,8 @@
   }
 
   // ---- Zeitplan (Anteile am Scrollweg) ----
-  const FLUG = 0.6;                      // so viel gehoert dem Flug
-  const ZOOM_VON = 0.61, ZOOM_BIS = 0.82; // der Zoom von der Erde bis in die Halle ...
+  const FLUG = 0.62;                     // so viel gehoert dem Flug
+  const ZOOM_VON = 0.63, ZOOM_BIS = 0.83; // der Zoom von der Erde bis in die Halle ...
   const ZOOM_ENDE = 8;                   // ... ueber so viele e-fache Vergroesserungen
   const HALLE_VON = 5.2;                 // ab da faehrt die Kamera durch den Gang
   const ERDE_R = 110;                    // Radius der Erde in Einheiten der Bahn
@@ -278,14 +283,16 @@
   // Radius); die Kamera fliegt gerade an ihnen vorbei: sie kommen von vorn, wachsen
   // und ziehen am Rand des Bildes weg. Anderthalb Radien Abstand: dann fuellen sie
   // kurz vor dem Vorbeiflug ein gutes Viertel des Bildes
-  // (abst = Abstand von der Bahn in Radien: klein = dichter Vorbeiflug, gross = fern)
+  // (abst = Abstand von der Bahn in Radien: klein = dichter Vorbeiflug, gross = fern;
+  // saum = Farbe und Staerke der Atmosphaere am Rand; glanz = Glanzlicht; tempo =
+  // Eigendrehung, neigung = Achsneigung)
   const PLANETEN = [
-    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.27, seite: 1, hoch: 0.1, r: 650, abst: 2.0 },
-    { art: "ring", grund: [220, 200, 150], baender: [[230, 215, 170], [205, 185, 135], [225, 210, 165]], u: 0.46, seite: -1, hoch: -0.15, r: 520, abst: 1.35 },
-    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.58, seite: 1, hoch: 0.35, r: 400, abst: 2.6 },
-    { art: "fels", grund: [190, 105, 70], kappe: true, u: 0.72, seite: -1, hoch: -0.05, r: 240, abst: 1.4 },
-    { art: "mond", grund: [150, 150, 152], u: 0.83, seite: 1, hoch: 0.2, r: 170, abst: 1.6 },
+    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.44, seite: 1, hoch: 0.1, r: 650, abst: 2.0, saum: [1.0, 0.9, 0.75], saumStaerke: 0.5, glanz: 0.12, tempo: 3, neigung: 8 },
+    { art: "ring", grund: [220, 200, 150], baender: [[230, 215, 170], [205, 185, 135], [225, 210, 165]], u: 0.58, seite: -1, hoch: -0.15, r: 520, abst: 1.35, saum: [1.0, 0.95, 0.8], saumStaerke: 0.45, glanz: 0.1, tempo: 4, neigung: 22 },
+    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.7, seite: 1, hoch: 0.3, r: 400, abst: 2.4, saum: [0.55, 0.7, 1.0], saumStaerke: 0.7, glanz: 0.25, tempo: 5, neigung: 28 },
+    { art: "fels", grund: [190, 105, 70], kappe: true, u: 0.82, seite: -1, hoch: -0.05, r: 240, abst: 1.4, saum: [1.0, 0.75, 0.6], saumStaerke: 0.25, glanz: 0.04, tempo: 2.5, neigung: 25 },
   ];
+  const MOND = { art: "mond", grund: [150, 150, 152], r: 30, saum: [0.8, 0.8, 0.8], saumStaerke: 0.0, glanz: 0.02, tempo: 0.5, neigung: 6 };
   const PLANET_ORTE = PLANETEN.map((pl) => neben(pl.u, pl.seite, pl.hoch, pl.r * pl.abst, 0));
 
   // ---- Sprites: einmal gezeichnete Bilder, die dann nur noch kopiert werden ----
@@ -401,43 +408,25 @@
       const x0 = ((xi % N) + N) % N, x1 = (x0 + 1) % N, y0 = (((yi % N) + N) % N) * N, y1 = ((((yi + 1) % N) + N) % N) * N;
       return misch(misch(w[y0 + x0], w[y0 + x1], sx), misch(w[y1 + x0], w[y1 + x1], sx), sy);
     };
-    return (x, y) => 0.57 * wert(gitter[0], x, y) + 0.29 * wert(gitter[1], x * 2.1 + 7, y * 2.1 + 3) + 0.14 * wert(gitter[2], x * 4.3 + 11, y * 4.3 + 5);
+    return (x, y) => 0.57 * wert(gitter[0], x, y) + 0.29 * wert(gitter[1], x * 2 + 7, y * 2.1 + 3) + 0.14 * wert(gitter[2], x * 4 + 11, y * 4.3 + 5);
   }
 
-  // Planeten als Sprites, Bildpunkt fuer Bildpunkt: Baender mit Wirbeln (Gasriesen),
-  // Flecken und Kappen (Fels), Meere und Krater (Mond), dazu Ringe; Licht von links
-  // oben vorn
-  function planetBauen(pl) {
-    const R = 220, S = 560, B2 = pl.art === "ring" ? 1240 : S, cx = B2 / 2, cy = S / 2;
-    const c = sprite(B2, S), g = c.getContext("2d"), z = zufall(pl.r);
+  // Die Karte eines Planeten (Laenge quer, Breite hoch, nahtlos in der Laenge), Bildpunkt
+  // fuer Bildpunkt aus Rauschen: Baender mit Wirbeln (Gasriesen), Flecken und Kappen
+  // (Fels), Meere und Krater (Mond); dazu Stuerme. Daraus wird in WebGL eine Kugel.
+  function planetKarte(pl) {
+    const W = pl.art === "gas" || pl.art === "ring" ? 1024 : 512, Hh = W / 2;
+    const c = sprite(W, Hh), g = c.getContext("2d"), z = zufall(pl.r);
     const feld = rauschFeld(pl.r + 1), fein = rauschFeld(pl.r + 2);
-    const rgb = (f, k) => `rgb(${Math.round(f[0] * (k || 1))},${Math.round(f[1] * (k || 1))},${Math.round(f[2] * (k || 1))})`;
-    const ringe = (hinten) => {
-      g.save();
-      g.beginPath(); g.rect(0, hinten ? 0 : cy, B2, cy); g.clip();
-      g.translate(cx, cy); g.scale(1, 0.24);
-      for (let i = 0; i < 48; i++) {
-        const rr = R * (1.3 + (i / 48) * 1.1);
-        const luecke = i > 30 && i < 34 ? 0.12 : i > 40 && i < 42 ? 0.5 : 1;
-        g.globalAlpha = (0.22 + 0.55 * Math.abs(Math.sin(i * 0.9 + 1))) * luecke * (i > 42 ? 0.4 : 1);
-        g.strokeStyle = rgb([228, 214, 184], 0.72 + 0.28 * Math.sin(i * 0.5));
-        g.lineWidth = R * 0.026;
-        g.beginPath(); g.ellipse(0, 0, rr, rr, 0, 0, Math.PI * 2); g.stroke();
-      }
-      g.restore();
-    };
-    if (pl.art === "ring") ringe(true);
-    // Die Oberflaeche
-    const img = g.createImageData(2 * R, 2 * R), d = img.data;
+    const img = g.createImageData(W, Hh), d = img.data;
     const palette = pl.baender || [pl.grund];
-    for (let py = 0; py < 2 * R; py++) {
-      const y = (py - R + 0.5) / R;
-      for (let px = 0; px < 2 * R; px++) {
-        const x = (px - R + 0.5) / R;
-        const i = (py * 2 * R + px) * 4;
-        if (x * x + y * y > 1) { d[i + 3] = 0; continue; }
-        const lat = Math.asin(y);
-        const n1 = feld(px * 0.045, py * 0.045), n2 = fein(px * 0.012, py * 0.012);
+    for (let py = 0; py < Hh; py++) {
+      const lat = (0.5 - (py + 0.5) / Hh) * Math.PI;
+      const ky = py / Hh;
+      for (let px = 0; px < W; px++) {
+        const u = (px + 0.5) / W;
+        const i = (py * W + px) * 4;
+        const n1 = feld(u * 32, ky * 16), n2 = fein(u * 32 + 3, ky * 8 + 1);
         let f;
         if (pl.art === "gas" || pl.art === "ring" || pl.art === "eis") {
           const wirbel = pl.art === "gas" ? 0.34 : pl.art === "ring" ? 0.14 : 0.08;
@@ -450,7 +439,7 @@
         } else if (pl.art === "fels") {
           const dunkel = clamp((0.56 - n2) * 4, 0, 1);
           f = [misch(pl.grund[0], 95, dunkel * 0.7), misch(pl.grund[1], 45, dunkel * 0.7), misch(pl.grund[2], 30, dunkel * 0.7)].map((v) => v * (0.82 + 0.36 * n1));
-          const kappe = clamp((Math.abs(lat) - 1.25) * 5 + (n1 - 0.5) * 0.6, 0, 1);
+          const kappe = clamp((Math.abs(lat) - 1.2) * 5 + (n1 - 0.5) * 0.6, 0, 1);
           f = f.map((v) => misch(v, 245, kappe));
         } else {
           const meer = clamp((0.5 - n2) * 6, 0, 1);
@@ -460,32 +449,25 @@
         d[i] = f[0]; d[i + 1] = f[1]; d[i + 2] = f[2]; d[i + 3] = 255;
       }
     }
-    const flaeche = sprite(2 * R, 2 * R);
-    flaeche.getContext("2d").putImageData(img, 0, 0);
-    g.save();
-    g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.clip();
-    g.drawImage(flaeche, cx - R, cy - R);
-    g.globalAlpha = 1;
+    g.putImageData(img, 0, 0);
     if (pl.art === "gas") {
-      // der grosse Sturm und ein paar kleine
-      for (const st of [[0.3, 0.38, 0.26, 0.55, "200,90,60"], [-0.45, -0.3, 0.09, 0.5, "235,225,210"], [0.1, -0.58, 0.07, 0.5, "230,215,195"]]) {
-        g.save(); g.translate(cx + R * st[0], cy + R * st[1]); g.rotate(-0.08); g.scale(1, st[3]);
-        radial(g, 0, 0, R * st[2], [[0, `rgba(${st[4]},0.85)`], [0.55, `rgba(${st[4]},0.5)`], [1, `rgba(${st[4]},0)`]]);
+      for (const st of [[0.62, 0.66, 0.07, 0.5, "200,90,60"], [0.2, 0.36, 0.025, 0.5, "235,225,210"], [0.85, 0.3, 0.02, 0.5, "230,215,195"]]) {
+        g.save(); g.translate(W * st[0], Hh * st[1]); g.scale(1, st[3]);
+        radial(g, 0, 0, W * st[2], [[0, `rgba(${st[4]},0.85)`], [0.55, `rgba(${st[4]},0.5)`], [1, `rgba(${st[4]},0)`]]);
         g.restore();
       }
     }
     if (pl.art === "eis") {
-      g.save(); g.translate(cx - R * 0.25, cy + R * 0.2); g.scale(1, 0.6);
-      radial(g, 0, 0, R * 0.16, [[0, "rgba(20,35,110,0.8)"], [1, "rgba(20,35,110,0)"]]);
+      g.save(); g.translate(W * 0.4, Hh * 0.6); g.scale(1, 0.6);
+      radial(g, 0, 0, W * 0.045, [[0, "rgba(20,35,110,0.8)"], [1, "rgba(20,35,110,0)"]]);
       g.restore();
     }
     if (pl.art === "mond" || pl.art === "fels") {
       // Krater: Boden dunkel, Rand zum Licht hin hell, vom Licht weg dunkel
-      const anzahl = pl.art === "mond" ? 200 : 60;
+      const anzahl = pl.art === "mond" ? 320 : 110;
       for (let i = 0; i < anzahl; i++) {
-        const w = z() * Math.PI * 2, dd = Math.sqrt(z()) * R * 0.98;
-        const x = cx + Math.cos(w) * dd, y = cy + Math.sin(w) * dd;
-        const gr = 1.2 + Math.pow(z(), 3.2) * (pl.art === "mond" ? 14 : 9);
+        const x = z() * W, y = Hh * (0.08 + z() * 0.84);
+        const gr = (1.2 + Math.pow(z(), 3.2) * (pl.art === "mond" ? 14 : 9)) * (W / 512);
         g.fillStyle = pl.art === "mond" ? "rgba(0,0,0,0.2)" : "rgba(40,15,8,0.22)";
         g.beginPath(); g.arc(x, y, gr, 0, Math.PI * 2); g.fill();
         g.strokeStyle = "rgba(255,255,255,0.22)"; g.lineWidth = Math.max(0.8, gr * 0.12);
@@ -494,31 +476,30 @@
         g.beginPath(); g.arc(x, y, gr, Math.PI * -0.15, Math.PI * 0.8); g.stroke();
       }
     }
-    if (pl.art === "ring") {
-      // der Schatten der Ringe auf dem Planeten
-      g.save(); g.translate(cx, cy + R * 0.12); g.scale(1, 0.24);
-      g.strokeStyle = "rgba(0,0,0,0.45)"; g.lineWidth = R * 0.9;
-      g.beginPath(); g.ellipse(0, 0, R * 1.85, R * 1.85, 0, Math.PI * 0.05, Math.PI * 0.95); g.stroke();
-      g.restore();
+    return c;
+  }
+  // Die Ringe (in Bildkoordinaten um die Kugel): hinten die obere Haelfte, vorn die untere
+  // (eine Flaeche mit einem Verlauf, dessen Stufen die Baender und Luecken sind -- so
+  // kostet sie auch riesig nur einen Fuellvorgang)
+  function ringeZeichnen(cx, cy, R, hinten, a, neigung) {
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, hinten ? 0 : cy, B, hinten ? cy : H - cy); ctx.clip();
+    ctx.translate(cx, cy); ctx.rotate(neigung); ctx.scale(1, 0.26);
+    const r0 = R * 1.3, r1 = R * 2.4;
+    const g = ctx.createRadialGradient(0, 0, r0, 0, 0, r1);
+    for (let i = 0; i <= 48; i++) {
+      const luecke = i > 30 && i < 34 ? 0.12 : i > 40 && i < 42 ? 0.5 : 1;
+      const al = (0.22 + 0.55 * Math.abs(Math.sin(i * 0.9 + 1))) * luecke * (i > 42 ? 0.4 : 1);
+      const k = 0.72 + 0.28 * Math.sin(i * 0.5);
+      g.addColorStop(i / 48, `rgba(${Math.round(228 * k)},${Math.round(214 * k)},${Math.round(184 * k)},${al.toFixed(3)})`);
     }
-    // Schattierung: Licht von links oben vorn
-    g.globalCompositeOperation = "multiply";
-    radial(g, cx - R * 0.45, cy - R * 0.4, R * 1.9, [[0, "rgb(255,255,255)"], [0.36, "rgb(240,240,245)"], [0.62, "rgb(90,90,110)"], [0.8, "rgb(12,12,20)"], [1, "rgb(0,0,0)"]]);
-    if (pl.art !== "mond") {
-      // Saum der Atmosphaere, nur auf der Lichtseite
-      g.globalCompositeOperation = "lighter";
-      g.save();
-      g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, R, Math.PI * 0.9, Math.PI * 1.85); g.closePath(); g.clip();
-      g.globalAlpha = 0.3;
-      const v = g.createRadialGradient(cx, cy, R * 0.9, cx, cy, R);
-      v.addColorStop(0, "rgba(0,0,0,0)");
-      v.addColorStop(1, pl.art === "eis" ? "rgba(140,180,255,0.9)" : "rgba(255,230,200,0.7)");
-      g.fillStyle = v; g.fillRect(cx - R, cy - R, 2 * R, 2 * R);
-      g.restore();
-    }
-    g.restore();
-    if (pl.art === "ring") ringe(false);
-    return { bild: c, R, cx, cy, b: B2, h: S };
+    ctx.globalAlpha = a;
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, r1, r1, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, r0, r0, 0, 0, Math.PI * 2, true);
+    ctx.fill("evenodd");
+    ctx.restore();
   }
 
   let welt = null;
@@ -530,7 +511,7 @@
       const w = z();
       sterne.push({ p, g, hell, band, farbe: w < 0.1 ? 0 : w < 0.3 ? 1 : w < 0.62 ? 2 : w < 0.84 ? 3 : w < 0.95 ? 4 : 5, phase: z() * Math.PI * 2 });
     };
-    const anzahlSterne = klein ? 900 : 1800;
+    const anzahlSterne = klein ? 1400 : 2800;
     for (let i = 0; i < anzahlSterne; i++) {
       const hell = 0.2 + 0.8 * Math.pow(z(), 2.4);   // wenige helle, viele schwache
       stern([(z() - 0.5) * 7000, (z() - 0.5) * 5000, 900 - z() * (LAENGE + 2600)], 0.5 + hell * 1.6, hell, false);
@@ -545,15 +526,15 @@
       const x = Math.cos(winkel) * radius, t = Math.sin(winkel) * radius;
       return [mitteBahn[0] + x, mitteBahn[1] + t * Math.sin(neigung) + quer * Math.cos(neigung), mitteBahn[2] + t * Math.cos(neigung) - quer * Math.sin(neigung)];
     };
-    const anzahlBand = klein ? 1000 : 2200;
+    const anzahlBand = klein ? 1400 : 3000;
     for (let i = 0; i < anzahlBand; i++) stern(aufScheibe(5200 + z() * 4200, gauss() * 470), 0.3 + z() * 0.9, 0.25 + z() * 0.45, true);
     const BAND_FARBEN = ["190,205,245", "235,225,205", "215,215,240", "255,235,210"];
     const bandGlut = [], bandStaub = [];
-    for (let i = 0; i < 48; i++) bandGlut.push({ p: aufScheibe(5600 + z() * 3400, gauss() * 420), r: 1700 + z() * 1300, a: 0.06 + z() * 0.07, farbe: BAND_FARBEN[i % 4] });
+    for (let i = 0; i < 48; i++) bandGlut.push({ p: aufScheibe(5600 + z() * 3400, gauss() * 420), r: 1700 + z() * 1300, a: 0.09 + z() * 0.09, farbe: BAND_FARBEN[i % 4] });
     for (let i = 0; i < 20; i++) bandStaub.push({ p: aufScheibe(5800 + z() * 3000, gauss() * 140), r: 500 + z() * 600, a: 0.4 + z() * 0.3 });
     // Staub nah an der Bahn: kurze helle Punkte, die an der Kamera vorbeiziehen
     const staub = [];
-    const anzahlStaub = klein ? 220 : 460;
+    const anzahlStaub = klein ? 320 : 700;
     for (let i = 0; i < anzahlStaub; i++) staub.push(neben(z(), Math.cos(z() * 6.3), Math.sin(z() * 6.3), 40 + z() * 260, 0));
 
     // Nebel: grosse Lichtwolken mit Struktur neben der Bahn, abwechselnd links und rechts
@@ -579,9 +560,15 @@
         wolke([0, 1, 2].map((k) => m[k] + (rf.rechts[k] * Math.cos(w) + rf.oben[k] * Math.sin(w)) * d - rf.vorn[k] * pl.r * (0.8 + j)), pl.r * (1.8 + z() * 0.8), 0.2 + z() * 0.14, i + j);
       }
     });
-    // Planeten und der Mond der Erde -- ihre Sprites kommen nach und nach (siehe spritesBauen)
-    const planeten = PLANETEN.map((pl, i) => ({ art: pl.art, p: PLANET_ORTE[i], r: pl.r, sp: null }));
-    const erdeMond = { art: "mond", p: neben(0.97, -1, 0.3, 430, -250), r: 30, sp: null };
+    // Planeten und der Mond der Erde -- ihre Karten kommen nach und nach (siehe spritesBauen)
+    const planeten = PLANETEN.map((pl, i) => ({ art: pl.art, pl, p: PLANET_ORTE[i], r: pl.r, phase: z() * 360, karte: null }));
+    const erdeMond = { art: "mond", pl: MOND, p: neben(0.97, -1, 0.3, 430, -250), r: MOND.r, phase: 40, karte: null };
+    // Ferne Galaxien, weit neben der Bahn: kleine Scheiben, schraeg, die langsam vorbeiziehen
+    const galaxien = [];
+    for (let i = 0; i < 3; i++) {
+      const u = 0.25 + i * 0.22;
+      galaxien.push({ p: neben(u, Math.cos(i * 2.1 + 0.5), Math.sin(i * 2.1 + 0.5) * 0.6, 2600 + z() * 1800, 0), r: 900 + z() * 600, dreh: z() * Math.PI, kipp: 0.35 + z() * 0.35, a: 0.5 + z() * 0.3 });
+    }
 
     // Die Platine im Computer: Leiterbahnen von den Raendern zum Prozessor (Einheiten
     // der Glasscheibe: u quer, v hoch, der Prozessor bei 0,62/0,62)
@@ -599,20 +586,34 @@
     for (let i = 0; i < 12; i++) kondensatoren.push([0.45 + z() * 0.34, 0.44 + z() * 0.06]);
     for (let i = 0; i < 6; i++) kondensatoren.push([0.74 + z() * 0.03, 0.5 + z() * 0.3]);
 
-    return { klein, sterne, bandGlut, bandStaub, staub, nebel, planeten, erdeMond, bahnen, kondensatoren, galaxie: null, erde: null };
+    return { klein, sterne, bandGlut, bandStaub, staub, nebel, planeten, erdeMond, galaxien, bahnen, kondensatoren, galaxie: null, erde: null };
   }
-  // Die Sprites (Galaxie, Planeten) kosten je einige Dutzend Millisekunden: eines nach
-  // dem anderen, jeweils wenn der Browser Luft hat -- und in Reihenfolge des Auftritts
+  // Die Galaxie und die Karten der Planeten kosten je einige Dutzend Millisekunden: eines
+  // nach dem anderen, jeweils wenn der Browser Luft hat -- in Reihenfolge des Auftritts.
+  // Jede Karte wird gleich als Textur in WebGL abgelegt (ohne WebGL bleibt sie leer).
   function spritesBauen() {
     if (!welt) return;
     const w = welt;
     let schritt = null;
     if (!w.galaxie) schritt = () => { w.galaxie = galaxieBauen(); };
     else {
-      const offen = w.planeten.concat([w.erdeMond]).find((pl) => !pl.sp);
+      const offen = w.planeten.concat([w.erdeMond]).find((pl) => !pl.karte);
       if (offen) schritt = () => {
-        const vorhanden = w.planeten.find((pl) => pl.sp && pl.art === offen.art);
-        offen.sp = vorhanden ? vorhanden.sp : planetBauen(PLANETEN.find((pl) => pl.art === offen.art));
+        const vorhanden = w.planeten.find((pl) => pl.karte && pl.art === offen.art);
+        offen.karte = vorhanden ? vorhanden.karte : { bild: planetKarte(offen.pl), textur: null };
+        if (!offen.karte.textur && glStarten()) {
+          const gl = erde.gl, t = gl.createTexture();
+          gl.activeTexture(gl.TEXTURE6);
+          gl.bindTexture(gl.TEXTURE_2D, t);
+          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, offen.karte.bild);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+          gl.generateMipmap(gl.TEXTURE_2D);
+          offen.karte.textur = t;
+        }
       };
     }
     if (!schritt) return;
@@ -752,6 +753,55 @@ void main() {
   farbe += vec3(0.35, 0.55, 1.0) * saum * (0.25 + 0.75 * tagLicht) * uAtmo * 0.9;
   gl_FragColor = vec4(farbe * uHell * uAlpha, uAlpha);
 }`;
+  // Das zweite Programm: eine Kugel mit einer Karte, Licht von der Sonne, weicher Rand,
+  // Saum einer Atmosphaere und ein wenig Glanz -- fuer die Planeten und den Mond
+  const FS_KUGEL = `
+precision highp float;
+uniform vec2 uMitte;
+uniform float uR;
+uniform mat3 uDreh;
+uniform vec3 uSonne;
+uniform sampler2D uTex;
+uniform vec3 uSaum;
+uniform float uSaumStaerke, uGlanz, uAlpha;
+const float PI = 3.14159265;
+void main() {
+  vec2 d = (gl_FragCoord.xy - uMitte) / uR;
+  float r2 = dot(d, d);
+  vec3 sonne = normalize(uSonne);
+  float r = sqrt(r2);
+  if (r2 >= 1.0) {
+    if (r > 1.25 || uSaumStaerke <= 0.0) discard;
+    vec3 n = vec3(d / r, 0.0);
+    float licht = smoothstep(-0.3, 0.5, dot(n, sonne));
+    float a = exp(-(r - 1.0) * 22.0) * (0.1 + 0.5 * licht) * uSaumStaerke * uAlpha;
+    gl_FragColor = vec4(uSaum * a, a);
+    return;
+  }
+  float z = sqrt(1.0 - r2);
+  vec3 n = vec3(d, z);
+  vec3 w = uDreh * n;
+  float lat = asin(clamp(w.z, -1.0, 1.0));
+  float lon = atan(w.y, w.x);
+  vec3 tex = texture2D(uTex, vec2(lon / (2.0 * PI) + 0.5, 0.5 - lat / PI)).rgb;
+  float diff = dot(n, sonne);
+  float licht = smoothstep(-0.12, 0.35, diff);
+  vec3 farbe = tex * (0.03 + 1.0 * licht);
+  vec3 h = normalize(sonne + vec3(0.0, 0.0, 1.0));
+  farbe += vec3(1.0, 0.98, 0.94) * pow(max(dot(n, h), 0.0), 40.0) * uGlanz * licht;
+  float saum = pow(1.0 - z, 2.5);
+  farbe += uSaum * saum * (0.15 + 0.85 * licht) * uSaumStaerke;
+  float kante = 1.0 - smoothstep(1.0 - 2.5 / uR, 1.0, r);
+  float a = kante * uAlpha;
+  gl_FragColor = vec4(farbe * a, a);
+}`;
+  // WebGL einmal einrichten (beide Programme); false, wenn es nicht geht
+  function glStarten() {
+    if (erde.gl) return true;
+    if (erde.fehl) return false;
+    if (!erdeStarten()) { erde.fehl = true; return false; }
+    return true;
+  }
   function erdeStarten() {
     const c = sprite(1, 1);
     const einstellungen = { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: "high-performance" };
@@ -782,6 +832,19 @@ void main() {
       gl.uniform4f(erde.u.uEu, EUROPA[0], EUROPA[1], EUROPA[2], EUROPA[3]);
       gl.uniform4f(erde.u.uZiel, ZIEL_BOX[0], ZIEL_BOX[1], ZIEL_BOX[2], ZIEL_BOX[3]);
       erde.prog = prog;
+      // das Kugel-Programm teilt sich den Eckpunkt-Puffer (dasselbe Attribut 'a')
+      const kugel = gl.createProgram();
+      gl.attachShader(kugel, schattierer(gl.VERTEX_SHADER, VS));
+      gl.attachShader(kugel, schattierer(gl.FRAGMENT_SHADER, FS_KUGEL));
+      gl.bindAttribLocation(kugel, a, "a");
+      gl.linkProgram(kugel);
+      if (!gl.getProgramParameter(kugel, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(kugel));
+      gl.useProgram(kugel);
+      erde.ku = {};
+      for (const name of ["uMitte", "uR", "uDreh", "uSonne", "uSaum", "uSaumStaerke", "uGlanz", "uAlpha"]) erde.ku[name] = gl.getUniformLocation(kugel, name);
+      gl.uniform1i(gl.getUniformLocation(kugel, "uTex"), 6);
+      erde.kugelProg = kugel;
+      gl.useProgram(prog);
     } catch (e) {
       return false;
     }
@@ -794,7 +857,7 @@ void main() {
   function erdeLaden() {
     if (erde.angestossen || reduziert.matches) return;
     erde.angestossen = true;
-    if (!erdeStarten()) { erde.fehl = true; return; }
+    if (!glStarten()) return;
     const gl = erde.gl;
     const klein = B < 700;
     ERDE_BILDER.forEach((name, i) => {
@@ -819,6 +882,43 @@ void main() {
       bild.src = BILDER + name + (klein ? "-k" : "") + ".jpg";
     });
   }
+  // Spalten der Drehung: Blick-x = Osten, Blick-y = Norden, Blick-z = Lot auf die Mitte
+  function drehMatrix(laenge0, breite0) {
+    const cl = Math.cos(laenge0 * GRAD), sl = Math.sin(laenge0 * GRAD), cb = Math.cos(breite0 * GRAD), sb = Math.sin(breite0 * GRAD);
+    return new Float32Array([-sl, cl, 0, -sb * cl, -sb * sl, cb, cb * cl, cb * sl, sb]);
+  }
+  // Ein Planet als Kugel: gerechnet wird nur das Rechteck um ihn (Schere), dann kopiert
+  function kugelGl(cx, cy, R, laenge0, breite0, sonne, pl, karte, alpha) {
+    const gl = erde.gl, u = erde.ku, c = erde.leinwand;
+    if (c.width !== leinwand.width || c.height !== leinwand.height) { c.width = leinwand.width; c.height = leinwand.height; }
+    const s = dpr;
+    const x0 = Math.max(0, Math.floor((cx - R * 1.3) * s)), x1 = Math.min(c.width, Math.ceil((cx + R * 1.3) * s));
+    const y0 = Math.max(0, Math.floor((H - cy - R * 1.3) * s)), y1 = Math.min(c.height, Math.ceil((H - cy + R * 1.3) * s));
+    if (x1 <= x0 || y1 <= y0) return;
+    gl.useProgram(erde.kugelProg);
+    gl.activeTexture(gl.TEXTURE6);
+    gl.bindTexture(gl.TEXTURE_2D, karte.textur);
+    gl.viewport(0, 0, c.width, c.height);
+    gl.enable(gl.SCISSOR_TEST);
+    gl.scissor(x0, y0, x1 - x0, y1 - y0);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform2f(u.uMitte, cx * s, (H - cy) * s);
+    gl.uniform1f(u.uR, R * s);
+    gl.uniformMatrix3fv(u.uDreh, false, drehMatrix(laenge0, breite0));
+    gl.uniform3f(u.uSonne, sonne[0], sonne[1], sonne[2]);
+    gl.uniform3f(u.uSaum, pl.saum[0], pl.saum[1], pl.saum[2]);
+    gl.uniform1f(u.uSaumStaerke, pl.saumStaerke);
+    gl.uniform1f(u.uGlanz, pl.glanz);
+    gl.uniform1f(u.uAlpha, alpha);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.disable(gl.SCISSOR_TEST);
+    gl.useProgram(erde.prog);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    // der Ausschnitt der GL-Leinwand (y von oben gezaehlt) an seine Stelle
+    ctx.drawImage(c, x0, c.height - y1, x1 - x0, y1 - y0, x0 / s, (c.height - y1) / s, (x1 - x0) / s, (y1 - y0) / s);
+  }
   function erdeGl(cx, cy, R, laenge0, breite0, sonne, e) {
     const gl = erde.gl, u = erde.u, c = erde.leinwand;
     // fuellt die Erde das Bild, reicht die halbe Aufloesung (die Bilder sind dann
@@ -827,14 +927,13 @@ void main() {
     const bw = Math.round(leinwand.width * teil), bh = Math.round(leinwand.height * teil);
     if (c.width !== bw || c.height !== bh) { c.width = bw; c.height = bh; }
     const s = dpr * teil;
+    gl.useProgram(erde.prog);
     gl.viewport(0, 0, bw, bh);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.uniform2f(u.uMitte, cx * s, (H - cy) * s);
     gl.uniform1f(u.uR, R * s);
-    const cl = Math.cos(laenge0 * GRAD), sl = Math.sin(laenge0 * GRAD), cb = Math.cos(breite0 * GRAD), sb = Math.sin(breite0 * GRAD);
-    // Spalten: Blick-x = Osten, Blick-y = Norden, Blick-z = Lot auf die Mitte
-    gl.uniformMatrix3fv(u.uDreh, false, new Float32Array([-sl, cl, 0, -sb * cl, -sb * sl, cb, cb * cl, cb * sl, sb]));
+    gl.uniformMatrix3fv(u.uDreh, false, drehMatrix(laenge0, breite0));
     gl.uniform3f(u.uSonne, sonne[0], sonne[1], sonne[2]);
     gl.uniform1f(u.uEuMix, e.eu);
     gl.uniform1f(u.uZielMix, e.ziel);
@@ -915,7 +1014,7 @@ void main() {
 
     // Die Erde: wo sie im Bild steht und wie gross; beim Zoom wandert sie in die Mitte
     const erdeProj = projiziere(k, bahn(ZIEL_U), f);
-    const zurMitte = stueck(p, 0.6, 0.66);
+    const zurMitte = stueck(p, 0.62, 0.68);
     const fx = misch(erdeProj ? erdeProj.x : B / 2, B / 2, zurMitte);
     const fy = misch(erdeProj ? erdeProj.y : H / 2, H / 2, zurMitte);
     const R = (erdeProj ? (ERDE_R * f) / erdeProj.z : 1) * Math.exp(L);
@@ -934,6 +1033,23 @@ void main() {
       ctx.restore();
     }
 
+    // Ferne Galaxien, weit draussen: schraege Scheiben, die langsam vorbeiziehen
+    if (himmel > 0 && innen > 0 && welt.galaxie) {
+      ctx.globalCompositeOperation = "source-over";
+      for (const ga of welt.galaxien) {
+        const q1 = projiziere(k, ga.p, f);
+        if (!q1) continue;
+        const r = (ga.r * f) / q1.z;
+        if (r < 4 || q1.x + r < 0 || q1.x - r > B || q1.y + r < 0 || q1.y - r > H) continue;
+        ctx.save();
+        ctx.translate(q1.x, q1.y);
+        ctx.rotate(ga.dreh);
+        ctx.scale(1, ga.kipp);
+        ctx.globalAlpha = himmel * innen * ga.a * clamp(1 - (q1.z - 3000) / 9000, 0.2, 1);
+        ctx.drawImage(welt.galaxie, -r, -r, 2 * r, 2 * r);
+        ctx.restore();
+      }
+    }
     ctx.globalCompositeOperation = "lighter";
     if (himmel > 0) {
       const rand = Math.max(B, H);
@@ -1028,7 +1144,7 @@ void main() {
 
     // ---- Die Erde ----
     // Blick: erst ueber dem Atlantik, dann nach Europa
-    const dreh = stueck(p, 0.6, 0.67);
+    const dreh = stueck(p, 0.62, 0.69);
     const laenge0 = misch(-30 + 4 * Math.sin(zeit * 0.1), ZIEL_LAENGE, dreh);
     const breite0 = misch(14, ZIEL_BREITE, dreh);
     if (erdeSicht > 0 && R > 0.6) {
@@ -1080,28 +1196,45 @@ void main() {
       }
     }
 
-    // Planeten und der Mond: decken ab, was hinter ihnen liegt
+    // Planeten und der Mond: echte Kugeln (WebGL) -- fern liegt Dunst davor, der mit
+    // der Naehe weicht; sie drehen sich langsam um die eigene Achse, das Licht kommt
+    // von der Sonne hinter der Kamera, beim Vorbeiflug wandert es ueber die Kugel
     ctx.globalCompositeOperation = "source-over";
+    const sonneSicht = [dot(SONNE_WELT, k.rechts), dot(SONNE_WELT, k.oben), -dot(SONNE_WELT, k.vorn)];
     const planetZeichnen = (pl, a) => {
-      if (!pl.sp) return;
       const m = projiziere(k, pl.p, f);
       if (!m) return;
-      const sk = (pl.r * f) / m.z / pl.sp.R;
-      if (m.x - pl.sp.cx * sk > B || m.x + (pl.sp.b - pl.sp.cx) * sk < 0 || m.y - pl.sp.cy * sk > H || m.y + (pl.sp.h - pl.sp.cy) * sk < 0) return;
-      // fern liegt Dunst davor (der Planet bleibt undurchsichtig, wird nur dunkler
-      // und blasser), nah ist er ganz da
+      const R = (pl.r * f) / m.z;
+      if (R < 0.8 || m.x + R * 2.6 < 0 || m.x - R * 2.6 > B || m.y + R * 2.6 < 0 || m.y - R * 2.6 > H) return;
       const dunst = pl.r > 60 ? clamp((m.z - 1300) / 2000, 0, 1) : clamp((m.z - 3000) / 7000, 0, 1);
       a *= clamp((m.z - 40) / 120, 0, 1) * (1 - stueck(dunst, 0.8, 1));
       if (a < 0.02) return;
-      ctx.globalAlpha = a;
-      ctx.drawImage(pl.sp.bild, m.x - pl.sp.cx * sk, m.y - pl.sp.cy * sk, pl.sp.b * sk, pl.sp.h * sk);
+      const laenge0 = pl.phase + (still ? 0 : zeit * pl.pl.tempo), breite0 = pl.pl.neigung;
+      const kipp = pl.art === "ring" ? -0.18 : 0;
+      if (pl.art === "ring") ringeZeichnen(m.x, m.y, R, true, a, kipp);
+      if (pl.karte && pl.karte.textur && erde.gl) {
+        kugelGl(m.x, m.y, R, laenge0, breite0, sonneSicht, pl.pl, pl.karte, a);
+      } else {
+        // ohne WebGL: eine schattierte Scheibe
+        const gr = pl.pl.grund;
+        const g = ctx.createRadialGradient(m.x - R * 0.4, m.y - R * 0.4, R * 0.1, m.x, m.y, R);
+        g.addColorStop(0, `rgb(${gr[0]},${gr[1]},${gr[2]})`);
+        g.addColorStop(0.7, `rgb(${Math.round(gr[0] * 0.5)},${Math.round(gr[1] * 0.5)},${Math.round(gr[2] * 0.5)})`);
+        g.addColorStop(1, "rgb(4,4,8)");
+        ctx.globalAlpha = a;
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(m.x, m.y, R, 0, Math.PI * 2); ctx.fill();
+      }
+      if (pl.art === "ring") ringeZeichnen(m.x, m.y, R, false, a, kipp);
       if (dunst > 0.02) {
-        const r = pl.r * sk * (pl.sp.b / pl.sp.R) * 0.55;
+        ctx.globalCompositeOperation = "source-over";
         ctx.globalAlpha = a * dunst * 0.85;
+        const r = R * (pl.art === "ring" ? 2.6 : 1.3);
         ctx.drawImage(fleck("8,10,18"), m.x - r, m.y - r, 2 * r, 2 * r);
       }
     };
-    const planetenSicht = himmel;
+    // erst, wenn die Kamera in der Galaxie ist -- ein Planet ausserhalb kann nicht sein
+    const planetenSicht = himmel * stueck(q, 0.37, 0.45);
     if (planetenSicht > 0) for (const pl of welt.planeten) planetZeichnen(pl, planetenSicht);
     const mondSicht = erdeSicht * (1 - stueck(L, 0, 0.5));
     if (mondSicht > 0) planetZeichnen(welt.erdeMond, mondSicht);
@@ -1317,8 +1450,8 @@ void main() {
   // Licht, Tastatur, Maus -- auf Holz, in einem Raum mit Farbe. m = Breite des
   // Monitorbilds in Bildpunkten, (ax, ay) = Fuss des Monitors.
   function computerZeichnen(ax, ay, m, sicht, p, zeit, still) {
-    const glas = stueck(p, 0.83, 0.855);       // das Gehaeuse wird durchsichtig
-    const fluss = stueck(p, 0.84, 0.86) * (1 - stueck(p, 0.918, 0.93));   // die Platine arbeitet, bis das Zeichen da ist
+    const glas = stueck(p, 0.835, 0.86);       // das Gehaeuse wird durchsichtig
+    const fluss = stueck(p, 0.845, 0.865) * (1 - stueck(p, 0.918, 0.93));   // die Platine arbeitet, bis das Zeichen da ist
     const blitz = Math.sin(Math.PI * stueck(p, 0.92, 0.928));   // kurzes Aufleuchten
     const logo = stueck(p, 0.922, 0.934);      // das Zeichen erscheint
     const schrift = stueck(p, 0.93, 0.945);
@@ -1504,7 +1637,7 @@ void main() {
   // Der Monitor rechnet die Formeln durch -- im Takt des Scrollens: mit jedem Stueck
   // Weg kommt eine Zeile dazu (Formel, Pfeil, Ergebnis); bei der juengsten laufen
   // die Ziffern, bis sie sich gesetzt haben; darunter blinkt die Marke
-  const RECHNEN_VON = 0.84, RECHNEN_BIS = 0.918;
+  const RECHNEN_VON = 0.845, RECHNEN_BIS = 0.918;
   function konsoleZeichnen(sx, sy, hb, hh, m, p, zeit, still, sicht) {
     const g = Math.max(9, m * 0.026), zh = g * 1.75;
     const anzahl = Math.max(3, Math.floor((2 * hh - g * 1.6) / zh));
