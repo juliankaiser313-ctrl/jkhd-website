@@ -33,7 +33,8 @@
 // Ganze viel schoener aus als auf dem Laptop; und die Kamera soll sich nicht so wild
 // umherdrehen, eher waagerecht bleiben und nur nach links oder rechts gehen." Dazu:
 // "die grossen Planeten sind immer noch zu nah und springen ploetzlich, das darf
-// nicht passieren."
+// nicht passieren." Und: "die Galaxie soll nicht einfach verschwinden, sondern ein
+// Punkt davon soll zum ersten Planeten werden, das sieht besser aus."
 //
 // Umsetzung ohne Bibliothek: eine Zeichenflaeche (canvas 2D) mit eigener
 // Perspektiv-Projektion; die Erde zeichnet ein kleines WebGL-Programm (eine Kugel je
@@ -45,7 +46,8 @@
 // schattierte Scheiben. Der Scrollfortschritt p durch den Abschnitt
 // #universum (die Buehne bleibt dabei stehen, sticky) treibt alles:
 //   0,00-0,20  die Milchstrasse liegt voraus und waechst, Sterne ringsum; hinein: die
-//              Arme werden zum Band, Sterne, Nebel und Staub fuellen den Raum
+//              Arme werden zum Band, Sterne, Nebel und Staub fuellen den Raum; das
+//              Bild waechst auf einen Punkt eines Arms zu, der zum ersten Planeten wird
 //   0,20-0,70  der Flug auf einer sehr langen, kurvigen Bahn durch die Galaxie: ein
 //              dichtes Sternfeld, das Band mit Glut und Staub, Nebel, ferne Galaxien
 //              -- und vier Planeten, die fest im Raum stehen (echte Kugeln aus WebGL
@@ -364,6 +366,10 @@
 
   // Eine Spiralgalaxie von schraeg oben: Halo, zwei Arme aus Lichtflecken (blau-weiss,
   // dazwischen rosa Wolken), Staubbahnen als Loecher, warmer Kern, einzelne Sterne
+  // Ein Punkt auf einem Arm der Galaxie (in Einheiten des Halbmessers): auf ihn hin
+  // waechst das Bild, und aus ihm wird der erste Planet -- Julian: "ein Punkt davon
+  // soll zum ersten Planeten werden"
+  const GALAXIE_PUNKT = [0.083, -0.281];
   function galaxieBauen() {
     const S = 1024, M = S / 2, c = sprite(S, S), g = c.getContext("2d"), z = zufall(99);
     const gauss = () => z() + z() + z() - 1.5;
@@ -415,6 +421,11 @@
       const gr = z() < 0.9 ? 1 : 2;
       g.fillRect(x, y, gr, gr);
     }
+    // der eine Punkt, der zum ersten Planeten wird: etwas heller als die anderen
+    g.globalAlpha = 1;
+    const px = M + GALAXIE_PUNKT[0] * M, py = M + GALAXIE_PUNKT[1] * M;
+    g.drawImage(warm, px - 2.5, py - 2.5, 5, 5);
+    g.fillRect(px - 1, py - 1, 2, 2);
     return c;
   }
 
@@ -457,10 +468,17 @@
           const hell = pl.art === "eis" ? 0.9 + 0.2 * n1 : 0.86 + 0.28 * n1;
           f = f.map((v) => v * hell);
         } else if (pl.art === "fels") {
-          const dunkel = clamp((0.56 - n2) * 4, 0, 1);
-          f = [misch(pl.grund[0], 95, dunkel * 0.7), misch(pl.grund[1], 45, dunkel * 0.7), misch(pl.grund[2], 30, dunkel * 0.7)].map((v) => v * (0.82 + 0.36 * n1));
-          const kappe = clamp((Math.abs(lat) - 1.2) * 5 + (n1 - 0.5) * 0.6, 0, 1);
-          f = f.map((v) => misch(v, 245, kappe));
+          // zum Pol hin glatt: dort laufen alle Laengen zusammen, 32 Rauschperioden
+          // wuerden zu Strahlen
+          const pol = Math.min(1, Math.cos(lat) * 1.6);
+          const dunkel = clamp((0.56 - n2) * 4, 0, 1) * pol;
+          f = [misch(pl.grund[0], 95, dunkel * 0.7), misch(pl.grund[1], 45, dunkel * 0.7), misch(pl.grund[2], 30, dunkel * 0.7)].map((v) => v * (0.82 + 0.36 * (0.5 + (n1 - 0.5) * pol)));
+          // die Polkappe: ihr Rand hat ein paar weiche Lappen (nahtlos: ganze Wellen
+          // um den Planeten); feines Rauschen dort nur schwach -- nahe am Pol laufen
+          // alle Laengen zusammen, und 32 Rauschperioden werden zu einer Punktreihe
+          const lappen = Math.sin(u * Math.PI * 6) * 0.5 + Math.sin(u * Math.PI * 10 + 2) * 0.3;
+          const kappe = clamp((Math.abs(lat) - 1.2) * 5 + (lappen * 0.12 + (n1 - 0.5) * 0.12) * Math.min(1, Math.cos(lat) * 3), 0, 1);
+          f = f.map((v) => misch(v, 220, kappe));
         } else {
           const meer = clamp((0.5 - n2) * 6, 0, 1);
           const grau = (0.78 + 0.44 * n1) * misch(1, 0.58, meer);
@@ -485,8 +503,10 @@
     if (pl.art === "mond" || pl.art === "fels") {
       // Krater: Boden dunkel, Rand zum Licht hin hell, vom Licht weg dunkel
       const anzahl = pl.art === "mond" ? 320 : 110;
+      // (nicht in die Polregion: dort staucht die Karte sie zu einer Punktreihe)
+      const rand = pl.art === "mond" ? 0.08 : 0.2;
       for (let i = 0; i < anzahl; i++) {
-        const x = z() * W, y = Hh * (0.08 + z() * 0.84);
+        const x = z() * W, y = Hh * (rand + z() * (1 - 2 * rand));
         const gr = (1.2 + Math.pow(z(), 3.2) * (pl.art === "mond" ? 14 : 9)) * (W / 512);
         g.fillStyle = pl.art === "mond" ? "rgba(0,0,0,0.2)" : "rgba(40,15,8,0.22)";
         g.beginPath(); g.arc(x, y, gr, 0, Math.PI * 2); g.fill();
@@ -569,7 +589,7 @@
     const bandGlut = [], bandStaub = [];
     // (wenige grosse Flecken, die sich kaum ueberlappen: jeder kostet Fuellarbeit)
     for (let i = 0; i < 40; i++) bandGlut.push({ p: aufScheibe(21000 + z() * 7000, gauss() * 1200), r: 5000 + z() * 3000, a: 0.1 + z() * 0.08, farbe: BAND_FARBEN[i % 4] });
-    for (let i = 0; i < 36; i++) bandStaub.push({ p: aufScheibe(21000 + z() * 6000, gauss() * 500), r: 1500 + z() * 1500, a: 0.4 + z() * 0.3 });
+    for (let i = 0; i < 24; i++) bandStaub.push({ p: aufScheibe(21000 + z() * 6000, gauss() * 500), r: 3500 + z() * 3500, a: 0.22 + z() * 0.22 });
     // Staub nah an der Bahn: kurze helle Punkte, die an der Kamera vorbeiziehen
     const staub = [];
     const anzahlStaub = Math.round(1300 * dichte);
@@ -825,7 +845,14 @@ void main() {
   vec3 w = uDreh * n;
   float lat = asin(clamp(w.z, -1.0, 1.0));
   float lon = atan(w.y, w.x);
-  vec3 tex = texture2D(uTex, vec2(lon / (2.0 * PI) + 0.5, 0.5 - lat / PI)).rgb;
+  // Zwei Abtastungen mit versetzter Naht: an der Naht (lon = +-PI) springt die
+  // Koordinate, der Treiber nimmt dort die kleinste Mipmap-Stufe -- eine Linie aus
+  // Mittelwert-Pixeln. Die zweite Koordinate hat ihre Naht bei lon = 0 (REPEAT);
+  // genommen wird jeweils die, deren Naht fern ist
+  float u1 = lon / (2.0 * PI) + 0.5;
+  float u2 = u1 + step(lon, 0.0);
+  float v = 0.5 - lat / PI;
+  vec3 tex = mix(texture2D(uTex, vec2(u1, v)).rgb, texture2D(uTex, vec2(u2, v)).rgb, step(0.5 * PI, abs(lon)));
   float diff = dot(n, sonne);
   float licht = smoothstep(-0.12, 0.35, diff);
   vec3 farbe = tex * (0.03 + 1.0 * licht);
@@ -1072,13 +1099,25 @@ void main() {
     const R = (erdeProj ? (ERDE_R * f) / erdeProj.z : 1) * Math.exp(L);
     const erdeSicht = stueck(q, 0.6, 0.7) * (1 - stueck(L, 5.0, 5.6));   // kommt von vorn und waechst
 
-    // Die Milchstrasse voraus: waechst, bis sie das Bild fuellt, dann sind wir drin
+    // Die Milchstrasse voraus: waechst, bis sie das Bild fuellt, dann sind wir drin.
+    // Sie waechst auf ihren markierten Punkt zu: das Bild liegt so, dass der Punkt
+    // auf dem ersten Planeten steht (Drehung und Stauchung des Bildes mitgerechnet);
+    // ganz am Anfang steht sie noch mittig
     const galaxieSicht = auftauchen * (1 - stueck(q, 0.3, 0.46));
     if (galaxieSicht > 0 && welt.galaxie) {
       const gr = f * 0.21 * Math.exp(7.5 * q);
+      const dreh = 0.55 + q * 0.15;
+      let cx = B / 2 + Math.sin(q * 3) * B * 0.03, cy = H * 0.46;
+      const ersterProj = projiziere(k, welt.planeten[0].p, f);
+      if (ersterProj) {
+        const lx = GALAXIE_PUNKT[0] * gr, ly = GALAXIE_PUNKT[1] * gr * 0.48;
+        const hin = stueck(q, 0.05, 0.22);
+        cx = misch(cx, ersterProj.x - (lx * Math.cos(dreh) - ly * Math.sin(dreh)), hin);
+        cy = misch(cy, ersterProj.y - (lx * Math.sin(dreh) + ly * Math.cos(dreh)), hin);
+      }
       ctx.save();
-      ctx.translate(B / 2 + Math.sin(q * 3) * B * 0.03, H * 0.46);
-      ctx.rotate(0.55 + q * 0.15);
+      ctx.translate(cx, cy);
+      ctx.rotate(dreh);
       ctx.scale(1, 0.48);
       ctx.globalAlpha = galaxieSicht;
       ctx.drawImage(welt.galaxie, -gr, -gr, 2 * gr, 2 * gr);
@@ -1257,13 +1296,16 @@ void main() {
     // kommt von der Sonne hinter der Kamera, beim Vorbeiflug wandert es ueber die Kugel
     ctx.globalCompositeOperation = "source-over";
     const sonneSicht = [dot(SONNE_WELT, k.rechts), dot(SONNE_WELT, k.oben), -dot(SONNE_WELT, k.vorn)];
-    const planetZeichnen = (pl, a) => {
+    // (punkt: der erste Planet ist der markierte Punkt der Galaxie -- erst ein heller
+    // Punkt ohne Dunst, der dann, q 0,38-0,56, auf seine wahre Groesse waechst)
+    const planetZeichnen = (pl, a, punkt) => {
       const m = projiziere(k, pl.p, f);
       if (!m) return;
-      const R = (pl.r * f) / m.z;
+      const wahr = (pl.r * f) / m.z;
+      const R = punkt ? misch(2.2, wahr, stueck(q, 0.38, 0.56)) : wahr;
       if (R < 0.8 || m.x + R * 2.6 < 0 || m.x - R * 2.6 > B || m.y + R * 2.6 < 0 || m.y - R * 2.6 > H) return;
       const sichtweite = pl.pl.sicht || 10000;
-      const dunst = clamp((m.z - 2500) / (sichtweite - 2500), 0, 1);
+      const dunst = punkt ? 0 : clamp((m.z - 2500) / (sichtweite - 2500), 0, 1);
       a *= clamp((m.z - 40) / 120, 0, 1) * (1 - stueck(dunst, 0.5, 1));   // ueber die ferne Haelfte der Sichtweite einblenden
       if (a < 0.02) return;
       const laenge0 = pl.phase + (still ? 0 : zeit * pl.pl.tempo), breite0 = pl.pl.neigung;
@@ -1283,6 +1325,19 @@ void main() {
         ctx.beginPath(); ctx.arc(m.x, m.y, R, 0, Math.PI * 2); ctx.fill();
       }
       if (pl.art === "ring") ringeZeichnen(m.x, m.y, R, false, a, kipp);
+      if (punkt) {
+        // der helle Punkt, solange die Kugel klein ist
+        const glanz = a * (1 - stueck(R, 5, 14));
+        if (glanz > 0.01) {
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = glanz;
+          const r = 8 + R * 0.6;
+          ctx.drawImage(fleck("255,236,220"), m.x - r, m.y - r, 2 * r, 2 * r);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(m.x - 1.3, m.y - 1.3, 2.6, 2.6);
+          ctx.globalCompositeOperation = "source-over";
+        }
+      }
       if (dunst > 0.02) {
         ctx.globalCompositeOperation = "source-over";
         ctx.globalAlpha = a * dunst * 0.7;
@@ -1291,11 +1346,18 @@ void main() {
       }
     };
     // erst, wenn die Kamera in der Galaxie ist und deren Bild (bis q 0,46) verschwunden
-    // -- ein Planet ausserhalb der Milchstrasse kann nicht sein
+    // -- ein Planet ausserhalb der Milchstrasse kann nicht sein. Der erste ist die
+    // Ausnahme: er ist der Punkt der Galaxie und schon da, solange ihr Bild steht
     const planetenSicht = himmel * stueck(q, 0.44, 0.52);
-    if (planetenSicht > 0) for (const pl of welt.planeten) planetZeichnen(pl, planetenSicht);
+    const punktSicht = himmel * stueck(q, 0.26, 0.36);
+    // ferne zuerst, damit ein ferner, noch blasser Planet nie ueber einem nahen liegt
+    const reihe = welt.planeten.map((pl, i) => ({ pl, i, z: dot(sub(pl.p, k.pos), k.vorn) })).sort((a, b) => b.z - a.z);
+    for (const { pl, i } of reihe) {
+      if (i === 0) { if (punktSicht > 0) planetZeichnen(pl, punktSicht, true); }
+      else if (planetenSicht > 0) planetZeichnen(pl, planetenSicht, false);
+    }
     const mondSicht = erdeSicht * (1 - stueck(L, 0, 0.5));
-    if (mondSicht > 0) planetZeichnen(welt.erdeMond, mondSicht);
+    if (mondSicht > 0) planetZeichnen(welt.erdeMond, mondSicht, false);
 
     // ---- Das Rechenzentrum und der Computer ----
     const halle = stueck(L, 5.0, 5.6);
