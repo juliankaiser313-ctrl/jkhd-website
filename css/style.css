@@ -2722,20 +2722,83 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 
 /* Breit: Protokoll als Spalte neben Chart und Handel, die Legende direkt
    unter dem Chart */
+/* Breit (ab 1141 px): das Brett als Terminal, alles auf einem Schirm -- Julian:
+   "bei der Simulation kann man gar nicht traden, weil man gar nicht alles auf
+   einem Bildschirm hat". Links der Chart, so hoch wie die rechte Spalte
+   (Nachricht, Handel, SL/TP); die beiden Tafeln als schmaler Streifen darueber,
+   das Protokoll darunter. js/spiel.js holt das Brett beim Start unter die
+   Kopfzeile. Auf 730 px Fensterhoehe (Laptop) passt das Brett ohne Protokoll
+   ganz ins Bild. */
 @media (min-width: 1141px) {
   .sp-koerper {
-    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-columns: minmax(0, 1fr) 380px;
     grid-template-areas:
       "leiste leiste"
       "tafeln tafeln"
-      "nachricht protokoll"
-      "chart protokoll"
-      "legende protokoll"
-      "handel protokoll"
-      "schutz protokoll";
-    gap: 18px 24px;
-    padding: 24px;
+      "chart nachricht"
+      "chart handel"
+      "chart schutz"
+      "protokoll protokoll";
+    gap: 10px 20px;
+    padding: 14px 20px;
   }
+  .sp-leiste { padding-bottom: 8px; }
+  .sp-leiste .sp-knopf,
+  .sp-leiste .sp-segmente button { min-height: 36px; }
+  /* Tafeln als Streifen: Name, Kapital und Balken in einer Zeile, die Werte darunter */
+  .sp-tafeln { gap: 12px; }
+  .sp-tafel { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 14px; padding: 8px 14px; }
+  .sp-tafel-kopf { flex: 0 0 auto; margin: 0; }
+  .sp-tafel > .sp-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }   /* "Kapital" nur zum Vorlesen */
+  .sp-kapital { font-size: 1.15rem; }
+  .sp-weg { flex: 1 1 120px; margin: 0; }
+  .sp-weg-skala { display: none; }
+  .sp-werte { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 2px 16px; margin-top: 6px; padding-top: 6px; }
+  .sp-werte > div { display: flex; align-items: baseline; gap: 6px; }
+  .sp-werte dd { font-size: 0.78rem; }
+  .sp-nachricht { min-height: 38px; padding: 6px 12px; font-size: 0.84rem; }
+  /* Chart so hoch wie die rechte Spalte; die Legende liegt unten im Chartbereich */
+  .sp-chartbereich { display: flex; flex-direction: column; min-height: 0; padding-bottom: 40px; }
+  .sp-chart { flex: 1 1 auto; height: auto; min-height: 300px; }
+  /* Die Leinwand liegt absolut im Rahmen: Mit height: 100 % in einem Rahmen ohne
+     feste Hoehe zaehlte ihre eigene Hoehe (das Attribut, das js/spiel.js setzt)
+     als Inhalt -- das Raster wuchs mit jedem Nachmessen weiter */
+  .sp-chart canvas { position: absolute; inset: 0; }
+  .sp-legende { grid-area: chart; align-self: end; gap: 3px 12px; font-size: 0.7rem; }
+  /* Handel und SL/TP kompakt in der Spalte; die Hinweise (Kontraktgroesse,
+     Ziehen im Chart, Tasten im Feld) stehen in den Regeln unter dem Brett */
+  .sp-handel { align-content: start; gap: 8px; }
+  .sp-menge .sp-segmente button { min-height: 36px; }
+  .sp-menge-einheit { display: none; }
+  .sp-orders { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .sp-order-glatt { grid-column: 1 / -1; }
+  /* Order-Knoepfe einzeilig je Zeile (sonst bricht "Verkaufen 99 S" dreizeilig um) */
+  .sp-order { min-height: 50px; padding: 6px 12px; gap: 2px; }
+  .sp-order-was { font-size: 0.72rem; letter-spacing: 0.06em; }
+  .sp-order-wo { font-size: 0.68rem; }
+  .sp-meldung { min-height: 1.3em; font-size: 0.8rem; }
+  .sp-schutz { gap: 4px; padding-top: 8px; }
+  .sp-schutz-kopf p,
+  .sp-schutz-tasten { display: none; }
+  .sp-schutz-feld input { width: 5.5em; min-height: 36px; }
+  .sp-schutz-feld button { min-width: 36px; min-height: 36px; }
+  .sp-schutz-aktionen .sp-knopf { min-height: 36px; padding: 0 10px; }
+  .sp-schutz-info { min-height: 1.3em; font-size: 0.72rem; }
+  .sp-schutz-fuss { gap: 6px 12px; }
+  .sp-schutz-fuss .sp-knopf { min-height: 36px; padding: 0 10px; }
+}
+
+/* Breit, aber niedrig (kleiner Laptop, 1366 x 768 oder 1280 x 720): die Legende und
+   die Abstandszeilen unter SL/TP entfallen, dann passt das Brett bis SL/TP auch in
+   620 px Fensterhoehe */
+@media (min-width: 1141px) and (max-height: 700px) {
+  .sp-koerper { gap: 8px 20px; padding: 12px 20px; }
+  .sp-leiste { padding-bottom: 6px; }
+  .sp-legende { display: none; }
+  .sp-chartbereich { padding-bottom: 0; }
+  .sp-chart { min-height: 260px; }
+  .sp-nachricht { min-height: 32px; padding: 4px 12px; }
+  .sp-schutz-info { display: none; }
 }
 
 @media (max-width: 940px) {

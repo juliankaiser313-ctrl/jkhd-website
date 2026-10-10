@@ -807,7 +807,23 @@
     schichtZu(schichtEnde);
     modus = "laeuft";
     anzeigen();
+    brettInsBild();
     laufen();
+  }
+
+  // Beim Start das Brett ins Bild holen. Gemeint ist das Brett bis SL/TP -- das
+  // Protokoll darunter darf unter dem Rand liegen. Passt das unter die Kopfzeile,
+  // steht das Brett oben (breit: Chart, Handel und SL/TP zugleich zu sehen). Ist
+  // es hoeher als das Fenster (Handy), steht der Chart oben und die Handels-
+  // knoepfe gleich darunter. Wer das Brett schon ganz sieht, bleibt, wo er ist.
+  function brettInsBild() {
+    const kopf = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    const brett = wurzel.getBoundingClientRect();
+    const schutz = wurzel.querySelector(".sp-schutz");
+    const unten = (schutz ? schutz.getBoundingClientRect().bottom : brett.bottom) + 16;
+    if (brett.top >= kopf && unten <= window.innerHeight) return;
+    const ziel = unten - brett.top <= window.innerHeight - kopf ? wurzel : chartRahmen.parentElement;
+    ziel.scrollIntoView({ block: "start" });
   }
 
   function pausieren(vonSelbst) {
