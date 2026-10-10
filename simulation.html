@@ -33,8 +33,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/simulation.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/simulation.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/simulation.html">
-  <link rel="stylesheet" href="css/fonts.css?v=20261010p">
-  <link rel="stylesheet" href="css/style.css?v=20261010p">
+  <link rel="stylesheet" href="css/fonts.css?v=20261010q">
+  <link rel="stylesheet" href="css/style.css?v=20261010q">
 </head>
 <body>
 
@@ -328,6 +328,16 @@
               <div><dt>Ihre Trades</dt><dd data-sp="ende-trades-du"></dd></div>
               <div><dt>Trades des Algos</dt><dd data-sp="ende-trades-algo"></dd></div>
             </dl>
+            <!-- Bestenliste: nur nach einem Sieg, der unter die schnellsten zehn kaeme (js/spiel.js) -->
+            <form class="sp-besten-form" data-sp="besten-form" hidden novalidate>
+              <p class="sp-besten-hinweis" data-sp="besten-hinweis"></p>
+              <label class="sp-besten-label" for="sp-spitzname">Spitzname für die Bestenliste (2–16 Zeichen, kein echter Name)</label>
+              <div class="sp-besten-zeile">
+                <input id="sp-spitzname" type="text" maxlength="16" minlength="2" autocomplete="nickname" spellcheck="false" required>
+                <button type="submit" class="btn btn-primary">Eintragen</button>
+              </div>
+              <p class="sp-besten-meldung" data-sp="besten-meldung" aria-live="polite"></p>
+            </form>
             <div class="sp-schicht-knoepfe">
               <button type="button" class="btn btn-primary" data-sp-aktion="nochmal">Nochmal</button>
               <button type="button" class="btn btn-ghost" data-sp-aktion="ansehen">Chart ansehen</button>
@@ -339,9 +349,9 @@
       </div>
 
       <noscript>
-        <p class="note"><b>Das Spiel braucht JavaScript.</b> Es läuft ganz in
-           Ihrem Browser und lädt nichts nach. Die Regeln stehen unten auch ohne
-           JavaScript.</p>
+        <p class="note"><b>Das Spiel braucht JavaScript.</b> Es rechnet in
+           Ihrem Browser; nur die Bestenliste holt es von unserem Server. Die
+           Regeln stehen unten auch ohne JavaScript.</p>
       </noscript>
     </div>
   </section>
@@ -350,6 +360,23 @@
        Die Zahlen in den data-sp-zahl-Stellen setzt js/spiel.js aus den Regeln
        des Motors neu; der Text hier ist derselbe Stand für Besucher ohne
        JavaScript. -->
+  <!-- ================= BESTENLISTE =================
+       Die zehn schnellsten Siege gegen den Algo, von api.jkhd.de (js/spiel.js laedt
+       sie beim Oeffnen; ohne Server bleibt der Abschnitt verborgen). -->
+  <section class="section sp-besten-abschnitt" aria-labelledby="sp-besten-titel" data-sp="besten" hidden>
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Bestenliste</p>
+        <h2 id="sp-besten-titel">Die schnellsten Siege gegen den JKHD-Algo</h2>
+        <p>Nur wer die Million zuerst erreicht, kommt in die Liste – sortiert
+           nach Spielzeit. Dafür gehen Spitzname und Spielzeit an unseren
+           Server, mehr nicht (siehe Datenschutzerklärung).</p>
+      </div>
+      <ol class="sp-besten" data-sp="besten-liste"></ol>
+      <p class="sp-besten-leer" data-sp="besten-leer" hidden>Noch kein Eintrag – der erste Sieg macht den Anfang.</p>
+    </div>
+  </section>
+
   <section class="section sp-regel-abschnitt" aria-labelledby="sp-regeln-titel">
     <div class="container">
       <div class="section-head">
@@ -535,71 +562,64 @@
            die angekündigten Nachrichten. Die Zukunft des Markts kennt er
            nicht, Ihre SL und TP auch nicht.</p>
         <ul>
-          <li>Die ersten <span data-sp-zahl="ALGO.AUFWAERMEN" data-sp-art="sekunden">22</span> Sekunden
-              beobachtet er nur. Danach vergleicht er zwei gleitende
-              Durchschnitte über <span data-sp-zahl="ALGO.MITTEL_SCHNELL" data-sp-art="sekunden">2,5</span>
-              und <span data-sp-zahl="ALGO.MITTEL_LANGSAM" data-sp-art="sekunden">14</span> Sekunden
-              und misst die übliche Kursbewegung je Takt, gemittelt über
-              <span data-sp-zahl="ALGO.MITTEL_SCHWANKUNG" data-sp-art="sekunden">16</span> Sekunden.</li>
-          <li>Er steigt ein, wenn der kurze Durchschnitt um mehr als das
-              <span data-sp-zahl="ALGO.EINSTIEG" data-sp-art="zahl">7,75</span>-Fache dieser
-              Bewegung über oder unter dem langen liegt — immer in
-              Trendrichtung.</li>
-          <li>Hochs und Tiefs erkennt er selbst im Kursverlauf: Als Zone gilt
-              ihm ein Umkehrpunkt, von dem der Kurs mindestens
-              <span data-sp-zahl="ALGO.ZONE" data-sp-art="zahl">6</span> übliche
-              Bewegungen zurückgelaufen ist. Sticht der Kurs um mindestens
-              <span data-sp-zahl="ALGO.ABHOLUNG" data-sp-art="zahl">1</span> Bewegung
-              durch eine solche Zone und ist binnen
-              <span data-sp-zahl="ALGO.ABHOLUNG_TAKTE" data-sp-art="sekunden">3</span> Sekunden
-              zurück, wertet er das als Abholung und steigt
-              <span data-sp-zahl="ALGO.SPERRE" data-sp-art="sekunden">2</span> Sekunden
-              lang nicht in diese Richtung ein. Bleibt der Kurs länger dahinter,
-              war es ein Ausbruch: Aus dem Hoch wird für ihn eine Unterstützung,
-              aus dem Tief ein Widerstand.</li>
+          <li>Die ersten <span data-sp-zahl="ALGO.AUFWAERMEN" data-sp-art="sekunden">8</span> Sekunden beobachtet er
+              nur. Dann vergleicht er zwei gleitende Durchschnitte über
+              <span data-sp-zahl="ALGO.MITTEL_SCHNELL" data-sp-art="sekunden">1</span> und <span data-sp-zahl="ALGO.MITTEL_LANGSAM" data-sp-art="sekunden">10</span> Sekunden,
+              misst die übliche Kursbewegung je Takt (gemittelt über
+              <span data-sp-zahl="ALGO.MITTEL_SCHWANKUNG" data-sp-art="sekunden">16</span> Sekunden) und die Bewegung der
+              letzten <span data-sp-zahl="ALGO.MITTEL_HEKTIK" data-sp-art="sekunden">1,5</span> Sekunden. Ist die mehr als
+              das <span data-sp-zahl="ALGO.HEKTIK" data-sp-art="zahl">3,2</span>-Fache der üblichen, gilt ihm der Markt
+              als hektisch: Dann eröffnet er nichts und schließt einen
+              laufenden Trend-Trade.</li>
+          <li>Trend: Er steigt in Trendrichtung ein, wenn der kurze Durchschnitt
+              um mehr als das <span data-sp-zahl="ALGO.EINSTIEG" data-sp-art="zahl">7,5</span>-Fache der üblichen
+              Bewegung über oder unter dem langen liegt. Dreht der Trend um
+              mehr als das <span data-sp-zahl="ALGO.TRENDENDE" data-sp-art="zahl">3,5</span>-Fache gegen seine Position,
+              steigt er aus. Nach dem Ende eines Trend-Trades wartet er
+              <span data-sp-zahl="ALGO.RUHE" data-sp-art="sekunden">2</span> Sekunden, bevor er den nächsten Trend
+              handelt.</li>
+          <li>Sein Stop liegt hinter dem letzten Umkehrpunkt, mindestens
+              <span data-sp-zahl="ALGO.STOP" data-sp-art="zahl">3</span> und höchstens <span data-sp-zahl="ALGO.STOP_MAX" data-sp-art="zahl">4</span> übliche
+              Bewegungen entfernt, und <span data-sp-zahl="ALGO.ZONE_PUFFER" data-sp-art="zahl">3</span> Bewegungen
+              hinter einer Zone – nie knapp dahinter, wo die Stops der anderen
+              liegen. Je Kerze zieht er ihn nach: hinter den letzten
+              Umkehrpunkt, höchstens <span data-sp-zahl="ALGO.NACHZIEHEN" data-sp-art="zahl">20</span> Bewegungen hinter
+              dem besten Kurs seit dem Einstieg, nie zurück. Liegt der Kurs
+              <span data-sp-zahl="ALGO.BREAKEVEN" data-sp-art="zahl">4</span> Bewegungen im Gewinn, rückt der Stop auf
+              den Einstand.</li>
+          <li>Hochs und Tiefs erkennt er selbst im Kursverlauf: Als Zone gilt ihm
+              ein Umkehrpunkt, von dem der Kurs mindestens <span data-sp-zahl="ALGO.ZONE" data-sp-art="zahl">6</span> übliche
+              Bewegungen zurückgelaufen ist; berührt ist sie, sobald der Kurs
+              bis auf <span data-sp-zahl="ALGO.NAEHE" data-sp-art="zahl">1,5</span> Bewegungen herankommt. Im
+              Seitwärtsmarkt handelt er gegen die Zone, sobald der Kurs von ihr
+              wegdreht – bis zur <span data-sp-zahl="ALGO.ABPRALLER" data-sp-art="zahl">1</span>. Berührung, Stop
+              <span data-sp-zahl="ALGO.ZONE_STOP" data-sp-art="zahl">3</span> Bewegungen hinter der Zone, Gewinnziel
+              <span data-sp-zahl="ALGO.ZIEL" data-sp-art="zahl">6</span> Bewegungen oder bis kurz vor die nächste
+              Zone.</li>
+          <li>Sticht der Kurs um mindestens <span data-sp-zahl="ALGO.ABHOLUNG" data-sp-art="zahl">1</span> Bewegung durch
+              eine Zone und ist binnen <span data-sp-zahl="ALGO.ABHOLUNG_TAKTE" data-sp-art="sekunden">3</span> Sekunden
+              zurück, wertet er das als Abholung und steigt sofort dagegen ein,
+              Stop <span data-sp-zahl="ALGO.ABHOLUNG_PUFFER" data-sp-art="zahl">1</span> Bewegungen hinter dem Stich,
+              Ziel wie an der Zone. Bleibt der Kurs länger dahinter, war es ein
+              Ausbruch: Aus dem Hoch wird für ihn eine Unterstützung, aus dem
+              Tief ein Widerstand.</li>
           <li>Er setzt so viel ein, wie die Positionsgrenze erlaubt, verkleinert
-              aber, sobald sein Stop mehr als
-              <span data-sp-zahl="ALGO.RISIKO" data-sp-art="prozent">53&nbsp;%</span> seines
-              Kapitals kosten würde.</li>
-          <li>Wächst sein Kapital, wächst die Grenze mit. Erlaubt sie
-              mindestens <span data-sp-zahl="ALGO.NACHKAUF" data-sp-art="prozent">2&nbsp;%</span>
-              seiner Position zusätzlich, stockt er auf — auch dabei nur so
-              weit, dass sein Stop höchstens
-              <span data-sp-zahl="ALGO.RISIKO" data-sp-art="prozent">53&nbsp;%</span> seines
-              Kapitals kostet.</li>
-          <li>Mit jedem Einstieg legt er einen ruhenden Stop wie Ihren,
-              <span data-sp-zahl="ALGO.STOP" data-sp-art="zahl">2</span> übliche
-              Kursbewegungen entfernt. Liegt eines seiner Tiefs (bei Long) bzw.
-              Hochs (bei Short) näher als
-              <span data-sp-zahl="ALGO.ZONE_PUFFER" data-sp-art="zahl">3</span> Bewegungen
-              am Stop, legt er ihn
-              <span data-sp-zahl="ALGO.ZONE_PUFFER" data-sp-art="zahl">3</span> Bewegungen
-              hinter diese Zone — nie knapp dahinter, wo die Stops der anderen
-              liegen. Läuft der Kurs in seine Richtung, zieht er den Stop je
-              Kerze nach: höchstens
-              <span data-sp-zahl="ALGO.NACHZIEHEN" data-sp-art="zahl">14</span> Bewegungen
-              hinter dem besten Kurs seit dem Einstieg, ebenfalls nie knapp
-              hinter eine Zone, und nie zurück. Fällt der Vorsprung des
-              kurzen Durchschnitts unter das
-              <span data-sp-zahl="ALGO.AUSSTIEG" data-sp-art="zahl">0,83</span>-Fache, steigt
-              er aus.</li>
-          <li>In den letzten
-              <span data-sp-zahl="ALGO.KEIN_EINSTIEG_VOR" data-sp-art="sekunden">4</span> Sekunden
-              vor einer angekündigten Nachricht eröffnet er nichts und stockt
-              nicht auf;
-              <span data-sp-zahl="ALGO.FLACH_VOR" data-sp-art="sekunden">2</span>&nbsp;s vorher
-              ist er flach. Nach der Nachricht wartet er
-              <span data-sp-zahl="ALGO.ABWARTEN_NACH" data-sp-art="sekunden">1</span>&nbsp;s
-              ab.</li>
-          <li>Nach <span data-sp-zahl="ALGO.VERLUSTE_PAUSE" data-sp-art="zahl">3</span> Verlusten
-              in Folge legt er
-              <span data-sp-zahl="ALGO.PAUSE" data-sp-art="sekunden">25</span> Sekunden Pause
-              ein.</li>
+              aber, sobald sein Stop mehr als <span data-sp-zahl="ALGO.RISIKO" data-sp-art="prozent">65&nbsp;%</span> seines
+              Kapitals kosten würde. Wächst sein Kapital, wächst die Grenze mit:
+              Erlaubt sie mindestens <span data-sp-zahl="ALGO.NACHKAUF" data-sp-art="prozent">2&nbsp;%</span> seiner Position
+              zusätzlich, stockt er auf – auch dabei nur so weit, dass sein Stop
+              höchstens <span data-sp-zahl="ALGO.RISIKO" data-sp-art="prozent">65&nbsp;%</span> seines Kapitals kostet.</li>
+          <li>In den letzten <span data-sp-zahl="ALGO.KEIN_EINSTIEG_VOR" data-sp-art="sekunden">4</span> Sekunden vor
+              einer angekündigten Nachricht eröffnet er nichts und stockt nicht
+              auf; <span data-sp-zahl="ALGO.FLACH_VOR" data-sp-art="sekunden">2</span>&nbsp;s vorher ist er flach. Läuft
+              der Kurs <span data-sp-zahl="ALGO.NACHRICHT_MIT" data-sp-art="sekunden">0,5</span>&nbsp;s nach der Nachricht
+              weiter in Richtung des Sprungs, geht er mit.</li>
           <li>Er handelt zu denselben Kursen, mit derselben Preiswirkung,
               denselben Gebühren, derselben Positionsgrenze und denselben
-              ruhenden Orders wie Sie: Sein Stop wird genauso ausgelöst und kann
-              genauso abgeholt werden wie Ihrer. Ihre Stops sieht er nicht.
-              Schneller ist er nur, weil er nicht klicken muss.</li>
+              ruhenden Orders wie Sie: Sein Stop und sein Ziel werden genauso
+              ausgelöst, sein Stop kann genauso abgeholt werden wie Ihrer. Ihre
+              Stops sieht er nicht. Schneller ist er nur, weil er nicht klicken
+              muss.</li>
         </ul>
       </div>
 
@@ -608,8 +628,12 @@
         Goldpreise, und es ist kein echtes Geld im Spiel. Dass hier Gold gehandelt
         wird, sagt nichts darüber, welche Märkte JKHD handelt. Der Gegner ist
         ein vereinfachter Spiel-Algorithmus mit festen Regeln, nicht das
-        Handelssystem von JKHD. Keine Anlageberatung. Das Spiel läuft nur in
-        Ihrem Browser: Es speichert nichts und sendet nichts.
+        Handelssystem von JKHD. Keine Anlageberatung. Das Spiel rechnet in
+        Ihrem Browser und speichert dort nichts. An unseren Server (api.jkhd.de)
+        gehen nur die Bestenliste beim Öffnen der Seite, beim Start eine
+        zufällige Spielmarke und – wenn Sie nach einem Sieg einen Spitznamen
+        eintragen – dieser Spitzname mit Spielzeit, Spielnummer und Tempo
+        (siehe Datenschutzerklärung).
       </div>
     </div>
   </section>
@@ -666,8 +690,8 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20261010p"></script>
-  <script src="js/spiel-motor.js?v=20261010p"></script>
-  <script src="js/spiel.js?v=20261010p"></script>
+  <script src="js/main.js?v=20261010q"></script>
+  <script src="js/spiel-motor.js?v=20261010q"></script>
+  <script src="js/spiel.js?v=20261010q"></script>
 </body>
 </html>

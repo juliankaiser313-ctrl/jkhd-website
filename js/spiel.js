@@ -76,6 +76,15 @@
     SPERRE_NACH_PAUSE: 6       // Takte bei Tempo 1x: nach "Weiter" kein Kauf, Verkauf, Glattstellen
   });
   const NACHHOLEN_MS = 1000;           // laengere Aussetzer holt der Takt nicht nach
+  // Bestenliste der schnellsten Siege (Julian, 10.10.2026): liegt auf unserem
+  // Server (api.jkhd.de, der Partner-Server). Drei Aufrufe, alle POST: die
+  // Liste beim Oeffnen der Seite, eine Spielmarke beim Start (belegt dem
+  // Server, dass ein Spiel lief und wie lange es hoechstens dauern konnte) und
+  // der Eintrag nach einem Sieg mit Spitzname, Spielzeit, Spielnummer und
+  // Tempo. Faellt der Server aus, fehlt nur die Liste; das Spiel laeuft wie
+  // immer, und ausser diesen drei Aufrufen geht nichts hinaus.
+  const BESTEN_API = "https://api.jkhd.de/index.php?aktion=";
+  const BESTEN_PLAETZE = 10;
   const PROTOKOLL_MAX = 8;             // Eintraege im Protokoll des Algos
   const ANSAGEN_MAX = 3;               // Zeilen im Vorlesebereich
   const NACHRICHT_NACHLAUF = 20;       // Takte, die eine eingetretene Nachricht im Band bleibt
@@ -235,6 +244,14 @@
   const knopfEinstand = wurzel.querySelector('[data-sp-aktion="sl-einstand"]');
   const endeUeberschrift = teil("ende-titel");
   const endeKarte = schichtEnde.querySelector(".sp-schicht-inhalt");
+  const bestenForm = teil("besten-form");
+  const bestenHinweis = teil("besten-hinweis");
+  const bestenMeldung = teil("besten-meldung");
+  const bestenFeld = bestenForm ? bestenForm.querySelector("input") : null;
+  const bestenKnopf = bestenForm ? bestenForm.querySelector("button") : null;
+  const bestenAbschnitt = document.querySelector('[data-sp="besten"]');
+  const bestenOl = document.querySelector('[data-sp="besten-liste"]');
+  const bestenLeer = document.querySelector('[data-sp="besten-leer"]');
   const tempoKnoepfe = wurzel.querySelectorAll("[data-sp-tempo]");
   const mengenKnoepfe = wurzel.querySelectorAll("[data-sp-menge]");
   const orderKnoepfe = {
@@ -298,6 +315,11 @@
 
   // ---------- Zustand der Oberflaeche ----------
   let spiel = null;
+  let bestenListe = null;        // die Liste vom Server (null: nicht geladen)
+  let marke = null;              // Spielmarke des laufenden Spiels
+  let markeSpiel = null;         // ... und fuer welches Spiel sie geholt wurde
+  let tempoMax = 1;              // hoechstes Tempo in diesem Spiel
+  let bestenOffen = null;        // Sieg, der eingetragen werden kann
   let modus = "start";           // "start" | "laeuft" | "pause" | "ende"
   let tempo = 1;
   // Voreingestellt ist "max": Mit einer kleinen festen Menge je Order kommt
@@ -376,34 +398,39 @@
   // Auf einstieg, nachkauf, trendende und vor_nachricht folgt im selben Takt
   // der Trade des Algos; beides wird ein Eintrag. Einen ausgeloesten Stop
   // meldet das schutz-Ereignis (siehe schutzVerarbeiten).
-  const MIT_ORDER = ["einstieg", "nachkauf", "trendende", "vor_nachricht"];
+  const MIT_ORDER = ["einstieg", "nachkauf", "trendende", "hektik", "vor_nachricht"];
 
   function algoText(e, trade) {
     const handel = trade ? ausfuehrungText(trade) + ergebnisText(trade) : "";
     switch (e.code) {
       case "bereit":
-        return T("Beobachtung beendet \u2013 sucht jetzt einen Trend.", "Done watching \u2013 now looking for a trend.");
-      case "einstieg":
-        return T("Einstieg " + e.richtung + ": ", "Enters " + e.richtung + ": ") + handel +
-          T(", Stop ", ", stop ") + kurs(e.stop) + ".";
+        return T("Beobachtung beendet \u2013 handelt jetzt.", "Done watching \u2013 trading now.");
+      case "einstieg": {
+        const grund = e.grund === "zone" ? T(" an der Zone", " at the zone")
+          : e.grund === "abholung" ? T(" gegen die Abholung", " against the liquidity grab")
+            : e.grund === "nachricht" ? T(" mit dem Nachrichtenschub", " with the news move")
+              : T(" im Trend", " with the trend");
+        return T("Einstieg " + e.richtung + grund + ": ", "Enters " + e.richtung + grund + ": ") + handel +
+          T(", Stop ", ", stop ") + kurs(e.stop) + (typeof e.ziel === "number" ? T(", Ziel ", ", target ") + kurs(e.ziel) : "") + ".";
+      }
       case "nachkauf":
         return T("Stockt auf: ", "Adds to the position: ") + handel + ".";
       case "trendende":
-        return T("Trend l\u00e4sst nach, raus: ", "Trend fading, out: ") + handel + ".";
+        return T("Trend gedreht, raus: ", "Trend has turned, out: ") + handel + ".";
+      case "hektik":
+        return T("Markt wird hektisch, raus: ", "Market turning hectic, out: ") + handel + ".";
       case "vor_nachricht":
         return T("Vor der Nachricht (" + themaText(e.thema) + ") flach: ",
           "Flat before the news (" + themaText(e.thema) + "): ") + handel + ".";
       // Die Einschaetzung des Algos nach seiner eigenen Regel, keine
       // Feststellung ueber den Markt: Er meldet deutlich mehr "Abholungen",
       // als der Markt macht (Messung im Ordner JKHD-Spiel)
-      case "abholung": {
-        const sperre = zahl(sekundenAusTakten(A.SPERRE));
+      case "abholung":
         return e.richtung === "oben"
-          ? T("Hoch bei " + kurs(e.zone) + " kurz durchstochen \u2013 wertet das als Abholung: " + sperre + " s kein Einstieg long.",
-            "High at " + kurs(e.zone) + " briefly pierced \u2013 treats it as a liquidity grab: no long entry for " + sperre + " s.")
-          : T("Tief bei " + kurs(e.zone) + " kurz durchstochen \u2013 wertet das als Abholung: " + sperre + " s kein Einstieg short.",
-            "Low at " + kurs(e.zone) + " briefly pierced \u2013 treats it as a liquidity grab: no short entry for " + sperre + " s.");
-      }
+          ? T("Hoch bei " + kurs(e.zone) + " kurz durchstochen \u2013 wertet das als Abholung.",
+            "High at " + kurs(e.zone) + " briefly pierced \u2013 treats it as a liquidity grab.")
+          : T("Tief bei " + kurs(e.zone) + " kurz durchstochen \u2013 wertet das als Abholung.",
+            "Low at " + kurs(e.zone) + " briefly pierced \u2013 treats it as a liquidity grab.");
       case "abwarten":
         return T("Nachricht eingetreten, wartet " + zahl(e.sekunden) + " s ab.",
           "News is out, waits " + zahl(e.sekunden) + " s.");
@@ -442,9 +469,8 @@
           (algo.sl === null ? "" : ", SL " + kurs(algo.sl)) +
           (algo.tp === null ? "" : ", TP " + kurs(algo.tp));
       case "beobachtet": return T("beobachtet den Markt", "watching the market");
-      case "bereit": return T("sucht einen Trend", "looking for a trend");
-      case "pause": return T("Pause nach Verlusten", "break after losses");
-      case "abwarten": return T("wartet nach der Nachricht ab", "waiting after the news");
+      case "bereit": return T("sucht Trend, Zone oder Abholung", "looking for a trend, a zone or a grab");
+      case "hektik": return T("wartet \u2013 Markt zu hektisch", "waiting \u2013 market too hectic");
       case "nachricht": return T("bleibt vor der Nachricht flach", "staying flat before the news");
       default: return algo.phase;
     }
@@ -789,6 +815,8 @@
     auswahl = null;
     antippen = null;
     endeTitel = "";
+    tempoMax = tempo;
+    bestenZuruecksetzen();
     protokollListe.textContent = "";
     protokollLeer.hidden = false;
     setzeText(meldungZeile, "");
@@ -805,6 +833,7 @@
     neuGefragt = false;
     schichtZu(schichtStart);
     schichtZu(schichtEnde);
+    markeHolen();
     modus = "laeuft";
     anzeigen();
     brettInsBild();
@@ -921,6 +950,7 @@
     setzeText(teil("ende-kapital-algo"), betrag(e.kapitalAlgo));
     setzeText(teil("ende-trades-du"), FORMAT_GANZ.format(z.du.trades));
     setzeText(teil("ende-trades-algo"), FORMAT_GANZ.format(z.algo.trades));
+    bestenAnbieten(e);
 
     const fokusImSpiel = wurzel.contains(document.activeElement);
     schichtEnde.hidden = false;
@@ -942,6 +972,144 @@
     if (fokusImSpiel) endeUeberschrift.focus({ preventScroll: true });
     ansagen(endeTitel + ". " + grund);
   }
+
+  // ---------- Bestenliste ----------
+  // Ein Aufruf an den Server: POST mit JSON; Antwort als { status, json } --
+  // status 0, wenn kein Netz. Der Server kennt die Herkunft (Origin) der Seite.
+  function bestenAnfrage(aktion, daten) {
+    if (typeof fetch !== "function") return Promise.resolve({ status: 0, json: null });
+    return fetch(BESTEN_API + aktion, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(daten || {}) })
+      .then((r) => r.json().catch(() => null).then((json) => ({ status: r.status, json })))
+      .catch(() => ({ status: 0, json: null }));
+  }
+
+  function datumText(iso) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+    if (!m) return "";
+    return IST_EN ? m[1] + "-" + m[2] + "-" + m[3] : m[3] + "." + m[2] + "." + m[1];
+  }
+
+  // Die Liste anzeigen; hervor: Rang des eigenen Eintrags (0 = keiner)
+  function bestenZeigen(liste, hervor) {
+    if (!bestenAbschnitt || !bestenOl) return;
+    bestenOl.textContent = "";
+    liste.slice(0, BESTEN_PLAETZE).forEach((e, i) => {
+      const li = document.createElement("li");
+      if (i + 1 === hervor) li.className = "ist-du";
+      const zelle = (klasse, text) => {
+        const s = document.createElement("span");
+        s.className = klasse;
+        s.textContent = text;
+        li.appendChild(s);
+      };
+      zelle("sp-besten-rang", String(i + 1) + ".");
+      zelle("sp-besten-name", String(e.name));
+      zelle("sp-besten-zeit", uhr(Number(e.sekunden)));
+      zelle("sp-besten-datum", datumText(e.datum));
+      bestenOl.appendChild(li);
+    });
+    if (bestenLeer) bestenLeer.hidden = liste.length > 0;
+    bestenAbschnitt.hidden = false;
+  }
+
+  function bestenLaden() {
+    if (!bestenAbschnitt) return;
+    bestenAnfrage("bestenliste").then((r) => {
+      if (r.status !== 200 || !r.json || !Array.isArray(r.json.liste)) return;
+      bestenListe = r.json.liste.filter((e) => e && typeof e.name === "string" && Number.isFinite(e.sekunden));
+      bestenZeigen(bestenListe, 0);
+    });
+  }
+
+  // Die Spielmarke fuer das laufende Spiel -- einmal je Spiel, beim Start
+  function markeHolen() {
+    if (!bestenForm || markeSpiel === spiel) return;
+    const meins = spiel;
+    markeSpiel = spiel;
+    marke = null;
+    bestenAnfrage("bestenliste_marke").then((r) => {
+      if (spiel === meins && r.status === 200 && r.json && typeof r.json.marke === "string") marke = r.json.marke;
+    });
+  }
+
+  function bestenZuruecksetzen() {
+    bestenOffen = null;
+    if (!bestenForm) return;
+    bestenForm.hidden = true;
+    bestenForm.classList.remove("ist-fertig");
+    setzeText(bestenMeldung, "");
+    if (bestenFeld) { bestenFeld.value = ""; bestenFeld.disabled = false; }
+    if (bestenKnopf) bestenKnopf.disabled = false;
+  }
+
+  // Nach dem Spielende: Hat der Mensch gewonnen und kaeme seine Zeit unter die
+  // ersten BESTEN_PLAETZE, bietet die Endkarte den Eintrag an. Ohne Marke (kein
+  // Server erreichbar) gibt es nichts anzubieten.
+  function bestenAnbieten(e) {
+    bestenZuruecksetzen();
+    if (!bestenForm || e.sieger !== "du" || !marke || markeSpiel !== spiel) return;
+    const sekunden = Math.round(sekundenAusTakten(e.takt));
+    const liste = bestenListe || [];
+    const rang = liste.filter((x) => x.sekunden <= sekunden).length + 1;
+    if (liste.length >= BESTEN_PLAETZE && rang > BESTEN_PLAETZE) return;
+    bestenOffen = { marke, sekunden, saat: spiel.saat, tempo: tempoMax };
+    setzeText(bestenHinweis, bestenListe === null
+      ? T("Ihr Sieg kann in die Bestenliste \u2013 tragen Sie einen Spitznamen ein.", "Your win can go on the leaderboard \u2013 enter a nickname.")
+      : T("Platz " + rang + " der Bestenliste \u2013 tragen Sie einen Spitznamen ein.", "Rank " + rang + " on the leaderboard \u2013 enter a nickname."));
+    bestenForm.hidden = false;
+  }
+
+  function bestenEintragen(ev) {
+    ev.preventDefault();
+    if (!bestenOffen || !bestenFeld) return;
+    const name = bestenFeld.value.replace(/\s+/g, " ").trim();
+    if (name.length < 2 || name.length > 16 || !/^[\p{L}\p{N} ._-]+$/u.test(name)) {
+      setzeText(bestenMeldung, T("2 bis 16 Zeichen: Buchstaben, Ziffern, Leerzeichen, Punkt, Strich.", "2 to 16 characters: letters, digits, spaces, dot, dash."));
+      bestenFeld.focus();
+      return;
+    }
+    const offen = bestenOffen;
+    bestenFeld.disabled = true;
+    if (bestenKnopf) bestenKnopf.disabled = true;
+    setzeText(bestenMeldung, T("Wird eingetragen \u2026", "Submitting \u2026"));
+    bestenAnfrage("bestenliste_eintrag", { marke: offen.marke, name, sekunden: offen.sekunden, saat: offen.saat, tempo: offen.tempo }).then((r) => {
+      if (r.status === 200 && r.json && Array.isArray(r.json.liste)) {
+        bestenOffen = null;
+        bestenListe = r.json.liste;
+        bestenZeigen(bestenListe, Number(r.json.rang) || 0);
+        bestenForm.classList.add("ist-fertig");
+        setzeText(bestenMeldung, T("Eingetragen: Platz " + r.json.rang + ". Die Liste steht unter dem Spiel.", "Listed: rank " + r.json.rang + ". The list is below the game."));
+        ansagen(T("In die Bestenliste eingetragen, Platz " + r.json.rang + ".", "Added to the leaderboard, rank " + r.json.rang + "."));
+        return;
+      }
+      let text;
+      if (r.status === 409) {
+        bestenOffen = null;
+        if (r.json && Array.isArray(r.json.liste)) { bestenListe = r.json.liste; bestenZeigen(bestenListe, 0); }
+        text = T("Inzwischen ist die Liste schneller \u2013 diese Zeit reicht nicht mehr.", "The list has got faster in the meantime \u2013 this time no longer qualifies.");
+      } else if (r.status === 400 && r.json && r.json.fehler === "name") {
+        text = T("Dieser Spitzname geht nicht \u2013 bitte einen anderen.", "This nickname is not allowed \u2013 please choose another.");
+        bestenFeld.disabled = false;
+        if (bestenKnopf) bestenKnopf.disabled = false;
+        bestenFeld.focus();
+        setzeText(bestenMeldung, text);
+        return;
+      } else if (r.status === 400) {
+        bestenOffen = null;
+        text = T("Die Spielmarke gilt nicht mehr \u2013 beim n\u00e4chsten Sieg klappt es.", "The game token has expired \u2013 it will work with the next win.");
+      } else if (r.status === 429) {
+        text = T("Zu viele Eintr\u00e4ge aus Ihrem Netz \u2013 bitte sp\u00e4ter noch einmal.", "Too many entries from your network \u2013 please try again later.");
+      } else {
+        text = T("Keine Verbindung zum Server \u2013 bitte noch einmal versuchen.", "No connection to the server \u2013 please try again.");
+      }
+      if (bestenOffen) {
+        bestenFeld.disabled = false;
+        if (bestenKnopf) bestenKnopf.disabled = false;
+      }
+      setzeText(bestenMeldung, text);
+    });
+  }
+  if (bestenForm) bestenForm.addEventListener("submit", bestenEintragen);
 
   // ---------- Anzeige ----------
   // Offener G/V (konto.offen) rechnet der Motor: genau das Ergebnis, das
@@ -1731,6 +1899,7 @@
   // ---------- Bedienung ----------
   function tempoWaehlen(neu) {
     tempo = neu;
+    if (neu > tempoMax) tempoMax = neu;
     tempoKnoepfe.forEach((k) => setzeAttribut(k, "aria-pressed", String(Number(k.dataset.spTempo) === neu)));
   }
 
@@ -1865,6 +2034,7 @@
   wurzel.hidden = false;
   koerper.inert = true;
   neuesSpielVorbereiten();
+  bestenLaden();
   anzeigen();
 
   if ("ResizeObserver" in window) new ResizeObserver(groesseAnpassen).observe(chartRahmen);

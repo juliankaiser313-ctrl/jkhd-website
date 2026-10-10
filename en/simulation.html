@@ -32,8 +32,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/simulation.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/simulation.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/simulation.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20261010p">
-  <link rel="stylesheet" href="../css/style.css?v=20261010p">
+  <link rel="stylesheet" href="../css/fonts.css?v=20261010q">
+  <link rel="stylesheet" href="../css/style.css?v=20261010q">
 </head>
 <body>
 
@@ -327,6 +327,16 @@
               <div><dt>Your trades</dt><dd data-sp="ende-trades-du"></dd></div>
               <div><dt>Algo trades</dt><dd data-sp="ende-trades-algo"></dd></div>
             </dl>
+            <!-- Leaderboard: only after a win that would rank among the fastest ten (js/spiel.js) -->
+            <form class="sp-besten-form" data-sp="besten-form" hidden novalidate>
+              <p class="sp-besten-hinweis" data-sp="besten-hinweis"></p>
+              <label class="sp-besten-label" for="sp-spitzname">Nickname for the leaderboard (2–16 characters, not your real name)</label>
+              <div class="sp-besten-zeile">
+                <input id="sp-spitzname" type="text" maxlength="16" minlength="2" autocomplete="nickname" spellcheck="false" required>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+              <p class="sp-besten-meldung" data-sp="besten-meldung" aria-live="polite"></p>
+            </form>
             <div class="sp-schicht-knoepfe">
               <button type="button" class="btn btn-primary" data-sp-aktion="nochmal">Play again</button>
               <button type="button" class="btn btn-ghost" data-sp-aktion="ansehen">View chart</button>
@@ -338,9 +348,9 @@
       </div>
 
       <noscript>
-        <p class="note"><b>The game needs JavaScript.</b> It runs entirely in
-           your browser and loads nothing else. The rules below are readable
-           without JavaScript.</p>
+        <p class="note"><b>The game needs JavaScript.</b> It is computed in
+           your browser; only the leaderboard comes from our server. The rules
+           below are readable without JavaScript.</p>
       </noscript>
     </div>
   </section>
@@ -349,6 +359,23 @@
        js/spiel.js sets the numbers in the data-sp-zahl places from the rules
        of the engine; the text here is the same for visitors without
        JavaScript. -->
+  <!-- ================= LEADERBOARD =================
+       The ten fastest wins against the Algo, from api.jkhd.de (js/spiel.js loads
+       them on opening; without the server the section stays hidden). -->
+  <section class="section sp-besten-abschnitt" aria-labelledby="sp-besten-titel" data-sp="besten" hidden>
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Leaderboard</p>
+        <h2 id="sp-besten-titel">The fastest wins against the JKHD Algo</h2>
+        <p>Only those who reach the million first make the list – sorted by
+           game time. For that, nickname and game time go to our server,
+           nothing more (see the privacy policy).</p>
+      </div>
+      <ol class="sp-besten" data-sp="besten-liste"></ol>
+      <p class="sp-besten-leer" data-sp="besten-leer" hidden>No entry yet – the first win starts the list.</p>
+    </div>
+  </section>
+
   <section class="section sp-regel-abschnitt" aria-labelledby="sp-regeln-titel">
     <div class="container">
       <div class="section-head">
@@ -525,67 +552,62 @@
            own account including its orders, and the announced news. It does
            not know the market’s future, nor your SL and TP.</p>
         <ul>
-          <li>For the first <span data-sp-zahl="ALGO.AUFWAERMEN" data-sp-art="sekunden">22</span> seconds
-              it only watches. Then it compares two moving averages over
-              <span data-sp-zahl="ALGO.MITTEL_SCHNELL" data-sp-art="sekunden">2.5</span> and
-              <span data-sp-zahl="ALGO.MITTEL_LANGSAM" data-sp-art="sekunden">14</span> seconds
-              and measures the usual price move per tick, averaged over
-              <span data-sp-zahl="ALGO.MITTEL_SCHWANKUNG" data-sp-art="sekunden">16</span> seconds.</li>
-          <li>It enters when the short average is more than
-              <span data-sp-zahl="ALGO.EINSTIEG" data-sp-art="zahl">7.75</span> times that
-              move above or below the long one — always in the direction of
-              the trend.</li>
-          <li>It finds highs and lows in the price history itself: it treats
-              any turning point from which the price has pulled back by at
-              least <span data-sp-zahl="ALGO.ZONE" data-sp-art="zahl">6</span> usual moves
-              as a zone.
-              If the price pierces such a zone by at least
-              <span data-sp-zahl="ALGO.ABHOLUNG" data-sp-art="zahl">1</span> move and is
-              back within <span data-sp-zahl="ALGO.ABHOLUNG_TAKTE" data-sp-art="sekunden">3</span> seconds,
-              it takes that as a liquidity grab and does not enter in that
-              direction for <span data-sp-zahl="ALGO.SPERRE" data-sp-art="sekunden">2</span> seconds.
-              If the price stays beyond it for longer, it was a breakout: the
-              high becomes support for it, the low becomes resistance.</li>
+          <li>For the first <span data-sp-zahl="ALGO.AUFWAERMEN" data-sp-art="sekunden">8</span> seconds it only
+              watches. Then it compares two moving averages over
+              <span data-sp-zahl="ALGO.MITTEL_SCHNELL" data-sp-art="sekunden">1</span> and <span data-sp-zahl="ALGO.MITTEL_LANGSAM" data-sp-art="sekunden">10</span> seconds,
+              measures the usual price move per tick (averaged over
+              <span data-sp-zahl="ALGO.MITTEL_SCHWANKUNG" data-sp-art="sekunden">16</span> seconds) and the move of the
+              last <span data-sp-zahl="ALGO.MITTEL_HEKTIK" data-sp-art="sekunden">1.5</span> seconds. If that is more than
+              <span data-sp-zahl="ALGO.HEKTIK" data-sp-art="zahl">3.2</span> times the usual, it treats the market as
+              hectic: then it opens nothing and closes a running trend
+              trade.</li>
+          <li>Trend: it enters in the direction of the trend when the short
+              average is more than <span data-sp-zahl="ALGO.EINSTIEG" data-sp-art="zahl">7.5</span> times the usual move
+              above or below the long one. If the trend turns against its
+              position by more than <span data-sp-zahl="ALGO.TRENDENDE" data-sp-art="zahl">3.5</span> times, it exits.
+              After a trend trade ends it waits <span data-sp-zahl="ALGO.RUHE" data-sp-art="sekunden">2</span> seconds
+              before trading the next trend.</li>
+          <li>Its stop sits behind the last turning point, at least
+              <span data-sp-zahl="ALGO.STOP" data-sp-art="zahl">3</span> and at most <span data-sp-zahl="ALGO.STOP_MAX" data-sp-art="zahl">4</span> usual moves
+              away, and <span data-sp-zahl="ALGO.ZONE_PUFFER" data-sp-art="zahl">3</span> moves behind a zone – never
+              just behind it, where everyone else’s stops sit. Each candle it
+              trails the stop: behind the last turning point, at most
+              <span data-sp-zahl="ALGO.NACHZIEHEN" data-sp-art="zahl">20</span> moves behind the best price since entry,
+              never backwards. Once the price is <span data-sp-zahl="ALGO.BREAKEVEN" data-sp-art="zahl">4</span> moves
+              in profit, the stop moves to the entry price.</li>
+          <li>It finds highs and lows in the price history itself: it treats a
+              turning point as a zone once the price has run back at least
+              <span data-sp-zahl="ALGO.ZONE" data-sp-art="zahl">6</span> usual moves from it; the zone counts as touched
+              as soon as the price comes within <span data-sp-zahl="ALGO.NAEHE" data-sp-art="zahl">1.5</span> moves. In a
+              sideways market it trades against the zone as soon as the price
+              turns away from it – up to the <span data-sp-zahl="ALGO.ABPRALLER" data-sp-art="zahl">1</span>. touch,
+              stop <span data-sp-zahl="ALGO.ZONE_STOP" data-sp-art="zahl">3</span> moves behind the zone, profit target
+              <span data-sp-zahl="ALGO.ZIEL" data-sp-art="zahl">6</span> moves or just short of the next zone.</li>
+          <li>If the price pierces a zone by at least <span data-sp-zahl="ALGO.ABHOLUNG" data-sp-art="zahl">1</span> move
+              and is back within <span data-sp-zahl="ALGO.ABHOLUNG_TAKTE" data-sp-art="sekunden">3</span> seconds, it
+              treats that as a liquidity grab and enters against it at once,
+              stop <span data-sp-zahl="ALGO.ABHOLUNG_PUFFER" data-sp-art="zahl">1</span> moves behind the spike, target
+              as at a zone. If the price stays beyond for longer, it was a
+              breakout: the high becomes support for it, the low becomes
+              resistance.</li>
           <li>It trades as much as the position limit allows, but trades
               smaller as soon as its stop would cost more than
-              <span data-sp-zahl="ALGO.RISIKO" data-sp-art="prozent">53%</span> of its
-              capital.</li>
-          <li>When its capital grows, the limit grows with it. As soon as the
-              limit allows at least
-              <span data-sp-zahl="ALGO.NACHKAUF" data-sp-art="prozent">2%</span> more than
-              its position, it adds to it — again only so far that its stop
-              costs at most
-              <span data-sp-zahl="ALGO.RISIKO" data-sp-art="prozent">53%</span> of its
-              capital.</li>
-          <li>With every entry it places a resting stop like yours,
-              <span data-sp-zahl="ALGO.STOP" data-sp-art="zahl">2</span> usual moves away.
-              If one of its lows (for a long position) or highs (for a short)
-              is closer than <span data-sp-zahl="ALGO.ZONE_PUFFER" data-sp-art="zahl">3</span> moves
-              to the stop, it places the stop
-              <span data-sp-zahl="ALGO.ZONE_PUFFER" data-sp-art="zahl">3</span> moves
-              beyond that zone — never just behind it, where the others’ stops
-              sit. If the price runs its way, it trails the stop once per
-              candle: at most
-              <span data-sp-zahl="ALGO.NACHZIEHEN" data-sp-art="zahl">14</span> moves
-              behind the best price since entry, again never just behind a
-              zone, and never backwards. If the lead of the short
-              average drops below
-              <span data-sp-zahl="ALGO.AUSSTIEG" data-sp-art="zahl">0.83</span> times the
-              move, it exits.</li>
-          <li>In the last
-              <span data-sp-zahl="ALGO.KEIN_EINSTIEG_VOR" data-sp-art="sekunden">4</span> seconds
-              before announced news it opens nothing and adds nothing;
-              <span data-sp-zahl="ALGO.FLACH_VOR" data-sp-art="sekunden">2</span>&nbsp;s
-              before, it is flat. After the news it waits
-              <span data-sp-zahl="ALGO.ABWARTEN_NACH" data-sp-art="sekunden">1</span>&nbsp;s.</li>
-          <li>After <span data-sp-zahl="ALGO.VERLUSTE_PAUSE" data-sp-art="zahl">3</span> losses
-              in a row it takes a break of
-              <span data-sp-zahl="ALGO.PAUSE" data-sp-art="sekunden">25</span> seconds.</li>
+              <span data-sp-zahl="ALGO.RISIKO" data-sp-art="prozent">65%</span> of its capital. When its capital grows,
+              the limit grows with it: as soon as it allows at least
+              <span data-sp-zahl="ALGO.NACHKAUF" data-sp-art="prozent">2%</span> of its position on top, it adds – again
+              only so far that its stop costs at most <span data-sp-zahl="ALGO.RISIKO" data-sp-art="prozent">65%</span>
+              of its capital.</li>
+          <li>In the last <span data-sp-zahl="ALGO.KEIN_EINSTIEG_VOR" data-sp-art="sekunden">4</span> seconds before an
+              announced news item it opens nothing and does not add;
+              <span data-sp-zahl="ALGO.FLACH_VOR" data-sp-art="sekunden">2</span>&nbsp;s before, it is flat. If the
+              price keeps running in the direction of the jump
+              <span data-sp-zahl="ALGO.NACHRICHT_MIT" data-sp-art="sekunden">0.5</span>&nbsp;s after the news, it goes
+              along.</li>
           <li>It trades at the same prices, with the same price impact, the
-              same fees, the same position limit and the same resting orders
-              as you: its stop is triggered the same way and can be taken out
-              the same way as yours. It does not see your stops. It is faster
-              only because it does not have to click.</li>
+              same fees, the same position limit and the same resting orders as
+              you: its stop and its target are triggered just like yours, and
+              its stop can be swept just like yours. It does not see your stops.
+              It is faster only because it does not have to click.</li>
         </ul>
       </div>
 
@@ -594,8 +616,11 @@
         real gold prices, and no real money is involved. That gold is traded
         here says nothing about which markets JKHD trades. The opponent is a
         simplified game algorithm with fixed rules, not JKHD’s trading system.
-        Not investment advice. The game runs only in your browser: it stores
-        nothing and sends nothing.
+        Not investment advice. The game is computed in your browser and stores
+        nothing there. Only the leaderboard (when you open the page), a random
+        game token at the start and – if you enter a nickname after a win –
+        that nickname with game time, game number and speed go to our server
+        (api.jkhd.de); see the privacy policy.
       </div>
     </div>
   </section>
@@ -652,8 +677,8 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20261010p"></script>
-  <script src="../js/spiel-motor.js?v=20261010p"></script>
-  <script src="../js/spiel.js?v=20261010p"></script>
+  <script src="../js/main.js?v=20261010q"></script>
+  <script src="../js/spiel-motor.js?v=20261010q"></script>
+  <script src="../js/spiel.js?v=20261010q"></script>
 </body>
 </html>

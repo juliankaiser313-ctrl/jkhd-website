@@ -118,20 +118,20 @@
 //     durch die andere ruhende Order), hat die Seite gewechselt oder das
 //     Spiel ist aus.
 //   { art: "algo", code: "bereit" }                       Beobachtung beendet
-//   { art: "algo", code: "einstieg", richtung: "long" | "short", menge, stop }
+//   { art: "algo", code: "einstieg", richtung: "long" | "short", menge, stop,
+//     grund: "trend" | "zone" | "abholung" | "nachricht", ziel? }
+//     (ziel nur bei Zone und Abholung: sein Gewinnziel als ruhende Order)
 //   { art: "algo", code: "nachkauf", menge }              stockt die Position auf
-//   { art: "algo", code: "trendende" }                    Trend vorbei, raus
+//   { art: "algo", code: "trendende" }                    Trend gedreht, raus
+//   { art: "algo", code: "hektik" }                       Markt hektisch, raus
 //   { art: "algo", code: "vor_nachricht", thema }         raus vor Nachricht
 //   { art: "algo", code: "abholung", richtung: "oben" | "unten", zone }
 //     Der Kurs hat ein Hoch (oben) bzw. Tief (unten) nur kurz durchstochen;
-//     der Algo steigt eine Weile nicht in diese Richtung ein
-//   { art: "algo", code: "abwarten", sekunden }           nach einer Nachricht
-//   { art: "algo", code: "pause", verluste, sekunden }    nach Verlusten in Folge
-//   { art: "algo", code: "pause_ende" }
+//     ist der Algo flach, steigt er im selben Takt dagegen ein
 //   { art: "ende", sieger, grund: "ziel" | "pleite", pleiteDu, pleiteAlgo,
 //     kapitalDu, kapitalAlgo }
 // Auf ein algo-Ereignis mit Order folgt im selben Takt dessen trade-Ereignis;
-// auf "einstieg" danach das schutz-Ereignis seines Stops.
+// auf "einstieg" danach das schutz-Ereignis seines Stops (und seines Ziels).
 //
 // Ablauf eines Takts (schritt), immer in dieser Reihenfolge:
 //   1. Kursprozess: Nachrichten, Phase, Zonen, neuer Kurs ohne Preiswirkung;
@@ -281,28 +281,39 @@
   // Fest und vorher festgelegt, auch fuer die Oberflaeche lesbar. Einheit der
   // Schwankung ("Bewegung") ist der gleitende Mittelwert der Kursbewegung je
   // Takt (in Dollar je Unze), Trendstaerke der Abstand der beiden gleitenden
-  // Mittel in dieser Einheit.
+  // Mittel in dieser Einheit. Seit dem 10.10.2026 spielt der Algo wie ein
+  // Profi (Julian: "so gut, dass er zu 99 % gewinnt, und schneller handeln"):
+  // Er unterscheidet Trend, Seitwaertsmarkt und Hektik, handelt im Trend die
+  // Wellen, im Seitwaertsmarkt die Zonen und jede Abholung dagegen, nimmt den
+  // Schub nach einer Nachricht mit und haelt nach Verlusten keine Pause.
   const ALGO = Object.freeze({
-    AUFWAERMEN: 88,           // Takte beobachten, bevor der erste Trade erlaubt ist
-    MITTEL_SCHNELL: 10,       // gleitende Mittel (Takte)
-    MITTEL_LANGSAM: 56,
-    MITTEL_SCHWANKUNG: 64,
-    EINSTIEG: 7.75,           // Trendstaerke fuer einen Einstieg
-    AUSSTIEG: 0.83,           // Trendstaerke, unter der ein Trade endet
-    STOP: 2,                  // erster Stop: so viele Bewegungen entfernt
-    NACHZIEHEN: 14,           // Stop je Kerze nachziehen: Abstand zum besten Kurs seit Einstieg
-    RISIKO: 0.53,             // Verlust bis zum Stop: hoechstens 53 % des Kapitals
+    AUFWAERMEN: 32,           // Takte beobachten, bevor der erste Trade erlaubt ist
+    MITTEL_SCHNELL: 4,        // gleitende Mittel (Takte)
+    MITTEL_LANGSAM: 40,
+    MITTEL_SCHWANKUNG: 64,    // uebliche Bewegung je Takt: gemittelt ueber so viele Takte
+    MITTEL_HEKTIK: 6,         // Bewegung der letzten Takte, fuer die Hektik-Erkennung
+    HEKTIK: 3.2,              // Bewegung der letzten Takte / uebliche Bewegung: ab da ist es Hektik
+    EINSTIEG: 7.5,            // Trendstaerke fuer einen Einstieg in Trendrichtung
+    TRENDENDE: 3.5,           // Trendstaerke so weit gegen die Position: Ausstieg
+    RUHE: 8,                 // Takte nach dem Ende eines Trend-Trades ohne neuen Trend-Einstieg
+    STOP: 3,                  // erster Stop: mindestens so viele Bewegungen entfernt ...
+    STOP_MAX: 4,              // ... hoechstens so viele (hinter dem letzten Umkehrpunkt)
+    BREAKEVEN: 4,             // liegt der Kurs so viele Bewegungen im Gewinn, rueckt der Stop auf den Einstand
+    NACHZIEHEN: 20,           // Stop je Kerze nachziehen: Abstand zum besten Kurs seit Einstieg
+    ZONE: 6,                  // Ruecklauf (Bewegungen), der ein Hoch/Tief zur Zone macht
+    ZONE_PUFFER: 3,           // Stop so viele Bewegungen hinter einer Zone, nie knapp dahinter
+    NAEHE: 1.5,               // so nah (Bewegungen) gilt eine Zone als beruehrt
+    ABPRALLER: 1,             // im Seitwaertsmarkt: bis zur so vielten Beruehrung gegen die Zone handeln
+    ZONE_STOP: 3,             // dabei Stop so viele Bewegungen hinter der Zone
+    ZIEL: 6,                  // Gewinnziel (Bewegungen) im Seitwaertsmarkt und nach einer Abholung
+    ABHOLUNG: 1,              // Zone um so viele Bewegungen durchstochen ...
+    ABHOLUNG_TAKTE: 12,       // ... und binnen so vieler Takte zurueck: Abholung -> Einstieg dagegen
+    ABHOLUNG_PUFFER: 1,       // Stop dann so viele Bewegungen hinter dem Stich
+    RISIKO: 0.65,             // Verlust bis zum Stop: hoechstens 65 % des Kapitals (meist bindet die Positionsgrenze)
+    NACHKAUF: 0.02,           // aufstocken, sobald die Grenze so viel mehr erlaubt (Anteil der Position)
     FLACH_VOR: 8,             // Takte vor einer Nachricht: Position schliessen
     KEIN_EINSTIEG_VOR: 16,    // Takte vor einer Nachricht: nichts eroeffnen, nicht aufstocken
-    ABWARTEN_NACH: 4,         // Takte nach einer Nachricht: abwarten
-    VERLUSTE_PAUSE: 3,        // so viele Verluste in Folge ...
-    PAUSE: 100,               // ... erzwingen so viele Takte Pause
-    NACHKAUF: 0.02,           // aufstocken, sobald die Grenze so viel mehr erlaubt (Anteil der Position)
-    ZONE: 6,                  // Ruecklauf (Bewegungen), der ein Hoch/Tief zur Zone macht
-    ZONE_PUFFER: 3,           // Stop mindestens so viele Bewegungen hinter einer Zone, nie knapp dahinter
-    ABHOLUNG: 1,              // Zone um so viele Bewegungen durchstochen ...
-    ABHOLUNG_TAKTE: 12,       // ... und binnen so vieler Takte zurueck: Abholung
-    SPERRE: 8                 // danach so viele Takte kein Einstieg in Stichrichtung
+    NACHRICHT_MIT: 2          // Takte nach einer Nachricht: laeuft der Kurs weiter in Sprungrichtung, geht er mit
   });
 
   // ---------- Zufallsgenerator ----------
@@ -772,84 +783,114 @@
   // Ereignis-Codes. Sein Gedaechtnis baut er selbst aus den Beobachtungen auf;
   // mehr als diese erreicht ihn nicht. Zonen erkennt er selbst aus dem
   // Kursverlauf, so wie ein Mensch im Chart -- die Zonen des Markts kennt er
-  // nicht.
+  // nicht, die Zukunft auch nicht.
+  //
+  // Sein Spiel: Im Trend (die gleitenden Mittel liegen EINSTIEG Bewegungen
+  // auseinander) geht er mit, Stop hinter dem letzten Umkehrpunkt, je Kerze
+  // nachgezogen; wird es hektisch (die Bewegung der letzten Takte ist HEKTIK
+  // mal so gross wie ueblich) oder dreht der Trend, ist er sofort raus. Im
+  // Seitwaertsmarkt handelt er gegen die Zonen: bei der ersten und zweiten
+  // Beruehrung eines Tiefs kauft er die Umkehr, Stop ZONE_STOP hinter der Zone,
+  // Ziel ZIEL Bewegungen oder bis kurz vor die naechste Zone. Wird eine Zone
+  // kurz durchstochen (Abholung), steigt er sofort dagegen ein, Stop hinter dem
+  // Stich. Nach einer Nachricht geht er mit, wenn der Kurs nach dem Sprung
+  // weiterlaeuft. Er setzt so viel ein, wie die Positionsgrenze erlaubt, und
+  // stockt auf, sobald das Kapital waechst.
   function erzeugeAlgo() {
     const aSchnell = 2 / (ALGO.MITTEL_SCHNELL + 1);
     const aLangsam = 2 / (ALGO.MITTEL_LANGSAM + 1);
     const aSchwankung = 2 / (ALGO.MITTEL_SCHWANKUNG + 1);
+    const aHektik = 2 / (ALGO.MITTEL_HEKTIK + 1);
     const wirkung = REGELN.PREISWIRKUNG;
+    const NAEHE_ZONE = 5;     // Bewegungen Abstand, bevor eine Zone erneut als beruehrt zaehlt
 
     const g = {
       takte: 0,
       schnell: 0,
       langsam: 0,
       schwankung: 0,
+      hektik: 0,
       vorher: 0,
+      davor: 0,
       eigeneWirkung: 0,       // eigene Preiswirkung nach den oeffentlichen Regeln
       bestand: 0,             // eigene Position nach der eigenen Order im letzten Takt
       bester: 0,
-      kapitalEinstieg: 0,
       imMarkt: false,
-      verluste: 0,
-      pauseBis: -1,
-      abwartenBis: -1,
+      art: null,              // "trend" | "zone" | "abholung" | "nachricht"
+      einstiegKurs: 0,
+      ruheBis: -1,            // bis dahin kein neuer Trend-Einstieg
       bereit: false,
-      pauseGemeldet: false,
       zzRichtung: 1,          // Zickzack: sucht ein Hoch (+1) oder Tief (-1)
       zzExtrem: 0,
-      hochs: [],              // erkannte Zonen: { preis, drueber: Takt des Durchstichs oder -1 }
+      letztesHoch: null,      // juengste bestaetigte Umkehrpunkte
+      letztesTief: null,
+      hochs: [],              // erkannte Zonen: { preis, drueber, extrem, beruehrt, scharf, beruehrtTakt }
       tiefs: [],
-      sperreLong: -1,         // nach einer Abholung: bis dahin kein Einstieg in Stichrichtung
-      sperreShort: -1
+      sprung: 0,              // Richtung des letzten Nachrichtensprungs, Kurs danach
+      nachSprung: 0,
+      stich: null             // Abholung in diesem Takt: { richtung, extrem }
     };
 
     function phase(b) {
       if (b.position > 0) return "long";
       if (b.position < 0) return "short";
       if (!g.bereit) return "beobachtet";
-      if (b.takt < g.pauseBis) return "pause";
-      if (b.takt < g.abwartenBis) return "abwarten";
       if (b.nachricht && b.nachricht.inTakten <= ALGO.KEIN_EINSTIEG_VOR) return "nachricht";
+      if (g.schwankung > 0 && g.hektik / g.schwankung > ALGO.HEKTIK) return "hektik";
       return "bereit";
     }
 
     // Zonen aus dem eigenen Kursverlauf: Hochs und Tiefs mit Ruecklauf ZONE.
-    // Durchsticht der Kurs eine Zone um ABHOLUNG und ist binnen
-    // ABHOLUNG_TAKTE zurueck, war es eine Abholung; bleibt er laenger
+    // Jede Annaeherung bis NAEHE zaehlt als Beruehrung (die naechste erst,
+    // wenn der Kurs NAEHE_ZONE weit weg war). Durchsticht der Kurs eine Zone um
+    // ABHOLUNG und ist binnen ABHOLUNG_TAKTE zurueck, war es eine Abholung
+    // (merkt sich den Stich fuer den Einstieg dagegen); bleibt er laenger
     // dahinter, kippt die Zone (ein Hoch wird Unterstuetzung, ein Tief
     // Widerstand).
     function zonenLernen(takt, kurs, einheit, ereignisse) {
+      g.stich = null;
       const merken = (liste, preis) => {
-        liste.push({ preis, drueber: -1 });
+        liste.push({ preis, drueber: -1, extrem: preis, beruehrt: 0, scharf: false, beruehrtTakt: -99 });
         if (liste.length > 3) liste.shift();
       };
       if (g.zzRichtung > 0) {
         if (kurs > g.zzExtrem) g.zzExtrem = kurs;
         else if (g.zzExtrem - kurs >= ALGO.ZONE * einheit) {
           merken(g.hochs, g.zzExtrem);
+          g.letztesHoch = g.zzExtrem;
           g.zzRichtung = -1;
           g.zzExtrem = kurs;
         }
       } else if (kurs < g.zzExtrem) g.zzExtrem = kurs;
       else if (kurs - g.zzExtrem >= ALGO.ZONE * einheit) {
         merken(g.tiefs, g.zzExtrem);
+        g.letztesTief = g.zzExtrem;
         g.zzRichtung = 1;
         g.zzExtrem = kurs;
       }
       for (const [liste, andere, r] of [[g.hochs, g.tiefs, 1], [g.tiefs, g.hochs, -1]]) {
         for (let i = liste.length - 1; i >= 0; i--) {
           const zo = liste[i];
+          const abstand = r * (zo.preis - kurs);     // > 0: Kurs diesseits der Zone
           if (zo.drueber < 0) {
-            if (r * (kurs - zo.preis) >= ALGO.ABHOLUNG * einheit) zo.drueber = takt;
+            if (abstand >= NAEHE_ZONE * einheit) zo.scharf = true;
+            else if (zo.scharf && abstand <= ALGO.NAEHE * einheit) {
+              zo.scharf = false;
+              zo.beruehrt += 1;
+              zo.beruehrtTakt = takt;
+            }
+            if (-abstand >= ALGO.ABHOLUNG * einheit) {
+              zo.drueber = takt;
+              zo.extrem = kurs;
+            }
           } else if (takt - zo.drueber > ALGO.ABHOLUNG_TAKTE) {
             liste.splice(i, 1);
             merken(andere, zo.preis);
-          } else if (r * (kurs - zo.preis) < 0) {
+          } else if (abstand > 0) {
             liste.splice(i, 1);
-            if (r > 0) g.sperreLong = takt + ALGO.SPERRE;
-            else g.sperreShort = takt + ALGO.SPERRE;
+            g.stich = { richtung: r, extrem: zo.extrem, zone: zo.preis };
             ereignisse.push({ code: "abholung", richtung: r > 0 ? "oben" : "unten", zone: aufCent(zo.preis) });
-          }
+          } else if (r * (kurs - zo.extrem) > 0) zo.extrem = kurs;
         }
       }
     }
@@ -866,6 +907,17 @@
       return aufCent(stop);
     }
 
+    // Naechste Zone auf der Gegenseite (Widerstand bei Long, Unterstuetzung bei Short)
+    function naechsteZone(long, kurs) {
+      let beste = null;
+      for (const zo of long ? g.hochs : g.tiefs) {
+        if (long ? zo.preis > kurs : zo.preis < kurs) {
+          if (beste === null || Math.abs(zo.preis - kurs) < Math.abs(beste - kurs)) beste = zo.preis;
+        }
+      }
+      return beste;
+    }
+
     function entscheiden(b) {
       const ereignisse = [];
       const schutz = [];
@@ -873,52 +925,45 @@
       // Eigene Preiswirkung herausrechnen: Der Algo misst den Markt, nicht sich
       // selbst. Er schaetzt sie aus den oeffentlichen Regeln (PREISWIRKUNG,
       // ABKLINGEN); die Wirkung fremder Orders bleibt im Kurs. Dazu gehoert
-      // auch sein eigener ruhender Stop: Ist die Position seit dem letzten
-      // Takt ohne eigene Order zu Ende, hat ihn der Stop in Schritt 2 dieses
-      // Takts glattgestellt, nach dem Abklingen.
+      // auch sein eigener ruhender Stop oder sein Ziel: Ist die Position seit
+      // dem letzten Takt ohne eigene Order zu Ende, hat eine ruhende Order in
+      // Schritt 2 dieses Takts glattgestellt, nach dem Abklingen.
       g.eigeneWirkung *= REGELN.ABKLINGEN;
       if (g.bestand !== 0 && b.position === 0) g.eigeneWirkung -= wirkung * g.bestand;
       const kurs = b.kurs - g.eigeneWirkung;
 
-      // Gleitende Mittel und Schwankungseinheit
+      // Gleitende Mittel, uebliche Bewegung, Bewegung der letzten Takte
       if (g.takte === 0) {
         g.schnell = kurs;
         g.langsam = kurs;
         g.schwankung = kurs * 0.0003;
+        g.hektik = g.schwankung;
         g.zzExtrem = kurs;
       } else {
+        const schritt = Math.abs(kurs - g.vorher);
         g.schnell += aSchnell * (kurs - g.schnell);
         g.langsam += aLangsam * (kurs - g.langsam);
-        g.schwankung += aSchwankung * (Math.abs(kurs - g.vorher) - g.schwankung);
+        g.schwankung += aSchwankung * (schritt - g.schwankung);
+        g.hektik += aHektik * (schritt - g.hektik);
       }
-      g.vorher = kurs;
-      g.takte += 1;
       const einheit = g.schwankung;
       const staerke = (g.schnell - g.langsam) / einheit;
+      const hektisch = g.hektik / einheit > ALGO.HEKTIK;
       zonenLernen(b.takt, kurs, einheit, ereignisse);
 
-      // Ergebnis des letzten Trades (eigener Ausstieg oder ausgeloester Stop):
-      // danach ist das Kapital reines Bargeld
+      // Nachrichtensprung: Richtung merken und den Kurs danach
+      if (b.seitNachricht === 0) {
+        g.sprung = kurs >= g.vorher ? 1 : -1;
+        g.nachSprung = kurs;
+      }
+      g.davor = g.takte === 0 ? kurs : g.vorher;   // Kurs des vorigen Takts
+      g.vorher = kurs;
+      g.takte += 1;
+
       if (g.imMarkt && b.position === 0) {
         g.imMarkt = false;
-        if (b.kapital < g.kapitalEinstieg) g.verluste += 1;
-        else g.verluste = 0;
-        if (g.verluste >= ALGO.VERLUSTE_PAUSE) {
-          g.pauseBis = b.takt + ALGO.PAUSE;
-          g.pauseGemeldet = true;
-          ereignisse.push({ code: "pause", verluste: g.verluste, sekunden: ALGO.PAUSE * REGELN.TAKT_MS / 1000 });
-          g.verluste = 0;
-        }
-      }
-      if (g.pauseGemeldet && b.takt >= g.pauseBis) {
-        g.pauseGemeldet = false;
-        ereignisse.push({ code: "pause_ende" });
-      }
-
-      // Nach einer Nachricht erst abwarten, bis sich der Markt gefangen hat
-      if (b.seitNachricht === 0) {
-        g.abwartenBis = b.takt + ALGO.ABWARTEN_NACH;
-        ereignisse.push({ code: "abwarten", sekunden: ALGO.ABWARTEN_NACH * REGELN.TAKT_MS / 1000 });
+        if (g.art === "trend" || g.art === "nachricht") g.ruheBis = b.takt + ALGO.RUHE;
+        g.art = null;
       }
 
       // Jede Antwort geht hier durch; der Algo merkt sich seine Position nach
@@ -932,21 +977,37 @@
         g.eigeneWirkung -= wirkung * b.position;
         return antwort({ aktion: "glatt", menge: Math.abs(b.position) });
       };
+      const vorNachricht = (takte) => b.nachricht && b.nachricht.inTakten <= takte;
 
       // ----- Mit Position: aussteigen, Stop nachziehen, aufstocken -----
       if (b.position !== 0) {
         const long = b.position > 0;
-        if (b.nachricht && b.nachricht.inTakten <= ALGO.FLACH_VOR) {
-          return glatt("vor_nachricht", { thema: b.nachricht.thema });
+        const richtung = long ? 1 : -1;
+        if (vorNachricht(ALGO.FLACH_VOR)) return glatt("vor_nachricht", { thema: b.nachricht.thema });
+        if (g.art === "trend" || g.art === "nachricht") {
+          if (hektisch) return glatt("hektik", {});
+          if (richtung * staerke <= -ALGO.TRENDENDE) return glatt("trendende", {});
         }
-        if (long ? staerke < ALGO.AUSSTIEG : staerke > -ALGO.AUSSTIEG) return glatt("trendende", {});
 
-        // Stop je Kerze nachziehen, nie zurueck und nie auf die falsche Seite
-        // des Kurses (dann greift ohnehin der ruhende Stop)
+        // Stop je Kerze nachziehen: hinter den letzten Umkehrpunkt, mindestens
+        // NACHZIEHEN hinter dem besten Kurs; nie zurueck und nie auf die
+        // falsche Seite des Kurses (dann greift ohnehin die ruhende Order)
         g.bester = long ? Math.max(g.bester, kurs) : Math.min(g.bester, kurs);
         let stop = b.sl;
-        if (b.takt % REGELN.KERZE_TAKTE === 0) {
-          const ziel = stopHinterZone(long, kurs, g.bester - (long ? 1 : -1) * ALGO.NACHZIEHEN * einheit, einheit);
+        const imGewinn = richtung * (kurs - g.einstiegKurs) >= ALGO.BREAKEVEN * einheit;
+        if (g.art !== "zone" && g.art !== "abholung" && (b.takt % REGELN.KERZE_TAKTE === 0 || imGewinn)) {
+          let ziel = g.bester - richtung * ALGO.NACHZIEHEN * einheit;
+          // im Gewinn: mindestens auf den Einstand (plus eine halbe Bewegung)
+          if (imGewinn) {
+            const einstand = g.einstiegKurs + richtung * 0.5 * einheit;
+            if (long ? einstand > ziel : einstand < ziel) ziel = einstand;
+          }
+          const umkehr = long ? g.letztesTief : g.letztesHoch;
+          if (umkehr !== null) {
+            const hinterUmkehr = umkehr - richtung * ALGO.ZONE_PUFFER * einheit;
+            if (long ? hinterUmkehr > ziel : hinterUmkehr < ziel) ziel = hinterUmkehr;
+          }
+          ziel = stopHinterZone(long, kurs, ziel, einheit);
           const besser = stop === null || (long ? ziel > stop : ziel < stop);
           const gueltig = long ? ziel < b.geld : ziel > b.brief;
           if (besser && gueltig) {
@@ -959,8 +1020,7 @@
         // mindestens NACHKAUF der Position zusaetzlich, kauft er nach -- nie
         // kurz vor einer Nachricht und nie so viel, dass der Stop der ganzen
         // Position mehr als RISIKO kostet.
-        if (stop === null) return antwort(null);
-        if (b.nachricht && b.nachricht.inTakten <= ALGO.KEIN_EINSTIEG_VOR) return antwort(null);
+        if (stop === null || vorNachricht(ALGO.KEIN_EINSTIEG_VOR)) return antwort(null);
         const bisStop = Math.abs(kurs - stop) * UNZEN;                 // Dollar je Kontrakt
         const nachRisiko = Math.floor((ALGO.RISIKO * b.kapital) / bisStop) - Math.abs(b.position);
         const zukauf = Math.min(long ? b.maxKauf : b.maxVerkauf, nachRisiko);
@@ -970,35 +1030,93 @@
         return antwort({ aktion: long ? "kauf" : "verkauf", menge: zukauf });
       }
 
-      // ----- Ohne Position: nur einsteigen, wenn alle Bedingungen stimmen -----
+      // ----- Ohne Position: Einstiege -----
       if (g.takte < ALGO.AUFWAERMEN) return antwort(null);
       if (!g.bereit) {
         g.bereit = true;
         ereignisse.push({ code: "bereit" });
       }
-      if (b.takt < g.pauseBis || b.takt < g.abwartenBis) return antwort(null);
-      if (b.nachricht && b.nachricht.inTakten <= ALGO.KEIN_EINSTIEG_VOR) return antwort(null);
-      if (Math.abs(staerke) < ALGO.EINSTIEG) return antwort(null);
-      const long = staerke > 0;
-      if (b.takt < (long ? g.sperreLong : g.sperreShort)) return antwort(null);
+      if (vorNachricht(ALGO.KEIN_EINSTIEG_VOR)) return antwort(null);
 
-      // Stop STOP Bewegungen entfernt, aber nie knapp hinter einer Zone; Menge
-      // so, dass der Stop hoechstens RISIKO kostet, und nie mehr als die
-      // Positionsgrenze erlaubt
-      const stop = stopHinterZone(long, kurs, kurs + (long ? -1 : 1) * ALGO.STOP * einheit, einheit);
-      if (long ? stop >= b.geld : stop <= b.brief) return antwort(null);
-      const abstand = Math.abs(kurs - stop);                          // Dollar je Unze
-      const nachRisiko = Math.floor((ALGO.RISIKO * b.kapital) / (abstand * UNZEN));
-      const menge = Math.min(nachRisiko, long ? b.maxKauf : b.maxVerkauf);
-      if (menge < 1) return antwort(null);
+      // Einstieg: Richtung, Stop und (im Seitwaertsmarkt) Ziel; Menge so, dass
+      // der Stop hoechstens RISIKO kostet und die Positionsgrenze haelt
+      const einsteigen = (long, stop, ziel, art, grund) => {
+        stop = stopHinterZone(long, kurs, stop, einheit);
+        if (long ? stop >= b.geld : stop <= b.brief) return antwort(null);
+        const abstand = Math.abs(kurs - stop);                          // Dollar je Unze
+        const nachRisiko = Math.floor((ALGO.RISIKO * b.kapital) / (abstand * UNZEN));
+        const menge = Math.min(nachRisiko, long ? b.maxKauf : b.maxVerkauf);
+        if (menge < 1) return antwort(null);
+        // Das Ziel muss auch nach der eigenen Preiswirkung der Order noch jenseits
+        // des Kurses liegen (eine grosse Order verschiebt den Kurs um WIRKUNG je
+        // Kontrakt); liegt es zu nah, rueckt es so weit hinaus
+        if (ziel !== null) {
+          const schub = wirkung * menge + einheit;
+          ziel = long ? Math.max(ziel, b.brief + schub) : Math.min(ziel, b.geld - schub);
+        }
+        g.imMarkt = true;
+        g.art = art;
+        g.bester = kurs;
+        g.einstiegKurs = kurs;
+        g.eigeneWirkung += wirkung * (long ? menge : -menge);
+        const e = { code: "einstieg", richtung: long ? "long" : "short", menge, stop, grund };
+        if (ziel !== null) e.ziel = aufCent(ziel);
+        ereignisse.push(e);
+        schutz.push({ typ: "sl", preis: stop });
+        if (ziel !== null) schutz.push({ typ: "tp", preis: aufCent(ziel) });
+        return antwort({ aktion: long ? "kauf" : "verkauf", menge });
+      };
 
-      g.imMarkt = true;
-      g.bester = kurs;
-      g.kapitalEinstieg = b.kapital;
-      g.eigeneWirkung += wirkung * (long ? menge : -menge);
-      ereignisse.push({ code: "einstieg", richtung: long ? "long" : "short", menge, stop });
-      schutz.push({ typ: "sl", preis: stop });
-      return antwort({ aktion: long ? "kauf" : "verkauf", menge });
+      // 1. Abholung: gegen den Stich, Stop dahinter, Ziel ZIEL Bewegungen
+      if (g.stich !== null) {
+        const long = g.stich.richtung < 0;      // ein Tief wurde abgeholt -> long
+        const stop = g.stich.extrem - (long ? 1 : -1) * ALGO.ABHOLUNG_PUFFER * einheit;
+        const ziel = kurs + (long ? 1 : -1) * ALGO.ZIEL * einheit;
+        return einsteigen(long, stop, ziel, "abholung", "abholung");
+      }
+
+      // 2. Nach einer Nachricht: laeuft der Kurs weiter in Sprungrichtung, mitgehen
+      if (b.seitNachricht === ALGO.NACHRICHT_MIT && g.sprung !== 0) {
+        const long = g.sprung > 0;
+        if ((kurs - g.nachSprung) * g.sprung >= 0.3 * einheit) {
+          const stop = kurs - (long ? 1 : -1) * ALGO.STOP * einheit;
+          return einsteigen(long, stop, null, "nachricht", "nachricht");
+        }
+      }
+
+      if (hektisch) return antwort(null);
+
+      // 3. Trend: Stop hinter dem letzten Umkehrpunkt (STOP .. STOP_MAX Bewegungen);
+      // nach dem Ende eines Trend-Trades erst RUHE Takte spaeter wieder
+      if (Math.abs(staerke) >= ALGO.EINSTIEG && b.takt >= g.ruheBis) {
+        const long = staerke > 0;
+        const umkehr = long ? g.letztesTief : g.letztesHoch;
+        let abstand = ALGO.STOP * einheit;
+        if (umkehr !== null) {
+          const bisUmkehr = (long ? kurs - umkehr : umkehr - kurs) + ALGO.ZONE_PUFFER * einheit;
+          abstand = Math.min(Math.max(abstand, bisUmkehr), ALGO.STOP_MAX * einheit);
+        }
+        return einsteigen(long, kurs - (long ? 1 : -1) * abstand, null, "trend", "trend");
+      }
+
+      // 4. Seitwaertsmarkt: gegen eine gerade beruehrte Zone, bis zur
+      // ABPRALLER-ten Beruehrung, wenn der Kurs von ihr wegdreht
+      for (const [liste, long] of [[g.tiefs, true], [g.hochs, false]]) {
+        for (const zo of liste) {
+          if (zo.drueber >= 0 || zo.beruehrt === 0 || zo.beruehrt > ALGO.ABPRALLER) continue;
+          if (b.takt - zo.beruehrtTakt > 3) continue;
+          const richtung = long ? 1 : -1;
+          if (richtung * (kurs - zo.preis) <= 0 || richtung * (kurs - zo.preis) > 3 * einheit) continue;
+          if (richtung * (kurs - g.davor) <= 0) continue;           // dreht noch nicht weg
+          const stop = zo.preis - richtung * ALGO.ZONE_STOP * einheit;
+          let ziel = kurs + richtung * ALGO.ZIEL * einheit;
+          const gegen = naechsteZone(long, kurs);
+          if (gegen !== null) ziel = long ? Math.min(ziel, gegen - einheit) : Math.max(ziel, gegen + einheit);
+          if (richtung * (ziel - kurs) < 4 * einheit) continue;
+          return einsteigen(long, stop, ziel, "zone", "zone");
+        }
+      }
+      return antwort(null);
     }
 
     return { entscheiden, phase };

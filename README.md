@@ -198,7 +198,8 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   ausdrücklich ein vereinfachter Spiel-Algorithmus, nicht das Handelssystem.
 - **Messung und Abstimmung** liegen außerhalb dieses Repositorys in
   `C:\Quant Arbeit\JKHD-Spiel` (README dort): `balance.js` belegt mit
-  Tausenden simulierten Runden, dass der Algo stark, aber schlagbar ist,
+  Tausenden simulierten Runden, wie stark der Algo ist (seit 10.10.2026 fast
+  unschlagbar: menschenaehnliche Strategien gewinnen im Mittel unter 3 %),
   `pruefung.js` prüft den Motor. Nach jeder Änderung am Motor beide laufen
   lassen, dann den Versionsstempel hochzählen.
 - Die KI der Fragen-Blase kennt diese Seite noch nicht (sie steht nicht im

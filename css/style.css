@@ -2937,6 +2937,57 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   .sp-schutz-tasten { display: none; }
 }
 
+/* Bestenliste der Simulation: das Formular in der Endkarte und die Liste
+   unter dem Brett (js/spiel.js); eigener Eintrag mit Rahmen */
+.sp-besten-form { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+.sp-besten-hinweis { font-weight: 600; color: var(--text); }
+.sp-besten-label {
+  display: block;
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: var(--label);
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sp-besten-zeile { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.sp-besten-zeile input {
+  flex: 1 1 160px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 12px;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--muted);
+  border-radius: var(--r-sm);
+}
+.sp-besten-zeile input:focus { outline: none; border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
+.sp-besten-meldung { min-height: 1.5em; margin-top: 8px; font-size: 0.88rem; color: var(--muted); }
+.sp-besten-form.ist-fertig .sp-besten-label,
+.sp-besten-form.ist-fertig .sp-besten-zeile { display: none; }
+.sp-besten-form.ist-fertig .sp-besten-meldung { color: var(--text); font-weight: 600; }
+.sp-besten { margin-top: 28px; list-style: none; border-top: 1px solid var(--border-2); }
+.sp-besten li {
+  display: grid;
+  grid-template-columns: 2.4em minmax(0, 1fr) auto auto;
+  gap: 12px 16px;
+  align-items: baseline;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.sp-besten li.ist-du { background: var(--wash-2); box-shadow: inset 0 0 0 1px var(--text); }
+.sp-besten-rang { font-family: var(--mono); color: var(--muted); }
+.sp-besten-name { font-weight: 600; overflow-wrap: anywhere; }
+.sp-besten-zeit { font-family: var(--mono); color: var(--text); }
+.sp-besten-datum { font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
+.sp-besten-leer { margin-top: 16px; color: var(--muted); }
+@media (max-width: 560px) {
+  .sp-besten li { grid-template-columns: 2em minmax(0, 1fr) auto; gap: 8px 10px; }
+  .sp-besten-datum { display: none; }
+}
+
 /* ---------- Startseite: Flug durch ein Netz aus Mathematik (js/universum.js) ----------
    Julian, 10.10.2026. Der Abschnitt ist der Scrollweg; die Buehne bleibt dabei stehen
    (sticky) und ist immer schwarz -- auch im hellen Modus, es ist ein Blick ins All.
