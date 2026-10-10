@@ -54,7 +54,8 @@ css/style.css      Gesamtes Design (Farben oben als CSS-Variablen)
 js/main.js         Mobile-Nav, Hell/Dunkel, Fragen-Blase, Partnerzugang
 js/spiel-motor.js  Spielmotor der Simulation (Regeln, Markt, Konten, JKHD-Algo), ohne DOM
 js/spiel.js        Oberfläche der Simulation (nur auf simulation.html / en/simulation.html)
-js/universum.js    Startseite: beim Scrollen ein Flug durch ein Netz aus Mathematik, dann die Erde, der Zoom bis in einen Computer und auf dessen Schirm das Zeichen mit dem Spruch (nur index.html / en/index.html)
+js/universum.js    Startseite: beim Scrollen der Flug in die Milchstrasse, durch ein Netz aus Mathematik, an Planeten vorbei zur Erde (WebGL, NASA-Bilder), der Zoom bis in einen Computer und auf dessen Schirm das Zeichen mit dem Spruch (nur index.html / en/index.html)
+assets/erde/       Erdbilder der NASA fuer js/universum.js (Blue Marble Tag, Black Marble Nacht, Wolken; Welt, Europa, Oberrhein; *-k.jpg = kleine Fassung fuers Handy). Gemeinfrei, Bildnachweis im Impressum. Werden erst geladen, wenn jemand bis zur Animation scrollt (2,3 MB bzw. 0,7 MB)
 favicon.svg        Browser-Tab-Icon (drei Balken)
 ```
 

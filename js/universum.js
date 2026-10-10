@@ -1,36 +1,42 @@
-// ---------- Startseite: Flug durch ein Netz aus Mathematik ----------
+// ---------- Startseite: Flug durch die Milchstrasse bis in einen Computer ----------
 // Julian, 10.10.2026 (nach dem Chart, das ihm nicht gefiel): "Wenn man runterscrollt,
 // soll es erst mal schwarz sein, und dann beim Scrollen soll eine fast schon
 // universumartige Umgebung erscheinen, wo Mathematik usw. alles wie in einem Netz
 // zusammenfliesst, und die Kamera soll dem Netz immer weiter folgen. Irgendwann
 // kommt es am Ziel an, und dort erscheint das Logo mit dem Spruch."
-//
-// Am selben Abend das Ende neu (Julian): "am Ende nicht direkt das Logo, sondern die
-// Erde, und die zoomt immer naeher rein bis in einen Computer, und dort sieht man,
-// wie Stroeme in den Bot fliessen, und am Ende auf dem Bildschirm das Logo".
+// Am selben Abend das Ende neu: "nicht direkt das Logo, sondern die Erde, und die
+// zoomt immer naeher rein bis in einen Computer, dort sieht man, wie Stroeme in den
+// Bot fliessen, und am Ende auf dem Bildschirm das Logo". Und dann die dritte
+// Fassung: "die Erde echt machen, das Universum echter, echte Planeten im
+// Hintergrund, oben nicht so lange schwarz, der Uebergang auf den PC schoener. Es
+// soll so aussehen, als kaeme die Kamera in die Milchstrasse, dort schweben die
+// Formeln, dann rasen die mit der Kamera im Universum rum Richtung Erde, dann bis
+// in den PC."
 //
 // Umsetzung ohne Bibliothek: eine Zeichenflaeche (canvas 2D) mit eigener
-// Perspektiv-Projektion. Der Scrollfortschritt durch den Abschnitt #universum
-// (die Buehne bleibt dabei stehen, sticky) bewegt die Kamera entlang einer Bahn
-// durch ein Netz; Knoten tragen Formeln und Zeichen, Lichtimpulse fliessen die
-// Kanten entlang nach vorn. Zum Ende laeuft das Netz in einen hellen Kern zusammen,
-// aus dem die Erde wird; der Zoom geht ueber Europa und eine Karte bis zu einem
-// Computer, auf dessen Schirm Leitungen in einen Chip fuehren (den Bot). Aus dem
-// Chip wird das Zeichen, darunter "JKHD", "Quant Systems" und der Spruch.
-//   0,00-0,03  schwarz
-//   0,03-0,10  Sterne und die ersten Knoten tauchen auf
-//   0,02-0,50  Flug durch das Netz
-//   0,45-0,52  die Lichtstroeme fliessen in den Kern
-//   0,49-0,60  aus dem Kern wird die Erde, sie dreht sich nach Europa
-//   0,60-0,87  Zoom: Europa, eine Karte, Lichter, bis ein Computer dasteht
-//   0,79-0,85  Stroeme fliessen ueber die Leitungen in den Chip (und dann weiter)
-//   0,85-0,92  aus dem Chip wird das Zeichen
-//   0,92-0,96  Wortmarke, "Quant Systems" und Spruch auf dem Bildschirm
-//   0,96-1,00  das Schlussbild steht
-// Alles wird hier erzeugt (feste Saat, jedes Mal gleich); nichts wird geladen oder
-// gespeichert, auch die Landumrisse sind von Hand nachgezeichnet. Bei "reduzierter
-// Bewegung" steht das Schlussbild still da (der Computer mit dem Zeichen), ohne
-// Scrollweg; ohne JavaScript zeigt der Abschnitt das Zeichen auf Schwarz.
+// Perspektiv-Projektion; die Erde zeichnet ein kleines WebGL-Programm (eine Kugel je
+// Bildpunkt, mit Tag- und Nachtseite, Wolken, Atmosphaere und Glanz auf dem Meer)
+// aus NASA-Aufnahmen in assets/erde/ -- gemeinfrei, liegen bei uns, kein fremder
+// Server. Ohne WebGL steht an ihrer Stelle eine Erde aus Punkten (Landumrisse von
+// Hand nachgezeichnet, weiter unten). Der Scrollfortschritt p durch den Abschnitt
+// #universum (die Buehne bleibt dabei stehen, sticky) treibt alles:
+//   0,00-0,10  die Milchstrasse liegt voraus und waechst, Sterne ringsum
+//   0,10-0,17  hinein: das Band, Nebel und Staub fuellen das Bild
+//   0,10-0,42  im Netz der Formeln (Knoten, Kanten, Lichtimpulse, Drahtmodelle)
+//   0,35-0,53  Rasen: die Formeln fliegen mit, Planeten ziehen vorbei, die Erde
+//              waechst voraus
+//   0,49-0,58  Ankunft: Lichtstroeme und Formeln fliessen in die Erde
+//   0,58-0,66  die Erde dreht sich nach Europa
+//   0,64-0,86  Zoom: Europa, Abend, Nachtlichter am Oberrhein, ein Licht wird zum
+//              Bildschirm, der Computer waechst daraus
+//   0,86-0,90  Stroeme fliessen ueber die Leitungen in den Chip (den Bot)
+//   0,89-0,94  aus dem Chip wird das Zeichen
+//   0,94-0,98  Wortmarke, "Quant Systems" und Spruch auf dem Bildschirm
+//   0,98-1,00  das Schlussbild steht
+// Alles ausser den Erdbildern wird hier erzeugt (feste Saat, jedes Mal gleich);
+// nichts wird gespeichert. Bei "reduzierter Bewegung" steht das Schlussbild still
+// da (der Computer mit dem Zeichen), ohne Scrollweg und ohne Bilder; ohne
+// JavaScript zeigt der Abschnitt das Zeichen auf Schwarz.
 (function () {
   const abschnitt = document.getElementById("universum");
   if (!abschnitt) return;
@@ -39,6 +45,10 @@
   const ctx = leinwand.getContext("2d");
   if (!ctx) return;
   const reduziert = window.matchMedia("(prefers-reduced-motion: reduce)");
+  // Wo die Erdbilder liegen: neben js/, auch von en/ aus gesehen
+  const BILDER = (() => {
+    try { return new URL("../assets/erde/", document.currentScript.src).href; } catch (e) { return "assets/erde/"; }
+  })();
 
   // ---- Hilfen ----
   function zufall(saat) {
@@ -61,8 +71,6 @@
   const norm = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
 
   // ---- Die Bahn: Catmull-Rom durch Stuetzpunkte, die Kamera fliegt nach -z ----
-  // (10.10.2026 abends, Julian: "die Animation etwas laenger, mit mehr Details im
-  // Hintergrund" -- Bahn von 5200 auf 8400, 14 statt 10 Stuecke)
   const LAENGE = 8400;
   const STUECKE = 14;
   const STUETZEN = [];
@@ -90,17 +98,34 @@
     const oben = kreuz(rechts, vorn);
     return { vorn, rechts, oben };
   }
-  const ZIEL_U = 1;          // dort steht der Kern, aus dem die Erde wird
+  const ZIEL_U = 1;          // dort steht die Erde
   const KAMERA_ENDE = 0.955; // so weit fliegt die Kamera
 
-  // ---- Zeitplan des Endes (Anteile am Scrollweg) ----
-  const FLUG = 0.56;                     // so viel gehoert dem Flug durch das Netz
-  const ZOOM_VON = 0.6, ZOOM_BIS = 0.87; // der Zoom von der Erde bis zum Computer ...
-  const ZOOM_ENDE = 12;                  // ... ueber so viele e-fache Vergroesserungen
+  // Die Fahrt: Ort u auf der Bahn ueber dem Fortschritt q im Flug. Stueckweise kubisch
+  // (Hermite) durch [q, u, Steigung]: langsam im Netz, dann das Rasen, am Ende sanft
+  // bremsen. Die Steigungen liegen in der Schranke von Fritsch und Carlson, die Kurve
+  // geht also nie rueckwaerts.
+  const FAHRT = [[0, 0, 0.12], [0.6, 0.36, 0.5], [0.92, 0.92, 1.0], [1, KAMERA_ENDE, 0]];
+  function fahrt(q) {
+    q = clamp(q, 0, 1);
+    let i = 0;
+    while (i < FAHRT.length - 2 && q > FAHRT[i + 1][0]) i++;
+    const a = FAHRT[i], b = FAHRT[i + 1];
+    const h = b[0] - a[0], t = (q - a[0]) / h, t2 = t * t, t3 = t2 * t;
+    return (2 * t3 - 3 * t2 + 1) * a[1] + (t3 - 2 * t2 + t) * h * a[2] + (-2 * t3 + 3 * t2) * b[1] + (t3 - t2) * h * b[2];
+  }
+
+  // ---- Zeitplan (Anteile am Scrollweg) ----
+  const FLUG = 0.58;                     // so viel gehoert dem Flug
+  const ZOOM_VON = 0.64, ZOOM_BIS = 0.86; // der Zoom von der Erde bis zum Computer ...
+  const ZOOM_ENDE = 8;                   // ... ueber so viele e-fache Vergroesserungen
+  const ERDE_R = 110;                    // Radius der Erde in Einheiten der Bahn
   // Ziel des Zooms: Schliengen (Sitz laut Impressum); es steht nirgends angeschrieben
   const ZIEL_LAENGE = 7.6, ZIEL_BREITE = 47.76;
   const GRAD = Math.PI / 180;
-  const SONNE = norm([-0.55, 0.42, 0.72]);   // Licht auf der Erde: links oben vorn
+  const SONNE_WELT = norm([-0.5, 0.3, 0.8]);   // Licht von links oben, hinter der Kamera
+  // Ausschnitte der NASA-Bilder: Laenge, Breite der linken unteren Ecke, Spannen (Grad)
+  const EUROPA = [-14, 34, 50, 30], ZIEL_BOX = [4, 45, 7, 5.5];
   // Der Computer in Einheiten der Schirmbreite, Ursprung in der Mitte des Schirms
   const SCHIRM_H = 0.3125;                        // halbe Hoehe des Schirms (16:10)
   const RAND = 0.022, KINN = 0.045, HALS = 0.15, FUSS = 0.02;
@@ -217,39 +242,235 @@
     "det(A − λI) = 0",
   ];
   const ZEICHEN = ["π", "Σ", "∫", "∂", "∞", "λ", "μ", "σ", "∇", "φ", "ε", "Δ", "θ", "Ω", "√", "≈", "∮", "ℏ"];
+  // Sternfarben nach Temperatur: blau-weiss bis rot
+  const STERN_FARBEN = ["185,200,255", "222,230,255", "255,255,255", "255,244,222", "255,224,176", "255,192,150"];
+
+  // ---- Sprites: einmal gezeichnete Bilder, die dann nur noch kopiert werden ----
+  function sprite(b, h) { const c = document.createElement("canvas"); c.width = b; c.height = h; return c; }
+  function radial(g, x, y, r, stops) {
+    const v = g.createRadialGradient(x, y, 0, x, y, r);
+    for (const s of stops) v.addColorStop(s[0], s[1]);
+    g.fillStyle = v;
+    g.fillRect(x - r, y - r, 2 * r, 2 * r);
+  }
+  // Weicher Lichtfleck in einer Farbe
+  const FLECKEN = new Map();
+  function fleck(farbe) {
+    let c = FLECKEN.get(farbe);
+    if (!c) {
+      c = sprite(128, 128);
+      radial(c.getContext("2d"), 64, 64, 64, [[0, `rgba(${farbe},1)`], [0.3, `rgba(${farbe},0.42)`], [0.7, `rgba(${farbe},0.08)`], [1, `rgba(${farbe},0)`]]);
+      FLECKEN.set(farbe, c);
+    }
+    return c;
+  }
+  // Wertrauschen in vier Oktaven, rund ausgeblendet: Wolkenstruktur fuer Nebel und Planeten
+  function rauschen(saat, S, farbe) {
+    const c = sprite(S, S), g = c.getContext("2d"), z = zufall(saat);
+    const N = 16, gitter = [];
+    for (let o = 0; o < 4; o++) { const w = new Float32Array(N * N); for (let i = 0; i < N * N; i++) w[i] = z(); gitter.push(w); }
+    const wert = (w, x, y) => {
+      const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi;
+      const sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
+      const x0 = xi % N, x1 = (xi + 1) % N, y0 = (yi % N) * N, y1 = ((yi + 1) % N) * N;
+      return misch(misch(w[y0 + x0], w[y0 + x1], sx), misch(w[y1 + x0], w[y1 + x1], sx), sy);
+    };
+    const img = g.createImageData(S, S), d = img.data;
+    for (let y = 0; y < S; y++) {
+      for (let x = 0; x < S; x++) {
+        let v = 0, amp = 0.5, fr = 4 / S;
+        for (let o = 0; o < 4; o++) { v += amp * wert(gitter[o], x * fr, y * fr); amp *= 0.5; fr *= 2; }
+        const dx = (x - S / 2) / (S / 2), dy = (y - S / 2) / (S / 2);
+        const m = clamp(1 - (dx * dx + dy * dy), 0, 1);
+        const a = clamp((v - 0.4) * 2.4, 0, 1) * m * m;
+        const i = (y * S + x) * 4;
+        d[i] = d[i + 1] = d[i + 2] = 255; d[i + 3] = Math.round(a * 255);
+      }
+    }
+    g.putImageData(img, 0, 0);
+    if (farbe) { g.globalCompositeOperation = "source-in"; g.fillStyle = `rgb(${farbe})`; g.fillRect(0, 0, S, S); }
+    return c;
+  }
+
+  // Eine Spiralgalaxie von schraeg oben: Halo, zwei Arme aus Lichtflecken (blau-weiss,
+  // dazwischen rosa Wolken), Staubbahnen als Loecher, warmer Kern, einzelne Sterne
+  function galaxieBauen() {
+    const S = 1024, M = S / 2, c = sprite(S, S), g = c.getContext("2d"), z = zufall(99);
+    const gauss = () => z() + z() + z() - 1.5;
+    const blau = fleck("175,195,255"), weiss = fleck("255,255,255"), rosa = fleck("255,170,205"), warm = fleck("255,228,190");
+    g.globalCompositeOperation = "lighter";
+    radial(g, M, M, S * 0.5, [[0, "rgba(140,160,220,0.16)"], [0.5, "rgba(140,160,220,0.05)"], [1, "rgba(140,160,220,0)"]]);
+    for (let arm = 0; arm < 2; arm++) {
+      const dreh = arm * Math.PI;
+      for (let i = 0; i < 1100; i++) {
+        const t = z() * 3.4 * Math.PI;
+        const r = 55 * Math.exp(0.2 * t);
+        if (r > S * 0.47) continue;
+        const streu = gauss() * r * 0.12 + gauss() * 6;
+        const w = t + dreh;
+        const x = M + Math.cos(w) * (r + streu), y = M + Math.sin(w) * (r + streu);
+        const art = z();
+        const sp = art < 0.68 ? blau : art < 0.85 ? weiss : art < 0.94 ? rosa : warm;
+        const gr = (6 + z() * 26) * (0.4 + r / 420);
+        g.globalAlpha = 0.04 + z() * 0.07;
+        g.drawImage(sp, x - gr, y - gr, 2 * gr, 2 * gr);
+      }
+    }
+    g.globalCompositeOperation = "destination-out";
+    for (let arm = 0; arm < 2; arm++) {
+      const dreh = arm * Math.PI;
+      for (let i = 0; i < 350; i++) {
+        const t = 0.8 + z() * 2.4 * Math.PI;
+        const r = 55 * Math.exp(0.2 * t) * 0.82;
+        const w = t + dreh;
+        const x = M + Math.cos(w) * r + gauss() * 5, y = M + Math.sin(w) * r + gauss() * 5;
+        const gr = 5 + z() * 14;
+        g.globalAlpha = 0.18 + z() * 0.2;
+        g.drawImage(weiss, x - gr, y - gr, 2 * gr, 2 * gr);
+      }
+    }
+    g.globalCompositeOperation = "lighter";
+    g.globalAlpha = 1;
+    g.save(); g.translate(M, M); g.scale(1, 0.75);
+    radial(g, 0, 0, 170, [[0, "rgba(255,240,215,0.9)"], [0.12, "rgba(255,232,200,0.55)"], [0.4, "rgba(240,215,190,0.14)"], [1, "rgba(240,215,190,0)"]]);
+    g.restore();
+    g.fillStyle = "#ffffff";
+    for (let i = 0; i < 1800; i++) {
+      const imKern = z() < 0.3;
+      const t = z() * 3.4 * Math.PI;
+      const r = (imKern ? z() * 90 : 55 * Math.exp(0.2 * t)) * (1 + gauss() * 0.12);
+      const w = imKern ? z() * Math.PI * 2 : t + (z() < 0.5 ? 0 : Math.PI);
+      const x = M + Math.cos(w) * r, y = M + Math.sin(w) * r;
+      g.globalAlpha = 0.3 + z() * 0.7;
+      const gr = z() < 0.9 ? 1 : 2;
+      g.fillRect(x, y, gr, gr);
+    }
+    return c;
+  }
+
+  // Planeten als Sprites: Baender, Flecken, Krater, Ringe; Licht von links oben vorn
+  const PLANETEN = [
+    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.5, winkel: 0.4, weite: 1700, r: 950 },
+    { art: "ring", grund: [220, 200, 150], baender: [[230, 215, 170], [205, 185, 135], [225, 210, 165]], u: 0.7, winkel: 3.6, weite: 1500, r: 760 },
+    { art: "fels", grund: [190, 105, 70], kappe: true, u: 0.33, winkel: 2.2, weite: 1500, r: 300 },
+    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.84, winkel: 5.2, weite: 1300, r: 520 },
+    { art: "mond", grund: [150, 150, 152], u: 0.61, winkel: 1.2, weite: 520, r: 210 },
+  ];
+  function planetBauen(pl, rausch) {
+    const R = 200, S = 512, B2 = pl.art === "ring" ? 1100 : S, cx = B2 / 2, cy = S / 2;
+    const c = sprite(B2, S), g = c.getContext("2d"), z = zufall(pl.r);
+    const rgb = (f, k) => `rgb(${Math.round(f[0] * (k || 1))},${Math.round(f[1] * (k || 1))},${Math.round(f[2] * (k || 1))})`;
+    const ringe = (hinten) => {
+      g.save();
+      g.beginPath(); g.rect(0, hinten ? 0 : cy, B2, cy); g.clip();
+      g.translate(cx, cy); g.scale(1, 0.24);
+      for (let i = 0; i < 40; i++) {
+        const rr = R * (1.35 + (i / 40) * 1.05);
+        const luecke = i > 24 && i < 28 ? 0.15 : 1;        // eine Teilung wie die Cassinische
+        g.globalAlpha = (0.25 + 0.55 * Math.abs(Math.sin(i * 0.9 + 1))) * luecke * (i > 34 ? 0.45 : 1);
+        g.strokeStyle = rgb([225, 212, 180], 0.75 + 0.25 * Math.sin(i * 0.5));
+        g.lineWidth = R * 0.028;
+        g.beginPath(); g.ellipse(0, 0, rr, rr, 0, 0, Math.PI * 2); g.stroke();
+      }
+      g.restore();
+    };
+    if (pl.art === "ring") ringe(true);
+    g.save();
+    g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.clip();
+    g.fillStyle = rgb(pl.grund); g.fillRect(cx - R, cy - R, 2 * R, 2 * R);
+    if (pl.baender) {
+      const n = pl.baender.length;
+      for (let y = -R; y <= R; y++) {
+        const phi = Math.asin(clamp(y / R, -1, 1));
+        const s = (Math.sin(phi * 7) + 0.6 * Math.sin(phi * 13 + 1.3) + 0.35 * Math.sin(phi * 23 + 0.4)) * 0.26 + 0.5;
+        const f = clamp(s, 0, 0.999) * (n - 1), i = Math.floor(f), k = f - i;
+        g.fillStyle = rgb([0, 1, 2].map((j) => misch(pl.baender[i][j], pl.baender[i + 1][j], k)));
+        g.globalAlpha = pl.art === "eis" ? 0.5 : 0.9;
+        g.fillRect(cx - R, cy + y, 2 * R, 1.5);
+      }
+    }
+    g.globalAlpha = 1;
+    if (pl.fleck) {
+      g.save(); g.translate(cx + R * 0.3, cy + R * 0.35); g.rotate(-0.1); g.scale(1, 0.55);
+      radial(g, 0, 0, R * 0.26, [[0, "rgba(200,90,60,0.9)"], [0.6, "rgba(200,100,70,0.6)"], [1, "rgba(200,100,70,0)"]]);
+      g.restore();
+    }
+    if (pl.art === "mond") {
+      for (let i = 0; i < 7; i++) {
+        const w = z() * Math.PI * 2, d = z() * R * 0.7;
+        g.fillStyle = "rgba(40,40,52,0.28)";
+        g.beginPath(); g.ellipse(cx + Math.cos(w) * d, cy + Math.sin(w) * d, R * (0.15 + z() * 0.25), R * (0.1 + z() * 0.2), z() * 3, 0, Math.PI * 2); g.fill();
+      }
+    }
+    if (pl.art === "fels" || pl.art === "mond") {
+      for (let i = 0; i < 60; i++) {
+        const w = z() * Math.PI * 2, d = Math.sqrt(z()) * R * 0.97;
+        const x = cx + Math.cos(w) * d, y = cy + Math.sin(w) * d, gr = 2 + z() * z() * (pl.art === "mond" ? 18 : 28);
+        if (pl.art === "mond") {
+          g.fillStyle = "rgba(0,0,0,0.22)"; g.beginPath(); g.arc(x, y, gr, 0, Math.PI * 2); g.fill();
+          g.fillStyle = "rgba(255,255,255,0.16)"; g.beginPath(); g.arc(x - gr * 0.25, y - gr * 0.25, gr * 0.8, 0, Math.PI * 2); g.fill();
+          g.fillStyle = rgb(pl.grund, 0.92); g.beginPath(); g.arc(x - gr * 0.12, y - gr * 0.12, gr * 0.62, 0, Math.PI * 2); g.fill();
+        } else {
+          g.fillStyle = z() < 0.6 ? "rgba(60,25,15,0.18)" : "rgba(255,200,160,0.12)";
+          g.beginPath(); g.ellipse(x, y, gr * 1.6, gr, z() * 3, 0, Math.PI * 2); g.fill();
+        }
+      }
+      if (pl.kappe) { g.fillStyle = "rgba(255,255,255,0.85)"; g.beginPath(); g.ellipse(cx, cy - R * 0.93, R * 0.35, R * 0.1, 0, 0, Math.PI * 2); g.fill(); }
+    }
+    g.globalCompositeOperation = "soft-light";
+    g.globalAlpha = pl.art === "eis" ? 0.35 : 0.7;
+    g.drawImage(rausch, cx - R, cy - R, 2 * R, 2 * R);
+    g.drawImage(rausch, cx - R * 1.3, cy - R * 0.8, 2.3 * R, 1.3 * R);
+    g.globalCompositeOperation = "multiply";
+    g.globalAlpha = 1;
+    radial(g, cx - R * 0.45, cy - R * 0.4, R * 1.9, [[0, "rgb(255,255,255)"], [0.36, "rgb(240,240,245)"], [0.62, "rgb(90,90,110)"], [0.8, "rgb(12,12,20)"], [1, "rgb(0,0,0)"]]);
+    if (pl.art !== "mond") {
+      // Saum der Atmosphaere, nur auf der Lichtseite
+      g.globalCompositeOperation = "lighter";
+      g.save();
+      g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, R, Math.PI * 0.9, Math.PI * 1.85); g.closePath(); g.clip();
+      g.globalAlpha = 0.3;
+      const v = g.createRadialGradient(cx, cy, R * 0.9, cx, cy, R);
+      v.addColorStop(0, "rgba(0,0,0,0)");
+      v.addColorStop(1, pl.art === "eis" ? "rgba(140,180,255,0.9)" : "rgba(255,230,200,0.7)");
+      g.fillStyle = v; g.fillRect(cx - R, cy - R, 2 * R, 2 * R);
+      g.restore();
+    }
+    g.restore();
+    if (pl.art === "ring") ringe(false);
+    return { bild: c, R, cx, cy, b: B2, h: S };
+  }
 
   let welt = null;
   function weltBauen(klein) {
     const z = zufall(20261010);
+    const gauss = () => z() + z() + z() - 1.5;
     const sterne = [];
-    const anzahlSterne = klein ? 900 : 2000;
+    const stern = (p, g, hell, band) => {
+      const w = z();
+      sterne.push({ p, g, hell, band, farbe: w < 0.1 ? 0 : w < 0.3 ? 1 : w < 0.62 ? 2 : w < 0.84 ? 3 : w < 0.95 ? 4 : 5, phase: z() * Math.PI * 2 });
+    };
+    const anzahlSterne = klein ? 1100 : 2600;
     for (let i = 0; i < anzahlSterne; i++) {
-      sterne.push({
-        p: [(z() - 0.5) * 7000, (z() - 0.5) * 5000, 900 - z() * (LAENGE + 2600)],
-        g: 0.4 + z() * 1.3,
-        hell: 0.6 + z() * 0.4,
-        phase: z() * Math.PI * 2,
-      });
+      const hell = 0.2 + 0.8 * Math.pow(z(), 2.4);   // wenige helle, viele schwache
+      stern([(z() - 0.5) * 7000, (z() - 0.5) * 5000, 900 - z() * (LAENGE + 2600)], 0.5 + hell * 1.6, hell, false);
     }
-    // Ein Band wie die Milchstrasse: viele schwache Sterne auf einer grossen, schraeg
-    // liegenden Scheibe um die Mitte der Bahn -- es zieht sich quer ueber den Himmel
+    // Das Band der Milchstrasse: viele schwache Sterne auf einer grossen, schraeg
+    // liegenden Scheibe um die Mitte der Bahn -- es zieht sich quer ueber den Himmel;
+    // dazu weiche Lichtflecken (die Glut des Bandes) und dunkle Staubwolken darin
     const mitteBahn = bahn(0.55);
     const neigung = 0.42;
-    const anzahlBand = klein ? 1100 : 2800;
-    for (let i = 0; i < anzahlBand; i++) {
+    const aufScheibe = (radius, quer) => {
       const winkel = z() * Math.PI * 2;
-      const radius = 5200 + z() * 4200;
-      const quer = (z() + z() + z() - 1.5) * 700;   // grob normalverteilt: dichte Mitte
-      const x = Math.cos(winkel) * radius;
-      const t = Math.sin(winkel) * radius;
-      sterne.push({
-        p: [mitteBahn[0] + x, mitteBahn[1] + t * Math.sin(neigung) + quer * Math.cos(neigung), mitteBahn[2] + t * Math.cos(neigung) - quer * Math.sin(neigung)],
-        g: 0.3 + z() * 0.9,
-        hell: 0.25 + z() * 0.45,
-        phase: z() * Math.PI * 2,
-        band: true,
-      });
-    }
+      const x = Math.cos(winkel) * radius, t = Math.sin(winkel) * radius;
+      return [mitteBahn[0] + x, mitteBahn[1] + t * Math.sin(neigung) + quer * Math.cos(neigung), mitteBahn[2] + t * Math.cos(neigung) - quer * Math.sin(neigung)];
+    };
+    const anzahlBand = klein ? 1300 : 3200;
+    for (let i = 0; i < anzahlBand; i++) stern(aufScheibe(5200 + z() * 4200, gauss() * 470), 0.3 + z() * 0.9, 0.25 + z() * 0.45, true);
+    const BAND_FARBEN = ["190,205,245", "235,225,205", "215,215,240", "255,235,210"];
+    const bandGlut = [], bandStaub = [];
+    for (let i = 0; i < 90; i++) bandGlut.push({ p: aufScheibe(5600 + z() * 3400, gauss() * 420), r: 1500 + z() * 1100, a: 0.05 + z() * 0.06, farbe: BAND_FARBEN[i % 4] });
+    for (let i = 0; i < 30; i++) bandStaub.push({ p: aufScheibe(5800 + z() * 3000, gauss() * 140), r: 500 + z() * 600, a: 0.4 + z() * 0.3 });
     // Staub nah an der Bahn: fliegt dicht an der Kamera vorbei und gibt Tempo
     const staub = [];
     const anzahlStaub = klein ? 140 : 300;
@@ -273,9 +494,10 @@
       const pos = [0, 1, 2].map((k) => mitte[k] + (r.rechts[k] * Math.cos(winkel) + r.oben[k] * Math.sin(winkel)) * weite);
       knoten.push({ p: pos, u, g: 1.2 + z() * 2.2, text: null, formel: false });
     }
-    // Formeln auf Knoten nah an der Bahn, gleichmaessig ueber den Weg verteilt
+    // Formeln auf Knoten nah an der Bahn, verteilt ueber den Teil des Wegs, den die
+    // Kamera langsam fliegt
     FORMELN.forEach((f, j) => {
-      const u = 0.1 + (j / FORMELN.length) * 0.74;
+      const u = 0.05 + (j / FORMELN.length) * 0.56;
       const mitte = bahn(u);
       const r = rahmen(u);
       const weite = 150 + z() * 170;
@@ -303,8 +525,8 @@
     // Das Zeichen: drei Balken (Anteile seiner Kantenlaenge, wie im Logo)
     const BALKEN = [{ x: 10, y: 22, b: 20, h: 56 }, { x: 40, y: 8, b: 20, h: 84 }, { x: 70, y: 22, b: 20, h: 56 }];
     // Lichtstroeme am Ende des Flugs: kommen von ueberall am Rand her (Bildschirm-
-    // Einheiten relativ zur Mitte) und fliessen in den Kern, aus dem die Erde wird
-    // (Ziel in Einheiten des Erdradius)
+    // Einheiten relativ zur Mitte) und fliessen in die Erde (Ziel in Einheiten ihres
+    // Radius)
     const strom = [];
     const anzahlStrom = klein ? 220 : 380;
     for (let i = 0; i < anzahlStrom; i++) {
@@ -317,20 +539,31 @@
         verzug: z() * 0.5,
       });
     }
-    // Nebel: wenige grosse Lichtwolken neben der Bahn, kuehle Grautoene
-    const FARBEN = ["170,185,215", "190,180,215", "160,200,215", "205,205,215"];
+    // Die Begleiter: Formeln, die beim Rasen mit der Kamera fliegen (Ort in Anteilen
+    // der halben Bildbreite und -hoehe, nicht in der Mitte, da waechst die Erde)
+    const BEGLEITER = ["E = mc^{2}", "e^{iπ} + 1 = 0", "a^{2} + b^{2} = c^{2}", "ζ(s) = Σ n^{−s}", "φ = (1 + √5) / 2", "det(A − λI) = 0",
+      "H = − Σ p_{i} log p_{i}", "∂u/∂t = α ∇^{2}u", "e^{x} = Σ x^{n} / n!", "σ^{2} = E[(X − μ)^{2}]", "f(x) = Σ a_{n} x^{n}", "iħ ∂ψ/∂t = Ĥψ"];
+    const begleiter = BEGLEITER.map((text, i) => {
+      // zwei Ringe um die Mitte (da waechst die Erde), auf dem Handy nur der aeussere
+      const w = (i / BEGLEITER.length) * Math.PI * 2 + 0.3;
+      const r = klein ? 0.78 : i % 2 ? 0.5 : 0.84;
+      return { text, x: Math.cos(w) * r * 1.1, y: Math.sin(w) * r, groesse: 0.75 + z() * 0.4, phase: z() * Math.PI * 2, verzug: z() };
+    });
+    // Nebel: grosse, leise Lichtwolken mit Struktur neben der Bahn
+    const NEBEL = [rauschen(3, 256, "120,150,230"), rauschen(4, 256, "170,130,220"), rauschen(5, 256, "110,190,210"), rauschen(6, 256, "235,150,185")];
     const nebel = [];
-    for (let i = 0; i < 14; i++) {
-      const u = 0.05 + i * 0.066 + (z() - 0.5) * 0.03;
+    for (let i = 0; i < 16; i++) {
+      const u = 0.05 + i * 0.058 + (z() - 0.5) * 0.03;
       const mitte = bahn(u);
       const r = rahmen(u);
       const winkel = z() * Math.PI * 2;
       const weite = 700 + z() * 900;
       nebel.push({
         p: [0, 1, 2].map((kk) => mitte[kk] + (r.rechts[kk] * Math.cos(winkel) + r.oben[kk] * Math.sin(winkel)) * weite - r.vorn[kk] * 400),
-        r: 900 + z() * 900,
-        a: 0.05 + z() * 0.06,
-        farbe: FARBEN[i % FARBEN.length],
+        r: 1100 + z() * 1100,
+        a: 0.14 + z() * 0.16,
+        bild: NEBEL[i % NEBEL.length],
+        dreh: z() * Math.PI * 2,
       });
     }
     // Koerper der Mathematik als Drahtmodelle, die langsam drehend neben der Bahn
@@ -352,32 +585,17 @@
         a: 0.28 + z() * 0.14,
       };
     });
-
-    // Lichter beim Zoom auf das Ziel, auf vielen Stufen: jede Stufe ist eine Scheibe um
-    // das Ziel (Radius in Bogenmass), ein Drittel so gross wie die vorige, die meisten
-    // Lichter in Haeufchen wie Orte von oben -- so ist auf jeder Stufe des Zooms das
-    // ganze Bild voller Lichter, und sie ziehen nach aussen weg
-    const lichter = [];
-    const proStufe = klein ? 170 : 300;
-    for (let st = 0; st < 10; st++) {
-      const r = 0.1 * Math.pow(3, -st);
-      const orte = [];
-      for (let o = 0; o < 9; o++) { const w = z() * Math.PI * 2, a = Math.sqrt(z()) * r; orte.push([Math.cos(w) * a, Math.sin(w) * a]); }
-      const punkte = [];
-      for (let i = 0; i < proStufe; i++) {
-        const w = z() * Math.PI * 2;
-        let x, y;
-        if (z() < 0.65) {
-          const o = orte[Math.floor(z() * orte.length)], a = Math.abs(z() + z() + z() - 1.5) * r * 0.09;
-          x = o[0] + Math.cos(w) * a; y = o[1] + Math.sin(w) * a;
-        } else {
-          const a = Math.sqrt(z()) * r;
-          x = Math.cos(w) * a; y = Math.sin(w) * a;
-        }
-        punkte.push({ x, y, hell: 0.45 + z() * 0.55, g: 0.9 + z() * 1.3 });
-      }
-      lichter.push({ r, punkte });
-    }
+    // Planeten neben der Bahn
+    const rausch = rauschen(8, 256, null);
+    const planeten = PLANETEN.map((pl) => {
+      const mitte = bahn(pl.u);
+      const r = rahmen(pl.u);
+      return {
+        p: [0, 1, 2].map((k) => mitte[k] + (r.rechts[k] * Math.cos(pl.winkel) + r.oben[k] * Math.sin(pl.winkel)) * pl.weite),
+        r: pl.r,
+        sp: planetBauen(pl, rausch),
+      };
+    });
 
     // Leitungen zum Computer (Einheiten der Schirmbreite, Ursprung in der Schirmmitte):
     // von weit draussen hinter den Monitor, dann als Leiterbahn ueber den Schirm bis an
@@ -424,12 +642,11 @@
       leitung(kurve([x2 * 5 + (z() - 0.5) * 0.4, -1 - z() * 0.35], [x2 * 1.8, -0.62], rand, 10),
         [rand, [x2, y2], [x, y1], [x, CHIP_Y - CHIP]]);
     }
-    return { klein, sterne, staub, knoten, kanten, strom, BALKEN, nebel, objekte, lichter, leitungen, erde: null };
+    return { klein, sterne, bandGlut, bandStaub, staub, knoten, kanten, strom, begleiter, BALKEN, nebel, objekte, planeten, leitungen, galaxie: galaxieBauen(), erde: null };
   }
 
-  // Die Erde: Punkte auf dem Land, ueberall gleich dicht (Fibonacci-Kugel), dazu ein
-  // feineres Raster um das Ziel, das erst beim Heranzoomen sichtbar wird, und das
-  // Gradnetz. Kostet ein paar Millisekunden -- deshalb erst, wenn der Browser Luft hat.
+  // Die Erde aus Punkten (Ersatz ohne WebGL): Land auf einer Fibonacci-Kugel, dazu
+  // das Gradnetz. Kostet ein paar Millisekunden -- deshalb erst, wenn sie gebraucht wird.
   function erdeBauen(klein) {
     const punkte = [];
     const anzahl = klein ? 7000 : 12000;
@@ -438,17 +655,6 @@
       const breite = Math.asin(1 - (2 * i + 1) / anzahl) / GRAD;
       const laenge = (((i * goldwinkel) / GRAD) % 360) - 180;
       if (istLand(laenge, breite)) punkte.push(...einheit(laenge, breite));
-    }
-    const fein = [];
-    const schritt = klein ? 0.6 : 0.45;
-    for (let breite = ZIEL_BREITE - 20; breite <= ZIEL_BREITE + 20; breite += schritt) {
-      const quer = Math.min(60, 20 / Math.cos(breite * GRAD));
-      const sl = schritt / Math.cos(breite * GRAD);
-      for (let laenge = ZIEL_LAENGE - quer; laenge <= ZIEL_LAENGE + quer; laenge += sl) {
-        const e = einheit(laenge, breite);
-        const abstand = Math.acos(clamp(dot(e, ZIEL), -1, 1));
-        if (abstand < 0.35 && istLand(laenge, breite)) fein.push(e[0], e[1], e[2], abstand);
-      }
     }
     const gradnetz = [];
     for (let lo = -180; lo < 180; lo += 15) {
@@ -461,12 +667,7 @@
       for (let lo = -180; lo <= 180; lo += 5) zug.push(einheit(lo, la));
       gradnetz.push(zug);
     }
-    return { punkte, fein, gradnetz };
-  }
-  function erdeSpaeter() {
-    const bauen = () => { if (welt && !welt.erde) welt.erde = erdeBauen(welt.klein); };
-    if (window.requestIdleCallback) window.requestIdleCallback(bauen, { timeout: 3000 });
-    else setTimeout(bauen, 300);
+    return { punkte, gradnetz };
   }
 
   // ---- Formen (Linienzuege in eigenen Koordinaten) ----
@@ -599,6 +800,166 @@
     }
   }
 
+  // ---- Die Erde in WebGL: je Bildpunkt eine Kugel, Bilder der NASA darauf ----
+  const erde = { gl: null, leinwand: null, prog: null, u: {}, bereit: false, geladen: 0, angestossen: false, fehl: false };
+  const ERDE_BILDER = ["welt-tag", "welt-nacht", "wolken", "europa-tag", "europa-nacht", "ziel-nacht"];
+  const VS = "attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }";
+  const FS = `
+precision highp float;
+uniform vec2 uMitte;      // Mitte der Erde in Bildpunkten (y von unten)
+uniform float uR;         // Radius in Bildpunkten
+uniform mat3 uDreh;       // Blick -> Welt
+uniform vec3 uSonne;      // Licht im Blick (x rechts, y oben, z zum Betrachter)
+uniform sampler2D uTag, uNacht, uWolken, uTagEu, uNachtEu, uNachtZiel;
+uniform vec4 uEu, uZiel;  // Ausschnitte: Laenge, Breite der Ecke, Spannen (Grad)
+uniform float uEuMix, uZielMix, uWolkenMix, uWolkenVersatz, uNachtWeich, uNachtStaerke, uHell, uAtmo, uAlpha;
+const float PI = 3.14159265;
+float kante(vec2 uv) {
+  vec2 k = smoothstep(0.0, 0.08, uv) * smoothstep(0.0, 0.08, 1.0 - uv);
+  return k.x * k.y;
+}
+vec3 lichter(sampler2D t, vec2 uv) {
+  // beim tiefen Zoom weich: eine groebere Stufe des Bildes mischt sich dazu
+  vec3 scharf = texture2D(t, uv).rgb;
+  vec3 weich = texture2D(t, uv, 1.0 + 4.0 * uNachtWeich).rgb;
+  return mix(scharf, weich, uNachtWeich);
+}
+void main() {
+  vec2 d = (gl_FragCoord.xy - uMitte) / uR;
+  float r2 = dot(d, d);
+  vec3 sonne = normalize(uSonne);
+  if (r2 >= 1.0) {
+    float r = sqrt(r2);
+    if (r > 1.4) discard;
+    vec3 n = vec3(d / r, 0.0);
+    float licht = smoothstep(-0.35, 0.5, dot(n, sonne));
+    float a = exp(-(r - 1.0) * 14.0) * (0.12 + 0.5 * licht) * uAtmo * uAlpha;
+    gl_FragColor = vec4(vec3(0.45, 0.65, 1.0) * a, a);
+    return;
+  }
+  float z = sqrt(1.0 - r2);
+  vec3 n = vec3(d, z);
+  vec3 w = uDreh * n;
+  float lat = asin(clamp(w.z, -1.0, 1.0));
+  float lon = atan(w.y, w.x);
+  vec2 uv = vec2(lon / (2.0 * PI) + 0.5, 0.5 - lat / PI);
+  float latG = lat / PI * 180.0, lonG = lon / PI * 180.0;
+  vec2 euv = vec2((lonG - uEu.x) / uEu.z, 1.0 - (latG - uEu.y) / uEu.w);
+  float euDrin = kante(euv) * uEuMix;
+  vec2 zuv = vec2((lonG - uZiel.x) / uZiel.z, 1.0 - (latG - uZiel.y) / uZiel.w);
+  float zielDrin = kante(zuv) * uZielMix;
+  vec3 tag = mix(texture2D(uTag, uv).rgb, texture2D(uTagEu, euv).rgb, euDrin);
+  vec3 nacht = mix(lichter(uNacht, uv), lichter(uNachtEu, euv), euDrin);
+  nacht = mix(nacht, lichter(uNachtZiel, zuv), zielDrin);
+  float wasser = smoothstep(0.02, 0.14, tag.b - max(tag.r, tag.g));
+  float wolke = texture2D(uWolken, vec2(fract(uv.x + uWolkenVersatz), uv.y)).r * uWolkenMix;
+  float diff = dot(n, sonne);
+  float tagLicht = smoothstep(-0.1, 0.3, diff);
+  float daemmer = exp(-pow(diff / 0.15, 2.0));
+  vec3 farbe = tag * (0.03 + 1.05 * tagLicht) * mix(vec3(1.0), vec3(1.15, 0.85, 0.65), daemmer * 0.6);
+  vec3 h = normalize(sonne + vec3(0.0, 0.0, 1.0));
+  farbe += vec3(1.0, 0.95, 0.85) * pow(max(dot(n, h), 0.0), 90.0) * wasser * tagLicht * 0.55;
+  float nachtAnteil = 1.0 - smoothstep(-0.25, 0.05, diff);
+  farbe += nacht * nachtAnteil * uNachtStaerke;
+  farbe = mix(farbe, vec3(1.0) * (0.04 + tagLicht), wolke * 0.9);
+  float saum = pow(1.0 - z, 2.2);
+  farbe += vec3(0.35, 0.55, 1.0) * saum * (0.25 + 0.75 * tagLicht) * uAtmo * 0.9;
+  gl_FragColor = vec4(farbe * uHell * uAlpha, uAlpha);
+}`;
+  function erdeStarten() {
+    const c = sprite(1, 1);
+    const einstellungen = { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: "high-performance" };
+    const gl = c.getContext("webgl", einstellungen) || c.getContext("experimental-webgl", einstellungen);
+    if (!gl) return false;
+    const schattierer = (typ, quelle) => {
+      const s = gl.createShader(typ);
+      gl.shaderSource(s, quelle);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+      return s;
+    };
+    try {
+      const prog = gl.createProgram();
+      gl.attachShader(prog, schattierer(gl.VERTEX_SHADER, VS));
+      gl.attachShader(prog, schattierer(gl.FRAGMENT_SHADER, FS));
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+      gl.useProgram(prog);
+      const puffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, puffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const a = gl.getAttribLocation(prog, "a");
+      gl.enableVertexAttribArray(a);
+      gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
+      for (const name of ["uMitte", "uR", "uDreh", "uSonne", "uEu", "uZiel", "uEuMix", "uZielMix", "uWolkenMix", "uWolkenVersatz", "uNachtWeich", "uNachtStaerke", "uHell", "uAtmo", "uAlpha"]) erde.u[name] = gl.getUniformLocation(prog, name);
+      ["uTag", "uNacht", "uWolken", "uTagEu", "uNachtEu", "uNachtZiel"].forEach((name, i) => gl.uniform1i(gl.getUniformLocation(prog, name), i));
+      gl.uniform4f(erde.u.uEu, EUROPA[0], EUROPA[1], EUROPA[2], EUROPA[3]);
+      gl.uniform4f(erde.u.uZiel, ZIEL_BOX[0], ZIEL_BOX[1], ZIEL_BOX[2], ZIEL_BOX[3]);
+      erde.prog = prog;
+    } catch (e) {
+      return false;
+    }
+    c.addEventListener("webglcontextlost", (e) => { e.preventDefault(); erde.gl = null; erde.bereit = false; erde.fehl = true; });
+    erde.gl = gl;
+    erde.leinwand = c;
+    return true;
+  }
+  // Die Bilder laden (erst, wenn der Abschnitt in die Naehe kommt) und als Texturen ablegen
+  function erdeLaden() {
+    if (erde.angestossen || reduziert.matches) return;
+    erde.angestossen = true;
+    if (!erdeStarten()) { erde.fehl = true; return; }
+    const gl = erde.gl;
+    const klein = welt && welt.klein;
+    ERDE_BILDER.forEach((name, i) => {
+      const bild = new Image();
+      bild.decoding = "async";
+      bild.onload = () => {
+        if (!erde.gl) return;
+        const t = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE0 + i);
+        gl.bindTexture(gl.TEXTURE_2D, t);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, bild);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, i < 3 ? gl.REPEAT : gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        erde.geladen++;
+        if (erde.geladen === ERDE_BILDER.length) erde.bereit = true;
+      };
+      bild.onerror = () => { erde.fehl = true; };
+      bild.src = BILDER + name + (klein ? "-k" : "") + ".jpg";
+    });
+  }
+  function erdeGl(cx, cy, R, laenge0, breite0, sonne, e) {
+    const gl = erde.gl, u = erde.u, c = erde.leinwand;
+    if (c.width !== leinwand.width || c.height !== leinwand.height) { c.width = leinwand.width; c.height = leinwand.height; }
+    gl.viewport(0, 0, c.width, c.height);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform2f(u.uMitte, cx * dpr, (H - cy) * dpr);
+    gl.uniform1f(u.uR, R * dpr);
+    const cl = Math.cos(laenge0 * GRAD), sl = Math.sin(laenge0 * GRAD), cb = Math.cos(breite0 * GRAD), sb = Math.sin(breite0 * GRAD);
+    // Spalten: Blick-x = Osten, Blick-y = Norden, Blick-z = Lot auf die Mitte
+    gl.uniformMatrix3fv(u.uDreh, false, new Float32Array([-sl, cl, 0, -sb * cl, -sb * sl, cb, cb * cl, cb * sl, sb]));
+    gl.uniform3f(u.uSonne, sonne[0], sonne[1], sonne[2]);
+    gl.uniform1f(u.uEuMix, e.eu);
+    gl.uniform1f(u.uZielMix, e.ziel);
+    gl.uniform1f(u.uWolkenMix, e.wolken);
+    gl.uniform1f(u.uWolkenVersatz, e.versatz);
+    gl.uniform1f(u.uNachtWeich, e.weich);
+    gl.uniform1f(u.uNachtStaerke, e.nacht);
+    gl.uniform1f(u.uHell, e.hell);
+    gl.uniform1f(u.uAtmo, e.atmo);
+    gl.uniform1f(u.uAlpha, e.alpha);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+    ctx.drawImage(c, 0, 0, B, H);
+  }
+
   // ---- Zeichnen ----
   let B = 0, H = 0, dpr = 1;
   let kleben = 0;   // Abstand der klebenden Buehne vom oberen Rand (css: top)
@@ -612,15 +973,15 @@
     while (B * H * dpr * dpr > 3.2e6 && dpr > 1) dpr -= 0.25;
     leinwand.width = Math.round(B * dpr);
     leinwand.height = Math.round(H * dpr);
-    const klein = B < 700;
-    if (!welt || welt.klein !== klein) { welt = weltBauen(klein); erdeSpaeter(); }
+    if (welt && welt.klein !== (B < 700)) welt = weltBauen(B < 700);
   }
+  // Die Welt (mit allen Sprites) kostet etwa eine Zehntelsekunde: nicht beim Laden der
+  // Seite, sondern wenn der Browser Luft hat -- spaetestens, wenn der Abschnitt dran ist
+  function weltSicher() { if (!welt) welt = weltBauen(B < 700); }
+  if (window.requestIdleCallback) window.requestIdleCallback(weltSicher, { timeout: 2000 }); else setTimeout(weltSicher, 400);
 
   function kamera(q) {
-    // Kamera faehrt (im Fortschritt des Flugs) von 0,04 bis 0,90 die Bahn entlang
-    // und bremst am Ende sanft
-    const t = stueck(q, 0.04, 0.9);
-    const u = t * KAMERA_ENDE;
+    const u = fahrt(q);
     const pos = bahn(u);
     // ein wenig vorausschauen: die Kamera folgt dem Fluss
     const blick = bahn(Math.min(ZIEL_U, u + 0.035));
@@ -642,7 +1003,7 @@
   // sonst als riesige Linie quer durchs Bild schneiden)
   const tiefe = (z, fern) => clamp((z - 60) / 240, 0, 1) * clamp(1 - (z - 300) / fern, 0, 1);
 
-  let zoomVorher = 0;   // Zoom im letzten Bild -- fuer den Schweif der Lichter
+  let qAlt = 0;
   function bild(p, zeit, still) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.globalCompositeOperation = "source-over";
@@ -651,110 +1012,202 @@
     ctx.fillRect(0, 0, B, H);
     if (!welt) return;
 
-    const q = Math.min(1, p / FLUG);      // Fortschritt im Flug durch das Netz
-    const auftauchen = stueck(q, 0.06, 0.18);
-    if (auftauchen <= 0) return;          // am Anfang: nur Schwarz
+    const q = Math.min(1, p / FLUG);      // Fortschritt im Flug
+    const auftauchen = stueck(q, 0, 0.03);
+    if (auftauchen <= 0) return;
 
     // Zoom von der Erde bis zum Computer, in e-fachen Vergroesserungen
     const L = ZOOM_ENDE * glatt(clamp((p - ZOOM_VON) / (ZOOM_BIS - ZOOM_VON), 0, 1));
-    const schweif = still ? 0 : 1 - Math.exp(-Math.max(0, L - zoomVorher) * 2.5);
-    zoomVorher = L;
-
     const k = kamera(q);
     const f = Math.min(B, H) * 0.95;
-    const ziel = stueck(q, 0.8, 0.93);        // die Lichtstroeme fliessen in den Kern
-    const netzSicht = auftauchen * (1 - stueck(q, 0.9, 0.97));
-    // Sterne, Staub und Nebel bleiben, bis die Erde den Schirm fuellt
-    const himmel = auftauchen * (1 - stueck(L, 1.4, 2.8));
-    ctx.globalCompositeOperation = "lighter";
+    // Die Kamera kurz davor -- fuer die Schweife der Sterne, solange es vorwaerts geht
+    const dq = still ? 0 : q - qAlt;
+    qAlt = q;
+    const kS = !still && Math.abs(dq) > 1e-5 ? kamera(clamp(q - dq * 2.5, 0, 1)) : null;
+    const innen = stueck(q, 0.16, 0.3);                       // in der Milchstrasse
+    const netzSicht = auftauchen * stueck(q, 0.17, 0.3) * (1 - stueck(q, 0.6, 0.72));
+    const himmel = auftauchen * (1 - stueck(L, 1.4, 2.8));     // Sterne weichen, wenn die Erde das Bild fuellt
+    const masse = computerMasse();
 
+    // Die Erde: wo sie im Bild steht und wie gross; beim Zoom wandert der Brennpunkt
+    // in die Mitte und zuletzt an die Stelle des Chips auf dem Schirm
+    const erdeProj = projiziere(k, bahn(ZIEL_U), f);
+    const zurMitte = stueck(p, 0.58, 0.66), zumChip = stueck(p, 0.72, 0.8);
+    const ex = erdeProj ? erdeProj.x : B / 2, ey = erdeProj ? erdeProj.y : H / 2;
+    const fx = misch(misch(ex, B / 2, zurMitte), B / 2, zumChip);
+    const fy = misch(misch(ey, H / 2, zurMitte), masse.fy, zumChip);
+    const R = (erdeProj ? (ERDE_R * f) / erdeProj.z : 1) * Math.exp(L);
+    const erdeSicht = stueck(q, 0.45, 0.56) * (1 - stueck(L, 5.0, 5.9));
+
+    // Die Milchstrasse voraus: waechst, bis sie das Bild fuellt, dann sind wir drin
+    const galaxieSicht = auftauchen * (1 - stueck(q, 0.19, 0.3));
+    if (galaxieSicht > 0) {
+      const gr = Math.min(B, H) * 0.2 * Math.exp(9.2 * q);
+      ctx.save();
+      ctx.translate(B / 2 + Math.sin(q * 3) * B * 0.04, H * 0.46);
+      ctx.rotate(0.55 + q * 0.4);
+      ctx.scale(1, 0.48);
+      ctx.globalAlpha = galaxieSicht;
+      ctx.drawImage(welt.galaxie, -gr, -gr, 2 * gr, 2 * gr);
+      ctx.restore();
+    }
+
+    ctx.globalCompositeOperation = "lighter";
     if (himmel > 0) {
-      // Sterne
-      ctx.fillStyle = "#ffffff";
+      // Die Glut des Bandes und die Staubwolken darin
+      if (innen > 0) {
+        for (const w of welt.bandGlut) {
+          const q1 = projiziere(k, w.p, f);
+          if (!q1) continue;
+          const r = (w.r * f) / q1.z;
+          if (q1.x + r < 0 || q1.x - r > B || q1.y + r < 0 || q1.y - r > H) continue;
+          ctx.globalAlpha = himmel * innen * w.a;
+          ctx.drawImage(fleck(w.farbe), q1.x - r, q1.y - r, 2 * r, 2 * r);
+        }
+      }
+      // Sterne, gebuendelt nach Farbe und Helligkeit; mit Schweif, wenn es vorwaerts geht
+      const eimerR = [], eimerL = [];
+      for (let c = 0; c < STERN_FARBEN.length; c++) { eimerR.push([[], [], [], [], []]); eimerL.push([[], [], [], [], []]); }
+      const glanz = [];
       for (const s of welt.sterne) {
-        const q = projiziere(k, s.p, f);
-        if (!q || q.x < -4 || q.x > B + 4 || q.y < -4 || q.y > H + 4) continue;
-        const a = himmel * s.hell * tiefe(q.z, s.band ? 14000 : 6500) * (0.6 + 0.4 * Math.sin(zeit * 1.3 + s.phase));
+        const q1 = projiziere(k, s.p, f);
+        if (!q1 || q1.x < -6 || q1.x > B + 6 || q1.y < -6 || q1.y > H + 6) continue;
+        const dichte = s.band ? innen : 0.55 + 0.45 * innen;
+        const a = himmel * dichte * s.hell * tiefe(q1.z, s.band ? 14000 : 6500) * (0.72 + 0.28 * Math.sin(zeit * 1.3 + s.phase));
         if (a < 0.02) continue;
-        const g = s.band ? clamp((s.g * 2200) / q.z, 0.5, 1.6) : clamp((s.g * 260) / q.z, 0.5, 2.4);
-        ctx.globalAlpha = a;
-        ctx.fillRect(q.x - g / 2, q.y - g / 2, g, g);
+        const g = s.band ? clamp((s.g * 2200) / q1.z, 0.5, 1.6) : clamp((s.g * 260) / q1.z, 0.5, 2.6);
+        const stufe = Math.min(4, Math.floor(a * 5));
+        let schweif = false;
+        if (kS) {
+          const q0 = projiziere(kS, s.p, f);
+          if (q0) {
+            const l = Math.hypot(q0.x - q1.x, q0.y - q1.y);
+            if (l > 1.2 && l < Math.max(B, H) * 0.5) { eimerL[s.farbe][stufe].push(q0.x, q0.y, q1.x, q1.y); schweif = true; }
+          }
+        }
+        eimerR[s.farbe][stufe].push(q1.x, q1.y, g);
+        if (s.hell > 0.93 && g > 1.6 && !schweif) glanz.push(q1.x, q1.y, g, a, s.farbe);
+      }
+      STERN_FARBEN.forEach((farbe, c) => {
+        eimerR[c].forEach((liste, st) => {
+          if (!liste.length) return;
+          ctx.fillStyle = `rgb(${farbe})`;
+          ctx.globalAlpha = (st + 0.5) / 5;
+          ctx.beginPath();
+          for (let i = 0; i < liste.length; i += 3) ctx.rect(liste[i] - liste[i + 2] / 2, liste[i + 1] - liste[i + 2] / 2, liste[i + 2], liste[i + 2]);
+          ctx.fill();
+        });
+        eimerL[c].forEach((liste, st) => {
+          if (!liste.length) return;
+          ctx.strokeStyle = `rgb(${farbe})`;
+          ctx.lineWidth = 1;
+          ctx.globalAlpha = ((st + 0.5) / 5) * 0.6;
+          ctx.beginPath();
+          for (let i = 0; i < liste.length; i += 4) { ctx.moveTo(liste[i], liste[i + 1]); ctx.lineTo(liste[i + 2], liste[i + 3]); }
+          ctx.stroke();
+        });
+      });
+      // Die hellsten mit Hof und vier Strahlen
+      for (let i = 0; i < glanz.length; i += 5) {
+        const x = glanz[i], y = glanz[i + 1], g = glanz[i + 2], a = glanz[i + 3], farbe = STERN_FARBEN[glanz[i + 4]];
+        const r = g * 7;
+        ctx.globalAlpha = a * 0.5;
+        ctx.drawImage(fleck(farbe), x - r, y - r, 2 * r, 2 * r);
+        ctx.strokeStyle = `rgb(${farbe})`;
+        ctx.globalAlpha = a * 0.35;
+        ctx.lineWidth = 0.8;
+        const l = g * 6;
+        ctx.beginPath(); ctx.moveTo(x - l, y); ctx.lineTo(x + l, y); ctx.moveTo(x, y - l); ctx.lineTo(x, y + l); ctx.stroke();
+      }
+      if (innen > 0) {
+        ctx.globalCompositeOperation = "source-over";
+        for (const w of welt.bandStaub) {
+          const q1 = projiziere(k, w.p, f);
+          if (!q1) continue;
+          const r = (w.r * f) / q1.z;
+          if (q1.x + r < 0 || q1.x - r > B || q1.y + r < 0 || q1.y - r > H) continue;
+          ctx.globalAlpha = himmel * innen * w.a;
+          ctx.drawImage(fleck("3,3,8"), q1.x - r, q1.y - r, 2 * r, 2 * r);
+        }
+        ctx.globalCompositeOperation = "lighter";
       }
 
       // Staub dicht an der Bahn: kurze helle Punkte, die an der Kamera vorbeiziehen
+      ctx.fillStyle = "#ffffff";
       for (const d of welt.staub) {
-        const q = projiziere(k, d, f);
-        if (!q || q.z > 1400 || q.x < 0 || q.x > B || q.y < 0 || q.y > H) continue;
-        const a = himmel * clamp((q.z - 20) / 120, 0, 1) * clamp(1 - q.z / 1400, 0, 1) * 0.7;
+        const q1 = projiziere(k, d, f);
+        if (!q1 || q1.z > 1400 || q1.x < 0 || q1.x > B || q1.y < 0 || q1.y > H) continue;
+        const a = himmel * innen * clamp((q1.z - 20) / 120, 0, 1) * clamp(1 - q1.z / 1400, 0, 1) * 0.7;
         if (a < 0.03) continue;
-        const g = clamp(180 / q.z, 0.6, 3);
+        const g = clamp(180 / q1.z, 0.6, 3);
         ctx.globalAlpha = a;
-        ctx.fillRect(q.x - g / 2, q.y - g / 2, g, g);
+        if (kS) {
+          const q0 = projiziere(kS, d, f);
+          if (q0) { ctx.strokeStyle = "#ffffff"; ctx.lineWidth = g; ctx.beginPath(); ctx.moveTo(q0.x, q0.y); ctx.lineTo(q1.x, q1.y); ctx.stroke(); continue; }
+        }
+        ctx.fillRect(q1.x - g / 2, q1.y - g / 2, g, g);
       }
 
-      // Nebel: grosse, sehr leise Lichtwolken in kuehlem Grau -- geben dem Raum Tiefe
+      // Nebel: grosse, leise Lichtwolken mit Struktur -- geben dem Raum Tiefe
       for (const w of welt.nebel) {
-        const q = projiziere(k, w.p, f);
-        if (!q || q.z < 120) continue;
-        const r = (w.r * f) / q.z;
-        if (q.x + r < 0 || q.x - r > B || q.y + r < 0 || q.y - r > H) continue;
-        const a = himmel * w.a * clamp(1 - (q.z - 600) / 5200, 0, 1) * clamp((q.z - 120) / 600, 0, 1);
-        if (a < 0.004) continue;
-        const g = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, r);
-        g.addColorStop(0, `rgba(${w.farbe},${a.toFixed(3)})`);
-        g.addColorStop(1, `rgba(${w.farbe},0)`);
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = g;
-        ctx.fillRect(q.x - r, q.y - r, r * 2, r * 2);
+        const q1 = projiziere(k, w.p, f);
+        if (!q1 || q1.z < 120) continue;
+        const r = (w.r * f) / q1.z;
+        if (q1.x + r < 0 || q1.x - r > B || q1.y + r < 0 || q1.y - r > H) continue;
+        const a = himmel * innen * w.a * clamp(1 - (q1.z - 600) / 5200, 0, 1) * clamp((q1.z - 120) / 600, 0, 1);
+        if (a < 0.005) continue;
+        ctx.save();
+        ctx.translate(q1.x, q1.y);
+        ctx.rotate(w.dreh + zeit * 0.01);
+        ctx.globalAlpha = a;
+        ctx.drawImage(w.bild, -r, -r, 2 * r, 2 * r);
+        ctx.restore();
       }
     }
 
-    // Der Kern am Ziel: ein ferner heller Punkt, auf den das Netz zulaeuft --
-    // er waechst, je naeher die Kamera kommt
-    const kern = projiziere(k, bahn(ZIEL_U), f);
-    if (kern) {
-      // klein genug, dass er nie zum grauen Schleier ueber dem ganzen Bild wird;
-      // er weicht, sobald die Erde dasteht
-      const r = clamp((380 * f) / kern.z, 6, Math.min(B, H) * 0.32);
-      const a = auftauchen * clamp(0.15 + (1 - kern.z / LAENGE) * 0.35, 0, 0.45) * (1 - stueck(p, 0.54, 0.6));
-      const g = ctx.createRadialGradient(kern.x, kern.y, 0, kern.x, kern.y, r);
-      g.addColorStop(0, `rgba(255,255,255,${a.toFixed(3)})`);
-      g.addColorStop(0.18, `rgba(214,222,240,${(a * 0.45).toFixed(3)})`);
-      g.addColorStop(1, "rgba(214,222,240,0)");
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = g;
-      ctx.fillRect(kern.x - r, kern.y - r, r * 2, r * 2);
+    // Planeten: decken ab, was hinter ihnen liegt
+    ctx.globalCompositeOperation = "source-over";
+    for (const pl of welt.planeten) {
+      const m = projiziere(k, pl.p, f);
+      if (!m) continue;
+      const rad = (pl.r * f) / m.z;
+      const sk = rad / pl.sp.R;
+      if (m.x - pl.sp.cx * sk > B || m.x + (pl.sp.b - pl.sp.cx) * sk < 0 || m.y - pl.sp.cy * sk > H || m.y + (pl.sp.h - pl.sp.cy) * sk < 0) continue;
+      const a = himmel * stueck(q, 0.22, 0.36) * clamp((m.z - 40) / 120, 0, 1) * clamp(1 - (m.z - 2500) / 7000, 0, 1);
+      if (a < 0.02) continue;
+      ctx.globalAlpha = a;
+      ctx.drawImage(pl.sp.bild, m.x - pl.sp.cx * sk, m.y - pl.sp.cy * sk, pl.sp.b * sk, pl.sp.h * sk);
     }
+    ctx.globalCompositeOperation = "lighter";
 
     // Die Koerper der Mathematik: Drahtmodelle, die sich langsam drehen
     ctx.strokeStyle = "#cfd8ea";
     ctx.lineWidth = 1;
-    for (const o of welt.objekte) {
-      const m = projiziere(k, o.mitte, f);
-      if (!m) continue;
-      const a = o.a * netzSicht * tiefe(m.z, 4200) * clamp((m.z - 250) / 500, 0, 1);
-      if (a < 0.02) continue;
-      // grob unsichtbar: Mittelpunkt weit ausserhalb des Bildes
-      const rad = (o.groesse * f) / m.z;
-      if (m.x + rad < 0 || m.x - rad > B || m.y + rad < 0 || m.y - rad > H) continue;
-      const w = zeit * o.tempo + o.phase, cw = Math.cos(w), sw = Math.sin(w), ck = Math.cos(o.kipp), sk = Math.sin(o.kipp);
-      ctx.globalAlpha = a;
-      ctx.beginPath();
-      for (const zug of o.zuege) {
-        let davor = false;
-        for (const pt of zug) {
-          const x1 = pt[0] * cw + pt[2] * sw, z1 = -pt[0] * sw + pt[2] * cw;
-          const y2 = pt[1] * ck - z1 * sk, z2 = pt[1] * sk + z1 * ck;
-          const q = projiziere(k, [o.mitte[0] + x1 * o.groesse, o.mitte[1] + y2 * o.groesse, o.mitte[2] + z2 * o.groesse], f);
-          if (!q) { davor = false; continue; }
-          if (davor) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y);
-          davor = true;
-        }
-      }
-      ctx.stroke();
-    }
-
     if (netzSicht > 0) {
+      for (const o of welt.objekte) {
+        const m = projiziere(k, o.mitte, f);
+        if (!m) continue;
+        const a = o.a * netzSicht * tiefe(m.z, 4200) * clamp((m.z - 250) / 500, 0, 1);
+        if (a < 0.02) continue;
+        const rad = (o.groesse * f) / m.z;
+        if (m.x + rad < 0 || m.x - rad > B || m.y + rad < 0 || m.y - rad > H) continue;
+        const w = zeit * o.tempo + o.phase, cw = Math.cos(w), sw = Math.sin(w), ck = Math.cos(o.kipp), sk = Math.sin(o.kipp);
+        ctx.globalAlpha = a;
+        ctx.beginPath();
+        for (const zug of o.zuege) {
+          let davor = false;
+          for (const pt of zug) {
+            const x1 = pt[0] * cw + pt[2] * sw, z1 = -pt[0] * sw + pt[2] * cw;
+            const y2 = pt[1] * ck - z1 * sk, z2 = pt[1] * sk + z1 * ck;
+            const q1 = projiziere(k, [o.mitte[0] + x1 * o.groesse, o.mitte[1] + y2 * o.groesse, o.mitte[2] + z2 * o.groesse], f);
+            if (!q1) { davor = false; continue; }
+            if (davor) ctx.lineTo(q1.x, q1.y); else ctx.moveTo(q1.x, q1.y);
+            davor = true;
+          }
+        }
+        ctx.stroke();
+      }
+
       // Knoten projizieren (einmal je Bild)
       const proj = welt.knoten.map((n) => projiziere(k, n.p, f));
 
@@ -788,77 +1241,94 @@
       for (const e of welt.kanten) {
         const A = welt.knoten[e.a].p, Bp = welt.knoten[e.b].p;
         const t = (zeit * e.tempo + e.phase) % 1;
-        const q = projiziere(k, punkt(A, Bp, t), f);
-        if (!q) continue;
-        const h = tiefe(q.z, 2400) * netzSicht * Math.sin(Math.PI * t);
+        const q1 = projiziere(k, punkt(A, Bp, t), f);
+        if (!q1) continue;
+        const h = tiefe(q1.z, 2400) * netzSicht * Math.sin(Math.PI * t);
         if (h < 0.05) continue;
-        const g = clamp(640 / q.z, 1, 5);
+        const g = clamp(640 / q1.z, 1, 5);
         const hinten = projiziere(k, punkt(A, Bp, Math.max(0, t - 0.16)), f);
         if (hinten) {
           ctx.globalAlpha = h * 0.45;
           ctx.lineWidth = g * 0.7;
-          ctx.beginPath(); ctx.moveTo(hinten.x, hinten.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(hinten.x, hinten.y); ctx.lineTo(q1.x, q1.y); ctx.stroke();
         }
         ctx.globalAlpha = h;
-        ctx.fillRect(q.x - g / 2, q.y - g / 2, g, g);
+        ctx.fillRect(q1.x - g / 2, q1.y - g / 2, g, g);
         ctx.globalAlpha = h * 0.2;
-        ctx.fillRect(q.x - g * 2, q.y - g * 2, g * 4, g * 4);
+        ctx.fillRect(q1.x - g * 2, q1.y - g * 2, g * 4, g * 4);
       }
       ctx.lineWidth = 1;
 
       // Knoten und ihre Beschriftung
       ctx.textBaseline = "middle";
       welt.knoten.forEach((n, i) => {
-        const q = proj[i];
-        if (!q) return;
-        const h = tiefe(q.z, n.formel ? 1900 : 2600) * netzSicht;
+        const q1 = proj[i];
+        if (!q1) return;
+        const h = tiefe(q1.z, n.formel ? 1900 : 2600) * netzSicht;
         if (h < 0.03) return;
-        const r = clamp((n.g * 300) / q.z, 0.8, 7);
+        const r = clamp((n.g * 300) / q1.z, 0.8, 7);
         ctx.fillStyle = "#ffffff";
         ctx.globalAlpha = h * 0.85;
-        ctx.beginPath(); ctx.arc(q.x, q.y, r, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(q1.x, q1.y, r, 0, Math.PI * 2); ctx.fill();
         ctx.globalAlpha = h * 0.12;
-        ctx.beginPath(); ctx.arc(q.x, q.y, r * 3.2, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(q1.x, q1.y, r * 3.2, 0, Math.PI * 2); ctx.fill();
         if (n.text) {
-          const g = ((n.formel ? 58 : 30) * f) / q.z / 2.2;
+          const g = ((n.formel ? 58 : 30) * f) / q1.z / 2.2;
           // Was ganz nah vorbeizieht, blendet aus, statt riesig angeschnitten zu
           // stehen -- die Grenze haengt an der Breite (Handy: kleiner)
           const gross = Math.min(64, B * 0.06);
           if (g < 8 || g > gross * 1.35) return;
           ctx.globalAlpha = h * (n.formel ? 0.95 : 0.55) * clamp(1 - (g - gross) / (gross * 0.35), 0, 1);
           ctx.fillStyle = "#f4f2ee";
-          if (n.formel) formelZeichnen(n.text, q.x, q.y - r - g * 0.9, g);
-          else { ctx.font = `italic 500 ${g.toFixed(1)}px "Playfair Display", Georgia, serif`; ctx.textAlign = "center"; ctx.fillText(n.text, q.x, q.y - r - g * 0.8); ctx.textAlign = "left"; }
+          if (n.formel) formelZeichnen(n.text, q1.x, q1.y - r - g * 0.9, g);
+          else { ctx.font = `italic 500 ${g.toFixed(1)}px "Playfair Display", Georgia, serif`; ctx.textAlign = "center"; ctx.fillText(n.text, q1.x, q1.y - r - g * 0.8); ctx.textAlign = "left"; }
         }
       });
     }
 
-    // ---- Das Ende: Erde, Zoom, Computer ----
-    // Der Brennpunkt: erst der Kern (fast die Bildmitte), dann die Bildmitte, zuletzt
-    // die Stelle des Chips auf dem Schirm des Computers im Schlussbild
-    const kz = projiziere(kamera(1), bahn(ZIEL_U), f);
-    const masse = computerMasse();
-    const zurMitte = stueck(p, 0.56, 0.66), zumChip = stueck(p, 0.78, 0.87);
-    const fx = misch(misch(kz ? kz.x : B / 2, B / 2, zurMitte), B / 2, zumChip);
-    const fy = misch(misch(kz ? kz.y : H / 2, H / 2, zurMitte), masse.fy, zumChip);
-    const R = Math.min(B, H) * 0.27 * Math.exp(L) * misch(0.85, 1, stueck(p, 0.5, 0.6));   // Erdradius
+    // ---- Die Erde ----
+    // Blick: erst ueber dem Atlantik, beim Rasen dreht sie sich langsam, dann nach Europa
+    const dreh = stueck(p, 0.58, 0.66);
+    const laenge0 = misch(-42 + 30 * stueck(q, 0.5, 0.95) + 4 * Math.sin(zeit * 0.1), ZIEL_LAENGE, dreh);
+    const breite0 = misch(14, ZIEL_BREITE, dreh);
+    if (erdeSicht > 0 && R > 0.6) {
+      if (erde.bereit) {
+        // Sonne im Blick; beim Zoom wandert sie hinter die Erde: Abend, dann Nacht
+        let s = [dot(SONNE_WELT, k.rechts), dot(SONNE_WELT, k.oben), -dot(SONNE_WELT, k.vorn)];
+        const abend = stueck(L, 1.6, 3.2) * 2.6;
+        s = [s[0] * Math.cos(abend) + s[2] * Math.sin(abend), s[1], -s[0] * Math.sin(abend) + s[2] * Math.cos(abend)];
+        erdeGl(fx, fy, R, laenge0, breite0, s, {
+          eu: stueck(L, 0.8, 1.8),
+          ziel: stueck(L, 3.0, 3.8),
+          wolken: 1 - stueck(L, 1.5, 2.6),
+          versatz: still ? 0 : zeit * 0.0012,
+          weich: stueck(L, 3.4, 5.2),
+          nacht: 1 + 0.3 * stueck(L, 3, 4.6),
+          hell: 1 - 0.95 * stueck(L, 3.9, 5.2),
+          atmo: 1 - stueck(L, 2, 3.5),
+          alpha: erdeSicht,
+        });
+      } else {
+        erdePunkte(fx, fy, R, laenge0, breite0, erdeSicht * (1 - stueck(L, 2.2, 3)), L);
+      }
+    }
 
-    // Lichtstroeme fliessen in den Kern, aus dem die Erde wird
-    const weg = stueck(q, 0.92, 0.98);
+    // Lichtstroeme fliessen in die Erde, aus dem Flug kommend
+    const ziel = stueck(q, 0.84, 0.98), weg = stueck(q, 0.96, 1);
     if (ziel > 0 && weg < 1) {
+      ctx.globalCompositeOperation = "lighter";
       ctx.strokeStyle = "#ffffff";
       ctx.fillStyle = "#ffffff";
       ctx.lineCap = "round";
       ctx.lineWidth = 1.4;
       const weit = Math.max(B, H) * 0.75;
-      const mx = kern ? kern.x : fx, my = kern ? kern.y : fy;
       for (const st of welt.strom) {
         const roh = clamp((ziel - st.verzug * 0.5) / 0.5, 0, 1);
         if (roh <= 0 || roh >= 1) continue;
-        const ort = (t) => [misch(mx + st.start[0] * weit, mx + st.ziel[0] * R, t), misch(my + st.start[1] * weit, my + st.ziel[1] * R, t)];
+        const ort = (t) => [misch(fx + st.start[0] * weit, fx + st.ziel[0] * R, t), misch(fy + st.start[1] * weit, fy + st.ziel[1] * R, t)];
         const [x, y] = ort(glatt(roh));
         const [hx, hy] = ort(glatt(Math.max(0, roh - 0.08)));
-        const h = Math.sin(Math.PI * roh) * (1 - weg);   // verloeschen, wo sie ankommen
+        const h = Math.sin(Math.PI * roh) * (1 - weg);
         ctx.globalAlpha = h * 0.55;
         ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(x, y); ctx.stroke();
         ctx.globalAlpha = h;
@@ -866,28 +1336,46 @@
       }
     }
 
-    // Die Erde: dreht sich von ueber dem Atlantik nach Europa, dann der Zoom
-    const erdeSicht = stueck(p, 0.49, 0.57) * (1 - stueck(L, 4.6, 5.6));
-    const dreh = stueck(p, 0.5, 0.66);
-    const laenge0 = misch(-38 + 10 * Math.sin(zeit * 0.12), ZIEL_LAENGE, dreh);
-    const breite0 = misch(16, ZIEL_BREITE, dreh);
-    if (erdeSicht > 0) {
-      if (!welt.erde) welt.erde = erdeBauen(welt.klein);
-      erdeZeichnen(fx, fy, R, laenge0, breite0, erdeSicht, L);
+    // Die Begleiter: Formeln, die beim Rasen mit der Kamera fliegen und zuletzt in
+    // die Erde stuerzen
+    const begleiterSicht = stueck(q, 0.7, 0.78) * (1 - stueck(q, 0.93, 0.995));
+    if (begleiterSicht > 0) {
+      ctx.globalCompositeOperation = "lighter";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#f4f2ee";
+      const gross = Math.min(40, B * 0.032);
+      for (const b of welt.begleiter) {
+        const hinein = stueck(q, 0.86 + b.verzug * 0.06, 0.96 + b.verzug * 0.03);
+        const x0 = B / 2 + (b.x + 0.03 * Math.sin(zeit * 0.7 + b.phase)) * B * 0.5;
+        const y0 = H / 2 + (b.y + 0.025 * Math.cos(zeit * 0.9 + b.phase)) * H * 0.5;
+        const x = misch(x0, fx, glatt(hinein)), y = misch(y0, fy, glatt(hinein));
+        const g = gross * b.groesse * (1 - 0.9 * hinein);
+        if (g < 5) continue;
+        ctx.globalAlpha = begleiterSicht * (0.85 - 0.4 * hinein);
+        if (b.text.length > 1) formelZeichnen(b.text, x, y, g);
+        else { ctx.font = `italic 500 ${(g * 1.3).toFixed(1)}px "Playfair Display", Georgia, serif`; ctx.textAlign = "center"; ctx.fillText(b.text, x, y); ctx.textAlign = "left"; }
+      }
     }
-    // eine Karte, die mitwaechst, und Lichter, die beim Zoom nach aussen ziehen
-    const karte = stueck(L, 1.6, 2.8) * (1 - stueck(L, ZOOM_ENDE - 2.6, ZOOM_ENDE - 1));
-    if (karte > 0) karteZeichnen(fx, fy, R, karte);
-    const lichter = stueck(L, 2.3, 3.4) * (1 - stueck(L, ZOOM_ENDE - 3, ZOOM_ENDE - 1.4));
-    if (lichter > 0) lichterZeichnen(fx, fy, R, lichter, schweif);
-    // die Marke am Ziel: aus ihr wird der Computer
-    const marke = stueck(p, 0.6, 0.65) * (1 - stueck(L, ZOOM_ENDE - 4.4, ZOOM_ENDE - 3.2));
+
+    // Die Marke am Ziel: pulsiert, solange die Erde als Kugel dasteht
+    const marke = stueck(p, 0.6, 0.65) * (1 - stueck(L, 1.2, 2.2));
     if (marke > 0) {
       const e = blick(drehung(laenge0, breite0), ZIEL);
       if (e[2] > 0) markeZeichnen(fx + R * e[0], fy - R * e[1], marke, zeit, still);
     }
-    // der Computer
-    const computer = stueck(L, ZOOM_ENDE - 4.6, ZOOM_ENDE - 3.2);
+
+    // Ein Licht wird zum Bildschirm: der Schein waechst mit dem Zoom, bis der
+    // Computer daraus hervortritt
+    const schein = stueck(L, 4.8, 5.8) * (1 - stueck(L, 7.4, 8));
+    if (schein > 0) {
+      ctx.globalCompositeOperation = "lighter";
+      const r = Math.max(8, masse.m * Math.exp(L - ZOOM_ENDE) * 0.8);
+      ctx.globalAlpha = schein * 0.9;
+      ctx.drawImage(fleck("190,210,255"), fx - r, fy - r, 2 * r, 2 * r);
+      ctx.globalAlpha = schein * 0.7;
+      ctx.drawImage(fleck("255,255,255"), fx - r * 0.3, fy - r * 0.3, r * 0.6, r * 0.6);
+    }
+    const computer = stueck(L, 5.6, 6.8);
     if (computer > 0) computerZeichnen(fx, fy, masse.m * Math.exp(L - ZOOM_ENDE), computer, p, zeit, still);
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
@@ -910,13 +1398,13 @@
     return [py, d.cb * e[2] - d.sb * px, d.sb * e[2] + d.cb * px];
   }
 
-  function erdeZeichnen(cx, cy, R, laenge0, breite0, sicht, L) {
+  // Ersatz ohne WebGL: die Erde aus Punkten
+  function erdePunkte(cx, cy, R, laenge0, breite0, sicht, L) {
+    if (!welt.erde) welt.erde = erdeBauen(welt.klein);
     const d = drehung(laenge0, breite0);
-    const randWeit = R > Math.max(B, H) * 2.5;   // ihr Rand liegt weit ausserhalb des Bildes
-    // Meer: dunkles Blaugrau, links oben im Licht; beim Heranzoomen wird es Nacht
-    const meer = sicht * (1 - stueck(L, 2.4, 3.8));
+    const randWeit = R > Math.max(B, H) * 2.5;
     ctx.globalCompositeOperation = "source-over";
-    ctx.globalAlpha = meer;
+    ctx.globalAlpha = sicht;
     if (randWeit) {
       ctx.fillStyle = "rgb(26,37,57)";
       ctx.fillRect(0, 0, B, H);
@@ -930,7 +1418,6 @@
     }
     ctx.globalCompositeOperation = "lighter";
     if (!randWeit) {
-      // Lufthuelle: ein heller Saum am Rand
       const hauch = ctx.createRadialGradient(cx, cy, R * 0.92, cx, cy, R * 1.24);
       hauch.addColorStop(0, "rgba(130,160,225,0)");
       hauch.addColorStop(0.25, `rgba(130,160,225,${(0.3 * sicht).toFixed(3)})`);
@@ -938,7 +1425,6 @@
       ctx.globalAlpha = 1;
       ctx.fillStyle = hauch;
       ctx.beginPath(); ctx.arc(cx, cy, R * 1.24, 0, Math.PI * 2); ctx.fill();
-      // Gradnetz alle 15 Grad
       const netz = sicht * 0.12 * (1 - stueck(L, 1.2, 2.2));
       if (netz > 0.005) {
         ctx.strokeStyle = "#9fb3d9";
@@ -958,96 +1444,34 @@
         ctx.stroke();
       }
     }
-    // Landpunkte, nach Helligkeit gebuendelt: hell im Licht, dunkler zur Nacht und zum Rand
-    const punkte = (liste, schritt, g, alpha, nahZiel) => {
-      if (alpha < 0.01) return;
-      const eimer = [[], [], [], [], []];
-      for (let i = 0; i < liste.length; i += schritt) {
-        const X = liste[i], Y = liste[i + 1], Z = liste[i + 2];
-        const px = X * d.cl + Y * d.sl;
-        const vz = d.sb * Z + d.cb * px;
-        if (vz <= 0.02) continue;
-        const vx = -X * d.sl + Y * d.cl, vy = d.cb * Z - d.sb * px;
-        const x = cx + R * vx, y = cy - R * vy;
-        if (x < -g || x > B + g || y < -g || y > H + g) continue;
-        let h = (0.3 + 0.7 * clamp(vx * SONNE[0] + vy * SONNE[1] + vz * SONNE[2], 0, 1)) * Math.sqrt(vz);
-        if (nahZiel) h *= clamp((0.34 - liste[i + 3]) / 0.1, 0, 1);
-        if (h < 0.06) continue;
-        eimer[Math.min(4, Math.floor(h * 5))].push(x, y);
-      }
-      ctx.fillStyle = "#dfe8fa";
-      eimer.forEach((l, j) => {
-        if (!l.length) return;
-        ctx.globalAlpha = (alpha * (j + 1)) / 5;
-        ctx.beginPath();
-        for (let n = 0; n < l.length; n += 2) ctx.rect(l[n] - g / 2, l[n + 1] - g / 2, g, g);
-        ctx.fill();
-      });
-    };
-    punkte(welt.erde.punkte, 3, clamp(R * 0.011, 1.2, 2.6), sicht * (1 - stueck(L, 1.8, 2.8)), false);
-    punkte(welt.erde.fein, 4, clamp(R * 0.0032, 1.1, 2.4), sicht * stueck(L, 1.1, 2) * (1 - stueck(L, 2.6, 3.6)), true);
-  }
-
-  // Ein Raster wie auf einer Karte, am Ziel verankert: es waechst mit dem Zoom, feinere
-  // Stufen blenden ein, groebere aus
-  function karteZeichnen(fx, fy, R, sicht) {
-    ctx.globalCompositeOperation = "lighter";
-    ctx.strokeStyle = "#9fb3d9";
-    ctx.lineWidth = 1;
-    const min = Math.log(14), max = Math.log(900);
-    for (let k = 0; k < 14; k++) {
-      const abst = 0.04 * Math.pow(3, -k) * R;   // Abstand der Linien in Pixeln
-      if (abst < 14 || abst > 900) continue;
-      ctx.globalAlpha = sicht * 0.09 * Math.sin((Math.PI * (Math.log(abst) - min)) / (max - min));
+    const liste = welt.erde.punkte, g = clamp(R * 0.011, 1.2, 2.6);
+    const eimer = [[], [], [], [], []];
+    for (let i = 0; i < liste.length; i += 3) {
+      const X = liste[i], Y = liste[i + 1], Z = liste[i + 2];
+      const px = X * d.cl + Y * d.sl;
+      const vz = d.sb * Z + d.cb * px;
+      if (vz <= 0.02) continue;
+      const vx = -X * d.sl + Y * d.cl, vy = d.cb * Z - d.sb * px;
+      const x = cx + R * vx, y = cy - R * vy;
+      if (x < -g || x > B + g || y < -g || y > H + g) continue;
+      const h = (0.3 + 0.7 * clamp(vx * SONNE_WELT[0] + vy * SONNE_WELT[1] + vz * SONNE_WELT[2], 0, 1)) * Math.sqrt(vz);
+      if (h < 0.06) continue;
+      eimer[Math.min(4, Math.floor(h * 5))].push(x, y);
+    }
+    ctx.fillStyle = "#dfe8fa";
+    eimer.forEach((l, j) => {
+      if (!l.length) return;
+      ctx.globalAlpha = (sicht * (j + 1)) / 5;
       ctx.beginPath();
-      for (let x = fx - Math.floor(fx / abst) * abst; x <= B; x += abst) { const r = Math.round(x) + 0.5; ctx.moveTo(r, 0); ctx.lineTo(r, H); }
-      for (let y = fy - Math.floor(fy / abst) * abst; y <= H; y += abst) { const r = Math.round(y) + 0.5; ctx.moveTo(0, r); ctx.lineTo(B, r); }
-      ctx.stroke();
-    }
-  }
-
-  function lichterZeichnen(fx, fy, R, sicht, schweif) {
-    ctx.globalCompositeOperation = "lighter";
-    ctx.fillStyle = "#e8eefc";
-    ctx.strokeStyle = "#e8eefc";
-    ctx.lineCap = "round";
-    const halb = Math.hypot(B, H) / 2;
-    for (const stufe of welt.lichter) {
-      // eine Stufe zeigt sich, solange ihre Scheibe etwa bildgross ist
-      const u = Math.log((stufe.r * R) / halb);
-      if (u < -1.6 || u > 1.6) continue;
-      const stufeSicht = sicht * Math.sin((Math.PI * (u + 1.6)) / 3.2);
-      for (const l of stufe.punkte) {
-        const x = fx + l.x * R, y = fy + l.y * R;
-        if (x < -20 || x > B + 20 || y < -20 || y > H + 20) continue;
-        const r = Math.hypot(x - fx, y - fy);
-        const h = stufeSicht * l.hell * clamp((r - 3) / 40, 0, 1);
-        if (h < 0.03) continue;
-        const g = l.g * clamp(r / 160, 0.8, B < 700 ? 1.6 : 2.2);
-        if (schweif > 0.01) {
-          // Schweif zur Mitte hin: so sieht man, dass es hineingeht
-          ctx.globalAlpha = h * 0.45;
-          ctx.lineWidth = g * 0.8;
-          ctx.beginPath(); ctx.moveTo(misch(x, fx, schweif), misch(y, fy, schweif)); ctx.lineTo(x, y); ctx.stroke();
-        }
-        ctx.globalAlpha = h;
-        ctx.fillRect(x - g / 2, y - g / 2, g, g);
-        if (l.hell > 0.85) {   // die hellsten mit einem Hof
-          ctx.globalAlpha = h * 0.18;
-          ctx.fillRect(x - g * 1.5, y - g * 1.5, g * 3, g * 3);
-        }
-      }
-    }
+      for (let n = 0; n < l.length; n += 2) ctx.rect(l[n] - g / 2, l[n + 1] - g / 2, g, g);
+      ctx.fill();
+    });
   }
 
   function markeZeichnen(x, y, sicht, zeit, still) {
     ctx.globalCompositeOperation = "lighter";
-    const g = ctx.createRadialGradient(x, y, 0, x, y, 22);
-    g.addColorStop(0, `rgba(235,242,255,${(0.45 * sicht).toFixed(3)})`);
-    g.addColorStop(1, "rgba(235,242,255,0)");
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = g;
-    ctx.fillRect(x - 22, y - 22, 44, 44);
+    ctx.globalAlpha = sicht * 0.8;
+    ctx.drawImage(fleck("235,242,255"), x - 22, y - 22, 44, 44);
     ctx.fillStyle = "#ffffff";
     ctx.globalAlpha = sicht;
     ctx.beginPath(); ctx.arc(x, y, 2.6, 0, Math.PI * 2); ctx.fill();
@@ -1111,22 +1535,23 @@
     }
   }
 
-  // Der Computer: ein Monitor mit Fuss in einem dunklen Raum; auf dem Schirm fuehren
-  // Leiterbahnen in einen Chip -- den Bot. Aus dem Chip wird das Zeichen, darunter die
-  // Schrift. m = Breite des Schirms in Pixeln, (fx, fy) = Mitte des Chips.
+  // Der Computer: ein Monitor mit Fuss auf einem Tisch in einem dunklen Raum, davor
+  // eine Tastatur; auf dem Schirm fuehren Leiterbahnen in einen Chip -- den Bot. Aus
+  // dem Chip wird das Zeichen, darunter die Schrift. m = Breite des Schirms in
+  // Bildpunkten, (fx, fy) = Mitte des Chips.
   function computerZeichnen(fx, fy, m, sicht, p, zeit, still) {
     const sx = fx, sy = fy - CHIP_Y * m;        // Mitte des Schirms
     const P = (pt) => [sx + pt[0] * m, sy + pt[1] * m];
     const hb = 0.5 * m, hh = SCHIRM_H * m;
     const unten = sy + hh + KINN * m;           // Unterkante des Gehaeuses
     const boden = unten + (HALS + FUSS) * m;    // darauf steht der Fuss
-    const fluss = stueck(p, 0.79, 0.85);         // die Stroeme in den Bot
-    const chipSicht = 1 - stueck(p, 0.87, 0.92);
-    const fuell = stueck(p, 0.85, 0.92);         // aus dem Chip wird das Zeichen
-    const schrift = stueck(p, 0.92, 0.96);       // danach steht das Schlussbild still
+    const fluss = stueck(p, 0.86, 0.9);          // die Stroeme in den Bot
+    const chipSicht = 1 - stueck(p, 0.9, 0.94);
+    const fuell = stueck(p, 0.89, 0.94);         // aus dem Chip wird das Zeichen
+    const schrift = stueck(p, 0.94, 0.975);      // danach steht das Schlussbild still
     const einzeln = m > 24;                      // sonst zu klein fuer Einzelheiten
 
-    // Licht des Schirms im Raum und auf dem Tisch
+    // Licht des Schirms im Raum, auf dem Tisch und an der Wand dahinter
     ctx.globalCompositeOperation = "lighter";
     ctx.globalAlpha = 1;
     let g = ctx.createRadialGradient(sx, sy, 0, sx, sy, m * 1.1);
@@ -1143,6 +1568,7 @@
     ctx.fillStyle = g;
     ctx.fillRect(-m * 0.8, -m * 0.8, m * 1.6, m * 1.6);
     ctx.restore();
+    // Tischkante
     g = ctx.createLinearGradient(sx - m, 0, sx + m, 0);
     g.addColorStop(0, "rgba(207,216,234,0)");
     g.addColorStop(0.5, `rgba(207,216,234,${(0.35 * sicht).toFixed(3)})`);
@@ -1188,6 +1614,20 @@
     ctx.fillStyle = "#cfd8ea";                       // Betriebslicht unten am Gehaeuse
     ctx.globalAlpha = sicht * 0.7;
     ctx.fillRect(sx - 1, sy + hh + KINN * m * 0.5 - 1, 2, 2);
+    // Tastatur vor dem Fuss, vom Schirm beleuchtet
+    if (einzeln) {
+      const tb = 0.56 * m, th = 0.055 * m, ty = boden + 0.035 * m;
+      ctx.globalAlpha = sicht;
+      ctx.fillStyle = "#050609";
+      ctx.strokeStyle = "rgba(207,216,234,0.3)";
+      rundRechteck(sx - tb / 2, ty, tb, th, 0.008 * m);
+      ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = "rgba(207,216,234,0.14)";
+      ctx.beginPath();
+      for (let i = 1; i < 4; i++) { const y = ty + (th * i) / 4; ctx.moveTo(sx - tb / 2 + 0.01 * m, y); ctx.lineTo(sx + tb / 2 - 0.01 * m, y); }
+      for (let i = 1; i < 14; i++) { const x = sx - tb / 2 + (tb * i) / 14; ctx.moveTo(x, ty + 0.006 * m); ctx.lineTo(x, ty + th - 0.006 * m); }
+      ctx.stroke();
+    }
 
     // Auf dem Schirm
     ctx.save();
@@ -1299,10 +1739,8 @@
 
   // ---- Fortschritt, Schleife ----
   // Vor der Buehne liegt der weiche Uebergang vom Startbildschirm ins Schwarz
-  // (.universum-uebergang); gezaehlt wird erst ab da, wo die Buehne stehen bleibt
-  // (die Buehne klebt unter der Kopfzeile: gezaehlt wird von da, wo sie anhaftet, bis da,
-  // wo sie wieder losgeht -- bis 10.10.2026 lag das um die Kopfzeilenhoehe zu spaet, und
-  // das Schlussbild kam erst, als die Buehne schon wegrollte)
+  // (.universum-uebergang); gezaehlt wird, von wo die Buehne unter der Kopfzeile
+  // anhaftet, bis sie wieder losgeht
   const uebergang = abschnitt.querySelector(".universum-uebergang");
   function zielFortschritt() {
     const r = abschnitt.getBoundingClientRect();
@@ -1315,6 +1753,9 @@
   let p = 0;            // gezeigter Fortschritt (folgt dem Scrollen weich nach)
   let laeuft = false;
   let letzte = 0;
+  // Messgeraet: mittlere Zeichenzeit je Bild (ms), einmal je Sekunde an der Leinwand
+  // als data-zeichenzeit -- so laesst sich auf jedem Geraet nachsehen, was es kostet
+  let messSumme = 0, messAnzahl = 0, messSeit = 0;
   function schleife(jetzt) {
     if (!laeuft) return;
     const dt = Math.min(0.05, (jetzt - letzte) / 1000 || 0.016);
@@ -1322,11 +1763,19 @@
     const zielP = zielFortschritt();
     p += (zielP - p) * (1 - Math.exp(-dt * 6));   // weich, unabhaengig von der Bildrate
     if (Math.abs(zielP - p) < 0.0004) p = zielP;
+    const t0 = performance.now();
     bild(p, jetzt / 1000, false);
+    messSumme += performance.now() - t0;
+    messAnzahl++;
+    if (jetzt - messSeit > 1000) {
+      leinwand.dataset.zeichenzeit = (messSumme / messAnzahl).toFixed(1);
+      messSumme = 0; messAnzahl = 0; messSeit = jetzt;
+    }
     requestAnimationFrame(schleife);
   }
   function starten() {
     if (laeuft || reduziert.matches) return;
+    weltSicher();
     laeuft = true;
     letzte = performance.now();
     p = zielFortschritt();
@@ -1337,7 +1786,7 @@
   function einrichten() {
     abschnitt.classList.toggle("ist-still", reduziert.matches);
     groesseAnpassen();
-    if (reduziert.matches) { anhalten(); bild(1, 0, true); }
+    if (reduziert.matches) { anhalten(); weltSicher(); bild(1, 0, true); }
   }
 
   abschnitt.classList.add("ist-aktiv");
@@ -1349,6 +1798,10 @@
     if (eintraege.some((e) => e.isIntersecting)) starten();
     else anhalten();
   }).observe(abschnitt);
+  // Die Erdbilder holen, sobald der Abschnitt in die Naehe kommt (einen Bildschirm davor)
+  new IntersectionObserver((eintraege) => {
+    if (eintraege.some((e) => e.isIntersecting)) erdeLaden();
+  }, { rootMargin: "100% 0px" }).observe(abschnitt);
 
   window.addEventListener("resize", () => { groesseAnpassen(); if (reduziert.matches) bild(1, 0, true); });
   if (reduziert.addEventListener) reduziert.addEventListener("change", einrichten);
