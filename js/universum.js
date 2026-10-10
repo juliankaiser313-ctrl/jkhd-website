@@ -17,7 +17,10 @@
 // Kamera soll so durchs Universum fliegen; die Formeln im Universum weglassen; der
 // PC soll echt aussehen, nicht nur schwarz-weiss, und dort sollen die Formeln
 // fliessend in den Chip fliessen, bis das Logo erscheint; ganz am Ende soll alles
-// schwarz werden und der Spruch 'Nirgends und doch ueberall' erscheinen."
+// schwarz werden und der Spruch 'Nirgends und doch ueberall' erscheinen." Sechste
+// Fassung: "die Formeln nicht so schnell; der PC soll an sein und die Formeln sollen
+// dort rechnen; bei den Planeten mehr Nebel; der Uebergang von der Milchstrasse auf
+// die Planeten echter, genauso der Uebergang zur Erde und vor allem auf die Erde."
 //
 // Umsetzung ohne Bibliothek: eine Zeichenflaeche (canvas 2D) mit eigener
 // Perspektiv-Projektion; die Erde zeichnet ein kleines WebGL-Programm (eine Kugel je
@@ -31,11 +34,13 @@
 //   0,10-0,52  der Flug: die Planeten stehen fest im Raum, die Kamera fliegt an ihnen
 //              vorbei (sie kommen von vorn, wachsen, ziehen seitlich weg), durch
 //              Nebel und Staub; voraus waechst die Erde, mit dem Mond
-//   0,56-0,62  die Erde dreht sich nach Europa
-//   0,60-0,84  Zoom: Europa, Abend, die Lichter einer Stadt -- dann ein Rechenzentrum:
-//              die Fahrt durch einen Gang zwischen Serverschraenken bis zum Tisch
+//   0,56-0,63  die Erde dreht sich nach Europa, der Flug geht ohne Halt in den Zoom ueber
+//   0,57-0,84  Zoom: in die Atmosphaere, durch die Wolken, Europa, Abend, die Lichter
+//              einer Stadt -- dann ein Rechenzentrum: die Fahrt durch einen Gang
+//              zwischen Serverschraenken bis zum Tisch; der Monitor dort ist an
 //   0,85-0,88  das Gehaeuse des Computers wird durchsichtig: die Platine
-//   0,86-0,93  Formeln fliessen von allen Seiten in den Prozessor
+//   0,86-0,93  Formeln fliessen langsam von allen Seiten in den Prozessor; jede, die
+//              ankommt, rechnet der Monitor durch (Formel, dann das Ergebnis)
 //   0,92-0,94  das Zeichen erscheint ploetzlich auf dem Monitor, dazu die Schrift
 //   0,95-0,98  alles wird schwarz
 //   0,97-1,00  "Nirgends und doch ueberall." (englisch: "Nowhere and yet everywhere.")
@@ -134,7 +139,7 @@
 
   // ---- Zeitplan (Anteile am Scrollweg) ----
   const FLUG = 0.56;                     // so viel gehoert dem Flug
-  const ZOOM_VON = 0.6, ZOOM_BIS = 0.84; // der Zoom von der Erde bis in die Halle ...
+  const ZOOM_VON = 0.57, ZOOM_BIS = 0.84; // der Zoom von der Erde bis in die Halle ...
   const ZOOM_ENDE = 8;                   // ... ueber so viele e-fache Vergroesserungen
   const HALLE_VON = 5.2;                 // ab da faehrt die Kamera durch den Gang
   const ERDE_R = 110;                    // Radius der Erde in Einheiten der Bahn
@@ -254,6 +259,13 @@
     "∂L/∂q − d/dt ∂L/∂q̇ = 0", "f(x) = e^{−x^{2}/2} / √(2π)", "e^{x} = Σ x^{n} / n!",
     "∇ × B = μ_{0}J + μ_{0}ε_{0} ∂E/∂t", "∮ f(z) dz = 2πi Σ Res", "df = f′ dX + ½ f″ σ^{2} dt",
     "det(A − λI) = 0", "x = (−b ± √(b^{2} − 4ac)) / 2a", "∇^{2}φ = 0", "S = k log W", "F = G m_{1} m_{2} / r^{2}",
+  ];
+  // Was der Monitor zu jeder Formel ausrechnet (ein Zahlenwert oder ein Befund)
+  const ERGEBNISSE = [
+    "0", "8.98755e16", "1.12941e11", "ψ ok", "1.772454", "1.644934", "0.618034",
+    "σ = 0.1820", "0.033124", "2.0766e-43", "0", "1.000000", "25", "2.718282",
+    "2.3219 bit", "u ok", "1.618034", "5050", "ok", "0", "0.398942", "2.718282",
+    "ok", "6.283185i", "0.004170", "λ = 3, 1", "2, −3", "0", "1.3807e-23", "1.982e20",
   ];
   // Sternfarben nach Temperatur: blau-weiss bis rot
   const STERN_FARBEN = ["185,200,255", "222,230,255", "255,255,255", "255,244,222", "255,224,176", "255,192,150"];
@@ -543,19 +555,30 @@
     const NEBEL = [rauschen(3, 256, "120,150,230"), rauschen(4, 256, "170,130,220"), rauschen(5, 256, "110,190,210"), rauschen(6, 256, "235,150,185")];
     const NEBEL_FARBEN = ["120,150,230", "170,130,220", "110,190,210", "235,150,185"];
     const nebel = [];
-    for (let i = 0; i < 10; i++) {
-      const u = 0.1 + i * 0.076 + (z() - 0.5) * 0.02;
+    const wolke = (p, r, a, i) => nebel.push({ p, r, a, bild: NEBEL[i % 4], farbe: NEBEL_FARBEN[i % 4], dreh: z() * Math.PI * 2 });
+    // entlang der Bahn
+    for (let i = 0; i < 14; i++) {
+      const u = 0.1 + i * 0.054 + (z() - 0.5) * 0.02;
       const seite = i % 2 ? 1 : -1;
-      const weite = 350 + z() * 400;
-      const r = 800 + z() * 500;
-      const mitte = neben(u, seite * Math.cos(z() * 1.2), (z() - 0.5) * 1.2, weite, 0);
-      nebel.push({ p: mitte, r, a: 0.22 + z() * 0.16, bild: NEBEL[i % 4], farbe: NEBEL_FARBEN[i % 4], dreh: z() * Math.PI * 2 });
+      wolke(neben(u, seite * Math.cos(z() * 1.2), (z() - 0.5) * 1.2, 350 + z() * 400, 0), 800 + z() * 500, 0.22 + z() * 0.16, i);
     }
+    // am Eintritt in die Galaxie: dichte Wolken, durch die die Kamera fliegt
+    for (let i = 0; i < 4; i++) wolke(neben(0.04 + i * 0.03, Math.cos(i * 1.9), Math.sin(i * 1.9) * 0.6, 180 + z() * 220, 0), 700 + z() * 400, 0.3 + z() * 0.12, i + 1);
+    // um jeden Planeten herum, hinter ihm und daneben
+    PLANETEN.forEach((pl, i) => {
+      for (let j = 0; j < 1; j++) {
+        const w = z() * Math.PI * 2;
+        const m = PLANET_ORTE[i];
+        const rf = rahmen(pl.u);
+        const d = pl.r * (1.6 + z() * 0.8);
+        wolke([0, 1, 2].map((k) => m[k] + (rf.rechts[k] * Math.cos(w) + rf.oben[k] * Math.sin(w)) * d - rf.vorn[k] * pl.r * (0.8 + j)), pl.r * (1.8 + z() * 0.8), 0.2 + z() * 0.14, i + j);
+      }
+    });
     // Die Formeln, die am Ende in den Prozessor fliessen: von allen Seiten, auf
     // gebogenen Wegen, jede mit eigenem Takt
-    const fluss = FORMELN.map((text, i) => ({
+    const fluss = FORMELN.slice(0, 16).map((text, i) => ({
       text, winkel: (i / FORMELN.length) * Math.PI * 2 + z() * 0.3, weite: 0.75 + z() * 0.4,
-      bogen: (z() - 0.5) * 0.9, phase: z(), tempo: 0.09 + z() * 0.05, groesse: 0.7 + z() * 0.5,
+      bogen: (z() - 0.5) * 0.9, phase: z(), tempo: 0.045 + z() * 0.025, groesse: 0.7 + z() * 0.5,
     }));
     // Planeten und der Mond der Erde -- ihre Sprites kommen nach und nach (siehe spritesBauen)
     const planeten = PLANETEN.map((pl, i) => ({ art: pl.art, p: PLANET_ORTE[i], r: pl.r, sp: null }));
@@ -641,19 +664,27 @@
     return teile;
   }
   const FORMEL_TEILE = new Map();
-  function formelZeichnen(text, x, y, groesse) {
+  // Die Breiten der Teile werden einmal bei 100 px gemessen und dann nur skaliert (das
+  // Messen jedes Bild kostete mehr als das Zeichnen) -- gemerkt wird erst, wenn die
+  // Schriften geladen sind, sonst stuenden die Masse der Ersatzschrift fest
+  let schriftenBereit = false;
+  function formelZeichnen(text, x, y, groesse, linksbuendig) {
+    groesse = Math.round(groesse * 2) / 2;   // in halben Bildpunkten: so trifft der Browser seine gemerkten Zeichen wieder
     let teile = FORMEL_TEILE.get(text);
     if (!teile) { teile = formelTeile(text); FORMEL_TEILE.set(text, teile); }
     const schrift = (g) => `italic 500 ${g.toFixed(1)}px "Playfair Display", "Cambria Math", Georgia, serif`;
-    let breite = 0;
-    for (const t of teile) { ctx.font = schrift(t.art ? groesse * 0.68 : groesse); breite += ctx.measureText(t.t).width; }
-    let lx = x - breite / 2;
-    for (const t of teile) {
-      const g = t.art ? groesse * 0.68 : groesse;
-      ctx.font = schrift(g);
-      ctx.fillText(t.t, lx, y - (t.art === 1 ? groesse * 0.42 : t.art === -1 ? -groesse * 0.22 : 0));
-      lx += ctx.measureText(t.t).width;
+    if (!teile[0].b || !teile[0].fest) {
+      for (const t of teile) { ctx.font = schrift(t.art ? 68 : 100); t.b = ctx.measureText(t.t).width; t.fest = schriftenBereit; }
     }
+    let breite = 0;
+    for (const t of teile) breite += (t.b * groesse) / 100;
+    let lx = linksbuendig ? x - 100 * groesse : x - breite / 2;
+    for (const t of teile) {
+      ctx.font = schrift(t.art ? groesse * 0.68 : groesse);
+      ctx.fillText(t.t, lx, y - (t.art === 1 ? groesse * 0.42 : t.art === -1 ? -groesse * 0.22 : 0));
+      lx += (t.b * groesse) / 100;
+    }
+    return breite;
   }
 
   // ---- Die Erde in WebGL: je Bildpunkt eine Kugel, Bilder der NASA darauf ----
@@ -892,7 +923,7 @@ void main() {
     const erdeSicht = stueck(q, 0.5, 0.62) * (1 - stueck(L, 5.0, 5.6));   // kommt von vorn und waechst
 
     // Die Milchstrasse voraus: waechst, bis sie das Bild fuellt, dann sind wir drin
-    const galaxieSicht = auftauchen * (1 - stueck(q, 0.19, 0.3));
+    const galaxieSicht = auftauchen * (1 - stueck(q, 0.22, 0.38));
     if (galaxieSicht > 0 && welt.galaxie) {
       const gr = Math.min(B, H) * 0.2 * Math.exp(9.2 * q);
       ctx.save();
@@ -981,7 +1012,7 @@ void main() {
         if (q1.x + r < 0 || q1.x - r > B || q1.y + r < 0 || q1.y - r > H) continue;
         const a = himmel * innen * w.a * clamp(1 - (q1.z - 600) / 5200, 0, 1) * clamp((q1.z - 100) / 500, 0, 1);
         if (a < 0.005) continue;
-        if (r > rand * 1.3) {
+        if (r > rand * 0.9) {
           ctx.globalAlpha = a * 0.3;
           ctx.fillStyle = `rgb(${w.farbe})`;
           ctx.fillRect(0, 0, B, H);
@@ -998,7 +1029,7 @@ void main() {
 
     // ---- Die Erde ----
     // Blick: erst ueber dem Atlantik, dann nach Europa
-    const dreh = stueck(p, 0.56, 0.62);
+    const dreh = stueck(p, 0.56, 0.63);
     const laenge0 = misch(-30 + 4 * Math.sin(zeit * 0.1), ZIEL_LAENGE, dreh);
     const breite0 = misch(14, ZIEL_BREITE, dreh);
     if (erdeSicht > 0 && R > 0.6) {
@@ -1021,6 +1052,33 @@ void main() {
       } else {
         erdePunkte(fx, fy, R, laenge0, breite0, erdeSicht * (1 - stueck(L, 2.2, 3)), L);
       }
+      // In die Atmosphaere: ein blauweisser Dunst, der aufzieht und sich wieder lichtet;
+      // dann durch die Wolkendecke -- zwei Wolkenlagen ziehen vorbei und reissen auf
+      const dunst = Math.sin(Math.PI * stueck(L, 0.5, 1.9)) * 0.28 * erdeSicht;
+      if (dunst > 0.005) {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = dunst;
+        ctx.fillStyle = "#c9dcf5";
+        ctx.fillRect(0, 0, B, H);
+      }
+      const wolkenflug = Math.sin(Math.PI * stueck(L, 1.3, 2.5)) * erdeSicht;
+      if (wolkenflug > 0.01) {
+        ctx.globalCompositeOperation = "source-over";
+        const gr = Math.max(B, H) * (0.9 + 0.8 * stueck(L, 1.3, 2.5));
+        for (let i = 0; i < 2; i++) {
+          const x = B * (0.3 + i * 0.4) + Math.sin(zeit * 0.08 + i) * B * 0.05 - (L - 1.3) * B * 0.25 * (i ? -1 : 1);
+          const y = H * (0.5 + (i ? 0.25 : -0.2));
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(i * 1.3 + L * 0.3);
+          ctx.globalAlpha = wolkenflug * 0.8;
+          ctx.drawImage(welt.nebel[0].bild, -gr, -gr, 2 * gr, 2 * gr);
+          ctx.restore();
+        }
+        ctx.globalAlpha = wolkenflug * 0.35;
+        ctx.fillStyle = "#eef3fb";
+        ctx.fillRect(0, 0, B, H);
+      }
     }
 
     // Planeten und der Mond: decken ab, was hinter ihnen liegt
@@ -1031,12 +1089,20 @@ void main() {
       if (!m) return;
       const sk = (pl.r * f) / m.z / pl.sp.R;
       if (m.x - pl.sp.cx * sk > B || m.x + (pl.sp.b - pl.sp.cx) * sk < 0 || m.y - pl.sp.cy * sk > H || m.y + (pl.sp.h - pl.sp.cy) * sk < 0) return;
-      a *= clamp((m.z - 40) / 120, 0, 1) * (pl.r > 60 ? clamp(1 - (m.z - 1500) / 1800, 0, 1) : clamp(1 - (m.z - 3000) / 7000, 0, 1));
+      // fern liegt Dunst davor (der Planet bleibt undurchsichtig, wird nur dunkler
+      // und blasser), nah ist er ganz da
+      const dunst = pl.r > 60 ? clamp((m.z - 1300) / 2000, 0, 1) : clamp((m.z - 3000) / 7000, 0, 1);
+      a *= clamp((m.z - 40) / 120, 0, 1) * (1 - stueck(dunst, 0.8, 1));
       if (a < 0.02) return;
       ctx.globalAlpha = a;
       ctx.drawImage(pl.sp.bild, m.x - pl.sp.cx * sk, m.y - pl.sp.cy * sk, pl.sp.b * sk, pl.sp.h * sk);
+      if (dunst > 0.02) {
+        const r = pl.r * sk * (pl.sp.b / pl.sp.R) * 0.55;
+        ctx.globalAlpha = a * dunst * 0.85;
+        ctx.drawImage(fleck("8,10,18"), m.x - r, m.y - r, 2 * r, 2 * r);
+      }
     };
-    const planetenSicht = himmel * innen;
+    const planetenSicht = himmel;
     if (planetenSicht > 0) for (const pl of welt.planeten) planetZeichnen(pl, planetenSicht);
     const mondSicht = erdeSicht * (1 - stueck(L, 0, 0.5));
     if (mondSicht > 0) planetZeichnen(welt.erdeMond, mondSicht);
@@ -1351,20 +1417,24 @@ void main() {
     rundRechteck(sx - hb - 0.025 * m, sy - hh - 0.025 * m, 2 * hb + 0.05 * m, 2 * hh + 0.065 * m, 0.012 * m);
     ctx.fill();
     ctx.strokeStyle = "rgba(200,210,230,0.45)"; ctx.stroke();
-    // der Schirm: aus, dunkelblau mit dem Widerschein des Raums -- dann an
-    const an = Math.max(logo, blitz);
-    g = ctx.createLinearGradient(sx - hb, sy - hh, sx + hb, sy + hh);
-    g.addColorStop(0, "#0c1426"); g.addColorStop(1, "#05070f");
+    // der Schirm ist an: er rechnet die Formeln durch, die im Prozessor ankommen --
+    // bis das Zeichen kommt
+    const an = 1;
+    g = ctx.createRadialGradient(sx, sy, 0, sx, sy, hb * 1.1);
+    g.addColorStop(0, "#101a30"); g.addColorStop(1, "#06080f");
     ctx.fillStyle = g;
     ctx.fillRect(sx - hb, sy - hh, 2 * hb, 2 * hh);
-    if (an > 0) {
-      ctx.globalAlpha = sicht * an;
+    if (logo < 1 && einzeln) konsoleZeichnen(sx, sy, hb, hh, m, zeit, still, sicht * (1 - logo));
+    if (blitz > 0) {
+      ctx.globalAlpha = sicht * blitz * 0.9;
+      ctx.fillStyle = "#dfe6f5";
+      ctx.fillRect(sx - hb, sy - hh, 2 * hb, 2 * hh);
+    }
+    if (logo > 0) {
+      ctx.globalAlpha = sicht * logo;
       g = ctx.createRadialGradient(sx, sy, 0, sx, sy, hb * 1.1);
       g.addColorStop(0, "#16203a"); g.addColorStop(1, "#070a14");
       ctx.fillStyle = g;
-      ctx.fillRect(sx - hb, sy - hh, 2 * hb, 2 * hh);
-      ctx.globalAlpha = sicht * blitz * 0.9;
-      ctx.fillStyle = "#dfe6f5";
       ctx.fillRect(sx - hb, sy - hh, 2 * hb, 2 * hh);
     }
     // das Zeichen und die Schrift
@@ -1435,6 +1505,47 @@ void main() {
       const chipX = tx + dxT * 0.62, chipY = tb + dyT * 0.62 - th * 0.62;
       formelnZeichnen(chipX, chipY, fluss * sicht, zeit, still, m);
     }
+  }
+
+  // Der Monitor rechnet: die Formeln, die zuletzt im Prozessor angekommen sind,
+  // stehen untereinander, die juengste mit dem Ergebnis, das sich erst noch
+  // einstellt (die Ziffern laufen, bis es steht); darunter blinkt die Marke
+  function konsoleZeichnen(sx, sy, hb, hh, m, zeit, still, sicht) {
+    const g = Math.max(9, m * 0.026), zh = g * 1.75;
+    const anzahl = Math.max(3, Math.floor((2 * hh - g * 1.6) / zh));
+    let zeilen;
+    if (still) zeilen = welt.fluss.slice(0, anzahl).map((fo, i) => ({ fo, i, seit: 9 }));
+    else {
+      zeilen = welt.fluss.map((fo, i) => { const n = Math.floor(zeit * fo.tempo + fo.phase); return { fo, i, seit: zeit - (n - fo.phase) / fo.tempo, n }; })
+        .filter((zl) => zl.n > 0).sort((a, b) => b.seit - a.seit).slice(-anzahl);
+    }
+    ctx.save();
+    ctx.beginPath(); ctx.rect(sx - hb, sy - hh, 2 * hb, 2 * hh); ctx.clip();
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    const links = sx - hb + g * 1.2;
+    zeilen.forEach((zl, k) => {
+      const y = sy - hh + g * 1.3 + k * zh;
+      const fertig = clamp((zl.seit - 0.1) / 1.3, 0, 1);
+      ctx.globalAlpha = sicht * (0.55 + 0.45 * Math.min(1, zl.seit));
+      ctx.fillStyle = "#d8e2ff";
+      const breite = formelZeichnen(zl.fo.text, links + 100 * g, y, g * 1.05, true);
+      let wert = ERGEBNISSE[zl.i] || "";
+      if (fertig < 1) {
+        // die Ziffern laufen noch
+        wert = wert.replace(/[0-9]/g, (d, j) => (j / wert.length < fertig ? d : String(Math.floor(((Math.sin(zeit * 41 + j * 7.3 + zl.i) + 1) * 5) % 10))));
+      }
+      ctx.font = `${g.toFixed(1)}px "Cascadia Code", Consolas, monospace`;
+      ctx.fillStyle = fertig < 1 ? "#ffd27a" : "#9fe3b0";
+      ctx.fillText("  →  " + wert, links + breite, y);
+    });
+    // die Marke blinkt
+    if (still || Math.sin(zeit * 6) > 0) {
+      ctx.globalAlpha = sicht * 0.9;
+      ctx.fillStyle = "#9fe3b0";
+      ctx.fillRect(links, sy - hh + g * 1.3 + zeilen.length * zh - g * 0.45, g * 0.55, g * 0.9);
+    }
+    ctx.restore();
   }
 
   // Die Platine im Gehaeuse (Einheiten der Glasscheibe, u quer 0..1, v hoch 0..1):
@@ -1648,7 +1759,8 @@ void main() {
   abschnitt.classList.add("ist-aktiv");
   einrichten();
   // Die Schriften (Playfair, Manrope) sind vielleicht noch nicht geladen
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (reduziert.matches) bild(0.94, 0, true); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { schriftenBereit = true; if (reduziert.matches) bild(0.94, 0, true); });
+  else schriftenBereit = true;
 
   new IntersectionObserver((eintraege) => {
     if (eintraege.some((e) => e.isIntersecting)) starten();
