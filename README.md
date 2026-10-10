@@ -54,7 +54,7 @@ css/style.css      Gesamtes Design (Farben oben als CSS-Variablen)
 js/main.js         Mobile-Nav, Hell/Dunkel, Fragen-Blase, Partnerzugang
 js/spiel-motor.js  Spielmotor der Simulation (Regeln, Markt, Konten, JKHD-Algo), ohne DOM
 js/spiel.js        Oberfläche der Simulation (nur auf simulation.html / en/simulation.html)
-js/universum.js    Startseite: beim Scrollen der Flug in die Milchstrasse, durch ein dichtes Sternfeld, weit auseinander an fest stehenden Planeten vorbei (Kugeln in WebGL, Karten aus Rauschen) zur Erde (WebGL, NASA-Bilder), der Zoom auf eine Stadt, in ein Rechenzentrum bis zum Computer, dessen Gehaeuse durchsichtig wird (Platine); der Monitor rechnet die Formeln durch, Zeile fuer Zeile beim Scrollen, dann erscheint dort das Zeichen, am Ende Schwarz und der Spruch der Fusszeile (nur index.html / en/index.html)
+js/universum.js    Startseite: beim Scrollen der Flug in die Milchstrasse, mit waagerechter Kamera durch ein dichtes Sternfeld unter dem Band der Milchstrasse, weit auseinander an fest stehenden Planeten vorbei (Kugeln in WebGL, Karten aus Rauschen) zur Erde (WebGL, NASA-Bilder), der Zoom auf eine Stadt, in ein Rechenzentrum bis zum Computer, dessen Gehaeuse durchsichtig wird (Platine); der Monitor rechnet die Formeln durch, Zeile fuer Zeile beim Scrollen, dann erscheint dort das Zeichen, am Ende Schwarz und der Spruch der Fusszeile (nur index.html / en/index.html)
 assets/erde/       Erdbilder der NASA fuer js/universum.js (Blue Marble Tag, Black Marble Nacht, Wolken; Welt, Europa, Oberrhein; *-k.jpg = kleine Fassung fuers Handy). Gemeinfrei, Bildnachweis im Impressum. Werden erst geladen, wenn jemand bis zur Animation scrollt (2,3 MB bzw. 0,7 MB)
 favicon.svg        Browser-Tab-Icon (drei Balken)
 ```

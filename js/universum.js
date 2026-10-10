@@ -29,7 +29,9 @@
 // vor allem dreidimensional sein." Neunte Fassung: "die Abstaende zwischen den
 // Planeten viel, viel groesser; dazwischen muss ein Universum sein, Sterne usw., nicht
 // einfach nix; und wenn man ins Universum kommt, sollen die Punkte nicht einfach
-// verschwinden -- echter und schoener."
+// verschwinden -- echter und schoener." Zehnte Fassung: "auf dem Handy sieht das
+// Ganze viel schoener aus als auf dem Laptop; und die Kamera soll sich nicht so wild
+// umherdrehen, eher waagerecht bleiben und nur nach links oder rechts gehen."
 //
 // Umsetzung ohne Bibliothek: eine Zeichenflaeche (canvas 2D) mit eigener
 // Perspektiv-Projektion; die Erde zeichnet ein kleines WebGL-Programm (eine Kugel je
@@ -97,17 +99,19 @@
   const misch = (a, b, t) => a + (b - a) * t;
   const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
   const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-  const kreuz = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
   const norm = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
 
   // ---- Die Bahn: Catmull-Rom durch Stuetzpunkte, die Kamera fliegt nach -z ----
   const LAENGE = 24000;
   const STUECKE = 40;
+  // Die Bahn schwingt gemaechlich nach links und rechts (hoechstens etwa 20 Grad aus
+  // der Flugrichtung) und hebt und senkt sich nur wenig: die Kamera soll sich "nicht
+  // so wild umherdrehen, eher waagerecht bleiben und nach links oder rechts gehen"
   const STUETZEN = [];
   for (let i = 0; i <= STUECKE; i++) {
     const z = 300 - i * (LAENGE / STUECKE);
     const ruhe = i >= STUECKE - 1 ? 0 : 1;   // zum Ziel hin gerade
-    STUETZEN.push([Math.sin(i * 0.9) * 700 * ruhe, Math.sin(i * 0.7 + 1.2) * 400 * ruhe, z]);
+    STUETZEN.push([(Math.sin(i * 0.5) * 300 + Math.sin(i * 1.1 + 0.7) * 60) * ruhe, Math.sin(i * 0.35 + 1.2) * 120 * ruhe, z]);
   }
   function bahn(u) {
     const n = STUETZEN.length - 1;
@@ -122,11 +126,14 @@
     }
     return r;
   }
+  // Der Rahmen an einer Stelle der Bahn: vorn ist die Flugrichtung, waagerecht
+  // genommen (die Kamera nickt und rollt nie, sie giert nur), oben ist immer oben
+  function waagerecht(richtung) {
+    const vorn = norm([richtung[0], 0, richtung[2]]);
+    return { vorn, rechts: [-vorn[2], 0, vorn[0]], oben: [0, 1, 0] };
+  }
   function rahmen(u) {
-    const vorn = norm(sub(bahn(Math.min(1, u + 0.004)), bahn(Math.max(0, u - 0.004))));
-    const rechts = norm(kreuz(vorn, [0, 1, 0]));
-    const oben = kreuz(rechts, vorn);
-    return { vorn, rechts, oben };
+    return waagerecht(sub(bahn(Math.min(1, u + 0.004)), bahn(Math.max(0, u - 0.004))));
   }
   // Ein Ort neben der Bahn: bei u, seitlich (rechts) und hoch (oben) um die Weite, dazu voraus
   function neben(u, seite, hoch, weite, voraus) {
@@ -291,9 +298,9 @@
   // saum = Farbe und Staerke der Atmosphaere am Rand; glanz = Glanzlicht; tempo =
   // Eigendrehung, neigung = Achsneigung)
   const PLANETEN = [
-    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.4, seite: 1, hoch: 0.1, r: 650, abst: 2.0, saum: [1.0, 0.9, 0.75], saumStaerke: 0.5, glanz: 0.12, tempo: 3, neigung: 8 },
+    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.4, seite: 1, hoch: 0.1, r: 650, abst: 1.5, saum: [1.0, 0.9, 0.75], saumStaerke: 0.5, glanz: 0.12, tempo: 3, neigung: 8 },
     { art: "ring", grund: [220, 200, 150], baender: [[230, 215, 170], [205, 185, 135], [225, 210, 165]], u: 0.58, seite: -1, hoch: -0.15, r: 520, abst: 1.35, saum: [1.0, 0.95, 0.8], saumStaerke: 0.45, glanz: 0.1, tempo: 4, neigung: 22 },
-    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.74, seite: 1, hoch: 0.3, r: 400, abst: 2.4, saum: [0.55, 0.7, 1.0], saumStaerke: 0.7, glanz: 0.25, tempo: 5, neigung: 28 },
+    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.74, seite: 1, hoch: 0.2, r: 400, abst: 1.7, saum: [0.55, 0.7, 1.0], saumStaerke: 0.7, glanz: 0.25, tempo: 5, neigung: 28 },
     { art: "fels", grund: [190, 105, 70], kappe: true, u: 0.88, seite: -1, hoch: -0.05, r: 240, abst: 1.4, saum: [1.0, 0.75, 0.6], saumStaerke: 0.25, glanz: 0.04, tempo: 2.5, neigung: 25 },
   ];
   const MOND = { art: "mond", grund: [150, 150, 152], r: 30, saum: [0.8, 0.8, 0.8], saumStaerke: 0.0, glanz: 0.02, tempo: 0.5, neigung: 6 };
@@ -507,7 +514,7 @@
   }
 
   let welt = null;
-  function weltBauen(klein) {
+  function weltBauen(klein, dichte) {
     const z = zufall(20261010);
     const gauss = () => z() + z() + z() - 1.5;
     const sterne = [];
@@ -515,30 +522,38 @@
       const w = z();
       sterne.push({ p, g, hell, band, farbe: w < 0.1 ? 0 : w < 0.3 ? 1 : w < 0.62 ? 2 : w < 0.84 ? 3 : w < 0.95 ? 4 : 5, phase: z() * Math.PI * 2 });
     };
-    const anzahlSterne = klein ? 7000 : 14000;
+    // Sterne im ganzen Raum, auch noch weit hinter der Erde (sonst ist der Anflug
+    // leer); ihre Zahl waechst mit der Flaeche des Schirms, damit das Feld auf dem
+    // Laptop so dicht steht wie auf dem Handy
+    const anzahlSterne = Math.round(18000 * dichte);
     for (let i = 0; i < anzahlSterne; i++) {
       const hell = 0.5 + 0.5 * Math.pow(z(), 1.6);   // wenige helle, viele mittlere
-      stern([(z() - 0.5) * 16000, (z() - 0.5) * 11000, 900 - z() * (LAENGE + 2600)], 0.5 + hell * 1.8, hell, false);
+      stern([(z() - 0.5) * 16000, (z() - 0.5) * 11000, 900 - z() * (LAENGE + 8000)], 0.5 + hell * 1.8, hell, false);
     }
-    // Das Band der Milchstrasse: viele schwache Sterne auf einer grossen, schraeg
-    // liegenden Scheibe um die Mitte der Bahn -- es zieht sich quer ueber den Himmel;
-    // dazu weiche Lichtflecken (die Glut des Bandes) und dunkle Staubwolken darin
+    // Das Band der Milchstrasse: viele schwache Sterne auf einem grossen Ring um die
+    // Mitte der Bahn. Die Ebene des Rings enthaelt die Flugrichtung und ist um sie
+    // gekippt: so liegt das Band als Diagonale ueber dem Bild, auf dem breiten Schirm
+    // wie auf dem schmalen (vorher kippte die Scheibe um die Querachse, und auf dem
+    // Laptop lag das Band vorn unter dem Bildrand). Die Kamera bleibt im Loch des
+    // Rings, das Band steht am Himmel und zieht nie an ihr vorbei. Dazu weiche
+    // Lichtflecken (die Glut des Bandes) und dunkle Staubwolken darin
     const mitteBahn = bahn(0.55);
     const neigung = 0.42;
     const aufScheibe = (radius, quer) => {
       const winkel = z() * Math.PI * 2;
       const x = Math.cos(winkel) * radius, t = Math.sin(winkel) * radius;
-      return [mitteBahn[0] + x, mitteBahn[1] + t * Math.sin(neigung) + quer * Math.cos(neigung), mitteBahn[2] + t * Math.cos(neigung) - quer * Math.sin(neigung)];
+      return [mitteBahn[0] + x * Math.cos(neigung) - quer * Math.sin(neigung), mitteBahn[1] + x * Math.sin(neigung) + quer * Math.cos(neigung), mitteBahn[2] + t];
     };
-    const anzahlBand = klein ? 4000 : 8000;
-    for (let i = 0; i < anzahlBand; i++) stern(aufScheibe(9000 + z() * 7000, gauss() * 800), 0.3 + z() * 0.9, 0.3 + z() * 0.5, true);
+    const anzahlBand = Math.round(9000 * dichte);
+    for (let i = 0; i < anzahlBand; i++) stern(aufScheibe(20000 + z() * 9000, gauss() * 1800), 0.3 + z() * 0.9, 0.3 + z() * 0.5, true);
     const BAND_FARBEN = ["190,205,245", "235,225,205", "215,215,240", "255,235,210"];
     const bandGlut = [], bandStaub = [];
-    for (let i = 0; i < 90; i++) bandGlut.push({ p: aufScheibe(9600 + z() * 5800, gauss() * 700), r: 2800 + z() * 2200, a: 0.06 + z() * 0.06, farbe: BAND_FARBEN[i % 4] });
-    for (let i = 0; i < 36; i++) bandStaub.push({ p: aufScheibe(10000 + z() * 5000, gauss() * 240), r: 900 + z() * 1000, a: 0.4 + z() * 0.3 });
+    // (wenige grosse Flecken, die sich kaum ueberlappen: jeder kostet Fuellarbeit)
+    for (let i = 0; i < 40; i++) bandGlut.push({ p: aufScheibe(21000 + z() * 7000, gauss() * 1200), r: 5000 + z() * 3000, a: 0.1 + z() * 0.08, farbe: BAND_FARBEN[i % 4] });
+    for (let i = 0; i < 36; i++) bandStaub.push({ p: aufScheibe(21000 + z() * 6000, gauss() * 500), r: 1500 + z() * 1500, a: 0.4 + z() * 0.3 });
     // Staub nah an der Bahn: kurze helle Punkte, die an der Kamera vorbeiziehen
     const staub = [];
-    const anzahlStaub = klein ? 600 : 1300;
+    const anzahlStaub = Math.round(1300 * dichte);
     for (let i = 0; i < anzahlStaub; i++) staub.push(neben(z(), Math.cos(z() * 6.3), Math.sin(z() * 6.3), 40 + z() * 260, 0));
 
     // Nebel: grosse Lichtwolken mit Struktur neben der Bahn, abwechselnd links und rechts
@@ -552,6 +567,8 @@
       const seite = i % 2 ? 1 : -1;
       wolke(neben(u, seite * Math.cos(z() * 1.2), (z() - 0.5) * 1.2, 350 + z() * 450, 0), 800 + z() * 600, 0.26 + z() * 0.18, i);
     }
+    // auf dem letzten Stueck vor der Erde noch zwei, seitlich
+    for (let i = 0; i < 2; i++) wolke(neben(0.905 + i * 0.02, i ? 1 : -1, (z() - 0.5) * 1.2, 1000 + z() * 500, 0), 900 + z() * 500, 0.2 + z() * 0.1, i + 2);
     // am Eintritt in die Galaxie: dichte Wolken, durch die die Kamera fliegt
     for (let i = 0; i < 4; i++) wolke(neben(0.04 + i * 0.03, Math.cos(i * 1.9), Math.sin(i * 1.9) * 0.6, 180 + z() * 220, 0), 700 + z() * 400, 0.3 + z() * 0.12, i + 1);
     // um jeden Planeten herum, hinter ihm und daneben
@@ -590,7 +607,7 @@
     for (let i = 0; i < 12; i++) kondensatoren.push([0.45 + z() * 0.34, 0.44 + z() * 0.06]);
     for (let i = 0; i < 6; i++) kondensatoren.push([0.74 + z() * 0.03, 0.5 + z() * 0.3]);
 
-    return { klein, sterne, bandGlut, bandStaub, staub, nebel, planeten, erdeMond, galaxien, bahnen, kondensatoren, galaxie: null, erde: null };
+    return { klein, dichte, sterne, bandGlut, bandStaub, staub, nebel, planeten, erdeMond, galaxien, bahnen, kondensatoren, galaxie: null, erde: null };
   }
   // Die Galaxie und die Karten der Planeten kosten je einige Dutzend Millisekunden: eines
   // nach dem anderen, jeweils wenn der Browser Luft hat -- in Reihenfolge des Auftritts.
@@ -971,23 +988,25 @@ void main() {
     if (B * H * dpr * dpr > 2.4e6) dpr = Math.sqrt(2.4e6 / (B * H));
     leinwand.width = Math.round(B * dpr);
     leinwand.height = Math.round(H * dpr);
-    if (welt && welt.klein !== (B < 700)) { welt = weltBauen(B < 700); spritesBauen(); }
+    if (welt && (welt.klein !== (B < 700) || Math.abs(welt.dichte - sternDichte()) > 0.2)) { welt = weltBauen(B < 700, sternDichte()); spritesBauen(); }
   }
+  // Wie viele Sterne der Raum bekommt, nach der Flaeche des Schirms: auf dem Handy
+  // etwa die Haelfte, auf einem grossen Schirm bis zum 1,4-fachen
+  function sternDichte() { return B < 700 ? 0.55 : clamp(Math.sqrt((B * H) / 9e5), 1, 1.4); }
   // Die Welt (mit allen Sprites) kostet etwa eine Zehntelsekunde: nicht beim Laden der
   // Seite, sondern wenn der Browser Luft hat -- spaetestens, wenn der Abschnitt dran ist
-  function weltSicher() { if (!welt) { welt = weltBauen(B < 700); spritesBauen(); } }
+  function weltSicher() { if (!welt) { welt = weltBauen(B < 700, sternDichte()); spritesBauen(); } }
   if (window.requestIdleCallback) window.requestIdleCallback(weltSicher, { timeout: 2000 }); else setTimeout(weltSicher, 400);
 
-  // Die Kamera: faehrt die Bahn entlang und schaut ein Stueck voraus -- der Raum
-  // zieht an ihr vorbei, nichts dreht sich ihr entgegen
+  // Die Kamera: faehrt die Bahn entlang und schaut ein Stueck voraus, immer waagerecht
+  // (sie giert nur, nickt und rollt nie) -- der Raum zieht an ihr vorbei, nichts
+  // dreht sich ihr entgegen
   function kamera(q) {
     const u = fahrt(q);
     const pos = bahn(u);
     const ziel = bahn(Math.min(ZIEL_U, u + 0.035));
-    const vorn = norm(sub(ziel, pos));
-    const rechts = norm(kreuz(vorn, [0, 1, 0]));
-    const oben = kreuz(rechts, vorn);
-    return { pos, vorn, rechts, oben, u };
+    const r = waagerecht(sub(ziel, pos));
+    return { pos, vorn: r.vorn, rechts: r.rechts, oben: r.oben, u };
   }
 
   function projiziere(k, p, f) {
@@ -1015,7 +1034,12 @@ void main() {
     // Zoom von der Erde bis in die Halle, in e-fachen Vergroesserungen
     const L = ZOOM_ENDE * glatt(clamp((p - ZOOM_VON) / (ZOOM_BIS - ZOOM_VON), 0, 1));
     const k = kamera(q);
-    const f = Math.min(B, H) * 0.95;
+    // Brennweite: auf dem schmalen Schirm 0,95 der Breite (Blick 56 Grad breit), auf
+    // dem breiten 0,66 der Breite (Blick 74 Grad breit statt 86): so fuellen Planeten,
+    // Band und Nebel das Bild auf dem Laptop aehnlich wie auf dem Handy. Sterne sind
+    // auf grossen Schirmen etwas groesser, sonst sind sie dort im Verhaeltnis winzig
+    const f = Math.max(Math.min(B, H) * 0.95, B * 0.66);
+    const sk = clamp(Math.min(B, H) / 660, 1, 1.3);
     const innen = stueck(q, 0.2, 0.4);                        // in der Milchstrasse
     const himmel = auftauchen * (1 - stueck(L, 1.4, 2.8));     // Sterne weichen, wenn die Erde das Bild fuellt
 
@@ -1030,10 +1054,10 @@ void main() {
     // Die Milchstrasse voraus: waechst, bis sie das Bild fuellt, dann sind wir drin
     const galaxieSicht = auftauchen * (1 - stueck(q, 0.3, 0.46));
     if (galaxieSicht > 0 && welt.galaxie) {
-      const gr = Math.min(B, H) * 0.2 * Math.exp(7.5 * q);
+      const gr = f * 0.21 * Math.exp(7.5 * q);
       ctx.save();
-      ctx.translate(B / 2 + Math.sin(q * 3) * B * 0.04, H * 0.46);
-      ctx.rotate(0.55 + q * 0.4);
+      ctx.translate(B / 2 + Math.sin(q * 3) * B * 0.03, H * 0.46);
+      ctx.rotate(0.55 + q * 0.15);
       ctx.scale(1, 0.48);
       ctx.globalAlpha = galaxieSicht;
       ctx.drawImage(welt.galaxie, -gr, -gr, 2 * gr, 2 * gr);
@@ -1067,7 +1091,7 @@ void main() {
           if (!q1) continue;
           const r = Math.min((w.r * f) / q1.z, rand * 0.6);
           if (q1.x + r < 0 || q1.x - r > B || q1.y + r < 0 || q1.y - r > H) continue;
-          ctx.globalAlpha = himmel * innen * w.a;
+          ctx.globalAlpha = himmel * innen * w.a * clamp(q1.z / 22000, 0.45, 1);   // nah blasser
           ctx.drawImage(fleck(w.farbe), q1.x - r, q1.y - r, 2 * r, 2 * r);
         }
       }
@@ -1079,11 +1103,12 @@ void main() {
         const q1 = projiziere(k, s.p, f);
         if (!q1 || q1.x < -4 || q1.x > B + 4 || q1.y < -4 || q1.y > H + 4) continue;
         const dichte = s.band ? innen : 0.6 + 0.4 * innen;
-        const a = himmel * dichte * s.hell * tiefe(q1.z, s.band ? 30000 : 20000) * (0.8 + 0.2 * Math.sin(zeit * 1.3 + s.phase));
+        const a = himmel * dichte * s.hell * tiefe(q1.z, s.band ? 60000 : 20000) * (0.8 + 0.2 * Math.sin(zeit * 1.3 + s.phase));
         if (a < 0.02) continue;
-        const g = s.band ? clamp((s.g * 6500) / q1.z, 1.0, 1.8) : clamp((s.g * 420) / q1.z, 1.5, 3.0);
+        const g0 = s.band ? clamp((s.g * 6500) / q1.z, 1.0, 1.8) : clamp((s.g * 420) / q1.z, 1.5, 3.0);
+        const g = g0 * sk;
         eimer[s.farbe][Math.min(4, Math.floor(a * 5))].push(q1.x, q1.y, g);
-        if (s.hell > 0.95 && g > 1.7) glanz.push(q1.x, q1.y, g, a, s.farbe);
+        if (s.hell > 0.95 && g0 > 1.7) glanz.push(q1.x, q1.y, g, a, s.farbe);
       }
       STERN_FARBEN.forEach((farbe, c) => {
         eimer[c].forEach((liste, st) => {
