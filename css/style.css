@@ -2858,7 +2858,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
    steht das Zeichen auf Schwarz; bei reduzierter Bewegung (.ist-still) das Schlussbild
    ohne Scrollweg. */
 .universum { position: relative; background: #000; }
-.universum.ist-aktiv { height: 2200vh; }
+.universum.ist-aktiv { height: 3000vh; }
 /* Weicher Uebergang vom Startbildschirm (Papier bzw. Nacht) ins Schwarz -- an
    der Stelle stand bis 10.10.2026 die leere Laufleiste (Julian: "diesen
    Uebergangsbalken wegmachen"). js/universum.js zaehlt erst nach ihm. */
@@ -2890,5 +2890,5 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .universum.ist-still { height: auto; }
 .universum.ist-still .universum-buehne { position: relative; top: 0; height: 72vh; min-height: 420px; }
 @media (max-width: 560px) {
-  .universum.ist-aktiv { height: 1750vh; }
+  .universum.ist-aktiv { height: 2400vh; }
 }

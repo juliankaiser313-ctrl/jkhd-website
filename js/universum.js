@@ -26,7 +26,10 @@
 // wenn man nicht mehr scrollt, das soll nicht sein; die fliegenden Formeln weg."
 // Achte Fassung: "ein Planet ausserhalb der Milchstrasse kann nicht sein; zwischen den
 // Planeten soll es laenger gehen und mehr Universum zu sehen sein; die Planeten sollen
-// vor allem dreidimensional sein."
+// vor allem dreidimensional sein." Neunte Fassung: "die Abstaende zwischen den
+// Planeten viel, viel groesser; dazwischen muss ein Universum sein, Sterne usw., nicht
+// einfach nix; und wenn man ins Universum kommt, sollen die Punkte nicht einfach
+// verschwinden -- echter und schoener."
 //
 // Umsetzung ohne Bibliothek: eine Zeichenflaeche (canvas 2D) mit eigener
 // Perspektiv-Projektion; die Erde zeichnet ein kleines WebGL-Programm (eine Kugel je
@@ -37,21 +40,22 @@
 // Punkten (Landumrisse von Hand nachgezeichnet, weiter unten) und die Planeten sind
 // schattierte Scheiben. Der Scrollfortschritt p durch den Abschnitt
 // #universum (die Buehne bleibt dabei stehen, sticky) treibt alles:
-//   0,00-0,10  die Milchstrasse liegt voraus und waechst, Sterne ringsum
-//   0,10-0,17  hinein: das Band, Nebel und Staub fuellen das Bild
-//   0,10-0,60  der Flug auf einer langen, kurvigen Bahn durch die Galaxie: Sterne,
-//              Staub, Nebel, das Band, ferne Galaxien -- und vier Planeten, die fest
-//              im Raum stehen (echte Kugeln aus WebGL mit Karte, Licht und Drehung),
-//              ungleich verteilt, mal nah, mal fern; voraus waechst die Erde, mit Mond
-//   0,62-0,69  die Erde dreht sich nach Europa, der Flug geht ohne Halt in den Zoom ueber
-//   0,63-0,83  Zoom: in die Atmosphaere, durch die Wolken, Europa, Abend, die Lichter
+//   0,00-0,20  die Milchstrasse liegt voraus und waechst, Sterne ringsum; hinein: die
+//              Arme werden zum Band, Sterne, Nebel und Staub fuellen den Raum
+//   0,20-0,70  der Flug auf einer sehr langen, kurvigen Bahn durch die Galaxie: ein
+//              dichtes Sternfeld, das Band mit Glut und Staub, Nebel, ferne Galaxien
+//              -- und vier Planeten, die fest im Raum stehen (echte Kugeln aus WebGL
+//              mit Karte, Licht und Drehung), weit auseinander, mal nah, mal fern;
+//              voraus waechst die Erde, mit Mond
+//   0,70-0,77  die Erde dreht sich nach Europa, der Flug geht ohne Halt in den Zoom ueber
+//   0,71-0,86  Zoom: in die Atmosphaere, durch die Wolken, Europa, Abend, die Lichter
 //              einer Stadt -- dann ein Rechenzentrum: die Fahrt durch einen Gang
 //              zwischen Serverschraenken bis zum Tisch; der Monitor dort ist an
-//   0,83-0,86  das Gehaeuse des Computers wird durchsichtig: die Platine
-//   0,84-0,92  der Monitor rechnet die Formeln durch, Zeile fuer Zeile mit dem
+//   0,86-0,89  das Gehaeuse des Computers wird durchsichtig: die Platine
+//   0,87-0,93  der Monitor rechnet die Formeln durch, Zeile fuer Zeile mit dem
 //              Scrollen (Formel, dann das Ergebnis, dessen Ziffern sich erst setzen)
-//   0,92-0,94  das Zeichen erscheint ploetzlich auf dem Monitor, dazu die Schrift
-//   0,95-0,98  alles wird schwarz
+//   0,93-0,95  das Zeichen erscheint ploetzlich auf dem Monitor, dazu die Schrift
+//   0,96-0,98  alles wird schwarz
 //   0,97-1,00  "Nirgends und doch ueberall." (englisch: "Nowhere and yet everywhere.")
 // Alles ausser den Erdbildern wird hier erzeugt (feste Saat, jedes Mal gleich);
 // nichts wird gespeichert. Bei "reduzierter Bewegung" steht der Computer mit dem
@@ -60,9 +64,9 @@
 //
 // Gegen das Ruckeln: die Leinwand bleibt unter 2,4 Mio. Bildpunkten, die Erde wird
 // beim Zoom in halber Aufloesung gerechnet, bei Stillstand nur jedes zweite Bild
-// gezeichnet -- und die Schleife misst ihre eigene Bildfolge: dauern die Bilder zu
-// lange, schaltet sie die Aufloesung herunter (data-qualitaet an der Leinwand,
-// data-zeichenzeit = Millisekunden je Bild).
+// gezeichnet -- und die Schleife misst ihre eigene Zeichenzeit: dauert ein Bild im
+// Mittel ueber 11 ms, schaltet sie die Aufloesung herunter (data-qualitaet an der
+// Leinwand, data-zeichenzeit = Millisekunden je Bild).
 (function () {
   const abschnitt = document.getElementById("universum");
   if (!abschnitt) return;
@@ -97,13 +101,13 @@
   const norm = (a) => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
 
   // ---- Die Bahn: Catmull-Rom durch Stuetzpunkte, die Kamera fliegt nach -z ----
-  const LAENGE = 12000;
-  const STUECKE = 20;
+  const LAENGE = 24000;
+  const STUECKE = 40;
   const STUETZEN = [];
   for (let i = 0; i <= STUECKE; i++) {
     const z = 300 - i * (LAENGE / STUECKE);
     const ruhe = i >= STUECKE - 1 ? 0 : 1;   // zum Ziel hin gerade
-    STUETZEN.push([Math.sin(i * 0.9) * 520 * ruhe, Math.sin(i * 0.7 + 1.2) * 300 * ruhe, z]);
+    STUETZEN.push([Math.sin(i * 0.9) * 700 * ruhe, Math.sin(i * 0.7 + 1.2) * 400 * ruhe, z]);
   }
   function bahn(u) {
     const n = STUETZEN.length - 1;
@@ -136,7 +140,7 @@
   // (Hermite) durch [q, u, Steigung]: gemaechlich in die Galaxie, dann stetig von
   // Planet zu Planet, am Ende sanft bremsen. Die Steigungen liegen in der Schranke
   // von Fritsch und Carlson, die Kurve geht also nie rueckwaerts.
-  const FAHRT = [[0, 0, 0.3], [0.2, 0.07, 0.6], [0.84, 0.86, 1.2], [1, KAMERA_ENDE, 0]];
+  const FAHRT = [[0, 0, 0.5], [0.15, 0.08, 0.8], [0.86, 0.9, 1.3], [1, KAMERA_ENDE, 0]];
   function fahrt(q) {
     q = clamp(q, 0, 1);
     let i = 0;
@@ -147,8 +151,8 @@
   }
 
   // ---- Zeitplan (Anteile am Scrollweg) ----
-  const FLUG = 0.62;                     // so viel gehoert dem Flug
-  const ZOOM_VON = 0.63, ZOOM_BIS = 0.83; // der Zoom von der Erde bis in die Halle ...
+  const FLUG = 0.7;                      // so viel gehoert dem Flug
+  const ZOOM_VON = 0.71, ZOOM_BIS = 0.86; // der Zoom von der Erde bis in die Halle ...
   const ZOOM_ENDE = 8;                   // ... ueber so viele e-fache Vergroesserungen
   const HALLE_VON = 5.2;                 // ab da faehrt die Kamera durch den Gang
   const ERDE_R = 110;                    // Radius der Erde in Einheiten der Bahn
@@ -287,10 +291,10 @@
   // saum = Farbe und Staerke der Atmosphaere am Rand; glanz = Glanzlicht; tempo =
   // Eigendrehung, neigung = Achsneigung)
   const PLANETEN = [
-    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.44, seite: 1, hoch: 0.1, r: 650, abst: 2.0, saum: [1.0, 0.9, 0.75], saumStaerke: 0.5, glanz: 0.12, tempo: 3, neigung: 8 },
+    { art: "gas", grund: [205, 170, 125], baender: [[235, 205, 165], [190, 140, 95], [220, 185, 140], [160, 110, 80], [230, 200, 160]], fleck: true, u: 0.4, seite: 1, hoch: 0.1, r: 650, abst: 2.0, saum: [1.0, 0.9, 0.75], saumStaerke: 0.5, glanz: 0.12, tempo: 3, neigung: 8 },
     { art: "ring", grund: [220, 200, 150], baender: [[230, 215, 170], [205, 185, 135], [225, 210, 165]], u: 0.58, seite: -1, hoch: -0.15, r: 520, abst: 1.35, saum: [1.0, 0.95, 0.8], saumStaerke: 0.45, glanz: 0.1, tempo: 4, neigung: 22 },
-    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.7, seite: 1, hoch: 0.3, r: 400, abst: 2.4, saum: [0.55, 0.7, 1.0], saumStaerke: 0.7, glanz: 0.25, tempo: 5, neigung: 28 },
-    { art: "fels", grund: [190, 105, 70], kappe: true, u: 0.82, seite: -1, hoch: -0.05, r: 240, abst: 1.4, saum: [1.0, 0.75, 0.6], saumStaerke: 0.25, glanz: 0.04, tempo: 2.5, neigung: 25 },
+    { art: "eis", grund: [60, 95, 200], baender: [[70, 110, 215], [55, 85, 185], [80, 120, 225]], u: 0.74, seite: 1, hoch: 0.3, r: 400, abst: 2.4, saum: [0.55, 0.7, 1.0], saumStaerke: 0.7, glanz: 0.25, tempo: 5, neigung: 28 },
+    { art: "fels", grund: [190, 105, 70], kappe: true, u: 0.88, seite: -1, hoch: -0.05, r: 240, abst: 1.4, saum: [1.0, 0.75, 0.6], saumStaerke: 0.25, glanz: 0.04, tempo: 2.5, neigung: 25 },
   ];
   const MOND = { art: "mond", grund: [150, 150, 152], r: 30, saum: [0.8, 0.8, 0.8], saumStaerke: 0.0, glanz: 0.02, tempo: 0.5, neigung: 6 };
   const PLANET_ORTE = PLANETEN.map((pl) => neben(pl.u, pl.seite, pl.hoch, pl.r * pl.abst, 0));
@@ -511,10 +515,10 @@
       const w = z();
       sterne.push({ p, g, hell, band, farbe: w < 0.1 ? 0 : w < 0.3 ? 1 : w < 0.62 ? 2 : w < 0.84 ? 3 : w < 0.95 ? 4 : 5, phase: z() * Math.PI * 2 });
     };
-    const anzahlSterne = klein ? 1400 : 2800;
+    const anzahlSterne = klein ? 7000 : 14000;
     for (let i = 0; i < anzahlSterne; i++) {
-      const hell = 0.2 + 0.8 * Math.pow(z(), 2.4);   // wenige helle, viele schwache
-      stern([(z() - 0.5) * 7000, (z() - 0.5) * 5000, 900 - z() * (LAENGE + 2600)], 0.5 + hell * 1.6, hell, false);
+      const hell = 0.5 + 0.5 * Math.pow(z(), 1.6);   // wenige helle, viele mittlere
+      stern([(z() - 0.5) * 16000, (z() - 0.5) * 11000, 900 - z() * (LAENGE + 2600)], 0.5 + hell * 1.8, hell, false);
     }
     // Das Band der Milchstrasse: viele schwache Sterne auf einer grossen, schraeg
     // liegenden Scheibe um die Mitte der Bahn -- es zieht sich quer ueber den Himmel;
@@ -526,15 +530,15 @@
       const x = Math.cos(winkel) * radius, t = Math.sin(winkel) * radius;
       return [mitteBahn[0] + x, mitteBahn[1] + t * Math.sin(neigung) + quer * Math.cos(neigung), mitteBahn[2] + t * Math.cos(neigung) - quer * Math.sin(neigung)];
     };
-    const anzahlBand = klein ? 1400 : 3000;
-    for (let i = 0; i < anzahlBand; i++) stern(aufScheibe(5200 + z() * 4200, gauss() * 470), 0.3 + z() * 0.9, 0.25 + z() * 0.45, true);
+    const anzahlBand = klein ? 4000 : 8000;
+    for (let i = 0; i < anzahlBand; i++) stern(aufScheibe(9000 + z() * 7000, gauss() * 800), 0.3 + z() * 0.9, 0.3 + z() * 0.5, true);
     const BAND_FARBEN = ["190,205,245", "235,225,205", "215,215,240", "255,235,210"];
     const bandGlut = [], bandStaub = [];
-    for (let i = 0; i < 48; i++) bandGlut.push({ p: aufScheibe(5600 + z() * 3400, gauss() * 420), r: 1700 + z() * 1300, a: 0.09 + z() * 0.09, farbe: BAND_FARBEN[i % 4] });
-    for (let i = 0; i < 20; i++) bandStaub.push({ p: aufScheibe(5800 + z() * 3000, gauss() * 140), r: 500 + z() * 600, a: 0.4 + z() * 0.3 });
+    for (let i = 0; i < 90; i++) bandGlut.push({ p: aufScheibe(9600 + z() * 5800, gauss() * 700), r: 2800 + z() * 2200, a: 0.06 + z() * 0.06, farbe: BAND_FARBEN[i % 4] });
+    for (let i = 0; i < 36; i++) bandStaub.push({ p: aufScheibe(10000 + z() * 5000, gauss() * 240), r: 900 + z() * 1000, a: 0.4 + z() * 0.3 });
     // Staub nah an der Bahn: kurze helle Punkte, die an der Kamera vorbeiziehen
     const staub = [];
-    const anzahlStaub = klein ? 320 : 700;
+    const anzahlStaub = klein ? 600 : 1300;
     for (let i = 0; i < anzahlStaub; i++) staub.push(neben(z(), Math.cos(z() * 6.3), Math.sin(z() * 6.3), 40 + z() * 260, 0));
 
     // Nebel: grosse Lichtwolken mit Struktur neben der Bahn, abwechselnd links und rechts
@@ -543,10 +547,10 @@
     const nebel = [];
     const wolke = (p, r, a, i) => nebel.push({ p, r, a, bild: NEBEL[i % 4], farbe: NEBEL_FARBEN[i % 4], dreh: z() * Math.PI * 2 });
     // entlang der Bahn
-    for (let i = 0; i < 18; i++) {
-      const u = 0.1 + i * 0.042 + (z() - 0.5) * 0.02;
+    for (let i = 0; i < 32; i++) {
+      const u = 0.1 + i * 0.026 + (z() - 0.5) * 0.02;
       const seite = i % 2 ? 1 : -1;
-      wolke(neben(u, seite * Math.cos(z() * 1.2), (z() - 0.5) * 1.2, 350 + z() * 400, 0), 800 + z() * 500, 0.22 + z() * 0.16, i);
+      wolke(neben(u, seite * Math.cos(z() * 1.2), (z() - 0.5) * 1.2, 350 + z() * 450, 0), 800 + z() * 600, 0.26 + z() * 0.18, i);
     }
     // am Eintritt in die Galaxie: dichte Wolken, durch die die Kamera fliegt
     for (let i = 0; i < 4; i++) wolke(neben(0.04 + i * 0.03, Math.cos(i * 1.9), Math.sin(i * 1.9) * 0.6, 180 + z() * 220, 0), 700 + z() * 400, 0.3 + z() * 0.12, i + 1);
@@ -565,9 +569,9 @@
     const erdeMond = { art: "mond", pl: MOND, p: neben(0.97, -1, 0.3, 430, -250), r: MOND.r, phase: 40, karte: null };
     // Ferne Galaxien, weit neben der Bahn: kleine Scheiben, schraeg, die langsam vorbeiziehen
     const galaxien = [];
-    for (let i = 0; i < 3; i++) {
-      const u = 0.25 + i * 0.22;
-      galaxien.push({ p: neben(u, Math.cos(i * 2.1 + 0.5), Math.sin(i * 2.1 + 0.5) * 0.6, 2600 + z() * 1800, 0), r: 900 + z() * 600, dreh: z() * Math.PI, kipp: 0.35 + z() * 0.35, a: 0.5 + z() * 0.3 });
+    for (let i = 0; i < 4; i++) {
+      const u = 0.22 + i * 0.19;
+      galaxien.push({ p: neben(u, Math.cos(i * 2.1 + 0.5), Math.sin(i * 2.1 + 0.5) * 0.6, 3400 + z() * 2600, 0), r: 900 + z() * 800, dreh: z() * Math.PI, kipp: 0.3 + z() * 0.4, a: 0.3 + z() * 0.25 });
     }
 
     // Die Platine im Computer: Leiterbahnen von den Raendern zum Prozessor (Einheiten
@@ -891,9 +895,12 @@ void main() {
   function kugelGl(cx, cy, R, laenge0, breite0, sonne, pl, karte, alpha) {
     const gl = erde.gl, u = erde.ku, c = erde.leinwand;
     if (c.width !== leinwand.width || c.height !== leinwand.height) { c.width = leinwand.width; c.height = leinwand.height; }
-    const s = dpr;
-    const x0 = Math.max(0, Math.floor((cx - R * 1.3) * s)), x1 = Math.min(c.width, Math.ceil((cx + R * 1.3) * s));
-    const y0 = Math.max(0, Math.floor((H - cy - R * 1.3) * s)), y1 = Math.min(c.height, Math.ceil((H - cy + R * 1.3) * s));
+    // ein grosser Planet wird in halber Aufloesung gerechnet (unten links in der
+    // GL-Leinwand, der Ausschnitt wird beim Kopieren wieder vergroessert)
+    const teil = R > Math.min(B, H) * 0.45 ? 0.5 : 1;
+    const s = dpr * teil;
+    const x0 = Math.max(0, Math.floor((cx - R * 1.3) * s)), x1 = Math.min(Math.floor(c.width * teil), Math.ceil((cx + R * 1.3) * s));
+    const y0 = Math.max(0, Math.floor((H - cy - R * 1.3) * s)), y1 = Math.min(Math.floor(c.height * teil), Math.ceil((H - cy + R * 1.3) * s));
     if (x1 <= x0 || y1 <= y0) return;
     gl.useProgram(erde.kugelProg);
     gl.activeTexture(gl.TEXTURE6);
@@ -917,7 +924,7 @@ void main() {
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
     // der Ausschnitt der GL-Leinwand (y von oben gezaehlt) an seine Stelle
-    ctx.drawImage(c, x0, c.height - y1, x1 - x0, y1 - y0, x0 / s, (c.height - y1) / s, (x1 - x0) / s, (y1 - y0) / s);
+    ctx.drawImage(c, x0, c.height - y1, x1 - x0, y1 - y0, x0 / s, H - y1 / s, (x1 - x0) / s, (y1 - y0) / s);
   }
   function erdeGl(cx, cy, R, laenge0, breite0, sonne, e) {
     const gl = erde.gl, u = erde.u, c = erde.leinwand;
@@ -1009,21 +1016,21 @@ void main() {
     const L = ZOOM_ENDE * glatt(clamp((p - ZOOM_VON) / (ZOOM_BIS - ZOOM_VON), 0, 1));
     const k = kamera(q);
     const f = Math.min(B, H) * 0.95;
-    const innen = stueck(q, 0.16, 0.3);                       // in der Milchstrasse
+    const innen = stueck(q, 0.2, 0.4);                        // in der Milchstrasse
     const himmel = auftauchen * (1 - stueck(L, 1.4, 2.8));     // Sterne weichen, wenn die Erde das Bild fuellt
 
     // Die Erde: wo sie im Bild steht und wie gross; beim Zoom wandert sie in die Mitte
     const erdeProj = projiziere(k, bahn(ZIEL_U), f);
-    const zurMitte = stueck(p, 0.62, 0.68);
+    const zurMitte = stueck(p, 0.7, 0.76);
     const fx = misch(erdeProj ? erdeProj.x : B / 2, B / 2, zurMitte);
     const fy = misch(erdeProj ? erdeProj.y : H / 2, H / 2, zurMitte);
     const R = (erdeProj ? (ERDE_R * f) / erdeProj.z : 1) * Math.exp(L);
-    const erdeSicht = stueck(q, 0.5, 0.62) * (1 - stueck(L, 5.0, 5.6));   // kommt von vorn und waechst
+    const erdeSicht = stueck(q, 0.6, 0.7) * (1 - stueck(L, 5.0, 5.6));   // kommt von vorn und waechst
 
     // Die Milchstrasse voraus: waechst, bis sie das Bild fuellt, dann sind wir drin
-    const galaxieSicht = auftauchen * (1 - stueck(q, 0.22, 0.38));
+    const galaxieSicht = auftauchen * (1 - stueck(q, 0.3, 0.46));
     if (galaxieSicht > 0 && welt.galaxie) {
-      const gr = Math.min(B, H) * 0.2 * Math.exp(9.2 * q);
+      const gr = Math.min(B, H) * 0.2 * Math.exp(7.5 * q);
       ctx.save();
       ctx.translate(B / 2 + Math.sin(q * 3) * B * 0.04, H * 0.46);
       ctx.rotate(0.55 + q * 0.4);
@@ -1045,7 +1052,7 @@ void main() {
         ctx.translate(q1.x, q1.y);
         ctx.rotate(ga.dreh);
         ctx.scale(1, ga.kipp);
-        ctx.globalAlpha = himmel * innen * ga.a * clamp(1 - (q1.z - 3000) / 9000, 0.2, 1);
+        ctx.globalAlpha = himmel * innen * ga.a * clamp(1 - (q1.z - 4000) / 14000, 0.2, 1);
         ctx.drawImage(welt.galaxie, -r, -r, 2 * r, 2 * r);
         ctx.restore();
       }
@@ -1071,18 +1078,18 @@ void main() {
       for (const s of welt.sterne) {
         const q1 = projiziere(k, s.p, f);
         if (!q1 || q1.x < -4 || q1.x > B + 4 || q1.y < -4 || q1.y > H + 4) continue;
-        const dichte = s.band ? innen : 0.55 + 0.45 * innen;
-        const a = himmel * dichte * s.hell * tiefe(q1.z, s.band ? 14000 : 6500) * (0.72 + 0.28 * Math.sin(zeit * 1.3 + s.phase));
+        const dichte = s.band ? innen : 0.6 + 0.4 * innen;
+        const a = himmel * dichte * s.hell * tiefe(q1.z, s.band ? 30000 : 20000) * (0.8 + 0.2 * Math.sin(zeit * 1.3 + s.phase));
         if (a < 0.02) continue;
-        const g = s.band ? clamp((s.g * 2200) / q1.z, 0.5, 1.6) : clamp((s.g * 260) / q1.z, 0.5, 2.6);
+        const g = s.band ? clamp((s.g * 6500) / q1.z, 1.0, 1.8) : clamp((s.g * 420) / q1.z, 1.5, 3.0);
         eimer[s.farbe][Math.min(4, Math.floor(a * 5))].push(q1.x, q1.y, g);
-        if (s.hell > 0.93 && g > 1.6) glanz.push(q1.x, q1.y, g, a, s.farbe);
+        if (s.hell > 0.95 && g > 1.7) glanz.push(q1.x, q1.y, g, a, s.farbe);
       }
       STERN_FARBEN.forEach((farbe, c) => {
         eimer[c].forEach((liste, st) => {
           if (!liste.length) return;
           ctx.fillStyle = `rgb(${farbe})`;
-          ctx.globalAlpha = (st + 0.5) / 5;
+          ctx.globalAlpha = 0.5 + st * 0.125;
           ctx.beginPath();
           for (let i = 0; i < liste.length; i += 3) ctx.rect(liste[i] - liste[i + 2] / 2, liste[i + 1] - liste[i + 2] / 2, liste[i + 2], liste[i + 2]);
           ctx.fill();
@@ -1112,9 +1119,9 @@ void main() {
       for (const d of welt.staub) {
         const q1 = projiziere(k, d, f);
         if (!q1 || q1.z > 1400 || q1.x < 0 || q1.x > B || q1.y < 0 || q1.y > H) continue;
-        const a = himmel * innen * clamp((q1.z - 20) / 120, 0, 1) * clamp(1 - q1.z / 1400, 0, 1) * 0.7;
+        const a = himmel * innen * clamp((q1.z - 20) / 120, 0, 1) * clamp(1 - q1.z / 1400, 0, 1);
         if (a < 0.03) continue;
-        const g = clamp(180 / q1.z, 0.6, 3);
+        const g = clamp(200 / q1.z, 1.0, 3);
         ctx.globalAlpha = a;
         ctx.fillRect(q1.x - g / 2, q1.y - g / 2, g, g);
       }
@@ -1125,9 +1132,9 @@ void main() {
         if (!q1 || q1.z < 100) continue;
         const r = (w.r * f) / q1.z;
         if (q1.x + r < 0 || q1.x - r > B || q1.y + r < 0 || q1.y - r > H) continue;
-        const a = himmel * innen * w.a * clamp(1 - (q1.z - 600) / 5200, 0, 1) * clamp((q1.z - 100) / 500, 0, 1);
+        const a = himmel * innen * w.a * clamp(1 - (q1.z - 600) / 7000, 0, 1) * clamp((q1.z - 100) / 500, 0, 1);
         if (a < 0.005) continue;
-        if (r > rand * 0.9) {
+        if (r > rand * 0.6) {
           ctx.globalAlpha = a * 0.3;
           ctx.fillStyle = `rgb(${w.farbe})`;
           ctx.fillRect(0, 0, B, H);
@@ -1144,7 +1151,7 @@ void main() {
 
     // ---- Die Erde ----
     // Blick: erst ueber dem Atlantik, dann nach Europa
-    const dreh = stueck(p, 0.62, 0.69);
+    const dreh = stueck(p, 0.7, 0.77);
     const laenge0 = misch(-30 + 4 * Math.sin(zeit * 0.1), ZIEL_LAENGE, dreh);
     const breite0 = misch(14, ZIEL_BREITE, dreh);
     if (erdeSicht > 0 && R > 0.6) {
@@ -1206,7 +1213,7 @@ void main() {
       if (!m) return;
       const R = (pl.r * f) / m.z;
       if (R < 0.8 || m.x + R * 2.6 < 0 || m.x - R * 2.6 > B || m.y + R * 2.6 < 0 || m.y - R * 2.6 > H) return;
-      const dunst = pl.r > 60 ? clamp((m.z - 1300) / 2000, 0, 1) : clamp((m.z - 3000) / 7000, 0, 1);
+      const dunst = pl.r > 60 ? clamp((m.z - 1500) / 2500, 0, 1) : clamp((m.z - 3000) / 7000, 0, 1);
       a *= clamp((m.z - 40) / 120, 0, 1) * (1 - stueck(dunst, 0.8, 1));
       if (a < 0.02) return;
       const laenge0 = pl.phase + (still ? 0 : zeit * pl.pl.tempo), breite0 = pl.pl.neigung;
@@ -1234,7 +1241,7 @@ void main() {
       }
     };
     // erst, wenn die Kamera in der Galaxie ist -- ein Planet ausserhalb kann nicht sein
-    const planetenSicht = himmel * stueck(q, 0.37, 0.45);
+    const planetenSicht = himmel * stueck(q, 0.3, 0.38);
     if (planetenSicht > 0) for (const pl of welt.planeten) planetZeichnen(pl, planetenSicht);
     const mondSicht = erdeSicht * (1 - stueck(L, 0, 0.5));
     if (mondSicht > 0) planetZeichnen(welt.erdeMond, mondSicht);
@@ -1244,14 +1251,14 @@ void main() {
     if (halle > 0) halleZeichnen(L, halle, p, zeit, still);
 
     // ---- Das Ende: alles wird schwarz, dann der Spruch ----
-    const dunkel = stueck(p, 0.95, 0.975);
+    const dunkel = stueck(p, 0.96, 0.98);
     if (dunkel > 0) {
       ctx.globalCompositeOperation = "source-over";
       ctx.globalAlpha = dunkel;
       ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, B, H);
     }
-    const spruch = stueck(p, 0.968, 0.99);
+    const spruch = stueck(p, 0.972, 0.992);
     if (spruch > 0) {
       ctx.globalAlpha = spruch;
       ctx.fillStyle = "#f4f2ee";
@@ -1450,11 +1457,11 @@ void main() {
   // Licht, Tastatur, Maus -- auf Holz, in einem Raum mit Farbe. m = Breite des
   // Monitorbilds in Bildpunkten, (ax, ay) = Fuss des Monitors.
   function computerZeichnen(ax, ay, m, sicht, p, zeit, still) {
-    const glas = stueck(p, 0.835, 0.86);       // das Gehaeuse wird durchsichtig
-    const fluss = stueck(p, 0.845, 0.865) * (1 - stueck(p, 0.918, 0.93));   // die Platine arbeitet, bis das Zeichen da ist
-    const blitz = Math.sin(Math.PI * stueck(p, 0.92, 0.928));   // kurzes Aufleuchten
-    const logo = stueck(p, 0.922, 0.934);      // das Zeichen erscheint
-    const schrift = stueck(p, 0.93, 0.945);
+    const glas = stueck(p, 0.865, 0.885);      // das Gehaeuse wird durchsichtig
+    const fluss = stueck(p, 0.87, 0.89) * (1 - stueck(p, 0.93, 0.94));   // die Platine arbeitet, bis das Zeichen da ist
+    const blitz = Math.sin(Math.PI * stueck(p, 0.932, 0.94));   // kurzes Aufleuchten
+    const logo = stueck(p, 0.934, 0.946);      // das Zeichen erscheint
+    const schrift = stueck(p, 0.942, 0.955);
     const einzeln = m > 40;
     const hue = still ? 200 : (zeit * 35) % 360;   // das wandernde Farblicht im Gehaeuse
     const farblicht = (versatz, a) => `hsla(${(hue + versatz) % 360},85%,62%,${a.toFixed(3)})`;
@@ -1637,7 +1644,7 @@ void main() {
   // Der Monitor rechnet die Formeln durch -- im Takt des Scrollens: mit jedem Stueck
   // Weg kommt eine Zeile dazu (Formel, Pfeil, Ergebnis); bei der juengsten laufen
   // die Ziffern, bis sie sich gesetzt haben; darunter blinkt die Marke
-  const RECHNEN_VON = 0.845, RECHNEN_BIS = 0.918;
+  const RECHNEN_VON = 0.87, RECHNEN_BIS = 0.93;
   function konsoleZeichnen(sx, sy, hb, hh, m, p, zeit, still, sicht) {
     const g = Math.max(9, m * 0.026), zh = g * 1.75;
     const anzahl = Math.max(3, Math.floor((2 * hh - g * 1.6) / zh));
@@ -1811,11 +1818,13 @@ void main() {
   // Messgeraet: mittlere Zeichenzeit je Bild (ms) und der Abstand der Bilder; einmal je
   // Sekunde an der Leinwand (data-zeichenzeit, data-qualitaet) -- und wenn die Bilder
   // laenger als 24 ms auseinanderliegen, geht die Aufloesung eine Stufe herunter
-  let messSumme = 0, messAnzahl = 0, messSeit = 0, abstandMittel = 16, geprueft = 0;
+  // (Gemessen wird die Zeichenzeit selbst, nicht der Abstand der Bilder: der haengt
+  // am Takt des Bildschirms -- auf einem 30-Hz-Schirm oder im Stromsparmodus sind
+  // 33 ms normal und kein Ruckeln.)
+  let messSumme = 0, messAnzahl = 0, messSeit = 0, geprueft = 0, langsam = 0;
   function schleife(jetzt) {
     if (!laeuft) return;
     const dt = Math.min(0.05, (jetzt - letzte) / 1000 || 0.016);
-    abstandMittel += ((jetzt - letzte) - abstandMittel) * 0.08;
     letzte = jetzt;
     const zielP = zielFortschritt();
     p += (zielP - p) * (1 - Math.exp(-dt * 6));   // weich, unabhaengig von der Bildrate
@@ -1829,13 +1838,17 @@ void main() {
       messAnzahl++;
     }
     if (jetzt - messSeit > 1000) {
-      leinwand.dataset.zeichenzeit = messAnzahl ? (messSumme / messAnzahl).toFixed(1) : "";
+      const zeichenzeit = messAnzahl ? messSumme / messAnzahl : 0;
+      leinwand.dataset.zeichenzeit = messAnzahl ? zeichenzeit.toFixed(1) : "";
       leinwand.dataset.qualitaet = qualitaet.toFixed(2);
       messSumme = 0; messAnzahl = 0; messSeit = jetzt;
-      if (!ruhig && jetzt - geprueft > 2500 && abstandMittel > 24 && qualitaet > 0.55) {
+      // erst zwei langsame Sekunden hintereinander zaehlen (die erste Sekunde einer
+      // Phase enthaelt das Aufwaermen der Schrift-Zwischenspeicher)
+      langsam = zeichenzeit > 11 && !ruhig ? langsam + 1 : 0;
+      if (langsam >= 2 && jetzt - geprueft > 2500 && qualitaet > 0.55) {
         qualitaet -= 0.15;
         geprueft = jetzt;
-        abstandMittel = 16;
+        langsam = 0;
         groesseAnpassen();
       }
     }
@@ -1855,13 +1868,13 @@ void main() {
   function einrichten() {
     abschnitt.classList.toggle("ist-still", reduziert.matches);
     groesseAnpassen();
-    if (reduziert.matches) { anhalten(); weltSicher(); bild(0.94, 0, true); }
+    if (reduziert.matches) { anhalten(); weltSicher(); bild(0.95, 0, true); }
   }
 
   abschnitt.classList.add("ist-aktiv");
   einrichten();
   // Die Schriften (Playfair, Manrope) sind vielleicht noch nicht geladen
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { schriftenBereit = true; if (reduziert.matches) bild(0.94, 0, true); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { schriftenBereit = true; if (reduziert.matches) bild(0.95, 0, true); });
   else schriftenBereit = true;
 
   new IntersectionObserver((eintraege) => {
@@ -1873,6 +1886,6 @@ void main() {
     if (eintraege.some((e) => e.isIntersecting)) erdeLaden();
   }, { rootMargin: "100% 0px" }).observe(abschnitt);
 
-  window.addEventListener("resize", () => { groesseAnpassen(); if (reduziert.matches) bild(0.94, 0, true); });
+  window.addEventListener("resize", () => { groesseAnpassen(); if (reduziert.matches) bild(0.95, 0, true); });
   if (reduziert.addEventListener) reduziert.addEventListener("change", einrichten);
 })();
