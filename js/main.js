@@ -365,9 +365,6 @@ if (siteHeader) {
   function abzug() {
     const oben = hero.getBoundingClientRect().top + window.scrollY;
     document.documentElement.style.setProperty("--hero-abzug", Math.floor(oben) + "px");
-    // Passt der Hero nicht auf den Schirm (kurzes Fenster, starker Zoom),
-    // waere der Pfeil unter der Falte — dann ist er ueberfluessig.
-    hero.classList.toggle("ist-ueberhoch", Math.ceil(oben + hero.offsetHeight) > window.innerHeight + 1);
   }
 
   let geplant = false;
