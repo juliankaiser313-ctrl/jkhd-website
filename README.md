@@ -17,6 +17,8 @@ pruefung.html      Wie wir das EIGENE System prüfen: 5 Stufen, 6 Belastungsprob
 sicherheit.html    Sicherheit am EIGENEN System: 7 Sperren am Geldweg, 3 Karten „Spuren",
                    3 Karten „Daten", 5 Karten „Was wir nicht vorweisen können" —
                    kein Mandanten-, NDA- oder Übergabe-Bezug mehr (23.09.2026)
+simulation.html    Spiel „Sie gegen den JKHD-Algo“ (27.09.2026): erfundener Goldmarkt, beide
+                   starten mit 100.000 $, wer zuerst 1.000.000 $ hat, gewinnt (siehe unten)
 mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
 unternehmen.html   Seit 26.09.2026 ohne altes Angebot: Julians Satz als Überschrift, Profil +
                    Auf einen Blick, „Was JKHD nicht tut", Austausch, 4 Grundsätze (.creed),
@@ -36,6 +38,7 @@ en/index.html      Englische Fassung der Startseite
 en/system.html     "How a system is built"
 en/testing.html    "How we test our own system"
 en/security.html   "There are no client files here"
+en/simulation.html "You against the JKHD Algo"
 en/mathematics.html
 en/company.html
 en/contact.html
@@ -49,6 +52,8 @@ assets/og-image.png  Vorschaubild für Link-Teilen
 assets/fonts/      Self-hosted Schriften (DSGVO)
 css/style.css      Gesamtes Design (Farben oben als CSS-Variablen)
 js/main.js         Mobile-Nav, Hell/Dunkel, Fragen-Blase, Partnerzugang
+js/spiel-motor.js  Spielmotor der Simulation (Regeln, Markt, Konten, JKHD-Algo), ohne DOM
+js/spiel.js        Oberfläche der Simulation (nur auf simulation.html / en/simulation.html)
 favicon.svg        Browser-Tab-Icon (drei Balken)
 ```
 
@@ -86,16 +91,19 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
   der geltende trägt `.is-on`. Gewählt wird in `localStorage` unter
   `jkhd-theme` gemerkt; ohne eigene Wahl folgt die Seite dem Betriebssystem.
 - **Zwei Ebenen der Navigation:** In der offenen Kopfzeile stehen nur die
-  Seiten, die zuerst gesehen werden sollen (derzeit Leistungen, System,
-  Prüfung + Kontakt-Knopf). Alles Weitere liegt im Klappfeld: `<a>`-Zeilen als
+  Seiten, die zuerst gesehen werden sollen (derzeit Startseite, System,
+  Prüfungen, Sicherheit, Simulation + Kontakt-Knopf). Alles Weitere liegt im Klappfeld: `<a>`-Zeilen als
   direkte Kinder von `.nav-prefs`, oberhalb von Sprache und Darstellung. Auf
   dem Handy ändert das nichts — dort steht ohnehin alles untereinander in
   derselben Reihenfolge.
 - **Kommen neue Seitenlinks in die Kopfzeile**, wird sie ab 1141 px breiter —
   dann entweder einen Punkt ins Klappfeld verschieben oder die Schwelle im
   Block `@media (min-width: 1141px)` anheben, sonst schiebt die Zeile die
-  Seite waagerecht hinaus. Stand jetzt (inkl. Sicherheit) bleiben bei 1141 px
-  rund 244 px Luft — das reicht für etwa einen weiteren Eintrag.
+  Seite waagerecht hinaus. Stand 27.09.2026 (inkl. Simulation, gemessen im
+  Browser mit Scrollleiste) bleiben bei 1141 px zwischen Marke und Leiste
+  136 px (DE) bzw. 194 px (EN), davon 24 px fester Abstand; die Leiste bleibt
+  von 1141 bis 1400 px einzeilig. Ein weiterer Eintrag (Text + 28 px Abstand)
+  passt auf Deutsch nur, wenn er kürzer als etwa 80 px ist.
 - **Inhaltliche Zusagen auf `sicherheit.html`** sind bewusst so formuliert,
   dass sie ohne Zertifikat haltbar sind: nichts zusagen, was nicht im eigenen
   Quelltext belegt ist, keine behaupteten Audits, und ein eigener Abschnitt
@@ -114,7 +122,8 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
   `unternehmen.html ↔ en/company.html`, `kontakt.html ↔ en/contact.html`,
   `partnerzugang.html ↔ en/partner-access.html`,
   `impressum.html ↔ en/imprint.html`, `datenschutz.html ↔ en/privacy.html`,
-  `index.html` und `system.html` heißen in beiden Sprachen gleich.
+  `index.html`, `system.html` und `simulation.html` heißen in beiden Sprachen
+  gleich.
 - **hreflang:** drei `<link rel="alternate">` im `<head>` jeder Seite
   (de, en, x-default) — plus dieselben Paare in `sitemap.xml`. Bei einer neuen
   Seite beides mitziehen.
@@ -145,6 +154,53 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
   Schriften, MIT-LICENSE) gehört dazu und wird vom Bau mitkopiert. Nach einem neuen
   Versionsstempel die beiden Seiten neu bauen (sie übernehmen Stempel, Kopf und Fuß aus
   `mathematik.html`). Nur Deutsch; `en/mathematics.html#formula-collections` verlinkt sie.
+
+## Simulation — Spiel gegen den JKHD-Algo (27.09.2026)
+
+Julians Wunsch: ein kleiner Markt, auf dem man Gold kauft und verkauft, und der
+JKHD-Algo spielt mit. Beide starten mit 100.000 $; wer zuerst 1.000.000 $ hat,
+gewinnt, wer unter 10.000 $ fällt, ist pleite und verliert. Kein Zeitlimit.
+Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
+„Sicherheit“ und in der Fußnavigation.
+
+- **`js/spiel-motor.js`** ist die einzige Stelle der Regeln: Markt (erfunden,
+  mit Saat reproduzierbar), Konten, Ausführung und der JKHD-Algo. Er sieht je
+  Takt nur, was auch der Mensch sieht, und handelt über dieselbe Ausführung.
+  Schnittstelle im Kopf der Datei (`JKHDSpiel.neuesSpiel(saat)`, `REGELN`,
+  `ALGO`, `schritt()`, `order()`, `zustand()`).
+- **`js/spiel.js`** ist nur die Oberfläche: Takt über `requestAnimationFrame`,
+  Chart auf `<canvas>` (Farben aus den CSS-Variablen), Tafeln, Handel, Protokoll
+  des Algos, Start- und Endschicht. Beide Dateien werden nur auf den zwei
+  Simulationsseiten geladen, nach `main.js`.
+- **Zahlen im Regeltext** stehen in `<span data-sp-zahl="REGELN.…" data-sp-art="…">`
+  und werden aus dem Motor neu gesetzt; der Text im HTML ist derselbe Wert für
+  Besucher ohne JavaScript. Wer eine Regel im Motor ändert, zieht den Text im
+  HTML mit — sonst sehen Besucher ohne JavaScript den alten Wert.
+- **Tasten** (B, S, X, Leertaste) wirken nur, solange das Spiel den Fokus hat,
+  nie beim Tippen in der Fragen-Blase oder mit Strg/Alt/Meta. Die Knöpfe im
+  Spiel sind deshalb `aria-disabled` statt `disabled`.
+- **Nachkaufen:** Die Positionsgrenze wächst mit dem Kapital, also kann man in
+  einem laufenden Trend immer wieder „Max“ drücken. Der Algo tut das auch
+  (`ALGO.NACHKAUF`, Protokoll „Stockt auf“) — solange er es nicht tat, gewann
+  ein Mensch, der das macht, über 90 % der Spiele. Voreingestellt ist deshalb
+  „Max“: Mit einer festen kleinen Menge gewinnt man praktisch nie.
+- **Spielnummer (Saat)** erst auf der Ergebniskarte: Der Motor ist über
+  `window.JKHDSpiel` erreichbar und rechnet mit gleicher Saat denselben Markt —
+  wer die Nummer während des Spiels kennt, kann jede Nachricht vorab ausrechnen.
+- **„Neues Spiel“** mitten im Spiel hält erst an und fragt nach („Wirklich
+  neu?“), erst der zweite Druck verwirft das Spiel.
+- **Zusagen:** Das Spiel speichert nichts (kein Cookie, kein Web-Speicher),
+  sendet nichts und lädt nichts von fremden Servern — wie auf
+  `sicherheit.html` und `datenschutz.html` versprochen. Die Texte sagen nicht,
+  dass JKHD Gold oder einen anderen Markt handelt, und der Gegner ist
+  ausdrücklich ein vereinfachter Spiel-Algorithmus, nicht das Handelssystem.
+- **Messung und Abstimmung** liegen außerhalb dieses Repositorys in
+  `C:\Quant Arbeit\JKHD-Spiel` (README dort): `balance.js` belegt mit
+  Tausenden simulierten Runden, dass der Algo stark, aber schlagbar ist,
+  `pruefung.js` prüft den Motor. Nach jeder Änderung am Motor beide laufen
+  lassen, dann den Versionsstempel hochzählen.
+- Die KI der Fragen-Blase kennt diese Seite noch nicht (sie steht nicht im
+  Wissen des Servers).
 
 ## Partnerzugang — Server läuft unter https://api.jkhd.de
 

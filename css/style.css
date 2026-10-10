@@ -2297,3 +2297,608 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   .module { grid-template-columns: 1fr; }
   .partner-daten dd + dt { margin-top: 12px; }
 }
+
+/* ---------- Simulation (Spiel gegen den JKHD-Algo) ----------
+   simulation.html / en/simulation.html, gesteuert von js/spiel.js. Papier wie
+   ueberall: Tinte gegen Grau, keine Farbe. Kauf und Verkauf, Sie und der Algo
+   unterscheiden sich durch Form und Lage, nie nur durch Farbe. Das Brett (.sp)
+   ist Panel, Tafeln und Chart liegen als Papier darauf. Knoepfe im Spiel sind
+   nie "disabled", sondern aria-disabled: Ein gesperrter Knopf verliert den
+   Fokus, und mit ihm waeren die Tasten des Spiels aus. */
+
+.sp-abschnitt { padding: 40px 0 72px; }
+
+.sp {
+  position: relative;
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-md);
+  background: var(--panel);
+}
+.sp[hidden],
+.sp [hidden] { display: none; }
+
+/* Das Brett nimmt den Fokus fuer die Tasten (tabindex="-1"). Sichtbar wird das
+   an der Kante und am Hinweis "Tasten aktiv", nicht an einem Rahmen ums Ganze. */
+.sp:focus { outline: none; }
+.sp:focus-within { border-color: var(--text); }
+
+/* Die Legende folgt schmal erst nach dem Handel: Chart, Menge und Kaufen /
+   Verkaufen stehen so direkt untereinander und passen eher zusammen ins Bild. */
+.sp-koerper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "leiste" "tafeln" "nachricht" "chart" "handel" "schutz" "legende" "protokoll";
+  gap: 16px;
+  padding: 20px;
+}
+
+/* Doppeltippen auf einen Knopf soll zweimal handeln, nicht die Seite zoomen
+   (iOS); Zoomen mit zwei Fingern bleibt moeglich. */
+.sp button { touch-action: manipulation; }
+
+/* Kleine Mono-Beschriftung wie die Kicker, nur leiser */
+.sp-label {
+  font-family: var(--mono);
+  font-size: var(--label);
+  font-weight: 600;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sp kbd,
+.sp-regel kbd {
+  display: inline-block;
+  padding: 0 5px;
+  font-family: var(--mono);
+  font-size: var(--label);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+}
+
+/* Leiste oben: Spielzeit links, Bedienung rechts */
+.sp-leiste {
+  grid-area: leiste;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sp-leiste-info { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; }
+.sp-uhr { font-family: var(--mono); font-size: 1.1rem; color: var(--text); }
+.sp-uhr .sp-label { margin-right: 6px; }
+.sp-steuerung { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+
+.sp-tasten { margin-right: 6px; font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
+.sp-tasten-an,
+.sp-tasten-feld { display: none; color: var(--text); }
+.sp:focus-within .sp-tasten-an { display: inline; }
+.sp:focus-within .sp-tasten-aus { display: none; }
+/* In den Feldern fuer SL und TP handeln die Tasten nicht -- das sagt der Hinweis dann auch */
+.sp:has(.sp-schutz input:focus) .sp-tasten-an { display: none; }
+.sp:has(.sp-schutz input:focus) .sp-tasten-feld { display: inline; }
+
+.sp-knopf,
+.sp-segmente button {
+  min-height: 40px;
+  padding: 0 14px;
+  font-family: var(--mono);
+  font-size: var(--caption);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.sp-knopf:hover,
+.sp-segmente button:hover { background: var(--wash-2); }
+
+/* Segmente wie der Schalter Hell/Dunkel: das gewaehlte in Tinte */
+.sp-segmente { display: inline-flex; }
+.sp-segmente button { min-width: 44px; padding: 0 10px; letter-spacing: 0.06em; border-radius: 0; }
+.sp-segmente button + button { margin-left: -1px; }
+.sp-segmente button:first-child { border-radius: var(--r-sm) 0 0 var(--r-sm); }
+.sp-segmente button:last-child { border-radius: 0 var(--r-sm) var(--r-sm) 0; }
+.sp-segmente button[aria-pressed="true"] {
+  position: relative;
+  z-index: 1;
+  color: var(--bg);
+  background: var(--text);
+  border-color: var(--text);
+}
+.sp-segmente button:focus-visible { position: relative; z-index: 2; }
+
+.sp [aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+.sp [aria-disabled="true"]:hover { background: var(--bg); border-color: var(--border-2); }
+
+/* Die beiden Tafeln: Sie und der JKHD-Algo */
+.sp-tafeln { grid-area: tafeln; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.sp-tafel { min-width: 0; padding: 18px 20px 16px; background: var(--bg); border: 1px solid var(--border); }
+.sp-tafel-kopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  margin-bottom: 10px;
+}
+.sp-tafel h3 { font-size: var(--h3-sm); }
+.sp-fuehrt {
+  padding: 2px 8px;
+  font-family: var(--mono);
+  font-size: var(--label);
+  font-weight: 600;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--text);
+  border-radius: var(--r-sm);
+}
+/* Das Schild haelt seinen Platz, auch wenn es gerade nicht gilt: Braeche der
+   Tafelkopf bei einem Fuehrungswechsel um, rutschte alles darunter -- auch
+   der Chart unter dem Finger. Auf dem Handy steht es als Reiter auf der
+   Kante (siehe unten). */
+.sp .sp-fuehrt[hidden] { display: block; visibility: hidden; }
+.sp-kapital {
+  font-family: var(--mono);
+  font-size: clamp(1.25rem, 2.2vw, 1.7rem);
+  line-height: 1.25;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+/* Weg von der Pleitegrenze (links) zum Ziel (rechts), logarithmisch; die
+   Lage der Startmarke setzt js/spiel.js aus den Regeln. */
+.sp-weg { position: relative; height: 10px; margin: 14px 0 4px; background: var(--panel-2); border: 1px solid var(--border-2); }
+.sp-weg-fuellung { position: absolute; top: 0; bottom: 0; left: 0; width: 50%; background: var(--text); }
+.sp-weg-start { position: absolute; top: -5px; bottom: -5px; left: 50%; width: 2px; margin-left: -1px; background: var(--muted); }
+.sp-weg-skala { position: relative; height: 1.5em; font-family: var(--mono); font-size: var(--label); color: var(--muted); }
+.sp-weg-skala span { position: absolute; top: 0; white-space: nowrap; }
+.sp-weg-skala span:first-child { left: 0; }
+.sp-weg-skala span:last-child { right: 0; }
+.sp-weg-skala .sp-weg-skala-start { left: 50%; transform: translateX(-50%); }
+
+.sp-werte {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 16px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.sp-werte dt,
+.sp-ende-werte dt {
+  font-family: var(--mono);
+  font-size: var(--label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sp-werte dd,
+.sp-ende-werte dd { font-family: var(--mono); font-size: 0.86rem; color: var(--text); overflow-wrap: anywhere; }
+
+/* Nachrichten: angekuendigt in Tinte (nicht zu uebersehen), eingetreten mit
+   kraeftigem Rand, sonst leise gestrichelt. Die Hoehe bleibt immer gleich. */
+.sp-nachricht {
+  grid-area: nachricht;
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px dashed var(--border-2);
+}
+.sp-nachricht.is-angekuendigt { font-weight: 700; color: var(--bg); background: var(--text); border: 1px solid var(--text); }
+.sp-nachricht.is-eingetreten { font-weight: 700; color: var(--text); border: 1px solid var(--text); box-shadow: inset 0 0 0 1px var(--text); }
+
+/* Chart */
+.sp-chartbereich { grid-area: chart; min-width: 0; }
+.sp-chart-kopf {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.sp-kurse { font-family: var(--mono); font-size: 0.76rem; }
+.sp-kurse b { font-weight: 600; color: var(--text); }
+.sp-chart { position: relative; height: 380px; background: var(--bg); border: 1px solid var(--border); }
+/* Linien im Chart lassen sich ziehen (js/spiel.js). Scrollen bleibt auf der
+   Leinwand erlaubt; nur eine Beruehrung, die auf einer Linie beginnt, haelt
+   das Skript fest. Langes Druecken soll kein Bildmenue oeffnen. */
+.sp-chart canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.sp-chart canvas.is-ziehen { touch-action: none; cursor: ns-resize; }
+.sp-pausiert {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 24px);
+  padding: 5px 12px;
+  font-family: var(--mono);
+  font-size: var(--label);
+  font-weight: 600;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--bg);
+  background: var(--text);
+  border-radius: var(--r-sm);
+}
+.sp-legende {
+  grid-area: legende;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  min-width: 0;
+  list-style: none;
+  font-size: var(--caption);
+  color: var(--muted);
+}
+.sp-legende li { display: inline-flex; align-items: center; gap: 7px; }
+.sp-legende svg { width: 26px; height: 12px; flex-shrink: 0; color: var(--text); }
+.sp-legende .sp-leise { color: var(--muted); }   /* Stop und Nachricht zeichnet der Chart in Grau */
+.sp-legende svg,
+.sp-order-was svg { fill: none; stroke: currentColor; stroke-width: 1; }
+.sp .sp-fuellen { fill: currentColor; stroke: none; }
+
+/* Handel: Menge, drei Order-Knoepfe, Rueckmeldung */
+.sp-handel { grid-area: handel; display: grid; gap: 12px; min-width: 0; }
+.sp-menge { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.sp-menge-einheit { font-size: var(--caption); color: var(--muted); }
+.sp-orders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.sp-order {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+  min-height: 62px;
+  padding: 10px 16px;
+  font: inherit;
+  text-align: left;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.sp-order:hover { background: var(--wash-2); border-color: var(--text); }
+.sp-order-was {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.sp-order-was svg { width: 12px; height: 12px; flex-shrink: 0; }
+.sp-order-wo { font-family: var(--mono); font-size: 0.74rem; color: var(--muted); }
+.sp-meldung { min-height: 1.6em; font-size: 0.88rem; color: var(--text); }
+
+/* SL und TP ohne Ziehen: je Zeile Name, Preisfeld mit - / +, Setzen,
+   Entfernen und darunter, was die Marke dort ergaebe */
+.sp-schutz {
+  grid-area: schutz;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.sp-schutz-kopf { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.sp-schutz h3 {
+  font-family: var(--mono);
+  font-size: var(--label);
+  font-weight: 600;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sp-schutz-kopf p { font-size: var(--caption); color: var(--muted); }
+.sp-schutz-zeile { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; min-width: 0; }
+.sp-schutz-name {
+  width: 2rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+.sp-schutz-feld { display: inline-flex; }
+.sp-schutz-aktionen { display: inline-flex; gap: 8px; }   /* Setzen und Entfernen brechen nur gemeinsam um */
+.sp-schutz-feld button {
+  min-width: 40px;
+  min-height: 40px;
+  font-family: var(--mono);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--muted);   /* mindestens 3:1 zum Grund, hell wie dunkel (WCAG 1.4.11) */
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.sp-schutz-feld button:first-child { border-radius: var(--r-sm) 0 0 var(--r-sm); }
+.sp-schutz-feld button:last-child { border-radius: 0 var(--r-sm) var(--r-sm) 0; }
+.sp-schutz-feld button:hover { background: var(--wash-2); }
+.sp-schutz-feld button:focus-visible { position: relative; z-index: 2; }
+/* 1rem: darunter zoomt iOS beim Antippen */
+.sp-schutz-feld input {
+  width: 7.5em;
+  min-width: 0;
+  min-height: 40px;
+  margin: 0 -1px;
+  padding: 0 8px;
+  font-family: var(--mono);
+  font-size: 1rem;
+  text-align: right;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--muted);   /* ein leeres Feld ist nur am Rand zu erkennen: 3:1 (WCAG 1.4.11) */
+  border-radius: 0;
+}
+.sp-schutz-feld input:focus { position: relative; z-index: 1; outline: none; border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
+.sp-schutz-info {
+  flex-basis: 100%;
+  min-height: 1.5em;
+  padding-left: calc(2rem + 8px);   /* unter dem Preisfeld, nicht unter dem Namen */
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.sp-schutz-fuss { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.sp-schutz-tasten { font-size: var(--caption); color: var(--muted); }
+
+/* Protokoll des Algos: oben sein Zustand, darunter die letzten Eintraege */
+.sp-protokoll { grid-area: protokoll; align-self: start; min-width: 0; }
+.sp-protokoll h3 {
+  margin-bottom: 10px;
+  font-family: var(--mono);
+  font-size: var(--label);
+  font-weight: 600;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sp-algo-jetzt {
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  font-size: 0.86rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.sp-algo-jetzt .sp-label { margin-right: 6px; }
+.sp-protokoll-leer { font-size: 0.84rem; color: var(--muted); }
+.sp-protokoll ol { list-style: none; }
+.sp-protokoll li {
+  padding: 8px 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.sp-protokoll-zeit { font-family: var(--mono); color: var(--muted); }
+
+/* Start und Spielende liegen als Schicht ueber dem Brett */
+.sp-schicht {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  padding: 64px 20px 20px;
+  overflow: auto;
+  background: var(--header-bg-scrolled);
+}
+.sp-schicht-inhalt {
+  width: 100%;
+  max-width: 560px;
+  padding: var(--pad-panel);
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-md);
+  box-shadow: 0 22px 48px var(--shadow-soft);
+}
+.sp-schicht .kicker { margin-bottom: 12px; }
+.sp-schicht h3 {
+  font-family: var(--serif);
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.002em;
+}
+.sp-schicht h3:focus { outline: none; }   /* bekommt den Fokus nur per Skript, beim Spielende */
+.sp-schicht ul { margin: 16px 0 0 20px; color: var(--muted); }
+.sp-schicht li + li { margin-top: 4px; }
+.sp-schicht-inhalt > p:not(.kicker) { margin-top: 12px; color: var(--muted); }
+.sp-schicht-knoepfe { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.sp-start-tasten { font-size: var(--caption); }
+.sp-ende-werte {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 20px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* Spielregeln unter dem Spiel */
+.sp-regel-abschnitt { padding-top: 48px; }
+.sp-regeln {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 0 40px;
+  border-top: 1px solid var(--border);
+}
+.sp-regel { padding: 24px 0; border-bottom: 1px solid var(--border); }
+.sp-regel h3,
+.sp-regel-algo h3 { margin-bottom: 8px; font-size: var(--h3-sm); }
+.sp-regel p { font-size: 0.95rem; color: var(--muted); }
+.sp-regel-algo { max-width: 900px; margin-top: 48px; }
+.sp-regel-algo > p { color: var(--muted); }
+.sp-regel-algo ul { margin: 14px 0 0 20px; color: var(--muted); }
+.sp-regel-algo li + li { margin-top: 8px; }
+.sp-regel-abschnitt .note { margin-top: 40px; }
+
+/* Breit: Protokoll als Spalte neben Chart und Handel, die Legende direkt
+   unter dem Chart */
+@media (min-width: 1141px) {
+  .sp-koerper {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-areas:
+      "leiste leiste"
+      "tafeln tafeln"
+      "nachricht protokoll"
+      "chart protokoll"
+      "legende protokoll"
+      "handel protokoll"
+      "schutz protokoll";
+    gap: 18px 24px;
+    padding: 24px;
+  }
+}
+
+@media (max-width: 940px) {
+  .sp-werte { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sp-chart { height: 320px; }
+}
+
+/* Handy quer und andere niedrige Fenster: Chart und Handel nebeneinander,
+   der Chart so hoch, wie unter der Kopfzeile Platz ist. So stehen Kurs und
+   Handelsknoepfe zugleich im Bild. */
+@media (max-height: 540px) and (min-width: 600px) and (max-width: 1140px) {
+  .sp-abschnitt .container { padding: 0 20px; }
+  .sp-koerper {
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 300px);
+    grid-template-areas:
+      "leiste leiste"
+      "tafeln tafeln"
+      "nachricht nachricht"
+      "chart handel"
+      "schutz schutz"
+      "legende legende"
+      "protokoll protokoll";
+    gap: 12px 16px;
+    padding: 12px;
+  }
+  .sp-handel { align-content: start; }
+  .sp-chart {
+    height: max(160px, min(320px, calc(100vh - var(--header-h) - 96px)));
+    height: max(160px, min(320px, calc(100dvh - var(--header-h) - 96px)));
+  }
+  .sp-orders { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .sp-order-glatt { grid-column: 1 / -1; }
+}
+
+/* Fingerbedienung: Knoepfe mindestens 44 px hoch, auch quer und auf dem Tablet */
+@media (pointer: coarse) {
+  .sp-knopf,
+  .sp-segmente button,
+  .sp-schutz-feld button,
+  .sp-schutz-feld input { min-height: 44px; }
+  .sp-schutz-feld button { min-width: 44px; }
+}
+
+/* Handy: beide Tafeln bleiben nebeneinander, dafuer knapp; Kaufen und
+   Verkaufen nebeneinander, Glattstellen darunter ueber die volle Breite. */
+@media (max-width: 560px) {
+  .sp-abschnitt { padding: 24px 0 56px; }
+  .sp-koerper { gap: 12px; padding: 12px; }
+  .sp-leiste { padding-bottom: 12px; }
+  .sp-tempo-label { display: none; }   /* die Gruppe heisst trotzdem "Tempo" (aria-label) */
+  .sp-tafeln { gap: 8px; }
+  .sp-tafel { padding: 10px 10px 8px; }
+  .sp-tafel-kopf { margin-bottom: 6px; }
+  .sp-kapital { font-size: 1.02rem; }
+  .sp-weg { margin-top: 10px; }
+  .sp-werte { grid-template-columns: minmax(0, 1fr); gap: 3px; margin-top: 8px; padding-top: 8px; }
+  .sp-werte > div { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 6px; }
+  .sp-werte dt { letter-spacing: 0.04em; }
+  .sp-werte dd { margin-left: auto; font-size: 0.74rem; }
+  /* Die Hoehe ueber dem Chart bleibt gleich, sonst verschoebe sich alles
+     darunter -- auch eine Linie, die gerade gezogen wird (Safari haelt die
+     Seite nicht fest). Deshalb bricht kein Wert um, wenn er erscheint
+     (Strich -> "2.002,35 $"); wird es eng, kuerzt sich die Bezeichnung, nie
+     der Wert. Der offene G/V aendert seine Laenge jeden Takt und steht
+     immer auf eigener Zeile. */
+  .sp-werte > div { flex-wrap: nowrap; }
+  .sp-werte dt { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sp-werte dd { flex-shrink: 0; white-space: nowrap; overflow-wrap: normal; }
+  .sp-werte > .sp-wert-offen { flex-wrap: wrap; }
+  .sp-wert-offen dd { flex-basis: 100%; text-align: right; }
+  /* "fuehrt" als Reiter auf der oberen Kante der Tafel: Es nimmt keinen
+     Platz, der Kopf bricht nie um, und beide Tafeln bleiben buendig. */
+  .sp-tafel { position: relative; }
+  .sp-fuehrt { position: absolute; top: -9px; right: 8px; padding: 1px 6px; }
+  /* Das Nachrichtenband ist immer zwei Zeilen hoch: "Eingetreten: ..., Kurs
+     -1,25 %" braucht schmal zwei, "Keine Nachricht angekuendigt" eine. */
+  .sp-nachricht { min-height: calc(2 * 1.7em + 18px); padding: 8px 12px; font-size: 0.84rem; }
+  .sp-chart { height: 240px; }
+  .sp-orders { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .sp-order-glatt { grid-column: 1 / -1; }
+  .sp-order { min-height: 56px; padding: 8px 12px; }
+  .sp-order-was { font-size: 0.74rem; letter-spacing: 0.08em; }
+  .sp-schicht { padding: 16px 8px; }
+  .sp-schicht-inhalt { padding: 24px 18px; }
+  .sp-schicht-knoepfe .btn { flex: 1 1 100%; }
+  .sp-ende-werte { gap: 10px 14px; }
+}
+
+/* Schmal (unter 371 px): Neben der Bezeichnung passt ein Wert wie
+   "2.024,55 $" nicht mehr in die halbe Breite. Jeder Wert steht dann auf
+   eigener Zeile, rechts -- wie der offene G/V, gleich hoch mit und ohne
+   Position. */
+@media (max-width: 370px) {
+  .sp-werte > div { flex-wrap: wrap; }
+  .sp-werte dd { flex-basis: 100%; text-align: right; }
+  /* Die drei Zahlen unter dem Balken brauchen rund 125 px, die Skala ist hier
+     schmaler (320 px: 105 px, die Zahlen lagen uebereinander). Die Startmarke
+     auf dem Balken bleibt, nur ihre Zahl entfaellt; die Regeln nennen sie. */
+  .sp-weg-skala .sp-weg-skala-start { display: none; }
+}
+
+/* Sehr schmal: Sechs Mengenknoepfe zu 44 px brauchen 259 px; mit 8 px statt
+   12 px Innenrand passen sie bei 320 px Breite in die Zeile. */
+@media (max-width: 359px) {
+  .sp-koerper { padding: 8px; }
+}
+
+/* Ohne Maus meist ohne Tastatur: Tastenhinweise weglassen */
+@media (hover: none) {
+  .sp-tasten,
+  .sp-order kbd,
+  .sp-start-tasten,
+  .sp-schutz-tasten { display: none; }
+}

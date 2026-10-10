@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulation — JKHD</title>
+  <meta name="description" content="Ein kleines Spiel im Browser: Sie gegen den JKHD-Algo auf einem erfundenen Goldmarkt. Beide starten mit 100.000 $ — wer zuerst 1.000.000 $ hat, gewinnt. Kein echtes Geld, keine echten Kurse.">
+  <meta name="theme-color" content="#f7f6f3">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JKHD">
+  <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta property="og:url" content="https://www.jkhd.de/simulation.html">
+  <link rel="canonical" href="https://www.jkhd.de/simulation.html">
+  <meta property="og:title" content="Simulation — JKHD">
+  <meta property="og:description" content="Sie gegen den JKHD-Algo: ein Spiel auf einem erfundenen Goldmarkt. Wer zuerst 1.000.000 $ hat, gewinnt.">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
+  <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script>
+    // Laeuft absichtlich vor dem Stylesheet: verhindert das Aufblitzen
+    // der falschen Farben beim Laden.
+    (function () {
+      try {
+        var g = localStorage.getItem("jkhd-theme");
+        var dunkel = g ? g === "dark"
+          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dunkel) document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="alternate" hreflang="de" href="https://www.jkhd.de/simulation.html">
+  <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/simulation.html">
+  <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/simulation.html">
+  <link rel="stylesheet" href="css/fonts.css?v=20260927d">
+  <link rel="stylesheet" href="css/style.css?v=20260927d">
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <div class="build-note">
+    <div class="container">
+      <span class="build-label">Im Aufbau</span>
+      <span>Diese Website wird gerade neu aufgebaut. Inhalte sind vorl&auml;ufig &mdash; Nachrichten sind jederzeit willkommen.</span>
+      <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+        <span class="brand-word">JKHD</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-tag">
+          <span class="brand-line1">Quant Systems</span>
+          <span class="brand-line2">Just Know How to Dominate.</span>
+        </span>
+      </a>
+      <nav class="site-nav" aria-label="Hauptnavigation">
+        <a href="index.html">Startseite</a>
+        <a class="nav-nur-schmal" href="was-wir-machen.html">Was wir machen</a>
+        <a href="system.html">System</a>
+        <a href="pruefung.html">Prüfungen</a>
+        <a href="sicherheit.html">Sicherheit</a>
+        <a href="simulation.html">Simulation</a>
+        <div class="nav-prefs">
+          <a class="nav-nur-breit" href="was-wir-machen.html">Was wir machen</a>
+          <a href="mathematik.html">Mathematik</a>
+          <a href="unternehmen.html">Unternehmen</a>
+          <a href="partnerzugang.html">Partnerzugang</a>
+          <a class="nav-legal" href="impressum.html">Impressum</a>
+          <a class="nav-legal" href="datenschutz.html">Datenschutz</a>
+          <div class="nav-lang">
+            <span class="nav-lang-label">Sprachen</span>
+            <div class="lang-switch" role="group" aria-label="Sprache / Language">
+              <span class="lang-current" aria-current="true">DE</span>
+              <a href="en/simulation.html" hreflang="en" lang="en" aria-label="Switch to English">EN</a>
+            </div>
+          </div>
+          <div class="nav-theme">
+            <span class="nav-theme-label">Darstellung</span>
+            <div class="theme-switch" role="group" aria-label="Darstellung">
+              <button type="button" class="theme-opt" data-theme-set="light">Hell</button>
+              <button type="button" class="theme-opt" data-theme-set="dark">Dunkel</button>
+            </div>
+          </div>
+        </div>
+        <a href="kontakt.html" class="btn btn-primary btn-sm">Kontakt</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Menü öffnen">☰</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+  <section class="page-head">
+    <div class="container">
+      <p class="kicker">// Simulation</p>
+      <h1>Sie gegen den JKHD-Algo.</h1>
+      <p>Ein kleiner, erfundener Goldmarkt: Sie und der JKHD-Algo starten mit je
+         <span data-sp-zahl="REGELN.START_KAPITAL" data-sp-art="betrag">100.000&nbsp;$</span>,
+         wer zuerst
+         <span data-sp-zahl="REGELN.ZIEL_KAPITAL" data-sp-art="betrag">1.000.000&nbsp;$</span>
+         hat, gewinnt. Der Algo ist ein vereinfachter Spiel-Gegner — nicht das
+         Handelssystem von JKHD.</p>
+    </div>
+  </section>
+
+  <!-- ================= DAS SPIEL =================
+       Gerüst für js/spiel.js; die Regeln selbst stehen in js/spiel-motor.js. -->
+  <section class="section sp-abschnitt" aria-labelledby="sp-spiel-titel">
+    <div class="container">
+      <h2 id="sp-spiel-titel" class="nur-vorlesen">Das Spiel</h2>
+
+      <div class="sp" id="spiel" tabindex="-1" hidden>
+        <div class="sp-koerper" data-sp="koerper">
+
+          <div class="sp-leiste">
+            <div class="sp-leiste-info">
+              <p class="sp-uhr"><span class="sp-label">Spielzeit</span> <span data-sp="zeit">0:00</span></p>
+            </div>
+            <div class="sp-steuerung">
+              <p class="sp-tasten"><span class="sp-tasten-an">Tasten aktiv</span><span class="sp-tasten-feld">Tasten aus: Sie tippen in ein Feld</span><span class="sp-tasten-aus">Tasten: erst ins Spiel klicken</span></p>
+              <button type="button" class="sp-knopf" data-sp-aktion="pause" aria-disabled="true" aria-keyshortcuts="Space">Pause</button>
+              <span class="sp-label sp-tempo-label" aria-hidden="true">Tempo</span>
+              <div class="sp-segmente" role="group" aria-label="Tempo">
+                <button type="button" data-sp-tempo="1" aria-pressed="true">1×</button>
+                <button type="button" data-sp-tempo="2" aria-pressed="false">2×</button>
+              </div>
+              <button type="button" class="sp-knopf" data-sp-aktion="neu">Neues Spiel</button>
+            </div>
+          </div>
+
+          <div class="sp-tafeln">
+            <section class="sp-tafel" aria-labelledby="sp-name-du">
+              <div class="sp-tafel-kopf">
+                <h3 id="sp-name-du">Sie</h3>
+                <span class="sp-fuehrt" data-sp="fuehrt-du" hidden>führt</span>
+              </div>
+              <p class="sp-label">Kapital</p>
+              <p class="sp-kapital" data-sp="kapital-du">100.000 $</p>
+              <div class="sp-weg" data-sp="weg-du" role="meter" aria-label="Weg von der Pleitegrenze zum Ziel" aria-valuemin="10000" aria-valuemax="1000000" aria-valuenow="100000" aria-valuetext="100.000 $">
+                <span class="sp-weg-fuellung" data-sp="fuellung-du"></span>
+                <span class="sp-weg-start" data-sp-start></span>
+              </div>
+              <div class="sp-weg-skala" aria-hidden="true">
+                <span data-sp-zahl="REGELN.PLEITE_GRENZE" data-sp-art="kompakt">10.000</span>
+                <span class="sp-weg-skala-start" data-sp-start data-sp-zahl="REGELN.START_KAPITAL" data-sp-art="kompakt">100.000</span>
+                <span data-sp-zahl="REGELN.ZIEL_KAPITAL" data-sp-art="kompakt">1&nbsp;Mio.</span>
+              </div>
+              <dl class="sp-werte">
+                <div><dt>Position</dt><dd data-sp="position-du">keine</dd></div>
+                <div><dt>Einstand</dt><dd data-sp="einstand-du">—</dd></div>
+                <div class="sp-wert-offen"><dt>Offener G/V</dt><dd data-sp="offen-du">—</dd></div>
+                <div><dt>SL<span class="nur-vorlesen"> (Stop-Loss)</span></dt><dd data-sp="sl-du">—</dd></div>
+                <div><dt>TP<span class="nur-vorlesen"> (Take-Profit)</span></dt><dd data-sp="tp-du">—</dd></div>
+                <div><dt>Trades</dt><dd data-sp="trades-du">0</dd></div>
+              </dl>
+            </section>
+            <section class="sp-tafel" aria-labelledby="sp-name-algo">
+              <div class="sp-tafel-kopf">
+                <h3 id="sp-name-algo">JKHD-Algo</h3>
+                <span class="sp-fuehrt" data-sp="fuehrt-algo" hidden>führt</span>
+              </div>
+              <p class="sp-label">Kapital</p>
+              <p class="sp-kapital" data-sp="kapital-algo">100.000 $</p>
+              <div class="sp-weg" data-sp="weg-algo" role="meter" aria-label="Weg von der Pleitegrenze zum Ziel" aria-valuemin="10000" aria-valuemax="1000000" aria-valuenow="100000" aria-valuetext="100.000 $">
+                <span class="sp-weg-fuellung" data-sp="fuellung-algo"></span>
+                <span class="sp-weg-start" data-sp-start></span>
+              </div>
+              <div class="sp-weg-skala" aria-hidden="true">
+                <span data-sp-zahl="REGELN.PLEITE_GRENZE" data-sp-art="kompakt">10.000</span>
+                <span class="sp-weg-skala-start" data-sp-start data-sp-zahl="REGELN.START_KAPITAL" data-sp-art="kompakt">100.000</span>
+                <span data-sp-zahl="REGELN.ZIEL_KAPITAL" data-sp-art="kompakt">1&nbsp;Mio.</span>
+              </div>
+              <dl class="sp-werte">
+                <div><dt>Position</dt><dd data-sp="position-algo">keine</dd></div>
+                <div><dt>Einstand</dt><dd data-sp="einstand-algo">—</dd></div>
+                <div class="sp-wert-offen"><dt>Offener G/V</dt><dd data-sp="offen-algo">—</dd></div>
+                <div><dt>SL<span class="nur-vorlesen"> (Stop-Loss)</span></dt><dd data-sp="sl-algo">—</dd></div>
+                <div><dt>TP<span class="nur-vorlesen"> (Take-Profit)</span></dt><dd data-sp="tp-algo">—</dd></div>
+                <div><dt>Trades</dt><dd data-sp="trades-algo">0</dd></div>
+              </dl>
+            </section>
+          </div>
+
+          <p class="sp-nachricht" data-sp="nachricht">Keine Nachricht angekündigt</p>
+
+          <div class="sp-chartbereich">
+            <div class="sp-chart-kopf">
+              <p>Erfundener Goldmarkt · $ je Unze</p>
+              <p class="sp-kurse">Geld <b data-sp="geld">—</b> · Brief <b data-sp="brief">—</b> · Spanne <b data-sp="spanne">—</b></p>
+            </div>
+            <div class="sp-chart">
+              <canvas data-sp="chart" role="img" aria-label="Kurschart des erfundenen Goldmarkts mit Ihren Trades, Ihrem Einstand, SL und TP sowie den Trades und dem Stop des JKHD-Algos. SL und TP setzen Sie ohne Ziehen mit den Feldern unter dem Chart."></canvas>
+              <p class="sp-pausiert" data-sp="pausiert" hidden>Pausiert</p>
+            </div>
+          </div>
+
+          <ul class="sp-legende">
+            <li><svg viewBox="0 0 26 12" aria-hidden="true"><path class="sp-fuellen" d="M6 1 11 10H1Z"/><path class="sp-fuellen" d="M20 11 25 2H15Z"/></svg>Ihre Käufe / Verkäufe</li>
+            <li><svg viewBox="0 0 26 12" aria-hidden="true"><path d="M1.5 9 6 3.5 10.5 9M15.5 3 20 8.5 24.5 3" stroke-width="2"/></svg>Käufe / Verkäufe des Algos</li>
+            <li><svg viewBox="0 0 26 12" aria-hidden="true"><path d="M0 6H26" stroke-dasharray="6 4"/></svg>Ihr Einstand – wegziehen: SL / TP</li>
+            <li><svg viewBox="0 0 26 12" aria-hidden="true"><rect class="sp-fuellen" x="0" y="2" width="10" height="8"/><path d="M10 6.5H26"/></svg>Ihr SL / TP – verschiebbar, × entfernt</li>
+            <li><svg class="sp-leise" viewBox="0 0 26 12" aria-hidden="true"><path d="M0 6H26" stroke-dasharray="1 3"/></svg>Stop (SL) des Algos</li>
+            <li><svg viewBox="0 0 26 12" aria-hidden="true"><path d="M3 2 11 10M11 2 3 10" stroke-width="2"/><circle cx="20" cy="6" r="4" stroke-width="2"/></svg>ausgelöster SL / TP</li>
+            <li><svg class="sp-leise" viewBox="0 0 26 12" aria-hidden="true"><path d="M13 0V12" stroke-dasharray="2 3"/></svg>Nachricht</li>
+            <li><svg viewBox="0 0 26 12" aria-hidden="true"><path d="M7.5 0V3M7.5 9V12M18.5 0V12"/><rect x="5.5" y="3.5" width="4" height="5.5"/><rect class="sp-fuellen" x="16" y="2.5" width="5" height="7"/></svg><span>Kerze = <span data-sp-zahl="REGELN.KERZE_TAKTE" data-sp-art="sekunden">2</span> s: hohl gestiegen, gefüllt gefallen</span></li>
+          </ul>
+
+          <div class="sp-handel">
+            <div class="sp-menge">
+              <span class="sp-label" aria-hidden="true">Menge</span>
+              <div class="sp-segmente" role="group" aria-label="Menge in Kontrakten">
+                <button type="button" data-sp-menge="1" aria-pressed="false">1</button>
+                <button type="button" data-sp-menge="5" aria-pressed="false">5</button>
+                <button type="button" data-sp-menge="10" aria-pressed="false">10</button>
+                <button type="button" data-sp-menge="25" aria-pressed="false">25</button>
+                <button type="button" data-sp-menge="50" aria-pressed="false">50</button>
+                <button type="button" data-sp-menge="max" aria-pressed="true">Max</button>
+              </div>
+              <span class="sp-menge-einheit">Kontrakte zu je <span data-sp-zahl="REGELN.KONTRAKT_UNZEN" data-sp-art="zahl">10</span> Unzen</span>
+            </div>
+            <div class="sp-orders">
+              <button type="button" class="sp-order" data-sp-order="kauf" aria-disabled="true" aria-keyshortcuts="B">
+                <span class="sp-order-was"><svg viewBox="0 0 12 12" aria-hidden="true"><path class="sp-fuellen" d="M6 1 11 10H1Z"/></svg>Kaufen <span data-sp="menge-kauf">Max</span> <kbd>B</kbd></span>
+                <span class="sp-order-wo"><span data-sp="preis-kauf">zum Briefkurs</span> <span data-sp="max-kauf"></span></span>
+              </button>
+              <button type="button" class="sp-order" data-sp-order="verkauf" aria-disabled="true" aria-keyshortcuts="S">
+                <span class="sp-order-was"><svg viewBox="0 0 12 12" aria-hidden="true"><path class="sp-fuellen" d="M6 11 11 2H1Z"/></svg>Verkaufen <span data-sp="menge-verkauf">Max</span> <kbd>S</kbd></span>
+                <span class="sp-order-wo"><span data-sp="preis-verkauf">zum Geldkurs</span> <span data-sp="max-verkauf"></span></span>
+              </button>
+              <button type="button" class="sp-order sp-order-glatt" data-sp-order="glatt" aria-disabled="true" aria-keyshortcuts="X">
+                <span class="sp-order-was"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 6H11" stroke-width="2"/></svg>Glattstellen <kbd>X</kbd></span>
+                <span class="sp-order-wo" data-sp="glatt-position">keine Position</span>
+              </button>
+            </div>
+            <p class="sp-meldung" data-sp="meldung"></p>
+          </div>
+
+          <section class="sp-schutz" aria-labelledby="sp-schutz-titel">
+            <div class="sp-schutz-kopf">
+              <h3 id="sp-schutz-titel">Stop-Loss (SL) und Take-Profit (TP)</h3>
+              <p>Im Chart: Einstandslinie antippen und wegziehen. Oder hier eintragen:</p>
+            </div>
+            <div class="sp-schutz-zeile" data-sp-schutz="sl">
+              <label class="sp-schutz-name" for="sp-sl-preis">SL<span class="nur-vorlesen"> – Stop-Loss, Preis in Dollar je Unze</span></label>
+              <div class="sp-schutz-feld">
+                <button type="button" data-sp-schritt="-1" aria-label="SL 1 $ tiefer" aria-disabled="true">−</button>
+                <input id="sp-sl-preis" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="sp-sl-info sp-schutz-tasten">
+                <button type="button" data-sp-schritt="1" aria-label="SL 1 $ höher" aria-disabled="true">+</button>
+              </div>
+              <div class="sp-schutz-aktionen">
+                <button type="button" class="sp-knopf" data-sp-schutz-aktion="setzen" aria-label="SL setzen" aria-disabled="true">Setzen</button>
+                <button type="button" class="sp-knopf" data-sp-schutz-aktion="entfernen" aria-label="SL entfernen" aria-disabled="true">Entfernen</button>
+              </div>
+              <p class="sp-schutz-info" id="sp-sl-info" data-sp="info-sl">keine offene Position</p>
+            </div>
+            <div class="sp-schutz-zeile" data-sp-schutz="tp">
+              <label class="sp-schutz-name" for="sp-tp-preis">TP<span class="nur-vorlesen"> – Take-Profit, Preis in Dollar je Unze</span></label>
+              <div class="sp-schutz-feld">
+                <button type="button" data-sp-schritt="-1" aria-label="TP 1 $ tiefer" aria-disabled="true">−</button>
+                <input id="sp-tp-preis" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-describedby="sp-tp-info sp-schutz-tasten">
+                <button type="button" data-sp-schritt="1" aria-label="TP 1 $ höher" aria-disabled="true">+</button>
+              </div>
+              <div class="sp-schutz-aktionen">
+                <button type="button" class="sp-knopf" data-sp-schutz-aktion="setzen" aria-label="TP setzen" aria-disabled="true">Setzen</button>
+                <button type="button" class="sp-knopf" data-sp-schutz-aktion="entfernen" aria-label="TP entfernen" aria-disabled="true">Entfernen</button>
+              </div>
+              <p class="sp-schutz-info" id="sp-tp-info" data-sp="info-tp">keine offene Position</p>
+            </div>
+            <div class="sp-schutz-fuss">
+              <button type="button" class="sp-knopf" data-sp-aktion="sl-einstand" aria-disabled="true">SL auf Einstand</button>
+              <p class="sp-schutz-tasten" id="sp-schutz-tasten">Im Feld: <kbd>↑</kbd> <kbd>↓</kbd> ±<span data-sp-zahl="SPIEL.SCHUTZ_SCHRITT" data-sp-art="betrag">1&nbsp;$</span>,
+                 mit <kbd>Umschalt</kbd> oder <kbd>Bild ↑</kbd> <kbd>Bild ↓</kbd> ±<span data-sp-zahl="SPIEL.SCHUTZ_SCHRITT_GROSS" data-sp-art="betrag">10&nbsp;$</span>,
+                 <kbd>Eingabe</kbd> setzt</p>
+            </div>
+          </section>
+
+          <section class="sp-protokoll" aria-labelledby="sp-protokoll-titel">
+            <h3 id="sp-protokoll-titel">Protokoll des JKHD-Algos</h3>
+            <p class="sp-algo-jetzt"><span class="sp-label">Jetzt</span> <span data-sp="status-algo">beobachtet den Markt</span></p>
+            <p class="sp-protokoll-leer" data-sp="protokoll-leer">Noch keine Einträge.</p>
+            <ol data-sp="protokoll"></ol>
+          </section>
+
+        </div>
+
+        <div class="sp-schicht" data-sp="start">
+          <div class="sp-schicht-inhalt">
+            <p class="kicker">// Bereit?</p>
+            <h3>Wer zuerst <span data-sp-zahl="REGELN.ZIEL_KAPITAL" data-sp-art="betrag">1.000.000&nbsp;$</span> hat, gewinnt.</h3>
+            <p>Kaufen Sie, wenn Sie steigende Kurse erwarten, und verkaufen Sie,
+               wenn Sie fallende erwarten. „Glattstellen“ schließt die Position.
+               Einen Take-Profit (TP) oder Stop-Loss (SL) ziehen Sie im Chart
+               aus Ihrer Einstandslinie – oder tragen ihn unter dem Chart ein.</p>
+            <div class="sp-schicht-knoepfe">
+              <button type="button" class="btn btn-primary" data-sp-aktion="start">Spiel starten</button>
+            </div>
+            <ul>
+              <li>Sie und der JKHD-Algo starten mit je <span data-sp-zahl="REGELN.START_KAPITAL" data-sp-art="betrag">100.000&nbsp;$</span>.</li>
+              <li>Unter <span data-sp-zahl="REGELN.PLEITE_GRENZE" data-sp-art="betrag">10.000&nbsp;$</span> ist man pleite und hat verloren.</li>
+              <li>Der Algo setzt so viel ein, wie die Positionsgrenze erlaubt, und
+                  stockt auf, wenn sein Kapital wächst. Deshalb ist auch bei Ihnen
+                  „Max“ voreingestellt.</li>
+              <li>Kein Zeitlimit — ein Spiel dauert meist nur wenige Minuten.</li>
+            </ul>
+            <p>Der JKHD-Algo ist ein vereinfachter Spiel-Gegner mit festen Regeln —
+               nicht das Handelssystem von JKHD. Er handelt zu denselben Kursen,
+               Gebühren und Grenzen wie Sie. Erfundene Kurse, kein echtes Geld.</p>
+            <p class="sp-start-tasten">Tasten: <kbd>B</kbd> kaufen · <kbd>S</kbd> verkaufen · <kbd>X</kbd> glattstellen · <kbd>Leertaste</kbd> Pause</p>
+          </div>
+        </div>
+
+        <div class="sp-schicht" data-sp="ende" hidden>
+          <div class="sp-schicht-inhalt">
+            <p class="kicker">// Spielende</p>
+            <h3 data-sp="ende-titel" tabindex="-1"></h3>
+            <p data-sp="ende-grund"></p>
+            <dl class="sp-ende-werte">
+              <div><dt>Spielzeit</dt><dd data-sp="ende-zeit"></dd></div>
+              <div><dt>Spielnummer</dt><dd data-sp="ende-saat"></dd></div>
+              <div><dt>Ihr Kapital</dt><dd data-sp="ende-kapital-du"></dd></div>
+              <div><dt>Kapital des Algos</dt><dd data-sp="ende-kapital-algo"></dd></div>
+              <div><dt>Ihre Trades</dt><dd data-sp="ende-trades-du"></dd></div>
+              <div><dt>Trades des Algos</dt><dd data-sp="ende-trades-algo"></dd></div>
+            </dl>
+            <div class="sp-schicht-knoepfe">
+              <button type="button" class="btn btn-primary" data-sp-aktion="nochmal">Nochmal</button>
+              <button type="button" class="btn btn-ghost" data-sp-aktion="ansehen">Chart ansehen</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="nur-vorlesen" data-sp="ansage" aria-live="polite"></div>
+      </div>
+
+      <noscript>
+        <p class="note"><b>Das Spiel braucht JavaScript.</b> Es läuft ganz in
+           Ihrem Browser und lädt nichts nach. Die Regeln stehen unten auch ohne
+           JavaScript.</p>
+      </noscript>
+    </div>
+  </section>
+
+  <!-- ================= SPIELREGELN =================
+       Die Zahlen in den data-sp-zahl-Stellen setzt js/spiel.js aus den Regeln
+       des Motors neu; der Text hier ist derselbe Stand für Besucher ohne
+       JavaScript. -->
+  <section class="section sp-regel-abschnitt" aria-labelledby="sp-regeln-titel">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">// Spielregeln</p>
+        <h2 id="sp-regeln-titel">So wird gespielt</h2>
+        <p>Alle Regeln gelten für Sie und den JKHD-Algo gleich.</p>
+      </div>
+
+      <div class="sp-regeln">
+        <div class="sp-regel">
+          <h3>Ziel</h3>
+          <p>Beide starten mit <span data-sp-zahl="REGELN.START_KAPITAL" data-sp-art="betrag">100.000&nbsp;$</span>.
+             Wer zuerst <span data-sp-zahl="REGELN.ZIEL_KAPITAL" data-sp-art="betrag">1.000.000&nbsp;$</span>
+             Kapital hat, gewinnt. Wer unter
+             <span data-sp-zahl="REGELN.PLEITE_GRENZE" data-sp-art="betrag">10.000&nbsp;$</span> fällt,
+             ist pleite und verliert; seine Position wird glattgestellt. Es gibt
+             kein Zeitlimit — ein Spiel endet nur so. Geschieht es beiden im
+             selben Augenblick, entscheidet das höhere Kapital.</p>
+        </div>
+        <div class="sp-regel">
+          <h3>Handel</h3>
+          <p>Gehandelt werden Kontrakte zu je
+             <span data-sp-zahl="REGELN.KONTRAKT_UNZEN" data-sp-art="zahl">10</span> Unzen:
+             kaufen (long) oder verkaufen (short, auch ohne Bestand). Sie kaufen
+             zum Briefkurs und verkaufen zum Geldkurs; dazwischen liegen
+             <span data-sp-zahl="REGELN.SPANNE" data-sp-art="kurs">1,00&nbsp;$</span> je Unze,
+             bei hektischem Markt und kurz nach einer Nachricht
+             <span data-sp-zahl="REGELN.SPANNE_WEIT" data-sp-art="kurs">2,00&nbsp;$</span>.
+             Dazu kommt eine Gebühr von
+             <span data-sp-zahl="REGELN.GEBUEHR" data-sp-art="betrag">2&nbsp;$</span> je
+             Kontrakt, beim Kauf wie beim Verkauf. „Glattstellen“ schließt die
+             ganze Position.</p>
+        </div>
+        <div class="sp-regel">
+          <h3>Preiswirkung</h3>
+          <p>Jeder gehandelte Kontrakt verschiebt den Kurs um
+             <span data-sp-zahl="REGELN.PREISWIRKUNG" data-sp-art="kurs">0,01&nbsp;$</span> je
+             Unze — beim Kauf nach oben, beim Verkauf nach unten. Große Orders
+             zahlen deshalb im Schnitt mehr. Die Verschiebung klingt in wenigen
+             Sekunden wieder ab und trifft beide Spieler gleich.</p>
+        </div>
+        <div class="sp-regel">
+          <h3>Stop-Loss und Take-Profit</h3>
+          <p>Für eine offene Position können Sie je einen Stop-Loss (SL) und
+             einen Take-Profit (TP) hinterlegen; beide gelten für die ganze
+             Position. Im Chart klicken Sie auf Ihre gestrichelte
+             Einstandslinie und ziehen sie weg: Nach oben entsteht bei Long ein
+             TP, nach unten ein SL, bei Short umgekehrt. Mit dem Finger tippen
+             Sie die Linie zuerst an und ziehen sie dann; so rollt ein Wisch
+             über den Chart die Seite, statt eine Linie zu verschieben. Bei Long
+             muss ein TP über dem Geldkurs liegen und ein SL darunter, bei Short
+             ein TP unter dem Briefkurs und ein SL darüber; eine Linie auf der
+             falschen Seite zeigt das beim Ziehen an und wird nicht gesetzt.
+             Gesetzte Linien greifen Sie im laufenden Spiel jederzeit und ziehen
+             sie nach; das × am Etikett entfernt sie, Escape bricht ein Ziehen
+             ab. Das Etikett nennt das Ergebnis der ganzen Position, falls die
+             Order genau dort ausgelöst wird, Gebühren und Preiswirkung
+             eingerechnet. Ohne Ziehen geht dasselbe mit den Feldern unter dem
+             Chart, auch per Tastatur. Beim Ziehen läuft das Spiel weiter, und
+             die Skala schrumpft nicht; läuft der Kurs aus dem Bild, wächst sie
+             mit, und halten Sie die Linie über den oberen oder unteren Rand
+             des Charts hinaus, wächst die Skala in diese Richtung.</p>
+        </div>
+        <div class="sp-regel">
+          <h3>Ausführung von SL und TP</h3>
+          <p>Geprüft wird in jedem Takt, nachdem sich der Kurs bewegt hat. Ein
+             SL wird ausgelöst, sobald der Geldkurs (bei Long) bzw. der
+             Briefkurs (bei Short) seine Marke erreicht, und geht dann als
+             Marktorder hinaus: Bei schnellen Bewegungen wird er hinter der
+             Marke ausgeführt (Schlupf), dazu kommt die eigene Preiswirkung —
+             das Ergebnis ist dann schlechter als auf dem Etikett. Ein TP wird
+             erst ausgeführt, wenn sich die ganze Position mindestens zu seinem
+             Preis glattstellen lässt, also zum TP oder besser. Weil dabei die
+             eigene Preiswirkung mitzählt, muss bei Long der Geldkurs den TP um
+             die halbe Preiswirkung der ganzen Position übersteigen — je
+             Kontrakt die Hälfte von
+             <span data-sp-zahl="REGELN.PREISWIRKUNG" data-sp-art="kurs">0,01&nbsp;$</span> —,
+             bei Short der Briefkurs entsprechend darunter liegen. Die Kurslinie
+             im Chart ist zudem der Mittelkurs, eine halbe Spanne von Geld- und
+             Briefkurs entfernt: Hat sie Ihren TP knapp überschritten, ist er
+             deshalb noch nicht erreicht. Endet die
+             Position — durch Glattstellen, einen Seitenwechsel oder die andere
+             Order —, verfallen SL und TP; Auf- und Abstocken lässt sie stehen.
+             Der JKHD-Algo hat dieselben Orders mit denselben Regeln; werden
+             seine und Ihre im selben Takt fällig, kommt zuerst die, deren Marke
+             der Kurs weiter überschritten hat.</p>
+        </div>
+        <div class="sp-regel">
+          <h3>Kapital und Positionsgrenze</h3>
+          <p>Ihr Kapital ist, was Ihnen bliebe, wenn Sie jetzt glattstellten —
+             nach Spanne, Preiswirkung und Gebühr. Direkt nach einem Kauf liegt
+             es deshalb etwas tiefer. Eine Order ist nur erlaubt, wenn der Wert
+             Ihrer Position (zum Mittelkurs) danach höchstens das
+             <span data-sp-zahl="REGELN.HEBEL" data-sp-art="zahl">20</span>-Fache Ihres
+             Kapitals beträgt; „Max“ nutzt das ganz aus. Wächst Ihr Kapital,
+             wächst die Grenze mit, und Sie können nachkaufen. Eine offene
+             Position wird bei Verlusten aber nicht verkleinert: Der Hebel kann
+             dann weit über das
+             <span data-sp-zahl="REGELN.HEBEL" data-sp-art="zahl">20</span>-Fache steigen,
+             und ein Kurssprung kann das Kapital sogar unter null drücken.</p>
+        </div>
+        <div class="sp-regel">
+          <h3>Markt und Nachrichten</h3>
+          <p>Der Markt ist erfunden. Er bewegt sich in Takten zu je
+             <span data-sp-zahl="REGELN.TAKT_MS" data-sp-art="millisekunden">0,25</span> Sekunden
+             (bei Tempo 1×), mal in Trends — in Schüben mit Rückläufen
+             dazwischen —, mal seitwärts, mal hektisch hin und her.
+             Nachrichten werden vorher angekündigt; wenn sie eintreten, springt
+             der Kurs — in welche Richtung, weiß vorher niemand.</p>
+        </div>
+        <div class="sp-regel">
+          <h3>Zonen und Liquidität</h3>
+          <p>An Hochs und Tiefs, an denen der Kurs gedreht hat, bilden sich
+             Zonen — dort liegen viele Stop-Orders anderer Marktteilnehmer.
+             Läuft der Kurs wieder an eine solche Zone, prallt er beim ersten
+             Mal meist ab und kommt danach in der Regel wieder, auch nach einem
+             Rücklauf im Trend. Je
+             öfter er abgeprallt ist, desto eher sticht er durch: Manchmal holt
+             er nur kurz die Stops dahinter ab und dreht dann scharf um
+             (Liquiditäts-Abholung), manchmal bricht er wirklich durch und
+             läuft weiter, manchmal prallt er einfach noch einmal ab. Läuft ein
+             Trend in eine Zone, bricht er meist durch. Was davon passiert und
+             wie tief der Kurs sticht, ist Zufall und vorher nicht zu sehen. Der
+             Markt sieht Ihre Stops nicht und zielt nicht auf Sie; liegt Ihr
+             Stop aber knapp hinter einer Zone, wird er bei einer Abholung
+             leicht mitgenommen — und jeder ausgelöste Stop, Ihrer wie der des
+             Algos, treibt den Kurs als Marktorder weiter in Stichrichtung. Die
+             Zonen zeichnet der Chart nicht ein; Sie erkennen sie wie der Algo
+             am Kursverlauf.</p>
+        </div>
+        <div class="sp-regel">
+          <h3>Anzeige</h3>
+          <p>Eine Kerze fasst
+             <span data-sp-zahl="REGELN.KERZE_TAKTE" data-sp-art="sekunden">2</span> Sekunden
+             zusammen. Der Balken unter dem Kapital reicht von der Pleitegrenze
+             (links) bis zum Ziel (rechts), logarithmisch: Jede Verdopplung ist
+             gleich lang, der Strich markiert den Start. „Offener G/V“ ist das
+             Ergebnis, das Glattstellen jetzt melden würde: die Veränderung
+             Ihres Kapitals seit dem Eröffnen der Position, alle Kosten
+             eingerechnet. Ausgelöste SL markiert der Chart mit ×, ausgelöste
+             TP mit ○, jeweils an ihrer Marke — Ihre kräftig, die des Algos
+             dünn und grau. Jedes Spiel hat eine Nummer, aus der sein Markt samt
+             Nachrichten entsteht; sie steht nach dem Ende auf der
+             Ergebniskarte.</p>
+        </div>
+        <div class="sp-regel">
+          <h3>Pause und Tempo</h3>
+          <p>In der Pause ruht der Markt, und niemand handelt — auch Sie nicht;
+             SL und TP setzen oder verschieben Sie erst danach. Nach „Weiter“
+             sind Kaufen, Verkaufen und Glattstellen noch
+             <span data-sp-zahl="SPIEL.SPERRE_NACH_PAUSE" data-sp-art="sekunden">1,5</span> Sekunden
+             gesperrt, so lange, wie man zum Reagieren braucht: Wer in der Pause
+             in Ruhe entscheidet, handelt so nicht zu dem Kurs, den er dabei
+             studiert hat. SL und TP gehen gleich nach „Weiter“. Wechselt der Tab in den
+             Hintergrund, pausiert das Spiel von selbst.
+             Mit Tempo 2× läuft der Markt doppelt so schnell. „Neues Spiel“
+             hält ein laufendes Spiel erst an und fragt nach; erst ein zweiter
+             Druck beginnt neu.</p>
+        </div>
+        <div class="sp-regel">
+          <h3>Tasten</h3>
+          <p><kbd>B</kbd> kaufen, <kbd>S</kbd> verkaufen, <kbd>X</kbd>
+             glattstellen, <kbd>Leertaste</kbd> Pause und weiter. Die Tasten
+             wirken, solange das Spiel den Fokus hat — nach einem Klick hinein.
+             Wer anderswo auf der Seite tippt, etwa in der Fragen-Blase, handelt
+             nie. Knöpfe im Spiel lösen Sie per Tastatur mit der Eingabetaste
+             aus; die Leertaste gehört der Pause. In den Feldern für SL und TP
+             tippen Sie Preise, dort handeln die Tasten nie: Die Pfeiltasten
+             ändern den Preis um
+             <span data-sp-zahl="SPIEL.SCHUTZ_SCHRITT" data-sp-art="betrag">1&nbsp;$</span>,
+             mit Umschalt oder Bild auf/ab um
+             <span data-sp-zahl="SPIEL.SCHUTZ_SCHRITT_GROSS" data-sp-art="betrag">10&nbsp;$</span>;
+             die Eingabetaste setzt die Order, Escape nimmt die Änderung
+             zurück. Escape bricht auch ein Ziehen im Chart ab.</p>
+        </div>
+      </div>
+
+      <div class="sp-regel-algo">
+        <h3>So spielt der JKHD-Algo</h3>
+        <p>Der JKHD-Algo ist ein vereinfachter Spiel-Algorithmus mit festen,
+           vorher festgelegten Regeln. Er sieht nur, was Sie auch sehen: den
+           Kursverlauf bis jetzt, sein eigenes Konto samt seiner Orders und
+           die angekündigten Nachrichten. Die Zukunft des Markts kennt er
+           nicht, Ihre SL und TP auch nicht.</p>
+        <ul>
+          <li>Die ersten <span data-sp-zahl="ALGO.AUFWAERMEN" data-sp-art="sekunden">22</span> Sekunden
+              beobachtet er nur. Danach vergleicht er zwei gleitende
+              Durchschnitte über <span data-sp-zahl="ALGO.MITTEL_SCHNELL" data-sp-art="sekunden">2,5</span>
+              und <span data-sp-zahl="ALGO.MITTEL_LANGSAM" data-sp-art="sekunden">14</span> Sekunden
+              und misst die übliche Kursbewegung je Takt, gemittelt über
+              <span data-sp-zahl="ALGO.MITTEL_SCHWANKUNG" data-sp-art="sekunden">16</span> Sekunden.</li>
+          <li>Er steigt ein, wenn der kurze Durchschnitt um mehr als das
+              <span data-sp-zahl="ALGO.EINSTIEG" data-sp-art="zahl">7,75</span>-Fache dieser
+              Bewegung über oder unter dem langen liegt — immer in
+              Trendrichtung.</li>
+          <li>Hochs und Tiefs erkennt er selbst im Kursverlauf: Als Zone gilt
+              ihm ein Umkehrpunkt, von dem der Kurs mindestens
+              <span data-sp-zahl="ALGO.ZONE" data-sp-art="zahl">6</span> übliche
+              Bewegungen zurückgelaufen ist. Sticht der Kurs um mindestens
+              <span data-sp-zahl="ALGO.ABHOLUNG" data-sp-art="zahl">1</span> Bewegung
+              durch eine solche Zone und ist binnen
+              <span data-sp-zahl="ALGO.ABHOLUNG_TAKTE" data-sp-art="sekunden">3</span> Sekunden
+              zurück, wertet er das als Abholung und steigt
+              <span data-sp-zahl="ALGO.SPERRE" data-sp-art="sekunden">2</span> Sekunden
+              lang nicht in diese Richtung ein. Bleibt der Kurs länger dahinter,
+              war es ein Ausbruch: Aus dem Hoch wird für ihn eine Unterstützung,
+              aus dem Tief ein Widerstand.</li>
+          <li>Er setzt so viel ein, wie die Positionsgrenze erlaubt, verkleinert
+              aber, sobald sein Stop mehr als
+              <span data-sp-zahl="ALGO.RISIKO" data-sp-art="prozent">53&nbsp;%</span> seines
+              Kapitals kosten würde.</li>
+          <li>Wächst sein Kapital, wächst die Grenze mit. Erlaubt sie
+              mindestens <span data-sp-zahl="ALGO.NACHKAUF" data-sp-art="prozent">2&nbsp;%</span>
+              seiner Position zusätzlich, stockt er auf — auch dabei nur so
+              weit, dass sein Stop höchstens
+              <span data-sp-zahl="ALGO.RISIKO" data-sp-art="prozent">53&nbsp;%</span> seines
+              Kapitals kostet.</li>
+          <li>Mit jedem Einstieg legt er einen ruhenden Stop wie Ihren,
+              <span data-sp-zahl="ALGO.STOP" data-sp-art="zahl">2</span> übliche
+              Kursbewegungen entfernt. Liegt eines seiner Tiefs (bei Long) bzw.
+              Hochs (bei Short) näher als
+              <span data-sp-zahl="ALGO.ZONE_PUFFER" data-sp-art="zahl">3</span> Bewegungen
+              am Stop, legt er ihn
+              <span data-sp-zahl="ALGO.ZONE_PUFFER" data-sp-art="zahl">3</span> Bewegungen
+              hinter diese Zone — nie knapp dahinter, wo die Stops der anderen
+              liegen. Läuft der Kurs in seine Richtung, zieht er den Stop je
+              Kerze nach: höchstens
+              <span data-sp-zahl="ALGO.NACHZIEHEN" data-sp-art="zahl">14</span> Bewegungen
+              hinter dem besten Kurs seit dem Einstieg, ebenfalls nie knapp
+              hinter eine Zone, und nie zurück. Fällt der Vorsprung des
+              kurzen Durchschnitts unter das
+              <span data-sp-zahl="ALGO.AUSSTIEG" data-sp-art="zahl">0,83</span>-Fache, steigt
+              er aus.</li>
+          <li>In den letzten
+              <span data-sp-zahl="ALGO.KEIN_EINSTIEG_VOR" data-sp-art="sekunden">4</span> Sekunden
+              vor einer angekündigten Nachricht eröffnet er nichts und stockt
+              nicht auf;
+              <span data-sp-zahl="ALGO.FLACH_VOR" data-sp-art="sekunden">2</span>&nbsp;s vorher
+              ist er flach. Nach der Nachricht wartet er
+              <span data-sp-zahl="ALGO.ABWARTEN_NACH" data-sp-art="sekunden">1</span>&nbsp;s
+              ab.</li>
+          <li>Nach <span data-sp-zahl="ALGO.VERLUSTE_PAUSE" data-sp-art="zahl">3</span> Verlusten
+              in Folge legt er
+              <span data-sp-zahl="ALGO.PAUSE" data-sp-art="sekunden">25</span> Sekunden Pause
+              ein.</li>
+          <li>Er handelt zu denselben Kursen, mit derselben Preiswirkung,
+              denselben Gebühren, derselben Positionsgrenze und denselben
+              ruhenden Orders wie Sie: Sein Stop wird genauso ausgelöst und kann
+              genauso abgeholt werden wie Ihrer. Ihre Stops sieht er nicht.
+              Schneller ist er nur, weil er nicht klicken muss.</li>
+        </ul>
+      </div>
+
+      <div class="note">
+        <b>Ein Spiel.</b> Markt und Kurse sind erfunden — das sind keine echten
+        Goldpreise, und es ist kein echtes Geld im Spiel. Dass hier Gold gehandelt
+        wird, sagt nichts darüber, welche Märkte JKHD handelt. Der Gegner ist
+        ein vereinfachter Spiel-Algorithmus mit festen Regeln, nicht das
+        Handelssystem von JKHD. Keine Anlageberatung. Das Spiel läuft nur in
+        Ihrem Browser: Es speichert nichts und sendet nichts.
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a class="brand" href="index.html" aria-label="JKHD — Startseite">
+            <svg viewBox="0 0 100 100" aria-hidden="true"><rect x="10" y="22" width="20" height="56"/><rect x="40" y="8" width="20" height="84"/><rect x="70" y="22" width="20" height="56"/></svg>
+            <span class="brand-word">JKHD</span>
+            <span class="brand-divider" aria-hidden="true"></span>
+            <span class="brand-tag">
+              <span class="brand-line1">Quant Systems</span>
+              <span class="brand-line2">Just Know How to Dominate.</span>
+            </span>
+          </a>
+          <p>Nirgends und doch überall.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer-Navigation">
+          <p class="footer-col-title">Navigation</p>
+          <a href="was-wir-machen.html">Was wir machen</a>
+          <a href="system.html">System</a>
+          <a href="pruefung.html">Prüfungen</a>
+          <a href="sicherheit.html">Sicherheit</a>
+          <a href="simulation.html">Simulation</a>
+          <a href="mathematik.html">Mathematik</a>
+          <a href="unternehmen.html">Unternehmen</a>
+          <a href="partnerzugang.html">Partnerzugang</a>
+          <a href="kontakt.html">Kontakt</a>
+        </nav>
+        <div class="footer-contact">
+          <p class="footer-col-title">Kontakt</p>
+          <a href="mailto:kontakt@jkhd.de">kontakt@jkhd.de</a>
+          <a href="mailto:service@jkhd.de">service@jkhd.de</a>
+          <a href="kontakt.html">Kontaktseite</a>
+        </div>
+        <div class="footer-legal-nav">
+          <p class="footer-col-title">Rechtliches</p>
+          <a href="impressum.html">Impressum</a>
+          <a href="datenschutz.html">Datenschutz</a>
+        </div>
+      </div>
+      <div class="footer-legal">
+        Keine Anlageberatung, keine Anlagevermittlung, keine
+        Finanzportfolioverwaltung. JKHD verwaltet kein Kundengeld und verkauft
+        keine Software. Angaben auf dieser Webseite sind unverbindlich.
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© <span id="year">2026</span> JKHD — jkhd.de</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js?v=20260927d"></script>
+  <script src="js/spiel-motor.js?v=20260927d"></script>
+  <script src="js/spiel.js?v=20260927d"></script>
+</body>
+</html>
