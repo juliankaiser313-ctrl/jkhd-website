@@ -361,9 +361,13 @@ if (siteHeader) {
 (function () {
   const hero = document.querySelector(".hero-voll");
   if (!hero) return;
+  // Gemessen wird am Abschnitt des Universums, wenn der Hero auf dessen Buehne
+  // liegt (seit 11.10.2026): die Buehne klebt beim Scrollen unter der Kopfzeile,
+  // der Hero mit ihr -- sein eigener Abstand nach oben waere dann falsch
+  const mess = hero.closest(".universum") || hero;
 
   function abzug() {
-    const oben = hero.getBoundingClientRect().top + window.scrollY;
+    const oben = mess.getBoundingClientRect().top + window.scrollY;
     document.documentElement.style.setProperty("--hero-abzug", Math.floor(oben) + "px");
   }
 

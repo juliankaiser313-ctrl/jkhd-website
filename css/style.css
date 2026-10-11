@@ -2991,15 +2991,15 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 /* ---------- Startseite: Flug durch ein Netz aus Mathematik (js/universum.js) ----------
    Julian, 10.10.2026. Der Abschnitt ist der Scrollweg; die Buehne bleibt dabei stehen
    (sticky) und ist immer schwarz -- auch im hellen Modus, es ist ein Blick ins All.
-   js/universum.js zeichnet auf die Leinwand. Ohne JavaScript (keine Klasse .ist-aktiv)
-   steht das Zeichen auf Schwarz; bei reduzierter Bewegung (.ist-still) das Schlussbild
-   ohne Scrollweg. */
+   js/universum.js zeichnet auf die Leinwand. Seit 11.10.2026 liegt der Hero der
+   Startseite auf der Buehne (.universum-hero, echter Inhalt ueber der Leinwand):
+   beim Scrollen blendet js/universum.js ihn aus und laesst seine Punkte in die
+   Milchstrasse fliegen -- der Scrollweg ist um eine Bildschirmhoehe laenger.
+   Ohne JavaScript (keine Klasse .ist-aktiv) steht der Hero wie gewohnt und darunter
+   das Zeichen auf Schwarz; bei reduzierter Bewegung (.ist-still) der Hero und
+   darunter das Schlussbild ohne Scrollweg. */
 .universum { position: relative; background: #000; }
-.universum.ist-aktiv { height: 3000vh; }
-/* Weicher Uebergang vom Startbildschirm (Papier bzw. Nacht) ins Schwarz -- an
-   der Stelle stand bis 10.10.2026 die leere Laufleiste (Julian: "diesen
-   Uebergangsbalken wegmachen"). js/universum.js zaehlt erst nach ihm. */
-.universum-uebergang { height: 18vh; background: linear-gradient(to bottom, var(--bg), #000); }
+.universum.ist-aktiv { height: 3100vh; }
 .universum-buehne {
   position: sticky;
   top: var(--header-h);
@@ -3009,23 +3009,40 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   background: #000;
 }
 .universum-leinwand { display: block; width: 100%; height: 100%; }
+.universum.ist-aktiv .universum-hero {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  height: 100%;
+  min-height: 0;
+  padding: 24px 0 64px;
+}
+.universum.ist-aktiv .universum-hero.ist-weg { visibility: hidden; }
 .universum:not(.ist-aktiv) .universum-leinwand { display: none; }
-.universum:not(.ist-aktiv) .universum-buehne {
-  position: static;
-  height: auto;
-  padding: 96px 24px;
+.universum:not(.ist-aktiv) .universum-buehne { position: static; height: auto; }
+.universum-ohne-js { display: none; }
+.universum:not(.ist-aktiv) .universum-ohne-js {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
+  padding: 96px 24px;
 }
-.universum.ist-aktiv .universum-ohne-js { display: none; }
-.universum-ohne-js { display: contents; }
 .universum-ohne-js svg { width: 88px; height: 88px; fill: #f4f2ee; }
 .universum-ohne-js .universum-wort { color: #f4f2ee; font-weight: 800; font-size: 1.4rem; letter-spacing: 0.34em; transform: translateX(0.17em); }
 .universum-ohne-js .universum-spruch { color: #9d9d99; font-family: var(--mono); font-size: 0.8rem; }
 .universum.ist-still { height: auto; }
-.universum.ist-still .universum-buehne { position: relative; top: 0; height: 72vh; min-height: 420px; }
+.universum.ist-still .universum-buehne { position: static; height: auto; display: flex; flex-direction: column; }
+.universum.ist-still .universum-hero {
+  order: -1;   /* im Dokument steht die Leinwand zuerst; hier kommt der Hero davor */
+  position: relative;
+  inset: auto;
+  height: auto;
+  min-height: calc(100vh - var(--hero-abzug));
+  min-height: calc(100svh - var(--hero-abzug));
+  padding: 72px 0 112px;
+}
+.universum.ist-still .universum-leinwand { height: 72vh; min-height: 420px; }
 @media (max-width: 560px) {
-  .universum.ist-aktiv { height: 2400vh; }
+  .universum.ist-aktiv { height: 2500vh; }
 }

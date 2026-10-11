@@ -34,7 +34,10 @@
 // umherdrehen, eher waagerecht bleiben und nur nach links oder rechts gehen." Dazu:
 // "die grossen Planeten sind immer noch zu nah und springen ploetzlich, das darf
 // nicht passieren." Und: "die Galaxie soll nicht einfach verschwinden, sondern ein
-// Punkt davon soll zum ersten Planeten werden, das sieht besser aus."
+// Punkt davon soll zum ersten Planeten werden, das sieht besser aus." Elfte
+// Fassung (11.10.2026): "nicht erst schwarz, sondern das Logo, der Text und die
+// Vierecke im Hintergrund sollen sich in eine Galaxie verwandeln, und dann geht
+// es weiter."
 //
 // Umsetzung ohne Bibliothek: eine Zeichenflaeche (canvas 2D) mit eigener
 // Perspektiv-Projektion; die Erde zeichnet ein kleines WebGL-Programm (eine Kugel je
@@ -44,7 +47,12 @@
 // Karten entstehen hier aus Rauschen. Ohne WebGL steht an ihrer Stelle eine Erde aus
 // Punkten (Landumrisse von Hand nachgezeichnet, weiter unten) und die Planeten sind
 // schattierte Scheiben. Der Scrollfortschritt p durch den Abschnitt
-// #universum (die Buehne bleibt dabei stehen, sticky) treibt alles:
+// #universum (die Buehne bleibt dabei stehen, sticky) treibt alles -- davor der
+// Vorspann (eine Bildschirmhoehe Scrollweg, Anteil `vorspann`): der Hero der
+// Startseite liegt auf der Buehne; seine Ueberschrift, das Zeichen, die Knoepfe
+// und das Raster werden zu Punkten, die sich um die Mitte in die Arme und den
+// Kern der Milchstrasse drehen, waehrend die Seite dahinter schwarz wird und die
+// Sterne kommen; dann, mit p = 0 des Flugs:
 //   0,00-0,20  die Milchstrasse liegt voraus und waechst, Sterne ringsum; hinein: die
 //              Arme werden zum Band, Sterne, Nebel und Staub fuellen den Raum; das
 //              Bild waechst auf einen Punkt eines Arms zu, der zum ersten Planeten wird
@@ -81,6 +89,7 @@
   const leinwand = abschnitt.querySelector(".universum-leinwand");
   const ctx = leinwand.getContext("2d");
   if (!ctx) return;
+  const hero = abschnitt.querySelector(".universum-hero");
   const reduziert = window.matchMedia("(prefers-reduced-motion: reduce)");
   // Wo die Erdbilder liegen: neben js/, auch von en/ aus gesehen
   const BILDER = (() => {
@@ -1028,9 +1037,11 @@ void main() {
   let kleben = 0;      // Abstand der klebenden Buehne vom oberen Rand (css: top)
   function groesseAnpassen() {
     kleben = parseFloat(getComputedStyle(buehne).top) || 0;
-    const r = buehne.getBoundingClientRect();
+    const r = leinwand.getBoundingClientRect();
     B = Math.max(1, Math.round(r.width));
     H = Math.max(1, Math.round(r.height));
+    heroTeilchen = null;
+    vorspannMessen();
     dpr = Math.min(window.devicePixelRatio || 1, 1.25) * qualitaet;
     // nicht ueber ~2,4 Mio. Bildpunkte: das Bild ist weich, Fuellrate ist der Engpass
     if (B * H * dpr * dpr > 2.4e6) dpr = Math.sqrt(2.4e6 / (B * H));
@@ -1067,16 +1078,17 @@ void main() {
   // Sichtbarkeit nach Tiefe: nah weich einblenden, fern im Dunst verschwinden
   const tiefe = (z, fern) => clamp((z - 60) / 240, 0, 1) * clamp(1 - (z - 300) / fern, 0, 1);
 
-  function bild(p, zeit, still) {
+  function bildFlug(p, zeit, still, vorher) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
-    ctx.fillStyle = "#000";
+    ctx.fillStyle = vorher < 1 ? grundFarbe(vorher) : "#000";
     ctx.fillRect(0, 0, B, H);
     if (!welt) return;
 
     const q = Math.min(1, p / FLUG);      // Fortschritt im Flug
-    const auftauchen = stueck(q, 0, 0.03);
+    // Galaxie und Sterne kommen schon im Vorspann unter den Punkten hervor
+    const auftauchen = Math.max(stueck(vorher, 0.5, 0.95), stueck(q, 0, 0.03));
     if (auftauchen <= 0) return;
 
     // Zoom von der Erde bis in die Halle, in e-fachen Vergroesserungen
@@ -1380,6 +1392,268 @@ void main() {
       gesperrt(SPRUCH, B / 2, H / 2, `500 ${Math.round(Math.min(44, B * 0.05))}px "Playfair Display", Georgia, serif`, 0.04);
     }
     ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+  }
+
+  // ---- Der Vorspann: der Hero wird zur Milchstrasse ----
+  // Julian, 11.10.2026: "nicht erst schwarz, sondern das Logo, der Text und die
+  // Vierecke im Hintergrund sollen sich in eine Galaxie verwandeln, und dann geht
+  // es weiter." Der Hero (echter Inhalt, liegt ueber der Leinwand) wird in Punkte
+  // abgetastet: jeder Buchstabe aus seiner Schrift an seiner Stelle (die Masse
+  // kommen aus dem Dokument, Zeichen fuer Zeichen), die Balken des Zeichens, der
+  // Strich, die Raender der Knoepfe -- und die Kreuzungen und Linien des Rasters.
+  // Beim Scrollen (eine Bildschirmhoehe, Anteil `vorspann` des Abschnitts) blendet
+  // der Hero aus, waehrend die Leinwand dieselben Punkte zeigt; dann loesen sie
+  // sich -- erst das Raster, dann die Schrift -- und drehen sich um die Mitte in
+  // die Arme und den Kern der Milchstrasse, genau dorthin, wo ihr Bild zu Beginn
+  // des Flugs steht (gleiche Lage, Drehung und Stauchung). Die Seite wird dabei
+  // schwarz, Sterne und das Bild der Galaxie kommen unter den Punkten hervor, die
+  // Punkte vergehen darin. Im hellen Modus ist die Schrift Tinte: die Punkte
+  // werden erst hell, wenn der Grund dunkel wird.
+  let vorspann = 0;          // Anteil des Scrollwegs, der dem Vorspann gehoert
+  let heroTeilchen = null;   // die abgetasteten Punkte, je Groesse neu
+  const VORSPANN_DAUER = 0.56;  // so lange (im Vorspann) fliegt ein Punkt
+  const TOENE = [[175, 195, 255], [255, 255, 255], [255, 170, 205], [255, 228, 190]];   // wie das Bild der Galaxie
+  function vorspannMessen() {
+    const weg = abschnitt.offsetHeight - buehne.offsetHeight;
+    vorspann = hero && weg > 0 && !reduziert.matches ? clamp(H / weg, 0, 0.2) : 0;
+  }
+  function bild(p, zeit, still) {
+    const ohne = still || vorspann <= 0;
+    const v = ohne ? 1 : clamp(p / vorspann, 0, 1);
+    const p2 = ohne ? p : clamp((p - vorspann) / (1 - vorspann), 0, 1);
+    if (!still) heroZeigen(v);
+    bildFlug(p2, zeit, still, v);
+    if (v < 1) verwandlung(v);
+  }
+  // Der Hero blendet ueber den Anfang des Vorspanns aus (die Leinwand zeigt dort
+  // schon dieselben Punkte); danach ist er unsichtbar und nicht mehr klickbar
+  function heroZeigen(v) {
+    if (!hero) return;
+    const a = 1 - stueck(v, 0.02, 0.14);
+    hero.style.opacity = a >= 1 ? "" : a.toFixed(3);
+    hero.classList.toggle("ist-weg", a <= 0);
+  }
+  function heroSicher() {
+    if (!heroTeilchen) heroTeilchen = heroAbtasten();
+    return heroTeilchen;
+  }
+  const rgb = (f) => "rgb(" + Math.round(f[0]) + "," + Math.round(f[1]) + "," + Math.round(f[2]) + ")";
+  // Der Grund der Leinwand: die Farbe des Heros, die ins Schwarz geht
+  function grundFarbe(v) {
+    const t = heroSicher();
+    if (!t) return "#000";
+    const m = 1 - stueck(v, 0.1, 0.5);
+    return rgb([t.grund[0] * m, t.grund[1] * m, t.grund[2] * m]);
+  }
+  function heroAbtasten() {
+    if (!hero || B < 2 || H < 2) return null;
+    // laufende Einblend-Animationen des Heros zu Ende bringen: sonst stehen die
+    // Masse noch verschoben (fadeUp in css/style.css)
+    for (const el of hero.querySelectorAll(".hero-inner > *")) {
+      if (el.getAnimations) for (const an of el.getAnimations()) an.finish();
+    }
+    const sr = leinwand.getBoundingClientRect();
+    const farbe = (text) => {
+      const m = /rgba?\(([^)]+)\)/.exec(text || "");
+      if (!m) return null;
+      const t = m[1].split(",").map(parseFloat);
+      return [t[0], t[1], t[2], t.length > 3 ? t[3] : 1];
+    };
+    const cs = getComputedStyle(hero);
+    const grund = farbe(cs.backgroundColor) || [0, 0, 0, 1];
+    const glanz = farbe(cs.backgroundImage) || [255, 255, 255, 0.07];
+    const h1 = hero.querySelector("h1");
+    const tinte = farbe(getComputedStyle(h1 || hero).color) || [244, 242, 238, 1];
+    const linie = farbe(getComputedStyle(hero, "::before").backgroundImage) || [128, 128, 128, 0.3];
+    const K = 72;   // die Kachel des Rasters (.hero::before)
+    // Die Maske des Rasters (radial, 75 % x 65 % von oben mittig, voll bis 25 %, weg ab 75 %)
+    const maske = (x, y) => clamp((0.75 - Math.hypot((x - B / 2) / (0.75 * B), y / (0.65 * H))) / 0.5, 0, 1);
+
+    // 1. Schrift, Zeichen, Strich und Knopfraender weiss auf eine Hilfsleinwand
+    const c = sprite(B, H), g = c.getContext("2d");
+    g.fillStyle = "#fff";
+    g.strokeStyle = "#fff";
+    g.lineWidth = 1;
+    g.textBaseline = "middle";
+    const range = document.createRange();
+    for (const el of hero.querySelectorAll("h1, .brand-word, .brand-line1, .brand-line2, .hero-actions .btn")) {
+      const st = getComputedStyle(el);
+      g.font = st.fontStyle + " " + st.fontWeight + " " + st.fontSize + " " + st.fontFamily;
+      const gross = st.textTransform === "uppercase";
+      const laeufer = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      let knoten;
+      while ((knoten = laeufer.nextNode())) {
+        const text = knoten.nodeValue;
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i];
+          if (ch.trim() === "") continue;
+          range.setStart(knoten, i);
+          range.setEnd(knoten, i + 1);
+          const r = range.getClientRects()[0];
+          if (!r || r.width <= 0) continue;
+          g.fillText(gross ? ch.toUpperCase() : ch, r.left - sr.left, r.top - sr.top + r.height / 2);
+        }
+      }
+    }
+    for (const svg of hero.querySelectorAll(".hero-brand svg")) {
+      const r = svg.getBoundingClientRect(), k = r.width / 100;
+      for (const re of svg.querySelectorAll("rect")) {
+        g.fillRect(r.left - sr.left + re.x.baseVal.value * k, r.top - sr.top + re.y.baseVal.value * k, re.width.baseVal.value * k, re.height.baseVal.value * k);
+      }
+    }
+    for (const el of hero.querySelectorAll(".brand-divider")) {
+      const r = el.getBoundingClientRect();
+      g.fillRect(r.left - sr.left, r.top - sr.top, Math.max(1, r.width), r.height);
+    }
+    for (const el of hero.querySelectorAll(".hero-actions .btn")) {
+      const r = el.getBoundingClientRect();
+      g.strokeRect(r.left - sr.left + 0.5, r.top - sr.top + 0.5, r.width - 1, r.height - 1);
+    }
+    // 2. abtasten: alle `schritt` Bildpunkte ein Punkt, so viele, wie der Schirm vertraegt
+    const d = g.getImageData(0, 0, B, H).data;
+    const hoechstens = B < 700 ? 3200 : 7000;
+    let schritt = 2, punkte = [];
+    for (;;) {
+      punkte = [];
+      for (let y = 0; y < H; y += schritt) {
+        for (let x = 0; x < B; x += schritt) {
+          const a = d[(y * B + x) * 4 + 3];
+          if (a > 40) punkte.push({ x, y, hell: a / 255, art: 0 });
+        }
+      }
+      if (punkte.length <= hoechstens || schritt >= 4) break;
+      schritt++;
+    }
+    // 3. das Raster: die Kreuzungen (heller) und Punkte entlang der Linien
+    for (let y = 0; y <= H; y += K) {
+      for (let x = 0; x <= B; x += K) {
+        const m = maske(x, y);
+        if (m > 0.04) punkte.push({ x, y, hell: 0.3 + 0.5 * m, art: 1 });
+      }
+    }
+    const T = 18;
+    for (let y = 0; y <= H; y += K) {
+      for (let x = T; x <= B; x += T) {
+        if (x % K === 0) continue;
+        const m = maske(x, y);
+        if (m > 0.04) punkte.push({ x, y, hell: 0.12 + 0.3 * m, art: 1 });
+      }
+    }
+    for (let x = 0; x <= B; x += K) {
+      for (let y = T; y <= H; y += T) {
+        if (y % K === 0) continue;
+        const m = maske(x, y);
+        if (m > 0.04) punkte.push({ x, y, hell: 0.12 + 0.3 * m, art: 1 });
+      }
+    }
+    // 4. das Raster als Bild (Linien mit Maske), das im Vorspann vergeht
+    const gitter = sprite(B, H), gg = gitter.getContext("2d");
+    gg.strokeStyle = "rgba(" + linie[0] + "," + linie[1] + "," + linie[2] + "," + linie[3] + ")";
+    gg.lineWidth = 1;
+    gg.beginPath();
+    for (let x = 0.5; x <= B; x += K) { gg.moveTo(x, 0); gg.lineTo(x, H); }
+    for (let y = 0.5; y <= H; y += K) { gg.moveTo(0, y); gg.lineTo(B, y); }
+    gg.stroke();
+    gg.globalCompositeOperation = "destination-in";
+    gg.save();
+    gg.translate(B / 2, 0);
+    gg.scale(0.75 * B, 0.65 * H);
+    const mg = gg.createRadialGradient(0, 0, 0, 0, 0, 1);
+    mg.addColorStop(0.25, "#000");
+    mg.addColorStop(0.75, "rgba(0,0,0,0)");
+    gg.fillStyle = mg;
+    gg.fillRect(-1, -0.2, 2, 2.2);
+    gg.restore();
+    // 5. jedem Punkt sein Ziel in der Milchstrasse, wie sie zu Beginn des Flugs im
+    // Bild steht (bildFlug: Mitte, Groesse, Drehung 0,55, Stauchung 0,48), und sein
+    // Weg dorthin: um die Mitte gedreht, im Sinn der Arme -- aeussere Punkte drehen
+    // sich oefter als innere, so bekommt der Wirbel unterwegs Spiralarme. Das
+    // Raster loest sich zuerst (zufaellig), die Schrift danach von links nach rechts
+    const f = Math.max(Math.min(B, H) * 0.95, B * 0.66);
+    const gr = f * 0.21, dreh = 0.55, cx = B / 2, cy = H * 0.46;
+    const rmax = Math.hypot(B / 2, H / 2);
+    const z = zufall(7);
+    const gauss = () => z() + z() + z() - 1.5;
+    for (const pt of punkte) {
+      let r, w;
+      if (pt.art === 0 && z() < 0.15) {              // in den Kern
+        r = z() * 0.22;
+        w = z() * 2 * Math.PI;
+      } else {                                       // auf einen Arm
+        const tt = 0.3 + z() * (3.4 * Math.PI - 0.3);
+        r = Math.min(0.47, (55 * Math.exp(0.2 * tt)) / 512 * (1 + gauss() * 0.1));
+        w = tt + (z() < 0.5 ? 0 : Math.PI) + gauss() * 0.05;
+      }
+      const lx = Math.cos(w) * r * gr, ly = Math.sin(w) * r * gr * 0.48;
+      const tx = cx + lx * Math.cos(dreh) - ly * Math.sin(dreh);
+      const ty = cy + lx * Math.sin(dreh) + ly * Math.cos(dreh);
+      pt.r0 = Math.hypot(pt.x - cx, pt.y - cy);
+      pt.a0 = Math.atan2(pt.y - cy, pt.x - cx);
+      pt.r1 = Math.hypot(tx - cx, ty - cy);
+      let da = Math.atan2(ty - cy, tx - cx) - pt.a0;
+      da -= Math.round(da / (2 * Math.PI)) * 2 * Math.PI;
+      pt.dreh = da - (0.7 + 1.2 * (pt.r0 / rmax) + z() * 0.15) * 2 * Math.PI;
+      pt.start = pt.art === 1 ? 0.04 + z() * 0.2 : 0.1 + 0.22 * (pt.x / B) + z() * 0.06;
+      const t = z();
+      pt.ton = pt.art === 1 ? (t < 0.7 ? 0 : 1) : t < 0.45 ? 1 : t < 0.8 ? 0 : t < 0.92 ? 3 : 2;
+    }
+    // je Ton eine Gruppe, nach Startzeit sortiert: so wechselt die Farbe beim
+    // Zeichnen nur ein paarmal je Bild
+    const gruppen = TOENE.map((ton, i) => punkte.filter((pt) => pt.ton === i).sort((a, b) => a.start - b.start));
+    const grau = [misch(grund[0], tinte[0], 0.5), misch(grund[1], tinte[1], 0.5), misch(grund[2], tinte[2], 0.5)];
+    // Farben je Gruppe in sieben Stufen von der Schrift (bzw. dem Raster) zum Ton
+    const farben = TOENE.map((ton, i) => {
+      const von = i === 0 && gruppen[i].length && gruppen[i][0].art === 1 ? grau : tinte;
+      const stufen = [];
+      for (let k = 0; k <= 6; k++) stufen.push(rgb([misch(von[0], ton[0], k / 6), misch(von[1], ton[1], k / 6), misch(von[2], ton[2], k / 6)]));
+      return stufen;
+    });
+    return { grund, glanz, gitter, gruppen, farben, schritt, cx, cy, vorlaeufig: !schriftenBereit };
+  }
+  function verwandlung(v) {
+    const t = heroSicher();
+    if (!t) return;
+    ctx.globalCompositeOperation = "source-over";
+    // der Glanz oben (wie .hero) und das Raster, beides vergeht
+    const seite = 1 - stueck(v, 0.1, 0.5);
+    if (seite > 0) {
+      ctx.save();
+      ctx.globalAlpha = seite;
+      ctx.translate(B / 2, -0.08 * H);
+      ctx.scale(0.6 * B, 0.45 * H);
+      const gl = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+      gl.addColorStop(0, "rgba(" + t.glanz[0] + "," + t.glanz[1] + "," + t.glanz[2] + "," + t.glanz[3] + ")");
+      gl.addColorStop(0.65, "rgba(" + t.glanz[0] + "," + t.glanz[1] + "," + t.glanz[2] + ",0)");
+      ctx.fillStyle = gl;
+      ctx.fillRect(-1, -0.5, 2, 3);
+      ctx.restore();
+      ctx.globalAlpha = seite * (1 - stueck(v, 0.04, 0.4));
+      ctx.drawImage(t.gitter, 0, 0, B, H);
+    }
+    // die Punkte: kommen mit dem Ausblenden des Heros, vergehen, wenn die Galaxie da ist
+    const ein = stueck(v, 0.02, 0.14);
+    const aus = 1 - stueck(v, 0.72, 0.98);
+    const licht = stueck(v, 0.1, 0.45);   // von der Tinte zum Licht
+    const cx = t.cx, cy = t.cy;
+    for (let gi = 0; gi < t.gruppen.length; gi++) {
+      let stufe = -1;
+      for (const pt of t.gruppen[gi]) {
+        const e = glatt(clamp((v - pt.start) / VORSPANN_DAUER, 0, 1));
+        let x = pt.x, y = pt.y;
+        if (e > 0) {
+          const r = misch(pt.r0, pt.r1, e);
+          const a = pt.a0 + pt.dreh * e;
+          x = cx + r * Math.cos(a);
+          y = cy + r * Math.sin(a);
+        }
+        const k = Math.round(Math.max(e, licht) * 6);
+        if (k !== stufe) { stufe = k; ctx.fillStyle = t.farben[gi][k]; }
+        ctx.globalAlpha = clamp(misch(pt.hell, 1, e * 0.8) * ein * aus, 0, 1);
+        const gr = misch(t.schritt, 1.4, e);
+        ctx.fillRect(x - gr * 0.5, y - gr * 0.5, gr, gr);
+      }
+    }
     ctx.globalAlpha = 1;
   }
 
@@ -1980,6 +2254,7 @@ void main() {
 
   function einrichten() {
     abschnitt.classList.toggle("ist-still", reduziert.matches);
+    heroZeigen(0);
     groesseAnpassen();
     if (reduziert.matches) { anhalten(); weltSicher(); bild(0.95, 0, true); }
   }
@@ -1987,7 +2262,7 @@ void main() {
   abschnitt.classList.add("ist-aktiv");
   einrichten();
   // Die Schriften (Playfair, Manrope) sind vielleicht noch nicht geladen
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { schriftenBereit = true; if (reduziert.matches) bild(0.95, 0, true); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { schriftenBereit = true; heroTeilchen = null; if (reduziert.matches) bild(0.95, 0, true); });
   else schriftenBereit = true;
 
   new IntersectionObserver((eintraege) => {
