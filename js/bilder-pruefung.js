@@ -1,28 +1,9 @@
-// ---------- Pruefungen: die Stufen als Animation beim Scrollen ----------
-// Julian, 11.10.2026: "bei der Pruefung alles wegmachen und stattdessen eine
-// Animation hinmachen, die beim Runterscrollen erklaert, was genau geprueft wird,
-// wie usw. -- wenig Text, eher mehr mit Animationen; und ganz am Ende soll dann
-// alles in Form des JKHD-Logos plus Spruch fliessen." Danach: "pro Thema zehnmal
-// laenger zum Scrollen, wenn alles aufgetaucht ist, dass man es auch lesen kann;
-// die Uebergaenge schoener -- nach oben weiterscrollen." Und: "die Diagramme und
-// beweglichen Anzeigefenster sollen sich bis zum Ende bewegen; den ersten Text
-// auch schon als Animation; beim Firmenlogo am Ende das nehmen, was ganz oben auf
-// der Startseite steht; die Punkte, die das Logo erstellen, sollen von unten kommen."
-//
-// Inhalt sind die fuenf Stufen, die Belastungsproben und die Grenze der Seite vom
-// 23.09.2026 (damals gegen den Quelltext des Systems geprueft), nur gekuerzt --
-// nichts Neues, keine Zahlen, die nicht dort standen. Die Texte je Bild stehen als
-// echter Inhalt in der Seite (.pruefung-text, das erste mit der Ueberschrift der
-// Seite); dieses Skript schiebt sie mit ihrem Bild herein und hinaus und zeichnet
-// dazu auf die Leinwand. Ohne JavaScript steht alles als Liste untereinander, bei
-// "reduzierter Bewegung" ebenso, mit dem Schlussbild still darueber.
-//
-// Der Scrollweg (Abschnitt #pruefung, die Buehne klebt) ist in Einheiten von je
-// etwa einer Bildschirmhoehe geteilt (LAENGEN). Jedes Bild schiebt sich von unten
-// herein (SCHUB), baut sich auf (AUFBAU) und steht dann still, bis das naechste
-// es nach oben hinausschiebt -- und solange es steht, bewegt es sich weiter (die
-// Reihen laufen, Fenster rollen, Signale kommen, das Lebenszeichen schlaegt; alles
-// an der Uhr `zeit`, nicht am Scrollen). Die Bilder:
+// ---------- Die Bilder der Pruefungen-Seite (pruefung.html / en/testing.html) ----------
+// Gezeichnet vom Motor js/bildlauf.js (dort steht, wie Scrollweg, Schub, Aufbau und
+// Haltezeit zusammenspielen). Inhalt sind die fuenf Stufen, die Belastungsproben
+// und die Grenze der Seite vom 23.09.2026 (damals gegen den Quelltext des Systems
+// geprueft), nur gekuerzt -- nichts Neues, keine Zahlen, die dort nicht standen.
+// Die Bilder:
 //   00 die Ueberschrift der Seite, dazu die fuenf Stufen als Zeichen, leise bewegt
 //   01 Zuerst rot: ein Feld von Tests, jeder wird erst rot, dann gruen; ein paar
 //      bleiben leer -- leer ist nichts bewiesen; danach laufen die Tests immer wieder
@@ -40,192 +21,9 @@
 //      herauskommen muss; danach trifft es sie reihum wieder
 //   07 Grenze: die fuenf Stufen als Zeichen, darunter der Strich, der vor dem
 //      echten Broker endet
-//   Ende (ENDE Einheiten): Punkte steigen von unten auf und werden zum Zeichen der
-//      Startseite (Balken, JKHD, Strich, Quant Systems, Just Know How to Dominate.);
-//      danach steht es eine Bildschirmhoehe lang (zugabe)
-(function () {
-  const abschnitt = document.getElementById("pruefung");
-  if (!abschnitt) return;
-  const buehne = abschnitt.querySelector(".pruefung-buehne");
-  const leinwand = abschnitt.querySelector(".pruefung-leinwand");
-  const ctx = leinwand.getContext("2d");
-  if (!ctx) return;
-  const texte = Array.from(abschnitt.querySelectorAll(".pruefung-text"));
-  const reduziert = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const EN = (document.documentElement.lang || "").toLowerCase().startsWith("en");
-  const T = (de, en) => (EN ? en : de);
-
-  // ---- Hilfen ----
-  function zufall(saat) {
-    let a = saat >>> 0;
-    return function () {
-      a = (a + 0x6d2b79f5) >>> 0;
-      let t = a;
-      t = Math.imul(t ^ (t >>> 15), t | 1);
-      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-  const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
-  const glatt = (t) => t * t * (3 - 2 * t);
-  const stueck = (p, von, bis) => glatt(clamp((p - von) / (bis - von), 0, 1));
-  const misch = (a, b, t) => a + (b - a) * t;
-  const dreieck = (u) => { const f = u - Math.floor(u); return f < 0.5 ? f * 2 : 2 - f * 2; };   // 0..1..0
-
-  // ---- Farben und Schriften aus dem Stil der Seite (hell oder dunkel) ----
-  let F = {};
-  function farbenLesen() {
-    const cs = getComputedStyle(document.documentElement);
-    const v = (name, sonst) => (cs.getPropertyValue(name) || "").trim() || sonst;
-    F = {
-      grund: v("--bg", "#f7f6f3"),
-      tinte: v("--text", "#101012"),
-      matt: v("--muted", "#605f5b"),
-      rand: v("--border", "#e2dfd8"),
-      rand2: v("--border-2", "#bdbab2"),
-      rot: v("--vip", "#b3261e"),
-      gruen: v("--ok", "#2e7d4f"),
-      mono: v("--mono", "Consolas, monospace"),
-      sans: v("--sans", "system-ui, sans-serif"),
-    };
-  }
-  const mono = (px, gewicht) => `${gewicht || 500} ${px}px ${F.mono}`;
-  const sans = (px, gewicht) => `${gewicht || 600} ${px}px ${F.sans}`;
-
-  // ---- Groesse ----
-  let B = 0, H = 0, dpr = 1, klein = false;
-  let textHoehen = [];
-  function groesseAnpassen() {
-    const r = leinwand.getBoundingClientRect();
-    B = Math.max(1, Math.round(r.width));
-    H = Math.max(1, Math.round(r.height));
-    klein = B < 700;
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    leinwand.width = Math.round(B * dpr);
-    leinwand.height = Math.round(H * dpr);
-    textHoehen = texte.map((el) => (el.offsetHeight || 160) + (klein ? 60 : 84));
-    teilchen = null;
-    zugabeMessen();
-  }
-  // Die Flaeche fuer die Zeichnung eines Bildes: ueber seinem Text, mit Rand
-  function flaeche(i) {
-    const rand = klein ? 20 : 48;
-    const oben = klein ? 20 : 32;
-    const unten = textHoehen[i] || 200;
-    return { x: rand, y: oben, b: B - 2 * rand, h: Math.max(120, H - unten - oben) };
-  }
-
-  // Kleine Zeichenhilfen
-  function text(s, x, y, font, farbe, lage, basis) {
-    ctx.font = font;
-    ctx.fillStyle = farbe;
-    ctx.textAlign = lage || "left";
-    ctx.textBaseline = basis || "alphabetic";
-    ctx.fillText(s, x, y);
-  }
-  function haken(x, y, gr, farbe, a) {
-    ctx.save();
-    ctx.globalAlpha *= a;
-    ctx.strokeStyle = farbe;
-    ctx.lineWidth = Math.max(1.5, gr * 0.14);
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.beginPath();
-    ctx.moveTo(x - gr * 0.45, y + gr * 0.02);
-    ctx.lineTo(x - gr * 0.12, y + gr * 0.36);
-    ctx.lineTo(x + gr * 0.48, y - gr * 0.36);
-    ctx.stroke();
-    ctx.restore();
-  }
-  function kreuz(x, y, gr, farbe, a) {
-    ctx.save();
-    ctx.globalAlpha *= a;
-    ctx.strokeStyle = farbe;
-    ctx.lineWidth = Math.max(1.5, gr * 0.14);
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(x - gr * 0.4, y - gr * 0.4);
-    ctx.lineTo(x + gr * 0.4, y + gr * 0.4);
-    ctx.moveTo(x + gr * 0.4, y - gr * 0.4);
-    ctx.lineTo(x - gr * 0.4, y + gr * 0.4);
-    ctx.stroke();
-    ctx.restore();
-  }
-  // Eine Kursreihe aus Zufall (feste Saat), die sich ohne Sprung wiederholt: der
-  // Gang endet, wo er begann -- so kann sie endlos durchs Bild laufen
-  function reiheRund(saat, n) {
-    const z = zufall(saat);
-    const w = [0];
-    for (let i = 1; i < n; i++) w.push(w[i - 1] + (z() - 0.5));
-    const ende = w[n - 1];
-    for (let i = 0; i < n; i++) w[i] -= (ende * i) / (n - 1);
-    return normiert(w);
-  }
-  function normiert(w) {
-    let lo = Infinity, hi = -Infinity;
-    for (const v of w) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
-    return w.map((v) => 0.12 + ((v - lo) / (hi - lo || 1)) * 0.76);
-  }
-  // Dieselben Schritte in zerstoerter Reihenfolge: kein Zusammenhang mehr, aber
-  // ebenfalls rund (die Summe der Schritte bleibt null)
-  function zerstoertRund(w, saat) {
-    const z = zufall(saat);
-    const schritte = [];
-    for (let i = 1; i < w.length; i++) schritte.push(w[i] - w[i - 1]);
-    for (let i = schritte.length - 1; i > 0; i--) { const j = Math.floor(z() * (i + 1)); const t = schritte[i]; schritte[i] = schritte[j]; schritte[j] = t; }
-    const aus = [w[0]];
-    for (const s of schritte) aus.push(aus[aus.length - 1] + s);
-    return normiert(aus);
-  }
-  // Eine Reihe mit Drift (eingebauter Effekt), nicht rund
-  function reiheDrift(saat, n, drift) {
-    const z = zufall(saat);
-    const w = [0];
-    for (let i = 1; i < n; i++) w.push(w[i - 1] + (z() - 0.5) + drift);
-    return normiert(w);
-  }
-  // Wert einer runden Reihe an einer Bruchstelle (linear dazwischen)
-  function wert(w, s) {
-    const n = w.length;
-    let i = Math.floor(s);
-    const f = s - i;
-    i = ((i % n) + n) % n;
-    return w[i] + (w[(i + 1) % n] - w[i]) * f;
-  }
-  // Eine Linie aus `anzahl` Werten einer runden Reihe ab Stelle `ab`, ueber die Breite b;
-  // `anteil` (0..1) zeichnet nur den Anfang (fuer den Aufbau)
-  function linieRund(w, ab, anzahl, x0, y0, b, h, anteil, farbe, staerke) {
-    const n = Math.max(2, Math.floor(anzahl * anteil));
-    ctx.strokeStyle = farbe;
-    ctx.lineWidth = staerke || 1.6;
-    ctx.lineJoin = "round";
-    ctx.beginPath();
-    for (let i = 0; i < n; i++) {
-      const x = x0 + (i / (anzahl - 1)) * b, y = y0 + h - wert(w, ab + i) * h;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-  }
-  function linie(w, x0, y0, b, h, anteil, farbe, staerke) {
-    const n = Math.max(2, Math.min(w.length, Math.floor(w.length * anteil)));
-    ctx.strokeStyle = farbe;
-    ctx.lineWidth = staerke || 1.6;
-    ctx.lineJoin = "round";
-    ctx.beginPath();
-    for (let i = 0; i < n; i++) {
-      const x = x0 + (i / (w.length - 1)) * b, y = y0 + h - w[i] * h;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-  }
-  // Die Form eines Herzschlags ueber eine Periode (ph 0..1): Hoehe -1..0,25
-  function puls(ph) {
-    if (ph < 0.12) return -(ph / 0.12);
-    if (ph < 0.24) return -(1 - (ph - 0.12) / 0.12);
-    if (ph < 0.3) return 0.25 * ((ph - 0.24) / 0.06);
-    if (ph < 0.36) return 0.25 * (1 - (ph - 0.3) / 0.06);
-    return 0;
-  }
+window.JKHDBilder = window.JKHDBilder || {};
+window.JKHDBilder.pruefung = function (k) {
+  const { ctx, F, T, text, haken, kreuz, linie, linieRund, reiheRund, zerstoertRund, reiheDrift, puls, mono, stueck, clamp, misch, dreieck, zufall } = k;
   const REIHE = reiheRund(5, 320);
   const REIHE_ZERSTOERT = zerstoertRund(REIHE, 9);
   const REIHE_EFFEKT = reiheDrift(11, 160, 0.09);
@@ -237,13 +35,13 @@
     ctx.strokeStyle = F.tinte; ctx.fillStyle = F.tinte; ctx.lineWidth = 1.5; ctx.lineCap = "round";
     const r = gr / 2;
     if (i === 0) {            // das Feld: 3x3 Kaestchen, eins leer; ein Test laeuft gerade
-      const k = gr / 3.4;
+      const kk = gr / 3.4;
       const lauf = Math.floor(zeit * 2.5) % 9;
       for (let j = 0; j < 9; j++) {
-        const kx = -r + (j % 3) * (k + 3), ky = -r + Math.floor(j / 3) * (k + 3);
-        if (j === 7) ctx.strokeRect(kx + 0.5, ky + 0.5, k - 1, k - 1);
-        else if (j === lauf) { ctx.fillStyle = F.rot; ctx.fillRect(kx, ky, k, k); ctx.fillStyle = F.tinte; }
-        else ctx.fillRect(kx, ky, k, k);
+        const kx = -r + (j % 3) * (kk + 3), ky = -r + Math.floor(j / 3) * (kk + 3);
+        if (j === 7) ctx.strokeRect(kx + 0.5, ky + 0.5, kk - 1, kk - 1);
+        else if (j === lauf) { ctx.fillStyle = F.rot; ctx.fillRect(kx, ky, kk, kk); ctx.fillStyle = F.tinte; }
+        else ctx.fillRect(kx, ky, kk, kk);
       }
     } else if (i === 1) {     // zwei Baender, der Vergleichscursor laeuft
       for (let j = 0; j < 6; j++) {
@@ -341,7 +139,7 @@
     if (t > 0.9) {
       const a = stueck(t, 0.9, 1);
       ctx.globalAlpha *= a;
-      if (klein) text(T("leer = nichts bewiesen, nur behauptet", "empty = nothing proven, only claimed"), bx, yU + 30, mono(11), F.rot);
+      if (k.klein) text(T("leer = nichts bewiesen, nur behauptet", "empty = nothing proven, only claimed"), bx, yU + 30, mono(11), F.rot);
       else text(T("leer = nichts bewiesen, nur behauptet", "empty = nothing proven, only claimed"), bx + A.b * 0.5, yU + 12, mono(12), F.rot, "right");
       ctx.globalAlpha /= a;
     }
@@ -352,6 +150,7 @@
   // Vorgabe (muss anders sein), die fehlende Vergleichsdatei (rot, nicht
   // uebersprungen); danach laeuft der Vergleich in den ersten beiden immer wieder
   function s2(t, zeit, A) {
+    const klein = k.klein;
     const bb = klein ? 9 : 11, l = klein ? 4 : 5, schritt = bb + l;
     const n = clamp(Math.floor((A.b - 40 + l) / schritt), 14, 44);
     const breite = n * schritt - l;
@@ -375,11 +174,11 @@
         else { ctx.strokeStyle = F.rand2; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, bb - 1, hB - 1); }
       }
     };
-    for (let k = 0; k < 3; k++) {
-      const P = paare[k];
+    for (let kk = 0; kk < 3; kk++) {
+      const P = paare[kk];
       if (t < P.von) break;
       const tp = clamp((t - P.von) / (P.bis - P.von), 0, 1);
-      const yA = y0 + k * paarH, yB = yA + hB + 26;
+      const yA = y0 + kk * paarH, yB = yA + hB + 26;
       text(T("Lauf A", "run A"), x0, yA - 5, mono(10), F.matt);
       text(T("Lauf B", "run B"), x0, yB - 5, mono(10), F.matt);
       if (P.fehlt) {
@@ -401,12 +200,12 @@
       if (!P.fehlt) {
         // bis hierhin verglichen: waehrend des Aufbaus mit dem Scrollen, danach
         // laeuft der Vergleich an der Uhr immer wieder von vorn
-        const bis = t >= 1 ? Math.floor(((zeit * 0.22 + k * 0.5) % 1) * (n + 6)) : Math.floor(tp * n);
+        const bis = t >= 1 ? Math.floor(((zeit * 0.22 + kk * 0.5) % 1) * (n + 6)) : Math.floor(tp * n);
         for (let i = 0; i < Math.min(bis, n); i++) {
           const gleich = musterA[i] === P.b[i];
           const x = x0 + i * schritt + bb / 2;
-          ctx.strokeStyle = k === 0 ? F.gruen : gleich ? F.rand2 : F.gruen;
-          ctx.lineWidth = k === 1 && gleich ? 1 : 2;
+          ctx.strokeStyle = kk === 0 ? F.gruen : gleich ? F.rand2 : F.gruen;
+          ctx.lineWidth = kk === 1 && gleich ? 1 : 2;
           ctx.beginPath();
           ctx.moveTo(x, yA + hB + 5);
           ctx.lineTo(x, yB - 5);
@@ -433,12 +232,12 @@
   // 03 Suche gegen den Zufall: drei Reihen; die ersten beiden laufen weiter, das
   // rollende Fenster rollt, das Gefundene blinkt
   function s3(t, zeit, A) {
+    const klein = k.klein;
     const abst = 14;
     const hK = (A.h - 2 * abst) / 3;
     const x0 = A.x, b = A.b;
     const grenze = 0.62, rand = 0.54;
     const lauf = zeit * 7;   // so laufen die Reihen (Werte je Sekunde)
-    // Reihe 1: Suche und Bestaetigung
     const y1 = A.y;
     linieRund(REIHE, lauf, 160, x0, y1, b, hK, stueck(t, 0, 0.22), F.tinte, 1.6);
     const aGrenze = stueck(t, 0.2, 0.3);
@@ -479,7 +278,6 @@
       if (!klein) text(T("rollendes Fenster: die Auswahl muss an jeder Zeitgrenze erneut halten", "rolling window: the selection has to hold again at every time boundary"), x0, y1 - 8, mono(11), F.matt);
       ctx.globalAlpha /= aFenster;
     }
-    // Reihe 2: zerstoerter Zusammenhang
     const y2 = y1 + hK + abst;
     const a2 = stueck(t, 0.5, 0.56);
     if (a2 > 0) {
@@ -489,7 +287,6 @@
         : T("dieselbe Suche über eine Reihe ohne Zusammenhang: zählt, wie oft sie auf Rauschen anspringt", "the same search over a series with no link left: counts how often it fires on noise"), x0, y2 + hK - 6, mono(11), F.matt);
       ctx.globalAlpha /= a2;
     }
-    // Reihe 3: eingebauter Effekt
     const y3 = y2 + hK + abst;
     const a3 = stueck(t, 0.72, 0.78);
     if (a3 > 0) {
@@ -506,21 +303,20 @@
 
   // 04 Schattenbetrieb: Signale durch die Sperren, immer weiter
   const SIGNALE = [-1, 0, -1, 1, -1, -1, 2, -1, 0, -1, 1, -1, -1, 2, -1, 0];   // -1 = kommt durch, sonst die Sperre
-  const SIGNAL_PERIODE = 11, SIGNAL_DAUER = 2.2;   // Sekunden je Runde, Sekunden von der Kante bis zur Evidenz
+  const SIGNAL_PERIODE = 11, SIGNAL_DAUER = 2.2;
   function s4(t, zeit, A) {
+    const klein = k.klein;
     const xChart = A.x, bChart = A.b * (klein ? 0.26 : 0.3);
     const xS = [0.46, 0.6, 0.74].map((f) => A.x + A.b * f);
     const xE = A.x + A.b * 0.92;
     const yM = A.y + A.h * 0.5;
     const hC = Math.min(A.h * 0.5, 180);
-    // der Markt: eine Reihe, die laeuft
     ctx.save();
     ctx.beginPath(); ctx.rect(xChart, yM - hC / 2, bChart, hC); ctx.clip();
     linieRund(REIHE, zeit * 9, 70, xChart, yM - hC / 2, bChart, hC, 1, F.tinte, 1.4);
     ctx.restore();
     text(T("Markt, live", "market, live"), xChart, yM - hC / 2 - 10, mono(12), F.matt);
     if (!klein) text(T("Kandidat: ohne Geld", "candidate: no money"), xChart + bChart, yM - hC / 2 - 10, mono(12), F.matt, "right");
-    // die Sperren
     const aS = stueck(t, 0.08, 0.25);
     const namen = [T("Regimefilter", "regime filter"), T("Wiederholungs-Stop", "repetition stop"), T("eine Position", "one position")];
     ctx.globalAlpha *= aS;
@@ -537,8 +333,6 @@
     ctx.strokeRect(xE - 12 + 0.5, yM - hC / 2 + 0.5, 24, hC);
     text(T("Evidenz", "evidence"), xE, yM - hC / 2 - 10, mono(12), F.matt, "center");
     ctx.globalAlpha /= aS;
-    // die Signale: je Runde die ganze Liste, Runde um Runde; die Evidenz zaehlt alle
-    // Runden zusammen, bis sie voll ist
     if (t > 0.25) {
       const xStart = xChart + bChart;
       const runde = Math.floor(zeit / SIGNAL_PERIODE), tz = zeit - runde * SIGNAL_PERIODE;
@@ -583,15 +377,15 @@
   // in jeder Runde steht der Prozess einmal, der Waechter beendet, der naechste
   // Durchgang startet neu
   function s5(t, zeit, A) {
+    const klein = k.klein;
     const x0 = A.x, b = A.b;
     const yM = A.y + A.h * 0.5;
     const amp = Math.min(44, A.h * 0.2);
-    const P = Math.max(560, b * 0.9);          // eine Runde der Spur, in Bildpunkten
-    const standVon = P * 0.5, standBis = P * 0.74;   // dort steht der Prozess
+    const P = Math.max(560, b * 0.9);
+    const standVon = P * 0.5, standBis = P * 0.74;
     const takt = 28;
-    const schub = zeit * 36;                   // so laeuft die Spur nach links
-    const sichtbar = x0 + b * clamp(t / 0.6, 0, 1);   // der Aufbau deckt die Spur von links auf
-    // die Spur
+    const schub = zeit * 36;
+    const sichtbar = x0 + b * clamp(t / 0.6, 0, 1);
     ctx.strokeStyle = F.tinte; ctx.lineWidth = 1.6; ctx.lineJoin = "round";
     ctx.beginPath();
     for (let x = x0; x <= sichtbar; x += 2) {
@@ -601,9 +395,8 @@
       if (x === x0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
     ctx.stroke();
-    // wo in der Sicht der Stillstand liegt (es kann einer zu sehen sein)
-    const k = Math.floor((schub + standVon) / P);
-    for (let r = k - 1; r <= k + 1; r++) {
+    const kk = Math.floor((schub + standVon) / P);
+    for (let r = kk - 1; r <= kk + 1; r++) {
       const xs = x0 + r * P + standVon - schub, xe = xs + (standBis - standVon);
       if (xe < x0 || xs > sichtbar) continue;
       const links = Math.max(xs, x0), rechts = Math.min(xe, sichtbar);
@@ -619,8 +412,6 @@
         else text(T("nächster Durchgang: neu, nie zwei zugleich", "next pass: restarted, never two at once"), Math.min(xe + 4, x0 + b - 290), yM - amp - 10, mono(11), F.gruen);
       }
     }
-    // der Zustand, wie die Prozessliste ihn sieht: "laeuft" -- immer, auch wenn der
-    // Prozess laengst nichts mehr tut; und der Zaehler des Lebenszeichens
     const chip = klein ? T("Liste: läuft", "list: running") : T("in der Prozessliste: läuft", "in the process list: running");
     ctx.font = mono(12);
     const cb = ctx.measureText(chip).width + 22;
@@ -668,12 +459,13 @@
     ctx.restore();
   }
   function s6(t, zeit, A) {
+    const klein = k.klein;
     const n = PROBEN.length;
     const zeile = Math.min(44, (A.h - 10) / n);
     const y0 = A.y + (A.h - zeile * n) / 2;
     const xG = A.x + 22, xN = A.x + 56;
     const xE = klein ? xN : A.x + Math.min(A.b * 0.5, 420);
-    const wieder = t >= 1 ? Math.floor(zeit * 1.1) % n : -1;   // welche Probe gerade wieder trifft
+    const wieder = t >= 1 ? Math.floor(zeit * 1.1) % n : -1;
     for (let i = 0; i < n; i++) {
       const an = (i / n) * 0.84;
       const a = stueck(t, an, an + 0.06);
@@ -718,226 +510,5 @@
     }
   }
 
-  // ---- Das Ende: Punkte steigen von unten auf und werden zum Zeichen der Startseite ----
-  // Das Zeichen, wie es ganz oben auf der Startseite steht: die Balken, JKHD, ein
-  // Strich, "Quant Systems" und darunter "Just Know How to Dominate." -- hier
-  // groesser, in der Mitte der Buehne
-  function wortBreite(c, s, abst) {
-    let w = 0;
-    for (const ch of s) w += c.measureText(ch).width + abst;
-    return w - abst;
-  }
-  function gesperrt(c, s, x, y, abst) {
-    for (const ch of s) { c.fillText(ch, x, y); x += c.measureText(ch).width + abst; }
-  }
-  function lockupMasse(c) {
-    const k = klein ? 1.0 : B < 1100 ? 1.7 : 2.1;   // Vergroesserung gegen den Hero (38 px Balken)
-    const bal = 38 * k, luecke = 16 * k;
-    const wort = 19.2 * k, strich = 40 * k, zeile1 = 16 * k, zeile2 = 11.5 * k;
-    c.save();
-    c.font = sans(wort, 800);
-    const wortB = wortBreite(c, "JKHD", wort * 0.34);
-    c.font = sans(zeile1, 700);
-    const z1B = wortBreite(c, "Quant Systems", zeile1 * 0.05);
-    c.font = mono(zeile2);
-    const z2B = wortBreite(c, "Just Know How to Dominate.", zeile2 * 0.03);
-    c.restore();
-    const tagB = Math.max(z1B, z2B);
-    const gesamt = bal + luecke + wortB + luecke + 1 + luecke + tagB;
-    return { k, bal, luecke, wort, strich, zeile1, zeile2, wortB, x0: B / 2 - gesamt / 2, cy: H * 0.46 };
-  }
-  function lockupZeichnen(a, g, farbe) {
-    const c = g || ctx;
-    const m = lockupMasse(c);
-    c.save();
-    c.globalAlpha *= a;
-    c.textAlign = "left";
-    c.textBaseline = "middle";
-    // die Balken (viewBox 100: Rechtecke 10/22/20/56, 40/8/20/84, 70/22/20/56)
-    c.fillStyle = farbe || F.tinte;
-    const s = m.bal / 100, bx = m.x0, by = m.cy - m.bal / 2;
-    c.fillRect(bx + 10 * s, by + 22 * s, 20 * s, 56 * s);
-    c.fillRect(bx + 40 * s, by + 8 * s, 20 * s, 84 * s);
-    c.fillRect(bx + 70 * s, by + 22 * s, 20 * s, 56 * s);
-    // JKHD
-    let x = bx + m.bal + m.luecke;
-    c.font = sans(m.wort, 800);
-    gesperrt(c, "JKHD", x, m.cy + m.wort * 0.04, m.wort * 0.34);
-    x += m.wortB + m.luecke;
-    // der Strich
-    c.fillStyle = farbe || F.rand2;
-    c.fillRect(x, m.cy - m.strich / 2, Math.max(1, m.k * 0.6), m.strich);
-    x += 1 + m.luecke;
-    // Quant Systems / Just Know How to Dominate.
-    c.fillStyle = farbe || F.tinte;
-    c.font = sans(m.zeile1, 700);
-    gesperrt(c, "Quant Systems", x, m.cy - m.zeile1 * 0.55, m.zeile1 * 0.05);
-    c.fillStyle = farbe || F.matt;
-    c.font = mono(m.zeile2);
-    gesperrt(c, "Just Know How to Dominate.", x, m.cy + m.zeile2 * 0.85, m.zeile2 * 0.03);
-    c.restore();
-  }
-  let teilchen = null;
-  function teilchenBauen() {
-    // das Zeichen abtasten (weiss auf schwarz auf einer Hilfsleinwand)
-    const c = document.createElement("canvas");
-    c.width = B; c.height = H;
-    const g = c.getContext("2d");
-    g.fillStyle = "#000"; g.fillRect(0, 0, B, H);
-    lockupZeichnen(1, g, "#fff");
-    const d = g.getImageData(0, 0, B, H).data;
-    const ziele = [];
-    const hoechstens = klein ? 2000 : 3400;
-    let schritt = 2;
-    for (;;) {
-      ziele.length = 0;
-      for (let y = 0; y < H; y += schritt) for (let x = 0; x < B; x += schritt) { if (d[(y * B + x) * 4] > 110) ziele.push([x, y]); }
-      if (ziele.length <= hoechstens || schritt >= 5) break;
-      schritt++;
-    }
-    if (!ziele.length) return null;
-    // jeder Zielpunkt bekommt einen Punkt, der unten ausserhalb der Buehne beginnt und
-    // auf einem Bogen aufsteigt; die linken etwas frueher als die rechten
-    const z = zufall(23);
-    const punkte = [];
-    let xl = Infinity, xr = -Infinity;
-    for (const zi of ziele) { xl = Math.min(xl, zi[0]); xr = Math.max(xr, zi[0]); }
-    for (const zi of ziele) {
-      const x0 = misch(xl, xr, z()) + (z() - 0.5) * B * 0.3;
-      const y0 = H + 10 + z() * H * 0.45;
-      punkte.push({
-        x0, y0,
-        x1: zi[0] + (z() - 0.5) * 0.8, y1: zi[1] + (z() - 0.5) * 0.8,
-        kx: (x0 + zi[0]) / 2 + (z() - 0.5) * B * 0.25,
-        ky: (y0 + zi[1]) / 2 + (z() - 0.3) * H * 0.3,
-        start: ((zi[0] - xl) / Math.max(1, xr - xl)) * 0.14 + z() * 0.16,
-        gr: 1.4 + z() * 1.2,
-      });
-    }
-    return { punkte };
-  }
-  function ende(t) {
-    if (t >= 1) { lockupZeichnen(1); return; }
-    if (!teilchen) teilchen = teilchenBauen();
-    if (!teilchen) { lockupZeichnen(stueck(t, 0, 0.3)); return; }
-    const DAUER = 0.6;
-    ctx.fillStyle = F.tinte;
-    ctx.globalAlpha = 0.9 * (1 - stueck(t, 0.9, 1) * 0.85);
-    for (const pt of teilchen.punkte) {
-      // schnell herein, langsam ankommen
-      const e = 1 - Math.pow(1 - clamp((t - pt.start) / DAUER, 0, 1), 2.2);
-      const u = 1 - e;
-      const x = u * u * pt.x0 + 2 * u * e * pt.kx + e * e * pt.x1;
-      const y = u * u * pt.y0 + 2 * u * e * pt.ky + e * e * pt.y1;
-      const gr = misch(pt.gr, 1.6, e);
-      ctx.fillRect(x - gr / 2, y - gr / 2, gr, gr);
-    }
-    ctx.globalAlpha = 1;
-    lockupZeichnen(stueck(t, 0.86, 1));
-  }
-
-  // ---- Die Bilder: Reihenfolge und Platz auf dem Scrollweg (Einheiten, s. oben) ----
-  const ZEICHNER = [s0, s1, s2, s3, s4, s5, s6, s7];
-  const LAENGEN = [2.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5];
-  const ENDE = 2.0;
-  const GESAMT = LAENGEN.reduce((a, b) => a + b, 0) + ENDE;
-  const SCHUB = 0.6 / GESAMT;     // so lange schiebt sich ein Bild herein (und das vorige hinaus)
-  const AUFBAU = 1.0 / GESAMT;    // so lange baut sich ein Bild auf, vom Beginn des Schubs an
-  const ANFANG = [];
-  { let s = 0; for (const l of LAENGEN) { ANFANG.push(s / GESAMT); s += l; } }
-  const ENDE_VON = (GESAMT - ENDE) / GESAMT;   // hier ist die Grenze hinaus; die Punkte steigen schon einen Schub frueher auf
-  // null, wenn das Bild nicht im Blick ist; sonst der Versatz dy (nach unten positiv)
-  // und der Aufbau t (0..1). Das erste Bild schiebt sich nicht herein.
-  function lage(i, p) {
-    const von = ANFANG[i], bis = i + 1 < ANFANG.length ? ANFANG[i + 1] : ENDE_VON;
-    const erstes = i === 0;
-    const ab = erstes ? 0 : von - SCHUB;
-    if (p < ab || p >= bis) return null;
-    let dy = 0;
-    if (!erstes) dy += (1 - stueck(p, von - SCHUB, von)) * H;
-    dy -= stueck(p, bis - SCHUB, bis) * H;
-    return { dy, t: clamp((p - ab) / AUFBAU, 0, 1) };
-  }
-
-  // ---- Ein Bild ----
-  function bild(p, still, zeit) {
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.globalCompositeOperation = "source-over";
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = F.grund;
-    ctx.fillRect(0, 0, B, H);
-    if (still) { lockupZeichnen(1); return; }
-    for (let i = 0; i < ZEICHNER.length; i++) {
-      const l = lage(i, p);
-      if (!l) continue;
-      ctx.save();
-      ctx.translate(0, l.dy);
-      ZEICHNER[i](l.t, zeit, flaeche(i));
-      ctx.restore();
-    }
-    if (p >= ENDE_VON - SCHUB) ende(clamp((p - (ENDE_VON - SCHUB)) / (1 - ENDE_VON + SCHUB), 0, 1));
-  }
-
-  // ---- Die Texte: Text i gehoert zu Bild i und bewegt sich mit ihm ----
-  function texteZeigen(p) {
-    for (let i = 0; i < texte.length; i++) {
-      const el = texte[i];
-      const l = i < ZEICHNER.length ? lage(i, p) : null;
-      const a = l ? 1 : 0, dy = l ? l.dy : 0;
-      el.style.opacity = a.toFixed(3);
-      el.style.transform = Math.abs(dy) > 0.5 ? `translateY(${dy.toFixed(1)}px)` : "none";
-      el.classList.toggle("ist-weg", a <= 0);
-    }
-  }
-
-  // ---- Fortschritt, Schleife ----
-  let kleben = 0, zugabe = 0;
-  function zugabeMessen() {
-    const weg = abschnitt.offsetHeight - buehne.offsetHeight;
-    zugabe = weg > 0 && !reduziert.matches ? clamp(H / weg, 0, 0.3) : 0;
-  }
-  function zielFortschritt() {
-    const r = abschnitt.getBoundingClientRect();
-    const weg = abschnitt.offsetHeight - buehne.offsetHeight;
-    if (weg <= 0) return 1;
-    const p = clamp((kleben - r.top) / weg, 0, 1);
-    return clamp(p / Math.max(0.01, 1 - zugabe), 0, 1);
-  }
-  let p = 0, laeuft = false, letzte = 0;
-  function schleife(jetzt) {
-    if (!laeuft) return;
-    const dt = Math.min(0.05, (jetzt - letzte) / 1000 || 0.016);
-    letzte = jetzt;
-    const zielP = zielFortschritt();
-    p += (zielP - p) * (1 - Math.exp(-dt * 7));
-    if (Math.abs(zielP - p) < 0.0003) p = zielP;
-    // jedes Bild wird gezeichnet: die Bilder bewegen sich auch, wenn niemand scrollt
-    bild(p, false, jetzt / 1000);
-    texteZeigen(p);
-    requestAnimationFrame(schleife);
-  }
-  function starten() {
-    if (laeuft || reduziert.matches) return;
-    laeuft = true;
-    letzte = performance.now();
-    p = zielFortschritt();
-    requestAnimationFrame(schleife);
-  }
-  function anhalten() { laeuft = false; }
-  function einrichten() {
-    farbenLesen();
-    abschnitt.classList.toggle("ist-still", reduziert.matches);
-    kleben = parseFloat(getComputedStyle(buehne).top) || 0;
-    groesseAnpassen();
-    if (reduziert.matches) { anhalten(); bild(1, true, 0); for (const el of texte) { el.style.opacity = ""; el.style.transform = ""; el.classList.remove("ist-weg"); } }
-  }
-
-  abschnitt.classList.add("ist-aktiv");
-  einrichten();
-  new IntersectionObserver((eintraege) => { if (eintraege.some((e) => e.isIntersecting)) starten(); else anhalten(); }).observe(abschnitt);
-  window.addEventListener("resize", () => { groesseAnpassen(); if (reduziert.matches) bild(1, true, 0); });
-  if (reduziert.addEventListener) reduziert.addEventListener("change", einrichten);
-  // Farben wechseln mit der Darstellung (hell/dunkel): der Schalter setzt data-theme
-  new MutationObserver(() => { farbenLesen(); teilchen = null; if (reduziert.matches) bild(1, true, 0); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { groesseAnpassen(); if (reduziert.matches) bild(1, true, 0); });
-})();
+  return { laengen: [2.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5], zeichner: [s0, s1, s2, s3, s4, s5, s6, s7] };
+};
