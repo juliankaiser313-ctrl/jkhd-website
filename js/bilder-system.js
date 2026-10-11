@@ -357,36 +357,41 @@ window.JKHDBilder.system = function (k) {
     ctx.globalAlpha /= aH;
   }
 
-  // 06 Haltepraemie: die Treppe, lange -- und der seltene Tag
+  // 06 Haltepraemie: die Treppe, lange -- und der seltene Tag. Die Spur laeuft ohne
+  // Ende nach links; damit sie im Bild bleibt, wird der Nettozuwachs je Runde als
+  // Steigung abgezogen (die Treppe steigt, faellt, steigt -- und kommt auf dieselbe
+  // Hoehe zurueck, ohne Sprung)
   function s6(t, zeit, A) {
     const hK = Math.min(A.h - 50, 240);
     const y0 = A.y + 16, x0 = A.x, b = A.b;
     const P = Math.max(640, b * 1.1);          // eine Runde in Bildpunkten
-    const stufe = 24, hub = hK * 0.045;        // alle 24 px eine Praemie
+    const stufe = 24;                          // alle 24 px eine Praemie
+    const proRunde = Math.floor(P / stufe);
     const fall = P * 0.78;                     // dort kommt der seltene Tag
+    const hub = (hK * 0.8) / (0.7 * proRunde); // so hoch eine Stufe: der Fall nimmt 70 % einer Runde und bleibt im Bild
+    const D = 0.7 * proRunde * hub;
+    const steigung = (proRunde * hub - D) / P;
     const schub = zeit * 30;
     const sichtbar = x0 + b * clamp(t / 0.5, 0, 1);
-    // der Kontostand ueber die Spur: Treppe hinauf, beim Fall verliert er den Grossteil
     const stand = (s) => {
-      const r = ((s % P) + P) % P;
-      const stufen = Math.floor(Math.min(r, fall) / stufe);
-      let h = stufen * hub;
-      if (r >= fall) h = h * 0.3 + Math.floor((r - fall) / stufe) * hub;
-      return h;
+      const faelle = s < fall ? 0 : Math.floor((s - fall) / P) + 1;
+      return Math.floor(s / stufe) * hub - faelle * D - steigung * s;
     };
+    const basis = y0 + hK * 0.75;
     ctx.strokeStyle = F.tinte; ctx.lineWidth = 1.6; ctx.lineJoin = "round";
     ctx.beginPath();
     for (let x = x0; x <= sichtbar; x += 2) {
-      const y = y0 + hK * 0.9 - stand(x - x0 + schub);
+      const y = basis - stand(x - x0 + schub);
       if (x === x0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
     ctx.stroke();
     // wo der Fall im Bild liegt
     const kk = Math.floor((schub + fall) / P);
     for (let r = kk - 1; r <= kk + 1; r++) {
-      const xf = x0 + r * P + fall - schub;
-      if (xf < x0 || xf > sichtbar) continue;
-      const oben = y0 + hK * 0.9 - stand(fall - 1), unten = y0 + hK * 0.9 - stand(fall + 1);
+      const sf = r * P + fall;
+      const xf = x0 + sf - schub;
+      if (xf < x0 || xf > sichtbar || sf < 0) continue;
+      const oben = basis - stand(sf - 1), unten = basis - stand(sf + 1);
       ctx.strokeStyle = F.rot; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(xf, oben); ctx.lineTo(xf, unten); ctx.stroke();
       if (xf > x0 + b * 0.7) text(T("das seltene Mal", "the rare once"), xf - 6, (oben + unten) / 2 + 4, mono(10), F.rot, "right");
@@ -445,7 +450,6 @@ window.JKHDBilder.system = function (k) {
 
   // 08 Orderbuch: Auftraege auf der Leiter, einer erscheint und verschwindet
   function s8(t, zeit, A) {
-    const klein = k.klein;
     const hL = Math.min(A.h - 40, 230);
     const yT = A.y + 18;
     const xM = A.x + A.b * 0.5;
@@ -469,7 +473,9 @@ window.JKHDBilder.system = function (k) {
         const a = stueck(tz, 2, 2.3) * (1 - stueck(tz, 3.2, 3.5));
         ctx.globalAlpha *= a;
         ctx.fillStyle = F.tinte; ctx.fillRect(xM + 6 + bMax * gV, yV + 2, bMax * 0.9, sh - 4);
-        text(klein ? T("gestellt, um gesehen zu werden", "placed to be seen") : T("ein großer Auftrag — gestellt, um gesehen zu werden, gleich wieder weg", "a large order — placed to be seen, withdrawn right away"), xM + 6, yV - 6, mono(10), F.rot);
+        // Beschriftung links der Mitte (dort ist oberhalb der Linie frei), auf Hoehe des Auftrags
+        const zeilen = [T("ein großer Auftrag,", "a large order,"), T("um gesehen zu werden,", "placed to be seen,"), T("gleich wieder weg", "withdrawn right away")];
+        for (let z = 0; z < zeilen.length; z++) text(zeilen[z], xM - 12, yV + sh / 2 - 8 + z * 12, mono(10), F.rot, "right");
         ctx.globalAlpha /= a;
         verkauf += 0.9 * a;
       }
@@ -481,7 +487,7 @@ window.JKHDBilder.system = function (k) {
     pfeil(xM, yMitte + (druck > 0 ? 14 : -14), xM, yMitte + (druck > 0 ? -10 : 10), druck > 0 ? F.gruen : F.rot);
     text(T("Verkaufsaufträge", "sell orders"), xM + 6, yT - 6, mono(10), F.matt);
     text(T("Kaufaufträge", "buy orders"), xM - 6, yT + hL + 14, mono(10), F.matt, "right");
-    text(T("nächster Schritt?", "next step?"), xM + 20, yMitte + 4, mono(10), F.matt);
+    text(T("nächster Schritt?", "next step?"), xM + 20, yMitte + 16, mono(10), F.matt);
     ctx.globalAlpha /= aL;
     const aZ = stueck(t, 0.5, 0.75);
     ctx.globalAlpha *= aZ;
