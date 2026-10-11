@@ -1127,17 +1127,25 @@ void main() {
         cx = misch(cx, ersterProj.x - (lx * Math.cos(dreh) - ly * Math.sin(dreh)), hin);
         cy = misch(cy, ersterProj.y - (lx * Math.sin(dreh) + ly * Math.cos(dreh)), hin);
       }
+      // Kommt der Flug aus dem Vorspann, ist die Galaxie zuerst die aus den Punkten
+      // (dasselbe Bild, nur aus ihnen gemalt); ihr eigentliches Bild blendet beim
+      // Wachsen darueber. Im Vorspann selbst zeichnet verwandlung() die Punkt-Galaxie.
+      const punkte = vorher >= 1 && heroTeilchen ? heroTeilchen : null;
+      const bildAnteil = vorher < 1 ? 0 : punkte ? stueck(q, 0.02, 0.1) : 1;
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(dreh);
       ctx.scale(1, 0.48);
-      ctx.globalAlpha = galaxieSicht;
-      ctx.drawImage(welt.galaxie, -gr, -gr, 2 * gr, 2 * gr);
+      if (bildAnteil > 0) {
+        ctx.globalAlpha = galaxieSicht * bildAnteil;
+        ctx.drawImage(welt.galaxie, -gr, -gr, 2 * gr, 2 * gr);
+      }
+      if (punkte && bildAnteil < 1) {
+        punktGalaxieMalen(punkte, 1);   // falls der letzte Vorspann-Takt uebersprungen wurde
+        ctx.globalAlpha = galaxieSicht * (1 - stueck(q, 0.04, 0.12));
+        ctx.drawImage(punkte.galaxie, -gr, -gr, 2 * gr, 2 * gr);
+      }
       ctx.restore();
-      // die Punkte des Vorspanns sitzen auf der Galaxie und vergehen erst, wenn ihr
-      // Bild waechst -- so springt nichts, wenn der Flug beginnt
-      const rest = vorher >= 1 && heroTeilchen ? 0.45 * (1 - stueck(q, 0, 0.07)) : 0;
-      if (rest > 0) teilchenAufGalaxie(cx, cy, gr, dreh, rest * galaxieSicht);
     }
 
     // Ferne Galaxien, weit draussen: schraege Scheiben, die langsam vorbeiziehen
@@ -1411,13 +1419,18 @@ void main() {
   // sich -- erst das Raster, dann die Schrift -- und drehen sich um die Mitte in
   // die Arme und den Kern der Milchstrasse, genau dorthin, wo ihr Bild zu Beginn
   // des Flugs steht (gleiche Lage, Drehung und Stauchung). Die Seite wird dabei
-  // schwarz, Sterne und das Bild der Galaxie kommen unter den Punkten hervor, die
-  // Punkte vergehen darin. Im hellen Modus ist die Schrift Tinte: die Punkte
+  // schwarz, die Sterne kommen. Angekommen, BLEIBEN die Punkte die Galaxie: jeder
+  // wird in ein eigenes Bild gemalt (Punkt-Galaxie: ein Leuchtfleck und ein Punkt
+  // je Teilchen, additiv wie das Bild der Galaxie selbst), und dieses Bild steht
+  // zu Beginn des Flugs an der Stelle der Galaxie; ihr eigentliches Bild blendet
+  // erst beim Wachsen darueber (gleiche Lage, gleiche Struktur -- die Ziele der
+  // Punkte stammen ja aus ihm). Im hellen Modus ist die Schrift Tinte: die Punkte
   // werden erst hell, wenn der Grund dunkel wird.
   let vorspann = 0;          // Anteil des Scrollwegs, der dem Vorspann gehoert
   let heroTeilchen = null;   // die abgetasteten Punkte, je Groesse neu
   const VORSPANN_DAUER = 0.5;   // so lange (im Vorspann) fliegt ein Punkt
   const TOENE = [[175, 195, 255], [255, 255, 255], [255, 170, 205], [255, 228, 190]];   // wie das Bild der Galaxie
+  const PUNKT_GALAXIE = 512;    // Kantenlaenge des Bildes, in das die Punkte gemalt werden
   function vorspannMessen() {
     const weg = abschnitt.offsetHeight - buehne.offsetHeight;
     vorspann = hero && weg > 0 && !reduziert.matches ? clamp(H / weg, 0, 0.2) : 0;
@@ -1570,11 +1583,12 @@ void main() {
     gg.fillRect(-1, -0.2, 2, 2.2);
     gg.restore();
     // 5. jedem Punkt sein Ziel in der Milchstrasse, wie sie zu Beginn des Flugs im
-    // Bild steht (bildFlug: Mitte, Groesse, Drehung 0,55, Stauchung 0,48). Die
-    // Ziele kommen aus dem Bild der Galaxie selbst: je heller eine Stelle, desto
-    // mehr Punkte landen dort -- so bilden die Punkte am Ende Kern, Arme und
-    // Staubbaender nach, und das Bild kann darunter erscheinen, ohne dass etwas
-    // springt. Der Weg: um die Mitte gedreht, im Sinn der Arme, aeussere Punkte
+    // Bild steht (bildFlug: Mitte, Groesse, Drehung 0,55, Stauchung 0,48). Die Ziele
+    // sind so verteilt wie die Leuchtflecken, aus denen das Bild der Galaxie gemacht
+    // ist (galaxieBauen: zwei Arme mit Streuung, ein dichter warmer Kern), dazu ein
+    // blasser Hof -- so ergeben die Punkte, als Flecken gemalt, dieselbe weiche
+    // Scheibe wie das Bild, und das Bild kann im Flug darueberblenden, ohne dass
+    // etwas springt. Der Weg: um die Mitte gedreht, im Sinn der Arme, aeussere Punkte
     // oefter als innere (Spiralarme unterwegs). Das Raster loest sich zuerst
     // (zufaellig), die Schrift danach von links nach rechts.
     const f = Math.max(Math.min(B, H) * 0.95, B * 0.66);
@@ -1582,50 +1596,42 @@ void main() {
     const rmax = Math.hypot(B / 2, H / 2);
     const z = zufall(7);
     const gauss = () => z() + z() + z() - 1.5;
-    weltSicher();
-    const GS = 192;
-    let summen = null, bildDaten = null, gesamt = 0;
-    if (welt && welt.galaxie) {
-      const kl = sprite(GS, GS), kg = kl.getContext("2d");
-      kg.drawImage(welt.galaxie, 0, 0, GS, GS);
-      bildDaten = kg.getImageData(0, 0, GS, GS).data;
-      summen = new Float32Array(GS * GS);
-      for (let i = 0; i < GS * GS; i++) {
-        const l = ((bildDaten[i * 4] * 0.3 + bildDaten[i * 4 + 1] * 0.5 + bildDaten[i * 4 + 2] * 0.2) / 255) * (bildDaten[i * 4 + 3] / 255);
-        gesamt += Math.pow(l, 0.9);
-        summen[i] = gesamt;
-      }
-      if (!(gesamt > 0)) summen = null;
-    }
-    const naechsterTon = (farbe) => {
-      const m = Math.max(farbe[0], farbe[1], farbe[2], 1);
-      let best = 1, abstand = Infinity;
-      for (let i = 0; i < TOENE.length; i++) {
-        const d = Math.hypot((farbe[0] / m) * 255 - TOENE[i][0], (farbe[1] / m) * 255 - TOENE[i][1], (farbe[2] / m) * 255 - TOENE[i][2]);
-        if (d < abstand) { abstand = d; best = i; }
-      }
-      return best;
-    };
+    // Staerke der Flecken nach der Zahl der Punkte: das Bild hat 2200 Flecken auf
+    // den Armen, hier sind es etwa die Haelfte der Punkte
+    const staerke = clamp(2200 / (0.52 * Math.max(1, punkte.length)), 0.3, 2.5);
     for (const pt of punkte) {
-      let sx, sy, ton;
-      if (summen) {
-        // eine Stelle des Bildes, nach Helligkeit gewuerfelt
-        const u = z() * gesamt;
-        let lo = 0, hi = summen.length - 1;
-        while (lo < hi) { const mid = (lo + hi) >> 1; if (summen[mid] < u) lo = mid + 1; else hi = mid; }
-        sx = (((lo % GS) + z()) / GS) * 2 - 1;
-        sy = ((Math.floor(lo / GS) + z()) / GS) * 2 - 1;
-        ton = naechsterTon([bildDaten[lo * 4], bildDaten[lo * 4 + 1], bildDaten[lo * 4 + 2]]);
-      } else {
-        // ohne Bild: auf einen Arm, dieselbe Spirale wie in galaxieBauen
-        const tt = 0.3 + z() * (3.4 * Math.PI - 0.3);
-        const r = Math.min(0.47, ((55 * Math.exp(0.2 * tt)) / 512) * (1 + gauss() * 0.1));
-        const w = tt + (z() < 0.5 ? 0 : Math.PI) + gauss() * 0.05;
-        sx = Math.cos(w) * r;
-        sy = Math.sin(w) * r;
+      let sx, sy, ton, rn;
+      const art = z();
+      if (art < 0.1) {                                 // der blasse Hof
+        rn = Math.sqrt(z()) * 0.5;
+        const w = z() * 2 * Math.PI;
+        sx = Math.cos(w) * rn;
+        sy = Math.sin(w) * rn;
+        ton = 0;
+        pt.fleckGr = 3 + z() * 4;
+        pt.fleckA = 0.012 * staerke;
+      } else if (art < 0.38) {                         // der Kern (im Bild 0,75 gestaucht)
+        rn = z() * z() * 0.2 * (1 + gauss() * 0.15);
+        const w = z() * 2 * Math.PI;
+        sx = Math.cos(w) * rn;
+        sy = Math.sin(w) * rn * 0.75;
+        ton = z() < 0.7 ? 3 : 1;
+        pt.fleckGr = 6 + z() * 10;
+        pt.fleckA = (0.04 + z() * 0.04) * staerke;
+      } else {                                         // die Arme, wie die Flecken des Bildes
+        let tt, r;
+        do { tt = z() * 3.4 * Math.PI; r = (55 * Math.exp(0.2 * tt)) / 512; } while (r > 0.47);
+        const streu = gauss() * r * 0.12 + (gauss() * 6) / 512;
+        const w = tt + (z() < 0.5 ? 0 : Math.PI);
+        rn = r + streu;
+        sx = Math.cos(w) * rn;
+        sy = Math.sin(w) * rn;
         const t = z();
         ton = t < 0.68 ? 0 : t < 0.85 ? 1 : t < 0.94 ? 2 : 3;
+        pt.fleckGr = (3 + z() * 13) * (0.4 + r * 1.2);
+        pt.fleckA = (0.04 + z() * 0.07) * staerke;
       }
+      pt.fleckA = Math.min(0.2, pt.fleckA);
       pt.sx = sx;
       pt.sy = sy;
       pt.ton = ton;
@@ -1651,25 +1657,55 @@ void main() {
       for (let k = 0; k <= 6; k++) stufen.push(rgb([misch(von[0], ton[0], k / 6), misch(von[1], ton[1], k / 6), misch(von[2], ton[2], k / 6)]));
       return stufen;
     });
-    return { grund, glanz, gitter, gruppen, farben, schritt, cx, cy, gr, vorlaeufig: !schriftenBereit };
+    // 6. die Punkt-Galaxie: in Ankunftsreihenfolge wird jeder Punkt als Leuchtfleck
+    // (Groesse und Staerke von oben) plus, jeder zweite, als Punkt in dieses Bild
+    // gemalt (punktGalaxieMalen)
+    const ankunft = punkte.slice().sort((a, b) => a.start - b.start);
+    const galaxie = sprite(PUNKT_GALAXIE, PUNKT_GALAXIE);
+    const flecken = TOENE.map((ton) => fleck(ton.join(",")));
+    for (const pt of punkte) {
+      pt.px = ((pt.sx + 1) / 2) * PUNKT_GALAXIE;
+      pt.py = ((pt.sy + 1) / 2) * PUNKT_GALAXIE;
+      pt.punktA = z() < 0.5 ? 0.1 + z() * 0.25 : 0;
+    }
+    return { grund, glanz, gitter, gruppen, farben, schritt, cx, cy, gr, ankunft, galaxie, flecken, gemalt: 0, vorlaeufig: !schriftenBereit };
   }
-  // Die Punkte an ihrem Platz auf der Galaxie, in deren Lage im Bild (Mitte,
-  // Groesse, Drehung, Stauchung wie das Bild selbst)
-  function teilchenAufGalaxie(cx, cy, gr, dreh, a) {
-    const t = heroTeilchen;
-    const cd = Math.cos(dreh), sd = Math.sin(dreh);
-    const gross = 1.4 * Math.sqrt(Math.max(1, gr / t.gr));
-    ctx.globalCompositeOperation = "source-over";
-    for (let gi = 0; gi < t.gruppen.length; gi++) {
-      ctx.fillStyle = t.farben[gi][6];
-      for (const pt of t.gruppen[gi]) {
-        const lx = pt.sx * gr, ly = pt.sy * gr * 0.48;
-        const x = cx + lx * cd - ly * sd, y = cy + lx * sd + ly * cd;
-        ctx.globalAlpha = a * pt.ziel;
-        ctx.fillRect(x - gross * 0.5, y - gross * 0.5, gross, gross);
+  // Die angekommenen Punkte werden in das Bild der Punkt-Galaxie gemalt: je
+  // Teilchen ein Leuchtfleck und ein Punkt, additiv wie beim Bild der Galaxie.
+  // In Ankunftsreihenfolge, deshalb je Takt nur die neuen; wer zurueckscrollt,
+  // bekommt das Bild geleert und neu gemalt
+  function punktGalaxieMalen(t, v) {
+    const bis = v - VORSPANN_DAUER;   // angekommen ist, wessen Start davor liegt
+    const g = t.galaxie.getContext("2d");
+    if (t.gemalt > 0 && t.ankunft[t.gemalt - 1].start > bis) {
+      g.clearRect(0, 0, PUNKT_GALAXIE, PUNKT_GALAXIE);
+      t.gemalt = 0;
+    }
+    if (t.gemalt >= t.ankunft.length || t.ankunft[t.gemalt].start > bis) return;
+    g.globalCompositeOperation = "lighter";
+    while (t.gemalt < t.ankunft.length && t.ankunft[t.gemalt].start <= bis) {
+      const pt = t.ankunft[t.gemalt++];
+      g.globalAlpha = pt.fleckA;
+      g.drawImage(t.flecken[pt.ton], pt.px - pt.fleckGr, pt.py - pt.fleckGr, 2 * pt.fleckGr, 2 * pt.fleckGr);
+      if (pt.punktA > 0) {
+        g.globalAlpha = pt.punktA;
+        g.fillStyle = t.farben[pt.ton][6];
+        g.fillRect(pt.px - 0.8, pt.py - 0.8, 1.6, 1.6);
       }
     }
-    ctx.globalAlpha = 1;
+    g.globalAlpha = 1;
+  }
+  // Das Bild der Punkt-Galaxie an der Stelle der Galaxie (Mitte, Groesse, Drehung,
+  // Stauchung wie ihr Bild)
+  function punktGalaxieZeichnen(t, cx, cy, gr, dreh, a) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(dreh);
+    ctx.scale(1, 0.48);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = a;
+    ctx.drawImage(t.galaxie, -gr, -gr, 2 * gr, 2 * gr);
+    ctx.restore();
   }
   function verwandlung(v) {
     const t = heroSicher();
@@ -1691,27 +1727,31 @@ void main() {
       ctx.globalAlpha = seite * (1 - stueck(v, 0.04, 0.4));
       ctx.drawImage(t.gitter, 0, 0, B, H);
     }
-    // die Punkte: kommen mit dem Ausblenden des Heros; sind sie zur Galaxie geworden,
-    // werden sie nur etwas leiser (das Bild kommt darunter hervor) und bleiben im
-    // Flug auf ihr sitzen (teilchenAufGalaxie)
+    // die angekommenen Punkte sind die Galaxie (Punkt-Galaxie), die fliegenden
+    // werden einzeln gezeichnet; sie kommen mit dem Ausblenden des Heros
+    punktGalaxieMalen(t, v);
+    if (t.gemalt > 0) punktGalaxieZeichnen(t, t.cx, t.cy, t.gr, 0.55, 1);
+    ctx.globalCompositeOperation = "source-over";
     const ein = stueck(v, 0.02, 0.14);
-    const aus = 1 - 0.55 * stueck(v, 0.8, 1);
     const licht = stueck(v, 0.1, 0.45);   // von der Tinte zum Licht
     const cx = t.cx, cy = t.cy;
     for (let gi = 0; gi < t.gruppen.length; gi++) {
       let stufe = -1;
       for (const pt of t.gruppen[gi]) {
         const e = glatt(clamp((v - pt.start) / VORSPANN_DAUER, 0, 1));
+        if (e >= 1) continue;   // angekommen: steht in der Punkt-Galaxie
         let x = pt.x, y = pt.y;
         if (e > 0) {
-          const r = misch(pt.r0, pt.r1, e);
+          // der Abstand zur Mitte ist frueher da als die Drehung: so fuellt sich der
+          // Kern, waehrend es sich noch dreht
+          const r = misch(pt.r0, pt.r1, 1 - Math.pow(1 - e, 1.6));
           const a = pt.a0 + pt.dreh * e;
           x = cx + r * Math.cos(a);
           y = cy + r * Math.sin(a);
         }
         const k = Math.round(Math.max(e, licht) * 6);
         if (k !== stufe) { stufe = k; ctx.fillStyle = t.farben[gi][k]; }
-        ctx.globalAlpha = clamp(misch(pt.hell, pt.ziel, e) * ein * aus, 0, 1);
+        ctx.globalAlpha = clamp(misch(pt.hell, pt.ziel, e) * ein, 0, 1);
         const gr = misch(t.schritt, 1.4, e);
         ctx.fillRect(x - gr * 0.5, y - gr * 0.5, gr, gr);
       }
