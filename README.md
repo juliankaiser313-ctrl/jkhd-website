@@ -10,7 +10,9 @@ Deutsch in der Wurzel, Englisch unter `/en/`.
 ```
 index.html         Startseite = Menü: Hero mit Marken-Lockup und zwei Knöpfen, leere Laufleiste
 was-wir-machen.html  Was wir machen: ein Satz, ein Absatz in einfacher Sprache, Bäcker-Kasten, Kontaktkasten
-system.html        Aufbau eines Systems (derzeit nur Kontaktkasten — Inhalt folgt)
+system.html        Die Grundarten — als Animation beim Scrollen (js/bildlauf.js + js/bilder-system.js): acht Grundarten
+                   automatischer Handelssysteme, je ein Bild, das den Mechanismus und den Haken zeigt, dazu
+                   „Und bei uns?“; je Bild zwei Sätze (11.10.2026; die Textfassung vom 23.09.2026 liegt in der Git-Historie)
 pruefung.html      Wie wir das EIGENE System prüfen — als Animation beim Scrollen (js/bildlauf.js + js/bilder-pruefung.js):
                    5 Stufen, 6 Belastungsproben, die Grenze; je Bild drei Zeilen Text, am Ende
                    fliesst alles ins Zeichen mit dem Spruch (11.10.2026; die Textfassung vom
@@ -37,7 +39,7 @@ ueber/leistungen/projekte/technologie/ansatz.html   Weiterleitungen auf die neue
 holding/           Alte Deckseite (bis 20.09.2026); seit 10.10.2026 nur noch Weiterleitungen auf Startseite, Impressum, Datenschutz
 
 en/index.html      Englische Fassung der Startseite
-en/system.html     "How a system is built"
+en/system.html     "How a system tries to make money" (die Grundarten als Animation)
 en/testing.html    "How we test our own system"
 en/security.html   "There are no client files here"
 en/simulation.html "You against the JKHD Algo"
@@ -59,6 +61,7 @@ js/spiel.js        Oberfläche der Simulation (nur auf simulation.html / en/simu
 js/bildlauf.js     Der Motor fuer Seiten als Folge lebender Bilder beim Scrollen (Pruefungen, Sicherheit): klebende Buehne, je Bild Text + Zeichnung, die sich hereinschieben, aufbauen, lange stehen (und sich dabei weiter bewegen) und nach oben hinausschieben; am Ende steigen Punkte von unten auf und werden zum Lockup der Startseite; ohne JavaScript eine Liste (Julian, 11.10.2026)
 js/bilder-pruefung.js   die Bilder der Pruefungen-Seite: Ueberschrift, fuenf Stufen, Belastungsproben, Grenze
 js/bilder-sicherheit.js die Bilder der Sicherheitsseite: Ueberschrift, sieben Sperren, Spuren, Daten, "Ehrlich gesagt"
+js/bilder-system.js     die Bilder der System-Seite: Ueberschrift, die acht Grundarten mit ihrem Haken, "Und bei uns?"
 js/universum.js    Startseite: der Hero liegt auf der Buehne und wird beim Scrollen zu Punkten, die sich in die Milchstrasse drehen (Vorspann, 11.10.2026); dann der Flug in die Milchstrasse, mit waagerechter Kamera durch ein dichtes Sternfeld unter dem Band der Milchstrasse, weit auseinander an fest stehenden Planeten vorbei (Kugeln in WebGL, Karten aus Rauschen) zur Erde (WebGL, NASA-Bilder), der Zoom auf eine Stadt, in ein Rechenzentrum bis zum Computer, dessen Gehaeuse durchsichtig wird (Platine); der Monitor rechnet die Formeln durch, Zeile fuer Zeile beim Scrollen, dann erscheint dort das Zeichen, am Ende Schwarz und der Spruch der Fusszeile (nur index.html / en/index.html)
 assets/erde/       Erdbilder der NASA fuer js/universum.js (Blue Marble Tag, Black Marble Nacht, Wolken; Welt, Europa, Oberrhein; *-k.jpg = kleine Fassung fuers Handy). Gemeinfrei, Bildnachweis im Impressum. Werden erst geladen, wenn jemand bis zur Animation scrollt (2,3 MB bzw. 0,7 MB)
 favicon.svg        Browser-Tab-Icon (drei Balken)
