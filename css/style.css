@@ -963,12 +963,13 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 /* ---------- Pruefungen: die Stufen als Animation (js/pruefung.js) ----------
    Julian, 11.10.2026. Der Abschnitt ist der Scrollweg, die Buehne klebt unter der
    Kopfzeile; die Leinwand zeichnet, die Texte je Bild liegen unten links darueber
-   und werden vom Skript ein- und ausgeblendet. Ohne JavaScript (keine Klasse
+   und schieben sich mit ihrem Bild herein und hinaus (das Skript setzt Versatz und
+   Sichtbarkeit). Ohne JavaScript (keine Klasse
    .ist-aktiv) und bei reduzierter Bewegung (.ist-still) stehen die Texte als
    Liste untereinander, bei .ist-still mit dem Schlussbild still darueber. */
 .page-head-knapp { padding: 72px 0 40px; }
 .pruefung { position: relative; background: var(--bg); }
-.pruefung.ist-aktiv { height: 1500vh; }
+.pruefung.ist-aktiv { height: 3400vh; }
 .pruefung-buehne {
   position: sticky;
   top: var(--header-h);
@@ -986,7 +987,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   bottom: 0;
   max-width: 600px;
   opacity: 0;
-  transform: translateY(14px);
 }
 .pruefung-text.ist-weg { visibility: hidden; }
 .pruefung-text h2 { margin: 8px 0 10px; font-size: clamp(1.4rem, 2.6vw, 2rem); }
@@ -1000,7 +1000,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .pruefung.ist-still .pruefung-text { position: static; opacity: 1; transform: none; visibility: visible; }
 .pruefung.ist-still .pruefung-leinwand { height: 60vh; min-height: 360px; }
 @media (max-width: 560px) {
-  .pruefung.ist-aktiv { height: 1400vh; }
+  .pruefung.ist-aktiv { height: 3000vh; }
   .pruefung-texte { bottom: 36px; }
   .pruefung-text { left: 20px; right: 20px; }
   .pruefung-text h2 { font-size: 1.3rem; }

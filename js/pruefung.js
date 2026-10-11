@@ -12,26 +12,31 @@
 // alles als Liste untereinander, bei "reduzierter Bewegung" ebenso, mit dem
 // Schlussbild (Zeichen und Spruch) still darueber.
 //
-// Der Scrollfortschritt p durch den Abschnitt #pruefung (die Buehne klebt):
-//   0,00-0,16  01 Zuerst rot: ein Feld von Tests, jeder wird erst rot, dann gruen;
-//              ein paar bleiben leer -- leer ist nichts bewiesen
-//   0,16-0,30  02 Eingefrorener Vergleichslauf: zwei Baender werden Zeile fuer Zeile
-//              verglichen (bitgleich); eine andere Vorgabe muss anders ausfallen;
-//              fehlt die Vergleichsdatei, ist es rot, nicht uebersprungen
-//   0,30-0,46  03 Suche gegen den Zufall: Suche vorn, Bestaetigung hinten, die
-//              Randzone faellt heraus, das rollende Fenster; dieselbe Suche ueber
-//              eine zerstoerte Reihe und eine mit eingebautem Effekt
-//   0,46-0,60  04 Schattenbetrieb: Signale laufen ohne Geld durch die Sperren
-//              (Regimefilter, Wiederholungs-Stop, eine Position) in die Evidenz
-//   0,60-0,72  05 Ueberwachter Dauerbetrieb: das Lebenszeichen, der Prozess steht
-//              (steht aber noch in der Liste), der Waechter beendet, der naechste
-//              Durchgang startet neu
-//   0,72-0,85  Belastungsproben: sechs Ausfaelle treffen das System, je mit dem,
-//              was dabei herauskommen muss
-//   0,85-0,91  Grenze: die fuenf Stufen als Zeichen in einer Reihe, darunter der
-//              Strich, der vor dem echten Broker endet
-//   0,91-1,00  Ende: alles auf der Leinwand wird zu Punkten, die zum Zeichen und
-//              zum Spruch fliessen; danach steht es eine Bildschirmhoehe lang
+// Der Scrollweg (Abschnitt #pruefung, die Buehne klebt) ist in Einheiten von je
+// etwa einer Bildschirmhoehe geteilt. Jedes Bild bekommt SZENE Einheiten: es
+// schiebt sich von unten herein (SCHUB), baut sich dabei und danach auf (AUFBAU)
+// und steht dann still, bis das naechste Bild es nach oben hinausschiebt -- wie
+// eine Seite, die weiterscrollt (Julian, 11.10.2026: "wenn alles aufgetaucht
+// ist, zehnmal laenger zum Scrollen, dass man es auch lesen kann; die
+// Uebergaenge schoener, nach oben weiterscrollen"). Die Bilder:
+//   01 Zuerst rot: ein Feld von Tests, jeder wird erst rot, dann gruen; ein paar
+//      bleiben leer -- leer ist nichts bewiesen
+//   02 Eingefrorener Vergleichslauf: zwei Baender werden Zeile fuer Zeile verglichen
+//      (bitgleich); eine andere Vorgabe muss anders ausfallen; fehlt die
+//      Vergleichsdatei, ist es rot, nicht uebersprungen
+//   03 Suche gegen den Zufall: Suche vorn, Bestaetigung hinten, die Randzone faellt
+//      heraus, das rollende Fenster; dieselbe Suche ueber eine zerstoerte Reihe und
+//      eine mit eingebautem Effekt
+//   04 Schattenbetrieb: Signale laufen ohne Geld durch die Sperren (Regimefilter,
+//      Wiederholungs-Stop, eine Position) in die Evidenz
+//   05 Ueberwachter Dauerbetrieb: das Lebenszeichen, der Prozess steht (steht aber
+//      noch in der Liste), der Waechter beendet, der naechste Durchgang startet neu
+//   Belastungsproben: sechs Ausfaelle treffen das System, je mit dem, was dabei
+//      herauskommen muss
+//   Grenze: die fuenf Stufen als Zeichen in einer Reihe, darunter der Strich, der
+//      vor dem echten Broker endet -- dieses Bild wird nicht hinausgeschoben:
+//   Ende (ENDE Einheiten): alles auf der Leinwand wird zu Punkten, die zum Zeichen
+//      und zum Spruch fliessen; danach steht es eine Bildschirmhoehe lang (zugabe)
 (function () {
   const abschnitt = document.getElementById("pruefung");
   if (!abschnitt) return;
@@ -39,7 +44,7 @@
   const leinwand = abschnitt.querySelector(".pruefung-leinwand");
   const ctx = leinwand.getContext("2d");
   if (!ctx) return;
-  const texte = Array.from(abschnitt.querySelectorAll(".pruefung-text")).map((el) => ({ el, von: parseFloat(el.dataset.von), bis: parseFloat(el.dataset.bis) }));
+  const texte = Array.from(abschnitt.querySelectorAll(".pruefung-text"));
   const reduziert = window.matchMedia("(prefers-reduced-motion: reduce)");
   const EN = (document.documentElement.lang || "").toLowerCase().startsWith("en");
   const T = (de, en) => (EN ? en : de);
@@ -103,7 +108,7 @@
     leinwand.width = Math.round(B * dpr);
     leinwand.height = Math.round(H * dpr);
     textHoehe = 0;
-    for (const t of texte) textHoehe = Math.max(textHoehe, t.el.offsetHeight);
+    for (const el of texte) textHoehe = Math.max(textHoehe, el.offsetHeight);
     textHoehe = (textHoehe || 160) + (klein ? 60 : 84);
     teilchen = null;
     zugabeMessen();
@@ -115,13 +120,8 @@
     return { x: rand, y: oben, b: B - 2 * rand, h: Math.max(120, H - textHoehe - oben) };
   }
 
-  // ---- Die Szenen ----
-  const SZENEN = [
-    ["s1", 0, 0.16], ["s2", 0.16, 0.3], ["s3", 0.3, 0.46], ["s4", 0.46, 0.6],
-    ["s5", 0.6, 0.72], ["s6", 0.72, 0.85], ["s7", 0.85, 0.91],
-  ];
-  const ENDE_VON = 0.91;      // ab hier fliessen die Punkte
-  const UEBERGANG = 0.02;     // Ein- und Ausblenden einer Szene, in p
+  // ---- Die Bilder: Reihenfolge und Platz auf dem Scrollweg (Einheiten, s. oben) ----
+  const SZENE = 4.5, ENDE = 2.0;
 
   // Kleine Zeichenhilfen
   function text(s, x, y, font, farbe, lage, basis) {
@@ -230,81 +230,92 @@
     if (t > 0.9) {
       const a = stueck(t, 0.9, 1);
       ctx.globalAlpha *= a;
-      text(T("leer = nichts bewiesen, nur behauptet", "empty = nothing proven, only claimed"), bx + A.b * 0.5, yU + 12, mono(12), F.rot, klein ? "left" : "right");
+      if (klein) text(T("leer = nichts bewiesen, nur behauptet", "empty = nothing proven, only claimed"), bx, yU + 30, mono(11), F.rot);
+      else text(T("leer = nichts bewiesen, nur behauptet", "empty = nothing proven, only claimed"), bx + A.b * 0.5, yU + 12, mono(12), F.rot, "right");
       ctx.globalAlpha /= a;
     }
   }
 
-  // 02 Eingefrorener Vergleichslauf: zwei Baender, Zeile fuer Zeile
+  // 02 Eingefrorener Vergleichslauf: drei Paare von Baendern, die nacheinander
+  // entstehen und stehen bleiben -- dieselbe Vorgabe (bitgleich), eine andere
+  // Vorgabe (muss anders sein), die fehlende Vergleichsdatei (rot, nicht uebersprungen)
   function s2(t) {
     const A = flaeche();
-    const bb = 11, l = 5, schritt = bb + l;
-    const n = clamp(Math.floor((A.b - 90 + l) / schritt), 14, 44);
+    const bb = klein ? 9 : 11, l = klein ? 4 : 5, schritt = bb + l;
+    const n = clamp(Math.floor((A.b - 40 + l) / schritt), 14, 44);
     const breite = n * schritt - l;
     const x0 = A.x + (A.b - breite) / 2;
-    const hB = 26;
-    const yA = A.y + A.h * 0.28, yB = yA + hB + 44;
+    const hB = klein ? 16 : 18;             // Hoehe eines Bands
+    const paarH = hB * 2 + 26 + 34;         // zwei Baender, die Luecke, die Urteilszeile
+    const y0 = A.y + 12 + Math.max(0, (A.h - 12 - 3 * paarH) / 2);
     const zA = zufall(31), musterA = [];
     for (let i = 0; i < n; i++) musterA.push(zA() < 0.5);
-    // Phasen: 0-0,42 bitgleich; 0,42-0,74 andere Vorgabe; 0,74-1 Datei fehlt
-    const phase = t < 0.42 ? 0 : t < 0.74 ? 1 : 2;
-    const tp = phase === 0 ? t / 0.42 : phase === 1 ? (t - 0.42) / 0.32 : (t - 0.74) / 0.26;
-    const zB = zufall(77), musterB = [];
-    for (let i = 0; i < n; i++) {
-      const anders = phase === 1 && i >= Math.floor(n * 0.45) ? zB() < 0.5 : null;
-      musterB.push(anders === null ? musterA[i] : anders);
-    }
-    const k = Math.floor(clamp(tp, 0, 1) * n);
-    text(T("Lauf A", "run A"), x0, yA - 10, mono(12), F.matt);
-    text(T("Lauf B", "run B"), x0, yB - 10, mono(12), F.matt);
-    for (let i = 0; i < n; i++) {
-      const x = x0 + i * schritt;
-      // Band A (fehlt in Phase 2: nur ein gestrichelter Rahmen)
-      if (phase < 2) {
-        if (musterA[i]) { ctx.fillStyle = F.tinte; ctx.fillRect(x, yA, bb, hB); }
-        else { ctx.strokeStyle = F.rand2; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, yA + 0.5, bb - 1, hB - 1); }
+    const zB = zufall(77), musterB2 = [];
+    for (let i = 0; i < n; i++) musterB2.push(i >= Math.floor(n * 0.45) ? zB() < 0.5 : musterA[i]);
+    const paare = [
+      { von: 0, bis: 0.32, b: musterA, urteil: T("dieselbe Vorgabe → bitgleich", "same input → bit-identical") },
+      { von: 0.36, bis: 0.66, b: musterB2, urteil: T("andere Vorgabe → anders, wie verlangt", "different input → different, as demanded") },
+      { von: 0.7, bis: 0.9, b: musterA, fehlt: true, urteil: T("Datei fehlt → rot, nicht übersprungen", "file missing → red, not skipped") },
+    ];
+    const band = (muster, y) => {
+      for (let i = 0; i < n; i++) {
+        const x = x0 + i * schritt;
+        if (muster[i]) { ctx.fillStyle = F.tinte; ctx.fillRect(x, y, bb, hB); }
+        else { ctx.strokeStyle = F.rand2; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, bb - 1, hB - 1); }
       }
-      if (musterB[i]) { ctx.fillStyle = F.tinte; ctx.fillRect(x, yB, bb, hB); }
-      else { ctx.strokeStyle = F.rand2; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, yB + 0.5, bb - 1, hB - 1); }
-      // der Vergleich: ein Strich zwischen den Baendern, wo schon verglichen ist
-      if (i < k && phase < 2) {
-        const gleich = musterA[i] === musterB[i];
-        const soll = phase === 0 ? gleich : !gleich;   // Phase 1 verlangt Unterschiede
-        ctx.strokeStyle = phase === 1 && !gleich ? F.gruen : gleich ? F.gruen : F.rot;
-        if (phase === 1 && gleich) ctx.strokeStyle = F.rand2;
-        ctx.lineWidth = soll ? 2 : 1;
-        ctx.beginPath();
-        ctx.moveTo(x + bb / 2, yA + hB + 6);
-        ctx.lineTo(x + bb / 2, yB - 6);
-        ctx.stroke();
+    };
+    for (let k = 0; k < 3; k++) {
+      const P = paare[k];
+      if (t < P.von) break;
+      const tp = clamp((t - P.von) / (P.bis - P.von), 0, 1);
+      const yA = y0 + k * paarH, yB = yA + hB + 26;
+      text(T("Lauf A", "run A"), x0, yA - 5, mono(10), F.matt);
+      text(T("Lauf B", "run B"), x0, yB - 5, mono(10), F.matt);
+      if (P.fehlt) {
+        const a = stueck(tp, 0, 0.4);
+        ctx.save();
+        ctx.globalAlpha *= a;
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = F.rand2;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x0 + 0.5, yA + 0.5, breite - 1, hB - 1);
+        ctx.restore();
+        ctx.globalAlpha *= a;
+        text(T("Vergleichsdatei fehlt", "comparison file missing"), x0 + breite / 2, yA + hB / 2, mono(10), F.matt, "center", "middle");
+        ctx.globalAlpha /= a;
+      } else {
+        band(musterA, yA);
       }
-    }
-    if (phase === 2) {
-      ctx.save();
-      ctx.setLineDash([4, 4]);
-      ctx.strokeStyle = F.rand2;
-      ctx.lineWidth = 1;
-      ctx.strokeRect(x0 + 0.5, yA + 0.5, breite - 1, hB - 1);
-      ctx.restore();
-      text(T("Vergleichsdatei fehlt", "comparison file missing"), x0 + breite / 2, yA + hB / 2, mono(12), F.matt, "center", "middle");
-    }
-    // der Laufcursor
-    if (phase < 2 && k < n) {
-      const x = x0 + k * schritt + bb / 2;
-      ctx.strokeStyle = F.tinte;
-      ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(x, yA - 4); ctx.lineTo(x, yB + hB + 4); ctx.stroke();
-    }
-    // das Urteil der Phase
-    const yU = yB + hB + 34;
-    const urteil = phase === 0 ? T("dieselbe Vorgabe → bitgleich", "same input → bit-identical")
-      : phase === 1 ? T("andere Vorgabe → anders, wie verlangt", "different input → different, as demanded")
-      : T("Datei fehlt → rot, nicht übersprungen", "file missing → red, not skipped");
-    const fertig = phase < 2 ? stueck(tp, 0.95, 1) : stueck(tp, 0.2, 0.4);
-    text(urteil, x0, yU, mono(12), F.matt);
-    if (fertig > 0) {
-      const m = ctx.measureText(urteil).width;
-      if (phase < 2) haken(x0 + m + 20, yU - 4, 14, F.gruen, fertig); else kreuz(x0 + m + 20, yU - 4, 14, F.rot, fertig);
+      band(P.b, yB);
+      if (!P.fehlt) {
+        // der Vergleich: ein Strich je Zeile, wo schon verglichen ist; im zweiten
+        // Paar sind die Unterschiede das Verlangte (gruen), Gleiches nur grau
+        const bis = Math.floor(tp * n);
+        for (let i = 0; i < bis; i++) {
+          const gleich = musterA[i] === P.b[i];
+          const x = x0 + i * schritt + bb / 2;
+          ctx.strokeStyle = k === 0 ? F.gruen : gleich ? F.rand2 : F.gruen;
+          ctx.lineWidth = k === 1 && gleich ? 1 : 2;
+          ctx.beginPath();
+          ctx.moveTo(x, yA + hB + 5);
+          ctx.lineTo(x, yB - 5);
+          ctx.stroke();
+        }
+        if (bis < n) {   // der Laufcursor
+          const x = x0 + bis * schritt + bb / 2;
+          ctx.strokeStyle = F.tinte;
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(x, yA - 3); ctx.lineTo(x, yB + hB + 3); ctx.stroke();
+        }
+      }
+      const yU = yB + hB + 20;
+      text(P.urteil, x0, yU, mono(11), F.matt);
+      const fertig = P.fehlt ? stueck(tp, 0.5, 0.8) : stueck(tp, 0.96, 1);
+      if (fertig > 0) {
+        ctx.font = mono(11);
+        const m = ctx.measureText(P.urteil).width;
+        if (P.fehlt) kreuz(x0 + m + 18, yU - 4, 13, F.rot, fertig); else haken(x0 + m + 18, yU - 4, 13, F.gruen, fertig);
+      }
     }
   }
 
@@ -756,6 +767,26 @@
     logoZeichnen(stueck(t, 0.86, 1));
   }
 
+  // ---- Die Lage eines Bildes bei p ----
+  const ZEICHNER = [s1, s2, s3, s4, s5, s6, s7];
+  const GESAMT = ZEICHNER.length * SZENE + ENDE;
+  const SCHUB = 0.6 / GESAMT;     // so lange schiebt sich ein Bild herein (und das vorige hinaus)
+  const AUFBAU = 1.0 / GESAMT;    // so lange baut sich ein Bild auf, vom Beginn des Schubs an
+  const ENDE_VON = (ZEICHNER.length * SZENE) / GESAMT;   // ab hier fliessen die Punkte
+  // null, wenn das Bild nicht im Blick ist; sonst der Versatz dy (nach unten positiv)
+  // und der Aufbau t (0..1). Das erste Bild schiebt sich nicht herein, das letzte
+  // nicht hinaus (aus ihm werden die Punkte).
+  function lage(i, p) {
+    const von = (i * SZENE) / GESAMT, bis = ((i + 1) * SZENE) / GESAMT;
+    const erstes = i === 0, letztes = i === ZEICHNER.length - 1;
+    const ab = erstes ? 0 : von - SCHUB;
+    if (p < ab || (!letztes && p >= bis) || (letztes && p >= ENDE_VON)) return null;
+    let dy = 0;
+    if (!erstes) dy += (1 - stueck(p, von - SCHUB, von)) * H;
+    if (!letztes) dy -= stueck(p, bis - SCHUB, bis) * H;
+    return { dy, t: clamp((p - ab) / AUFBAU, 0, 1) };
+  }
+
   // ---- Ein Bild ----
   function bild(p, still) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -764,21 +795,12 @@
     ctx.fillStyle = F.grund;
     ctx.fillRect(0, 0, B, H);
     if (still) { logoZeichnen(1); return; }
-    const zeichner = { s1, s2, s3, s4, s5, s6, s7 };
-    for (const [name, von, bis] of SZENEN) {
-      if (p < von || p > bis) continue;
-      // ein Bild blendet VOR seiner Grenze aus und das naechste NACH ihr ein: so
-      // liegen nie zwei Beschriftungen uebereinander
-      const ein = stueck(p, von, von + UEBERGANG);
-      // die letzte Szene blendet nicht aus: ihre Zeichnung wird zu den Punkten
-      const aus = name === "s7" ? 1 : 1 - stueck(p, bis - UEBERGANG, bis);
-      const a = ein * aus;
-      if (a <= 0) continue;
-      if (name === "s7" && p >= ENDE_VON) continue;
-      const t = clamp((p - von) / (bis - von), 0, 1);
+    for (let i = 0; i < ZEICHNER.length; i++) {
+      const l = lage(i, p);
+      if (!l) continue;
       ctx.save();
-      ctx.globalAlpha = a;
-      zeichner[name](t);
+      ctx.translate(0, l.dy);
+      ZEICHNER[i](l.t);
       ctx.restore();
     }
     if (p >= ENDE_VON) {
@@ -799,11 +821,15 @@
 
   // ---- Die Texte: je Bild einer, mit dem Scrollen ein- und ausgeblendet ----
   function texteZeigen(p) {
-    for (const t of texte) {
-      const a = stueck(p, t.von, t.von + 0.025) * (1 - stueck(p, t.bis - 0.025, t.bis));
-      t.el.style.opacity = a.toFixed(3);
-      t.el.style.transform = a >= 1 ? "none" : `translateY(${Math.round((1 - a) * 14)}px)`;
-      t.el.classList.toggle("ist-weg", a <= 0);
+    for (let i = 0; i < texte.length; i++) {
+      const el = texte[i];
+      const l = i < ZEICHNER.length ? lage(i, p) : null;
+      let a = l ? 1 : 0, dy = l ? l.dy : 0;
+      // der Text der Grenze geht, wenn die Punkte fliegen
+      if (i === ZEICHNER.length - 1 && p >= ENDE_VON) { a = 1 - stueck(p, ENDE_VON, ENDE_VON + (0.5 * ENDE) / GESAMT); dy = 0; }
+      el.style.opacity = a.toFixed(3);
+      el.style.transform = Math.abs(dy) > 0.5 ? `translateY(${dy.toFixed(1)}px)` : "none";
+      el.classList.toggle("ist-weg", a <= 0);
     }
   }
 
@@ -846,7 +872,7 @@
     abschnitt.classList.toggle("ist-still", reduziert.matches);
     kleben = parseFloat(getComputedStyle(buehne).top) || 0;
     groesseAnpassen();
-    if (reduziert.matches) { anhalten(); bild(1, true); for (const t of texte) { t.el.style.opacity = ""; t.el.style.transform = ""; t.el.classList.remove("ist-weg"); } }
+    if (reduziert.matches) { anhalten(); bild(1, true); for (const el of texte) { el.style.opacity = ""; el.style.transform = ""; el.classList.remove("ist-weg"); } }
   }
 
   abschnitt.classList.add("ist-aktiv");
