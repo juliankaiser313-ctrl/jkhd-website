@@ -60,6 +60,7 @@
      dazu (Julian: "die Ueberschriften mit Im Aufbau wegmachen"). */
   --hero-abzug: var(--header-h);
   --vip: #b3261e;                       /* die einzige Farbe der Seite: der VIP-Kasten */
+  --ok: #2e7d4f;                        /* "gruen" in der Pruefungen-Animation (js/pruefung.js) */
   --vip-wash: rgba(179, 38, 30, 0.06);
   --gold: #d9a400;                      /* die Krone ueber allem, was VIP heisst */
 }
@@ -97,6 +98,7 @@
   --watermark: rgba(244, 242, 238, 0.05);
   --watermark-hi: rgba(244, 242, 238, 0.14);
   --vip: #ff7b72;
+  --ok: #6ed19a;
   --vip-wash: rgba(255, 123, 114, 0.09);
   --gold: #f2c94c;
 }
@@ -957,6 +959,55 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 /* Der Kicker ist selbst ein <p> und darf hiervon nicht erfasst werden —
    sonst steht er im Seitenkopf groesser als in den Abschnitten. */
 .page-head p:not(.kicker) { margin-top: 14px; color: var(--muted); max-width: 640px; font-size: 1.06rem; }
+
+/* ---------- Pruefungen: die Stufen als Animation (js/pruefung.js) ----------
+   Julian, 11.10.2026. Der Abschnitt ist der Scrollweg, die Buehne klebt unter der
+   Kopfzeile; die Leinwand zeichnet, die Texte je Bild liegen unten links darueber
+   und werden vom Skript ein- und ausgeblendet. Ohne JavaScript (keine Klasse
+   .ist-aktiv) und bei reduzierter Bewegung (.ist-still) stehen die Texte als
+   Liste untereinander, bei .ist-still mit dem Schlussbild still darueber. */
+.page-head-knapp { padding: 72px 0 40px; }
+.pruefung { position: relative; background: var(--bg); }
+.pruefung.ist-aktiv { height: 1500vh; }
+.pruefung-buehne {
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  height: calc(100svh - var(--header-h));
+  overflow: hidden;
+  background: var(--bg);
+}
+.pruefung-leinwand { display: block; width: 100%; height: 100%; }
+.pruefung-texte { position: absolute; left: 0; right: 0; bottom: 56px; }
+.pruefung-text {
+  position: absolute;
+  left: 48px;
+  right: 48px;
+  bottom: 0;
+  max-width: 600px;
+  opacity: 0;
+  transform: translateY(14px);
+}
+.pruefung-text.ist-weg { visibility: hidden; }
+.pruefung-text h2 { margin: 8px 0 10px; font-size: clamp(1.4rem, 2.6vw, 2rem); }
+.pruefung-text p:not(.kicker) { color: var(--muted); font-size: 1rem; max-width: 560px; }
+.pruefung:not(.ist-aktiv) .pruefung-leinwand { display: none; }
+.pruefung:not(.ist-aktiv) .pruefung-buehne,
+.pruefung.ist-still .pruefung-buehne { position: static; height: auto; }
+.pruefung:not(.ist-aktiv) .pruefung-texte,
+.pruefung.ist-still .pruefung-texte { position: static; padding: 48px 48px 72px; display: grid; gap: 44px; }
+.pruefung:not(.ist-aktiv) .pruefung-text,
+.pruefung.ist-still .pruefung-text { position: static; opacity: 1; transform: none; visibility: visible; }
+.pruefung.ist-still .pruefung-leinwand { height: 60vh; min-height: 360px; }
+@media (max-width: 560px) {
+  .pruefung.ist-aktiv { height: 1400vh; }
+  .pruefung-texte { bottom: 36px; }
+  .pruefung-text { left: 20px; right: 20px; }
+  .pruefung-text h2 { font-size: 1.3rem; }
+  .pruefung-text p:not(.kicker) { font-size: 0.94rem; }
+  .pruefung:not(.ist-aktiv) .pruefung-texte,
+  .pruefung.ist-still .pruefung-texte { padding: 32px 20px 56px; }
+}
 
 /* ---------- Footer ---------- */
 

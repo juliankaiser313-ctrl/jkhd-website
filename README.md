@@ -11,9 +11,10 @@ Deutsch in der Wurzel, Englisch unter `/en/`.
 index.html         Startseite = Menü: Hero mit Marken-Lockup und zwei Knöpfen, leere Laufleiste
 was-wir-machen.html  Was wir machen: ein Satz, ein Absatz in einfacher Sprache, Bäcker-Kasten, Kontaktkasten
 system.html        Aufbau eines Systems (derzeit nur Kontaktkasten — Inhalt folgt)
-pruefung.html      Wie wir das EIGENE System prüfen: 5 Stufen, 6 Belastungsproben mit
-                   „Erwartet", 6 Lehren aus eigenen Fehlschlägen, Empfehlung in 5 Schritten
-                   (24 Stichpunkte), ehrlicher Schluss (23.09.2026)
+pruefung.html      Wie wir das EIGENE System prüfen — als Animation beim Scrollen (js/pruefung.js):
+                   5 Stufen, 6 Belastungsproben, die Grenze; je Bild drei Zeilen Text, am Ende
+                   fliesst alles ins Zeichen mit dem Spruch (11.10.2026; die Textfassung vom
+                   23.09.2026 mit Lehren und Empfehlung liegt in der Git-Historie)
 sicherheit.html    Sicherheit am EIGENEN System: 7 Sperren am Geldweg, 3 Karten „Spuren",
                    3 Karten „Daten", 5 Karten „Was wir nicht vorweisen können" —
                    kein Mandanten-, NDA- oder Übergabe-Bezug mehr (23.09.2026)
@@ -54,6 +55,7 @@ css/style.css      Gesamtes Design (Farben oben als CSS-Variablen)
 js/main.js         Mobile-Nav, Hell/Dunkel, Fragen-Blase, Partnerzugang
 js/spiel-motor.js  Spielmotor der Simulation (Regeln, Markt, Konten, JKHD-Algo), ohne DOM
 js/spiel.js        Oberfläche der Simulation (nur auf simulation.html / en/simulation.html)
+js/pruefung.js     Pruefungen-Seite (pruefung.html / en/testing.html): die fuenf Stufen, die Belastungsproben und die Grenze als Animation beim Scrollen (Leinwand, Texte je Bild als echter Inhalt), am Ende fliesst alles als Punkte ins Zeichen mit dem Spruch; ohne JavaScript eine Liste (Julian, 11.10.2026)
 js/universum.js    Startseite: der Hero liegt auf der Buehne und wird beim Scrollen zu Punkten, die sich in die Milchstrasse drehen (Vorspann, 11.10.2026); dann der Flug in die Milchstrasse, mit waagerechter Kamera durch ein dichtes Sternfeld unter dem Band der Milchstrasse, weit auseinander an fest stehenden Planeten vorbei (Kugeln in WebGL, Karten aus Rauschen) zur Erde (WebGL, NASA-Bilder), der Zoom auf eine Stadt, in ein Rechenzentrum bis zum Computer, dessen Gehaeuse durchsichtig wird (Platine); der Monitor rechnet die Formeln durch, Zeile fuer Zeile beim Scrollen, dann erscheint dort das Zeichen, am Ende Schwarz und der Spruch der Fusszeile (nur index.html / en/index.html)
 assets/erde/       Erdbilder der NASA fuer js/universum.js (Blue Marble Tag, Black Marble Nacht, Wolken; Welt, Europa, Oberrhein; *-k.jpg = kleine Fassung fuers Handy). Gemeinfrei, Bildnachweis im Impressum. Werden erst geladen, wenn jemand bis zur Animation scrollt (2,3 MB bzw. 0,7 MB)
 favicon.svg        Browser-Tab-Icon (drei Balken)
