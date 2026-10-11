@@ -418,7 +418,11 @@ if (siteHeader) {
   const io = new IntersectionObserver(
     (entries) => {
       for (const e of entries) {
-        if (e.isIntersecting) {
+        // "Sichtbar genug" heisst: 12 % des Elements ODER 120 px davon. Lange Texte
+        // (Datenschutz, Impressum: ein einziger .prose-Block von 6.000 px und mehr)
+        // erreichen 12 % ihrer eigenen Hoehe in keinem Fenster -- sie blieben sonst
+        // fuer immer unsichtbar (so gesehen am 11.10.2026 auf jkhd.de/datenschutz.html).
+        if (e.isIntersecting && (e.intersectionRatio >= 0.12 || e.intersectionRect.height >= 120)) {
           e.target.classList.add("in");
           io.unobserve(e.target);
           // Die Stagger-Verzoegerung gilt nur fuers Einblenden, nicht fuer Hover
@@ -429,7 +433,9 @@ if (siteHeader) {
         }
       }
     },
-    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    // mehrere Schwellen, damit der Beobachter auch bei sehr hohen Elementen meldet,
+    // sobald ein paar hundert Pixel im Bild sind (0,02 x 6.000 px = 120 px)
+    { threshold: [0, 0.01, 0.02, 0.04, 0.08, 0.12], rootMargin: "0px 0px -40px 0px" }
   );
 
   targets.forEach((el) => io.observe(el));
