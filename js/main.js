@@ -356,8 +356,9 @@ if (siteHeader) {
 // ---------- Startseite: der Hero fuellt genau den ersten Bildschirm ----------
 // Den ersten Wert setzt ein Inline-Skript in index.html direkt hinter der
 // Kopfzeile (sonst waere die Seite beim ersten Zeichnen zu hoch). Hier wird
-// nur nachgemessen: abgezogen wird, was ueber dem Hero liegt (Aufbau-Band +
-// Kopfzeile). Abgerundet, damit die Laufleiste keine Haarlinie zeigt.
+// nur nachgemessen: abgezogen wird, was ueber dem Hero liegt (die Kopfzeile;
+// bis 11.10.2026 auch das Band "Im Aufbau"). Abgerundet, damit die Laufleiste
+// keine Haarlinie zeigt.
 (function () {
   const hero = document.querySelector(".hero-voll");
   if (!hero) return;
@@ -380,11 +381,11 @@ if (siteHeader) {
 
   abzug();
   window.addEventListener("resize", spaeter);
-  // Die Hoehe des Aufbau-Bandes haengt an der Schriftgroesse: reiner Textzoom
+  // Die Hoehe der Kopfzeile kann an der Schriftgroesse haengen: reiner Textzoom
   // aendert sie, ohne dass resize feuert. Der Beobachter merkt es trotzdem.
   if (window.ResizeObserver) {
     const wache = new ResizeObserver(spaeter);
-    document.querySelectorAll(".build-note, .site-header").forEach((el) => wache.observe(el));
+    document.querySelectorAll(".site-header").forEach((el) => wache.observe(el));
   } else {
     window.addEventListener("orientationchange", spaeter);
   }

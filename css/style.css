@@ -55,10 +55,10 @@
   --rule-3: rgba(16, 16, 18, 0.1);
   --watermark: rgba(16, 16, 18, 0.05);
   --watermark-hi: rgba(16, 16, 18, 0.14);
-  /* Vorbelegung fuer den Vollbild-Hero: Kopfzeile + Aufbau-Band. Ohne
-     JavaScript bleibt es dabei (statt nur der Kopfzeile, was den Hero um die
-     Bandhoehe zu hoch machte); mit Skript wird der genaue Wert gesetzt. */
-  --hero-abzug: calc(var(--header-h) + 45px);
+  /* Vorbelegung fuer den Vollbild-Hero: die Kopfzeile. Mit Skript wird der
+     genaue Wert gemessen (js/main.js). Bis 11.10.2026 kam das Band "Im Aufbau"
+     dazu (Julian: "die Ueberschriften mit Im Aufbau wegmachen"). */
+  --hero-abzug: var(--header-h);
   --vip: #b3261e;                       /* die einzige Farbe der Seite: der VIP-Kasten */
   --vip-wash: rgba(179, 38, 30, 0.06);
   --gold: #d9a400;                      /* die Krone ueber allem, was VIP heisst */
@@ -122,12 +122,11 @@ a:hover { color: var(--accent); }
 ::selection { background: var(--accent); color: var(--bg); }
 
 /* Inhalt breiter als zuvor (war 1200), damit auf grossen Bildschirmen nicht
-   die Haelfte leer bleibt. Kopfzeile, Aufbau-Band und Fussbereich laufen
+   die Haelfte leer bleibt. Kopfzeile und Fussbereich laufen
    noch weiter — das fuellt die Seite, ohne die Lesbarkeit zu opfern. */
 .container { width: 100%; max-width: 1680px; margin: 0 auto; padding: 0 48px; }
 
 .site-header .container,
-.build-note .container,
 .site-footer .container { max-width: 1860px; }
 
 /* Grosse Ueberschriften in der Serife, alles darunter in der Grotesk */
@@ -162,39 +161,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-
-/* ---------- Aufbau-Hinweis ---------- */
-
-.build-note {
-  border-bottom: 1px solid var(--border);
-  background: var(--panel-2);
-  padding: 11px 0;
-  font-size: 0.84rem;
-  color: var(--muted);
-}
-
-/* Ein durchlaufender Satz statt drei Flex-Spalten — sonst bricht der Text
-   unnoetig oft um und das Band wird zum Block. */
-.build-note .container {
-  display: block;
-  max-width: 1000px;
-  text-align: center;
-  line-height: 1.6;
-}
-
-.build-note .build-label { margin-right: 12px; }
-.build-note a { margin-left: 12px; white-space: nowrap; }
-
-.build-label {
-  font-family: var(--mono);
-  font-size: var(--label);
-  letter-spacing: var(--label-ls);
-  text-transform: uppercase;
-  color: var(--text);
-}
-
-.build-note a { color: var(--text); border-bottom: 1px solid var(--border-2); }
-.build-note a:hover { color: var(--text); border-bottom-color: var(--text); }
 
 /* ---------- Header ---------- */
 
@@ -488,8 +454,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 /* Startseite: der erste Bildschirm gehoert dem Hero — Raster und Ueberschrift
    bis zum Rand, Laufleiste und Fusszeile (Navigation) erst nach dem Scrollen
-   (Julian, 23.09.2026). Abgezogen wird, was ueber dem Hero liegt: Aufbau-Band
-   und Kopfzeile; die genaue Hoehe setzt js/main.js als --hero-abzug, ohne
+   (Julian, 23.09.2026). Abgezogen wird, was ueber dem Hero liegt: die
+   Kopfzeile; die genaue Hoehe setzt js/main.js als --hero-abzug, ohne
    Skript bleibt es bei der Kopfzeilenhoehe. svh statt vh, weil auf dem Handy
    die Adressleiste wandert und vh dabei springt. */
 .hero-voll {
@@ -1206,12 +1172,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
   
   
-
-  /* Das Aufbau-Band darf den ersten Bildschirm nicht dominieren; es braucht
-     hier mehr Zeilen, darum eine groessere Vorbelegung fuer den Hero-Abzug. */
-  :root { --hero-abzug: calc(var(--header-h) + 76px); }
-  .build-note { padding: 9px 0; font-size: 0.78rem; }
-  .build-note .container { line-height: 1.5; }
 
   .layer-cols { grid-template-columns: 1fr; gap: 26px; }
 
