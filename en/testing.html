@@ -32,8 +32,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/pruefung.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/testing.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/pruefung.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20261011g">
-  <link rel="stylesheet" href="../css/style.css?v=20261011g">
+  <link rel="stylesheet" href="../css/fonts.css?v=20261011h">
+  <link rel="stylesheet" href="../css/style.css?v=20261011h">
 </head>
 <body>
 
@@ -91,21 +91,19 @@
        stattdessen eine Animation, die beim Runterscrollen erklaert, was genau
        geprueft wird und wie -- wenig Text, mehr Animation; ganz am Ende soll alles
        in Form des Zeichens und des Spruchs fliessen"). js/pruefung.js zeichnet auf
-       die Leinwand; die Texte je Bild sind echter Inhalt (die fuenf Stufen, die
-       Belastungsproben und die Grenze der Seite vom 23.09.2026, gekuerzt) und
-       stehen ohne JavaScript als Liste untereinander. -->
-  <section class="page-head page-head-knapp">
-    <div class="container">
-      <p class="kicker">// Testing</p>
-      <h1>How we test our own system.</h1>
-      <p>Five stages before a program may touch money — every one is allowed to stop the process. Scroll.</p>
-    </div>
-  </section>
-
+       die Leinwand; die Texte je Bild sind echter Inhalt (die Ueberschrift der
+       Seite als erstes Bild, dann die fuenf Stufen, die Belastungsproben und die
+       Grenze der Seite vom 23.09.2026, gekuerzt) und stehen ohne JavaScript als
+       Liste untereinander. -->
   <section class="pruefung" id="pruefung">
     <div class="pruefung-buehne">
       <canvas class="pruefung-leinwand" aria-hidden="true"></canvas>
       <div class="pruefung-texte">
+        <div class="pruefung-text pruefung-titel">
+          <p class="kicker">// Testing</p>
+          <h1>How we test our own system.</h1>
+          <p>Five stages before a program may touch money — every one is allowed to stop the process. Scroll.</p>
+        </div>
         <div class="pruefung-text">
           <p class="kicker">01 · Red first</p>
           <h2>A test only counts once it has been red with the fault present.</h2>
@@ -141,7 +139,7 @@
           <h2>What these tests do not do.</h2>
           <p>None of them creates an edge in the market. They prevent self-deception. No real broker is attached to our system yet.</p>
         </div>
-        <p class="nur-vorlesen">At the end: the JKHD mark and the line “Just Know How to Dominate.”</p>
+        <p class="nur-vorlesen">At the end: the JKHD mark — Quant Systems, Just Know How to Dominate.</p>
       </div>
     </div>
   </section>
@@ -197,7 +195,7 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20261011g"></script>
-  <script src="../js/pruefung.js?v=20261011g"></script>
+  <script src="../js/main.js?v=20261011h"></script>
+  <script src="../js/pruefung.js?v=20261011h"></script>
 </body>
 </html>

@@ -962,14 +962,13 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 /* ---------- Pruefungen: die Stufen als Animation (js/pruefung.js) ----------
    Julian, 11.10.2026. Der Abschnitt ist der Scrollweg, die Buehne klebt unter der
-   Kopfzeile; die Leinwand zeichnet, die Texte je Bild liegen unten links darueber
-   und schieben sich mit ihrem Bild herein und hinaus (das Skript setzt Versatz und
-   Sichtbarkeit). Ohne JavaScript (keine Klasse
+   Kopfzeile; die Leinwand zeichnet, die Texte je Bild (das erste traegt die
+   Ueberschrift der Seite) liegen unten links darueber und schieben sich mit ihrem
+   Bild herein und hinaus (das Skript setzt Versatz und Sichtbarkeit). Ohne JavaScript (keine Klasse
    .ist-aktiv) und bei reduzierter Bewegung (.ist-still) stehen die Texte als
    Liste untereinander, bei .ist-still mit dem Schlussbild still darueber. */
-.page-head-knapp { padding: 72px 0 40px; }
 .pruefung { position: relative; background: var(--bg); }
-.pruefung.ist-aktiv { height: 3400vh; }
+.pruefung.ist-aktiv { height: 3600vh; }
 .pruefung-buehne {
   position: sticky;
   top: var(--header-h);
@@ -989,7 +988,9 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   opacity: 0;
 }
 .pruefung-text.ist-weg { visibility: hidden; }
+.pruefung-text h1 { margin: 8px 0 12px; font-size: clamp(2rem, 4.4vw, 3rem); }
 .pruefung-text h2 { margin: 8px 0 10px; font-size: clamp(1.4rem, 2.6vw, 2rem); }
+.pruefung-titel p:not(.kicker) { font-size: 1.06rem; }
 .pruefung-text p:not(.kicker) { color: var(--muted); font-size: 1rem; max-width: 560px; }
 .pruefung:not(.ist-aktiv) .pruefung-leinwand { display: none; }
 .pruefung:not(.ist-aktiv) .pruefung-buehne,
@@ -1000,9 +1001,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .pruefung.ist-still .pruefung-text { position: static; opacity: 1; transform: none; visibility: visible; }
 .pruefung.ist-still .pruefung-leinwand { height: 60vh; min-height: 360px; }
 @media (max-width: 560px) {
-  .pruefung.ist-aktiv { height: 3000vh; }
+  .pruefung.ist-aktiv { height: 3200vh; }
   .pruefung-texte { bottom: 36px; }
   .pruefung-text { left: 20px; right: 20px; }
+  .pruefung-text h1 { font-size: 1.7rem; }
   .pruefung-text h2 { font-size: 1.3rem; }
   .pruefung-text p:not(.kicker) { font-size: 0.94rem; }
   .pruefung:not(.ist-aktiv) .pruefung-texte,

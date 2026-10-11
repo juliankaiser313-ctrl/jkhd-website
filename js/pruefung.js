@@ -2,41 +2,47 @@
 // Julian, 11.10.2026: "bei der Pruefung alles wegmachen und stattdessen eine
 // Animation hinmachen, die beim Runterscrollen erklaert, was genau geprueft wird,
 // wie usw. -- wenig Text, eher mehr mit Animationen; und ganz am Ende soll dann
-// alles in Form des JKHD-Logos plus Spruch fliessen."
+// alles in Form des JKHD-Logos plus Spruch fliessen." Danach: "pro Thema zehnmal
+// laenger zum Scrollen, wenn alles aufgetaucht ist, dass man es auch lesen kann;
+// die Uebergaenge schoener -- nach oben weiterscrollen." Und: "die Diagramme und
+// beweglichen Anzeigefenster sollen sich bis zum Ende bewegen; den ersten Text
+// auch schon als Animation; beim Firmenlogo am Ende das nehmen, was ganz oben auf
+// der Startseite steht; die Punkte, die das Logo erstellen, sollen von unten kommen."
 //
 // Inhalt sind die fuenf Stufen, die Belastungsproben und die Grenze der Seite vom
 // 23.09.2026 (damals gegen den Quelltext des Systems geprueft), nur gekuerzt --
-// nichts Neues, keine Zahlen, die nicht dort standen. Die Texte je Bild stehen
-// als echter Inhalt in der Seite (.pruefung-text); dieses Skript blendet sie
-// mit dem Scrollen ein und zeichnet dazu auf die Leinwand. Ohne JavaScript steht
-// alles als Liste untereinander, bei "reduzierter Bewegung" ebenso, mit dem
-// Schlussbild (Zeichen und Spruch) still darueber.
+// nichts Neues, keine Zahlen, die nicht dort standen. Die Texte je Bild stehen als
+// echter Inhalt in der Seite (.pruefung-text, das erste mit der Ueberschrift der
+// Seite); dieses Skript schiebt sie mit ihrem Bild herein und hinaus und zeichnet
+// dazu auf die Leinwand. Ohne JavaScript steht alles als Liste untereinander, bei
+// "reduzierter Bewegung" ebenso, mit dem Schlussbild still darueber.
 //
 // Der Scrollweg (Abschnitt #pruefung, die Buehne klebt) ist in Einheiten von je
-// etwa einer Bildschirmhoehe geteilt. Jedes Bild bekommt SZENE Einheiten: es
-// schiebt sich von unten herein (SCHUB), baut sich dabei und danach auf (AUFBAU)
-// und steht dann still, bis das naechste Bild es nach oben hinausschiebt -- wie
-// eine Seite, die weiterscrollt (Julian, 11.10.2026: "wenn alles aufgetaucht
-// ist, zehnmal laenger zum Scrollen, dass man es auch lesen kann; die
-// Uebergaenge schoener, nach oben weiterscrollen"). Die Bilder:
+// etwa einer Bildschirmhoehe geteilt (LAENGEN). Jedes Bild schiebt sich von unten
+// herein (SCHUB), baut sich auf (AUFBAU) und steht dann still, bis das naechste
+// es nach oben hinausschiebt -- und solange es steht, bewegt es sich weiter (die
+// Reihen laufen, Fenster rollen, Signale kommen, das Lebenszeichen schlaegt; alles
+// an der Uhr `zeit`, nicht am Scrollen). Die Bilder:
+//   00 die Ueberschrift der Seite, dazu die fuenf Stufen als Zeichen, leise bewegt
 //   01 Zuerst rot: ein Feld von Tests, jeder wird erst rot, dann gruen; ein paar
-//      bleiben leer -- leer ist nichts bewiesen
-//   02 Eingefrorener Vergleichslauf: zwei Baender werden Zeile fuer Zeile verglichen
-//      (bitgleich); eine andere Vorgabe muss anders ausfallen; fehlt die
-//      Vergleichsdatei, ist es rot, nicht uebersprungen
+//      bleiben leer -- leer ist nichts bewiesen; danach laufen die Tests immer wieder
+//   02 Eingefrorener Vergleichslauf: drei Paare von Baendern, Zeile fuer Zeile
+//      verglichen -- bitgleich; andere Vorgabe, muss anders sein; Datei fehlt, rot
 //   03 Suche gegen den Zufall: Suche vorn, Bestaetigung hinten, die Randzone faellt
 //      heraus, das rollende Fenster; dieselbe Suche ueber eine zerstoerte Reihe und
-//      eine mit eingebautem Effekt
+//      eine mit eingebautem Effekt; die Reihen laufen weiter
 //   04 Schattenbetrieb: Signale laufen ohne Geld durch die Sperren (Regimefilter,
-//      Wiederholungs-Stop, eine Position) in die Evidenz
-//   05 Ueberwachter Dauerbetrieb: das Lebenszeichen, der Prozess steht (steht aber
-//      noch in der Liste), der Waechter beendet, der naechste Durchgang startet neu
-//   Belastungsproben: sechs Ausfaelle treffen das System, je mit dem, was dabei
-//      herauskommen muss
-//   Grenze: die fuenf Stufen als Zeichen in einer Reihe, darunter der Strich, der
-//      vor dem echten Broker endet -- dieses Bild wird nicht hinausgeschoben:
-//   Ende (ENDE Einheiten): alles auf der Leinwand wird zu Punkten, die zum Zeichen
-//      und zum Spruch fliessen; danach steht es eine Bildschirmhoehe lang (zugabe)
+//      Wiederholungs-Stop, eine Position) in die Evidenz, immer weiter
+//   05 Ueberwachter Dauerbetrieb: das Lebenszeichen laeuft wie auf einem Monitor;
+//      der Prozess steht (steht aber noch in der Liste), der Waechter beendet, der
+//      naechste Durchgang startet neu -- und das wiederholt sich
+//   06 Belastungsproben: sechs Ausfaelle treffen das System, je mit dem, was dabei
+//      herauskommen muss; danach trifft es sie reihum wieder
+//   07 Grenze: die fuenf Stufen als Zeichen, darunter der Strich, der vor dem
+//      echten Broker endet
+//   Ende (ENDE Einheiten): Punkte steigen von unten auf und werden zum Zeichen der
+//      Startseite (Balken, JKHD, Strich, Quant Systems, Just Know How to Dominate.);
+//      danach steht es eine Bildschirmhoehe lang (zugabe)
 (function () {
   const abschnitt = document.getElementById("pruefung");
   if (!abschnitt) return;
@@ -64,6 +70,7 @@
   const glatt = (t) => t * t * (3 - 2 * t);
   const stueck = (p, von, bis) => glatt(clamp((p - von) / (bis - von), 0, 1));
   const misch = (a, b, t) => a + (b - a) * t;
+  const dreieck = (u) => { const f = u - Math.floor(u); return f < 0.5 ? f * 2 : 2 - f * 2; };   // 0..1..0
 
   // ---- Farben und Schriften aus dem Stil der Seite (hell oder dunkel) ----
   let F = {};
@@ -81,24 +88,13 @@
       mono: v("--mono", "Consolas, monospace"),
       sans: v("--sans", "system-ui, sans-serif"),
     };
-    F.grundRgb = farbeRgb(F.grund);
-  }
-  // Eine CSS-Farbe als [r, g, b] -- ueber die Leinwand, damit auch #abc oder rgb() gehen
-  const farbSonde = document.createElement("canvas");
-  farbSonde.width = farbSonde.height = 1;
-  function farbeRgb(farbe) {
-    const g = farbSonde.getContext("2d");
-    g.fillStyle = "#000";
-    g.fillStyle = farbe;
-    g.fillRect(0, 0, 1, 1);
-    const d = g.getImageData(0, 0, 1, 1).data;
-    return [d[0], d[1], d[2]];
   }
   const mono = (px, gewicht) => `${gewicht || 500} ${px}px ${F.mono}`;
   const sans = (px, gewicht) => `${gewicht || 600} ${px}px ${F.sans}`;
 
   // ---- Groesse ----
-  let B = 0, H = 0, dpr = 1, klein = false, textHoehe = 200;
+  let B = 0, H = 0, dpr = 1, klein = false;
+  let textHoehen = [];
   function groesseAnpassen() {
     const r = leinwand.getBoundingClientRect();
     B = Math.max(1, Math.round(r.width));
@@ -107,21 +103,17 @@
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     leinwand.width = Math.round(B * dpr);
     leinwand.height = Math.round(H * dpr);
-    textHoehe = 0;
-    for (const el of texte) textHoehe = Math.max(textHoehe, el.offsetHeight);
-    textHoehe = (textHoehe || 160) + (klein ? 60 : 84);
+    textHoehen = texte.map((el) => (el.offsetHeight || 160) + (klein ? 60 : 84));
     teilchen = null;
     zugabeMessen();
   }
-  // Die Flaeche fuer die Zeichnung: ueber dem Text, mit Rand
-  function flaeche() {
+  // Die Flaeche fuer die Zeichnung eines Bildes: ueber seinem Text, mit Rand
+  function flaeche(i) {
     const rand = klein ? 20 : 48;
     const oben = klein ? 20 : 32;
-    return { x: rand, y: oben, b: B - 2 * rand, h: Math.max(120, H - textHoehe - oben) };
+    const unten = textHoehen[i] || 200;
+    return { x: rand, y: oben, b: B - 2 * rand, h: Math.max(120, H - unten - oben) };
   }
-
-  // ---- Die Bilder: Reihenfolge und Platz auf dem Scrollweg (Einheiten, s. oben) ----
-  const SZENE = 4.5, ENDE = 2.0;
 
   // Kleine Zeichenhilfen
   function text(s, x, y, font, farbe, lage, basis) {
@@ -159,31 +151,63 @@
     ctx.stroke();
     ctx.restore();
   }
-  // Eine Kurslinie aus Zufall (feste Saat): n Punkte zwischen 0 und 1
-  function reihe(saat, n, drift, sprung) {
+  // Eine Kursreihe aus Zufall (feste Saat), die sich ohne Sprung wiederholt: der
+  // Gang endet, wo er begann -- so kann sie endlos durchs Bild laufen
+  function reiheRund(saat, n) {
     const z = zufall(saat);
-    const w = [];
-    let y = 0.5;
-    for (let i = 0; i < n; i++) {
-      y += (z() - 0.5) * 0.08 + (drift || 0);
-      if (sprung && i === sprung) y += 0.18;
-      y = clamp(y, 0.06, 0.94);
-      w.push(y);
-    }
-    return w;
+    const w = [0];
+    for (let i = 1; i < n; i++) w.push(w[i - 1] + (z() - 0.5));
+    const ende = w[n - 1];
+    for (let i = 0; i < n; i++) w[i] -= (ende * i) / (n - 1);
+    return normiert(w);
   }
-  // Dieselben Schritte, aber in zerstoerter Reihenfolge (kein Zusammenhang mehr)
-  function zerstoert(w, saat) {
+  function normiert(w) {
+    let lo = Infinity, hi = -Infinity;
+    for (const v of w) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
+    return w.map((v) => 0.12 + ((v - lo) / (hi - lo || 1)) * 0.76);
+  }
+  // Dieselben Schritte in zerstoerter Reihenfolge: kein Zusammenhang mehr, aber
+  // ebenfalls rund (die Summe der Schritte bleibt null)
+  function zerstoertRund(w, saat) {
     const z = zufall(saat);
     const schritte = [];
     for (let i = 1; i < w.length; i++) schritte.push(w[i] - w[i - 1]);
     for (let i = schritte.length - 1; i > 0; i--) { const j = Math.floor(z() * (i + 1)); const t = schritte[i]; schritte[i] = schritte[j]; schritte[j] = t; }
     const aus = [w[0]];
-    for (const s of schritte) aus.push(clamp(aus[aus.length - 1] + s, 0.06, 0.94));
-    return aus;
+    for (const s of schritte) aus.push(aus[aus.length - 1] + s);
+    return normiert(aus);
   }
-  function linie(w, x0, y0, b, h, bis, farbe, staerke) {
-    const n = Math.max(2, Math.min(w.length, Math.floor(w.length * bis)));
+  // Eine Reihe mit Drift (eingebauter Effekt), nicht rund
+  function reiheDrift(saat, n, drift) {
+    const z = zufall(saat);
+    const w = [0];
+    for (let i = 1; i < n; i++) w.push(w[i - 1] + (z() - 0.5) + drift);
+    return normiert(w);
+  }
+  // Wert einer runden Reihe an einer Bruchstelle (linear dazwischen)
+  function wert(w, s) {
+    const n = w.length;
+    let i = Math.floor(s);
+    const f = s - i;
+    i = ((i % n) + n) % n;
+    return w[i] + (w[(i + 1) % n] - w[i]) * f;
+  }
+  // Eine Linie aus `anzahl` Werten einer runden Reihe ab Stelle `ab`, ueber die Breite b;
+  // `anteil` (0..1) zeichnet nur den Anfang (fuer den Aufbau)
+  function linieRund(w, ab, anzahl, x0, y0, b, h, anteil, farbe, staerke) {
+    const n = Math.max(2, Math.floor(anzahl * anteil));
+    ctx.strokeStyle = farbe;
+    ctx.lineWidth = staerke || 1.6;
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const x = x0 + (i / (anzahl - 1)) * b, y = y0 + h - wert(w, ab + i) * h;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  function linie(w, x0, y0, b, h, anteil, farbe, staerke) {
+    const n = Math.max(2, Math.min(w.length, Math.floor(w.length * anteil)));
     ctx.strokeStyle = farbe;
     ctx.lineWidth = staerke || 1.6;
     ctx.lineJoin = "round";
@@ -194,10 +218,87 @@
     }
     ctx.stroke();
   }
+  // Die Form eines Herzschlags ueber eine Periode (ph 0..1): Hoehe -1..0,25
+  function puls(ph) {
+    if (ph < 0.12) return -(ph / 0.12);
+    if (ph < 0.24) return -(1 - (ph - 0.12) / 0.12);
+    if (ph < 0.3) return 0.25 * ((ph - 0.24) / 0.06);
+    if (ph < 0.36) return 0.25 * (1 - (ph - 0.3) / 0.06);
+    return 0;
+  }
+  const REIHE = reiheRund(5, 320);
+  const REIHE_ZERSTOERT = zerstoertRund(REIHE, 9);
+  const REIHE_EFFEKT = reiheDrift(11, 160, 0.09);
 
-  // 01 Zuerst rot: ein Feld von Tests
-  function s1(t) {
-    const A = flaeche();
+  // Die fuenf Stufen als Zeichen, jedes leise bewegt (fuer das erste und das letzte Bild)
+  function stufenGlyph(i, cx, cy, gr, zeit) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.strokeStyle = F.tinte; ctx.fillStyle = F.tinte; ctx.lineWidth = 1.5; ctx.lineCap = "round";
+    const r = gr / 2;
+    if (i === 0) {            // das Feld: 3x3 Kaestchen, eins leer; ein Test laeuft gerade
+      const k = gr / 3.4;
+      const lauf = Math.floor(zeit * 2.5) % 9;
+      for (let j = 0; j < 9; j++) {
+        const kx = -r + (j % 3) * (k + 3), ky = -r + Math.floor(j / 3) * (k + 3);
+        if (j === 7) ctx.strokeRect(kx + 0.5, ky + 0.5, k - 1, k - 1);
+        else if (j === lauf) { ctx.fillStyle = F.rot; ctx.fillRect(kx, ky, k, k); ctx.fillStyle = F.tinte; }
+        else ctx.fillRect(kx, ky, k, k);
+      }
+    } else if (i === 1) {     // zwei Baender, der Vergleichscursor laeuft
+      for (let j = 0; j < 6; j++) {
+        const bx = -r + j * (gr / 6);
+        if (j % 2 === 0) { ctx.fillRect(bx, -r, gr / 6 - 3, r * 0.7); ctx.fillRect(bx, r * 0.3, gr / 6 - 3, r * 0.7); }
+        else { ctx.strokeRect(bx + 0.5, -r + 0.5, gr / 6 - 4, r * 0.7 - 1); ctx.strokeRect(bx + 0.5, r * 0.3 + 0.5, gr / 6 - 4, r * 0.7 - 1); }
+      }
+      const x = -r + ((zeit * 0.4) % 1) * gr;
+      ctx.beginPath(); ctx.moveTo(x, -r - 4); ctx.lineTo(x, r + 4); ctx.stroke();
+    } else if (i === 2) {     // eine Reihe, die laeuft, mit der Grenze
+      linieRund(REIHE, zeit * 6, 60, -r, -r, gr, gr, 1, F.tinte, 1.4);
+      ctx.beginPath(); ctx.moveTo(r * 0.24, -r); ctx.lineTo(r * 0.24, r); ctx.stroke();
+    } else if (i === 3) {     // drei Sperren, ein Signal wandert hindurch
+      for (let j = 0; j < 3; j++) { const sx = -r + (j + 0.5) * (gr / 3); ctx.beginPath(); ctx.moveTo(sx, -r); ctx.lineTo(sx, -4); ctx.moveTo(sx, 4); ctx.lineTo(sx, r); ctx.stroke(); }
+      const x = -r - 6 + ((zeit * 0.5) % 1) * (2 * r + 12);
+      ctx.beginPath(); ctx.arc(x, 0, 3, 0, Math.PI * 2); ctx.fill();
+    } else {                  // das Lebenszeichen, es schlaegt
+      const periode = gr * 0.5;
+      const schub = (zeit * 30) % periode;
+      ctx.beginPath();
+      for (let x = -r; x <= r; x += 1) {
+        const ph = ((((x + r + schub) % periode) + periode) % periode) / periode;
+        const y = puls(ph) * r * 0.8;
+        if (x === -r) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function stufenReihe(A, t, zeit, alpha, mitZahlen) {
+    const n = 5;
+    const w = Math.min(120, (A.b - 40) / n);
+    const x0 = A.x + (A.b - w * n) / 2;
+    const y = A.y + A.h * (mitZahlen ? 0.36 : 0.5);
+    const gr = Math.min(56, w * 0.6);
+    for (let i = 0; i < n; i++) {
+      const a = stueck(t, i * 0.08, i * 0.08 + 0.1) * alpha;
+      if (a <= 0) continue;
+      ctx.globalAlpha *= a;
+      const cx = x0 + w * i + w / 2;
+      stufenGlyph(i, cx, y, gr, zeit);
+      text("0" + (i + 1), cx, y + gr / 2 + 22, mono(12), F.matt, "center");
+      ctx.globalAlpha /= a;
+    }
+  }
+
+  // 00 Die Ueberschrift: dazu die fuenf Stufen als Zeichen, leise
+  function s0(t, zeit, A) {
+    // die Zeichen kommen mit der Zeit (gleich nach dem Laden), nicht erst beim Scrollen
+    stufenReihe(A, Math.max(t, Math.min(1, zeit * 0.7)), zeit, 0.55, false);
+  }
+
+  // 01 Zuerst rot: ein Feld von Tests; danach laufen die Tests immer wieder (der Lauf
+  // zieht als helle Spalte ueber das Feld)
+  function s1(t, zeit, A) {
     const z = 26, l = 10, schritt = z + l;
     const spalten = clamp(Math.floor((A.b + l) / schritt), 6, 14);
     const zeilen = clamp(Math.floor((A.h - 40 + l) / schritt), 3, 6);
@@ -214,19 +315,29 @@
       if (zustand === "leer" || zustand === "offen") {
         ctx.strokeStyle = zustand === "leer" ? F.rand2 : F.rand;
         ctx.strokeRect(x + 0.5, y + 0.5, z - 1, z - 1);
-        if (zustand === "leer" && t > an + 0.14) { leer++; }
+        if (zustand === "leer" && t > an + 0.14) leer++;
       } else {
         const f = zustand === "rot" ? F.rot : F.gruen;
+        const a = zustand === "rot" ? 0.9 : 0.75;
         ctx.fillStyle = f;
-        ctx.globalAlpha *= zustand === "rot" ? 0.9 : 0.75;
+        ctx.globalAlpha *= a;
         ctx.fillRect(x, y, z, z);
-        ctx.globalAlpha /= zustand === "rot" ? 0.9 : 0.75;
+        ctx.globalAlpha /= a;
         if (zustand === "rot") rot++; else gruen++;
       }
     }
+    // der naechste Lauf: eine helle Spalte wandert ueber das Feld
+    if (t >= 1) {
+      const sp = ((zeit * 7) % (spalten + 8)) - 4;
+      if (sp >= 0 && sp < spalten) {
+        ctx.fillStyle = F.tinte;
+        ctx.globalAlpha *= 0.14;
+        ctx.fillRect(bx + sp * schritt - l / 2, by - 4, schritt, zeilen * schritt - l + 8);
+        ctx.globalAlpha /= 0.14;
+      }
+    }
     const yU = by + zeilen * schritt + 14;
-    const satz = T(`${gruen} grün · ${rot} rot · ${leer} leer`, `${gruen} green · ${rot} red · ${leer} empty`);
-    text(satz, bx, yU + 12, mono(12), F.matt);
+    text(T(`${gruen} grün · ${rot} rot · ${leer} leer`, `${gruen} green · ${rot} red · ${leer} empty`), bx, yU + 12, mono(12), F.matt);
     if (t > 0.9) {
       const a = stueck(t, 0.9, 1);
       ctx.globalAlpha *= a;
@@ -238,15 +349,15 @@
 
   // 02 Eingefrorener Vergleichslauf: drei Paare von Baendern, die nacheinander
   // entstehen und stehen bleiben -- dieselbe Vorgabe (bitgleich), eine andere
-  // Vorgabe (muss anders sein), die fehlende Vergleichsdatei (rot, nicht uebersprungen)
-  function s2(t) {
-    const A = flaeche();
+  // Vorgabe (muss anders sein), die fehlende Vergleichsdatei (rot, nicht
+  // uebersprungen); danach laeuft der Vergleich in den ersten beiden immer wieder
+  function s2(t, zeit, A) {
     const bb = klein ? 9 : 11, l = klein ? 4 : 5, schritt = bb + l;
     const n = clamp(Math.floor((A.b - 40 + l) / schritt), 14, 44);
     const breite = n * schritt - l;
     const x0 = A.x + (A.b - breite) / 2;
-    const hB = klein ? 16 : 18;             // Hoehe eines Bands
-    const paarH = hB * 2 + 26 + 34;         // zwei Baender, die Luecke, die Urteilszeile
+    const hB = klein ? 16 : 18;
+    const paarH = hB * 2 + 26 + 34;
     const y0 = A.y + 12 + Math.max(0, (A.h - 12 - 3 * paarH) / 2);
     const zA = zufall(31), musterA = [];
     for (let i = 0; i < n; i++) musterA.push(zA() < 0.5);
@@ -288,10 +399,10 @@
       }
       band(P.b, yB);
       if (!P.fehlt) {
-        // der Vergleich: ein Strich je Zeile, wo schon verglichen ist; im zweiten
-        // Paar sind die Unterschiede das Verlangte (gruen), Gleiches nur grau
-        const bis = Math.floor(tp * n);
-        for (let i = 0; i < bis; i++) {
+        // bis hierhin verglichen: waehrend des Aufbaus mit dem Scrollen, danach
+        // laeuft der Vergleich an der Uhr immer wieder von vorn
+        const bis = t >= 1 ? Math.floor(((zeit * 0.22 + k * 0.5) % 1) * (n + 6)) : Math.floor(tp * n);
+        for (let i = 0; i < Math.min(bis, n); i++) {
           const gleich = musterA[i] === P.b[i];
           const x = x0 + i * schritt + bb / 2;
           ctx.strokeStyle = k === 0 ? F.gruen : gleich ? F.rand2 : F.gruen;
@@ -301,7 +412,7 @@
           ctx.lineTo(x, yB - 5);
           ctx.stroke();
         }
-        if (bis < n) {   // der Laufcursor
+        if (bis < n) {
           const x = x0 + bis * schritt + bb / 2;
           ctx.strokeStyle = F.tinte;
           ctx.lineWidth = 1;
@@ -319,20 +430,17 @@
     }
   }
 
-  // 03 Suche gegen den Zufall: drei Reihen
-  const REIHE = reihe(5, 160, 0.0005);
-  const REIHE_ZERSTOERT = zerstoert(REIHE, 9);
-  const REIHE_EFFEKT = reihe(11, 160, 0.0028);
-  function s3(t) {
-    const A = flaeche();
+  // 03 Suche gegen den Zufall: drei Reihen; die ersten beiden laufen weiter, das
+  // rollende Fenster rollt, das Gefundene blinkt
+  function s3(t, zeit, A) {
     const abst = 14;
     const hK = (A.h - 2 * abst) / 3;
     const x0 = A.x, b = A.b;
     const grenze = 0.62, rand = 0.54;
+    const lauf = zeit * 7;   // so laufen die Reihen (Werte je Sekunde)
     // Reihe 1: Suche und Bestaetigung
     const y1 = A.y;
-    const bis1 = stueck(t, 0, 0.22);
-    linie(REIHE, x0, y1, b, hK, bis1, F.tinte, 1.6);
+    linieRund(REIHE, lauf, 160, x0, y1, b, hK, stueck(t, 0, 0.22), F.tinte, 1.6);
     const aGrenze = stueck(t, 0.2, 0.3);
     if (aGrenze > 0) {
       ctx.globalAlpha *= aGrenze;
@@ -344,7 +452,6 @@
     }
     const aRand = stueck(t, 0.3, 0.4);
     if (aRand > 0) {
-      // die Randzone: schraffiert, faellt heraus
       ctx.save();
       ctx.globalAlpha *= aRand * 0.9;
       ctx.beginPath(); ctx.rect(x0 + b * rand, y1, b * (grenze - rand), hK); ctx.clip();
@@ -357,12 +464,11 @@
       text(T("Randzone fällt heraus", "edge zone dropped"), x0 + b * rand - 8, y1 + hK - 6, mono(11), F.matt, "right");
       ctx.globalAlpha /= aRand;
     }
-    // das rollende Fenster
-    const aFenster = stueck(t, 0.4, 0.46) * (1 - stueck(t, 0.68, 0.74));
+    // das rollende Fenster: rollt an der Uhr hin und her, solange das Bild steht
+    const aFenster = stueck(t, 0.4, 0.46);
     if (aFenster > 0) {
-      const lauf = stueck(t, 0.44, 0.7);
       const fb = b * 0.18;
-      const fx = x0 + lauf * (b * rand - fb);
+      const fx = x0 + dreieck(zeit * 0.06) * (b * rand - fb);
       ctx.globalAlpha *= aFenster;
       ctx.fillStyle = F.tinte;
       ctx.globalAlpha *= 0.08;
@@ -370,8 +476,7 @@
       ctx.globalAlpha /= 0.08;
       ctx.strokeStyle = F.tinte; ctx.lineWidth = 1;
       ctx.strokeRect(fx + 0.5, y1 + 0.5, fb - 1, hK - 1);
-      if (klein) text(T("rollend: an jeder Grenze halten", "rolling: hold at every boundary"), x0, y1 + 12, mono(11), F.matt);
-      else text(T("rollendes Fenster: die Auswahl muss an jeder Zeitgrenze erneut halten", "rolling window: the selection has to hold again at every time boundary"), x0, y1 - 8, mono(11), F.matt);
+      if (!klein) text(T("rollendes Fenster: die Auswahl muss an jeder Zeitgrenze erneut halten", "rolling window: the selection has to hold again at every time boundary"), x0, y1 - 8, mono(11), F.matt);
       ctx.globalAlpha /= aFenster;
     }
     // Reihe 2: zerstoerter Zusammenhang
@@ -379,7 +484,7 @@
     const a2 = stueck(t, 0.5, 0.56);
     if (a2 > 0) {
       ctx.globalAlpha *= a2;
-      linie(REIHE_ZERSTOERT, x0, y2, b, hK, stueck(t, 0.5, 0.72), F.matt, 1.2);
+      linieRund(REIHE_ZERSTOERT, lauf, 160, x0, y2, b, hK, stueck(t, 0.5, 0.72), F.matt, 1.2);
       text(klein ? T("Reihe ohne Zusammenhang: Treffer auf Rauschen", "no link left: hits on noise")
         : T("dieselbe Suche über eine Reihe ohne Zusammenhang: zählt, wie oft sie auf Rauschen anspringt", "the same search over a series with no link left: counts how often it fires on noise"), x0, y2 + hK - 6, mono(11), F.matt);
       ctx.globalAlpha /= a2;
@@ -393,37 +498,32 @@
       const satz = klein ? T("eingebauter Effekt: wird er gefunden?", "effect built in: is it found?")
         : T("und über eine mit eingebautem Effekt: findet die Suche überhaupt etwas?", "and over one with an effect built in: does the search find anything at all?");
       text(satz, x0, y3 + hK - 6, mono(11), F.matt);
-      const f = stueck(t, 0.92, 1);
+      const f = stueck(t, 0.92, 1) * (t >= 1 ? 0.6 + 0.4 * Math.sin(zeit * 3) : 1);
       if (f > 0) { ctx.font = mono(11); haken(x0 + ctx.measureText(satz).width + 18, y3 + hK - 10, 13, F.gruen, f); }
       ctx.globalAlpha /= a3;
     }
   }
 
-  // 04 Schattenbetrieb: Signale durch die Sperren
+  // 04 Schattenbetrieb: Signale durch die Sperren, immer weiter
   const SIGNALE = [-1, 0, -1, 1, -1, -1, 2, -1, 0, -1, 1, -1, -1, 2, -1, 0];   // -1 = kommt durch, sonst die Sperre
-  function s4(t) {
-    const A = flaeche();
+  const SIGNAL_PERIODE = 11, SIGNAL_DAUER = 2.2;   // Sekunden je Runde, Sekunden von der Kante bis zur Evidenz
+  function s4(t, zeit, A) {
     const xChart = A.x, bChart = A.b * (klein ? 0.26 : 0.3);
     const xS = [0.46, 0.6, 0.74].map((f) => A.x + A.b * f);
     const xE = A.x + A.b * 0.92;
     const yM = A.y + A.h * 0.5;
     const hC = Math.min(A.h * 0.5, 180);
-    // der Markt: eine Linie, die mit dem Scrollen weiterlaeuft
-    const w = REIHE;
-    const lauf = t * 0.55;
+    // der Markt: eine Reihe, die laeuft
     ctx.save();
     ctx.beginPath(); ctx.rect(xChart, yM - hC / 2, bChart, hC); ctx.clip();
-    ctx.strokeStyle = F.tinte; ctx.lineWidth = 1.4; ctx.beginPath();
-    for (let i = 0; i < w.length; i++) {
-      const x = xChart + ((i / (w.length - 1)) - lauf) * bChart * 2.2, y = yM + hC / 2 - w[i] * hC;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
+    linieRund(REIHE, zeit * 9, 70, xChart, yM - hC / 2, bChart, hC, 1, F.tinte, 1.4);
     ctx.restore();
     text(T("Markt, live", "market, live"), xChart, yM - hC / 2 - 10, mono(12), F.matt);
     if (!klein) text(T("Kandidat: ohne Geld", "candidate: no money"), xChart + bChart, yM - hC / 2 - 10, mono(12), F.matt, "right");
     // die Sperren
+    const aS = stueck(t, 0.08, 0.25);
     const namen = [T("Regimefilter", "regime filter"), T("Wiederholungs-Stop", "repetition stop"), T("eine Position", "one position")];
+    ctx.globalAlpha *= aS;
     for (let g = 0; g < 3; g++) {
       ctx.strokeStyle = F.tinte; ctx.lineWidth = 2;
       ctx.beginPath();
@@ -433,108 +533,106 @@
       if (!klein || g !== 1) text(namen[g], xS[g], yM + hC / 2 + 18, mono(11), F.matt, "center");
     }
     if (klein) text(namen[1], xS[1], yM + hC / 2 + 32, mono(11), F.matt, "center");
-    // die Evidenz
     ctx.strokeStyle = F.rand2; ctx.lineWidth = 1;
     ctx.strokeRect(xE - 12 + 0.5, yM - hC / 2 + 0.5, 24, hC);
     text(T("Evidenz", "evidence"), xE, yM - hC / 2 - 10, mono(12), F.matt, "center");
-    // die Signale
-    const xStart = xChart + bChart;
-    let durch = 0;
-    for (let i = 0; i < SIGNALE.length; i++) {
-      const geburt = 0.05 + i * 0.05;
-      if (t < geburt) continue;
-      const alter = (t - geburt) / 0.2;       // 0..1 = von der Kante bis zur Evidenz
-      const ziel = SIGNALE[i];
-      const xVoll = xStart + alter * (xE - xStart);
-      const halt = ziel >= 0 ? xS[ziel] : xE;
-      const x = Math.min(xVoll, halt);
-      const y = yM + Math.sin(i * 1.7) * 4;
-      if (x >= halt - 0.5) {
-        if (ziel >= 0) {
-          // gesperrt: ein kurzes rotes Aufleuchten an der Sperre, dann weg
-          const seit = (xVoll - halt) / (xE - xStart);
-          const a = 1 - stueck(seit, 0, 0.12);
-          if (a > 0) { ctx.globalAlpha *= a; kreuz(halt, y, 12, F.rot, 1); ctx.globalAlpha /= a; }
+    ctx.globalAlpha /= aS;
+    // die Signale: je Runde die ganze Liste, Runde um Runde; die Evidenz zaehlt alle
+    // Runden zusammen, bis sie voll ist
+    if (t > 0.25) {
+      const xStart = xChart + bChart;
+      const runde = Math.floor(zeit / SIGNAL_PERIODE), tz = zeit - runde * SIGNAL_PERIODE;
+      const jeRunde = SIGNALE.filter((s) => s < 0).length;
+      let durch = 0;
+      for (let i = 0; i < SIGNALE.length; i++) {
+        const geburt = 0.3 + i * 0.55;
+        if (tz < geburt) continue;
+        const alter = (tz - geburt) / SIGNAL_DAUER;
+        const ziel = SIGNALE[i];
+        const xVoll = xStart + alter * (xE - xStart);
+        const halt = ziel >= 0 ? xS[ziel] : xE;
+        const x = Math.min(xVoll, halt);
+        const y = yM + Math.sin(i * 1.7) * 4;
+        if (x >= halt - 0.5) {
+          if (ziel >= 0) {
+            const seit = (xVoll - halt) / (xE - xStart);
+            const a = 1 - stueck(seit, 0, 0.12);
+            if (a > 0) { ctx.globalAlpha *= a; kreuz(halt, y, 12, F.rot, 1); ctx.globalAlpha /= a; }
+          } else {
+            durch++;
+          }
         } else {
-          durch++;
+          ctx.fillStyle = F.tinte;
+          ctx.beginPath(); ctx.arc(x, y, 3.2, 0, Math.PI * 2); ctx.fill();
         }
-      } else {
+      }
+      const platz = Math.floor((hC - 10) / 9);
+      const gesamt = Math.min(platz, runde * jeRunde + durch);
+      for (let j = 0; j < gesamt; j++) {
         ctx.fillStyle = F.tinte;
-        ctx.beginPath(); ctx.arc(x, y, 3.2, 0, Math.PI * 2); ctx.fill();
+        ctx.fillRect(xE - 7, yM + hC / 2 - 8 - j * 9, 14, 5);
       }
     }
-    // die Evidenz fuellt sich von unten
-    for (let j = 0; j < durch; j++) {
-      ctx.fillStyle = F.tinte;
-      ctx.fillRect(xE - 7, yM + hC / 2 - 8 - j * 9, 14, 5);
-    }
+    const aF = stueck(t, 0.5, 0.7);
+    ctx.globalAlpha *= aF;
     text(T("0 € im Spiel · dieselben Sperren wie mit Geld", "0 € at stake · the same locks as with money"), A.x, A.y + A.h - 4, mono(11), F.matt);
+    ctx.globalAlpha /= aF;
   }
 
-  // 05 Ueberwachter Dauerbetrieb: das Lebenszeichen
-  function s5(t) {
-    const A = flaeche();
+  // 05 Ueberwachter Dauerbetrieb: das Lebenszeichen laeuft wie auf einem Monitor;
+  // in jeder Runde steht der Prozess einmal, der Waechter beendet, der naechste
+  // Durchgang startet neu
+  function s5(t, zeit, A) {
     const x0 = A.x, b = A.b;
     const yM = A.y + A.h * 0.5;
     const amp = Math.min(44, A.h * 0.2);
-    const xStand = x0 + b * 0.5, xNeu = x0 + b * 0.76;
-    const bis = x0 + b * clamp(t / 0.9, 0, 1);
-    // die Linie: Schlaege alle 28 px bis zum Stillstand, dann flach, ab dem neuen Durchgang wieder Schlaege
+    const P = Math.max(560, b * 0.9);          // eine Runde der Spur, in Bildpunkten
+    const standVon = P * 0.5, standBis = P * 0.74;   // dort steht der Prozess
+    const takt = 28;
+    const schub = zeit * 36;                   // so laeuft die Spur nach links
+    const sichtbar = x0 + b * clamp(t / 0.6, 0, 1);   // der Aufbau deckt die Spur von links auf
+    // die Spur
     ctx.strokeStyle = F.tinte; ctx.lineWidth = 1.6; ctx.lineJoin = "round";
     ctx.beginPath();
-    let zaehler = 0;
-    for (let x = x0; x <= bis; x += 2) {
-      let y = yM;
-      const inStand = x >= xStand && x < xNeu;
-      if (!inStand) {
-        const ph = ((x - x0) % 28) / 28;
-        if (ph < 0.12) y = yM - amp * (ph / 0.12);
-        else if (ph < 0.24) y = yM - amp * (1 - (ph - 0.12) / 0.12);
-        else if (ph < 0.3) y = yM + amp * 0.25 * ((ph - 0.24) / 0.06);
-        else if (ph < 0.36) y = yM + amp * 0.25 * (1 - (ph - 0.3) / 0.06);
-      }
+    for (let x = x0; x <= sichtbar; x += 2) {
+      const s = (((x - x0 + schub) % P) + P) % P;
+      const steht = s >= standVon && s < standBis;
+      const y = steht ? yM : yM + puls((s % takt) / takt) * amp;
       if (x === x0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
     ctx.stroke();
-    zaehler = Math.floor((Math.min(bis, xStand) - x0) / 28) + (bis > xNeu ? Math.floor((bis - xNeu) / 28) : 0);
-    // der Zustand, wie die Prozessliste ihn sieht: "laeuft", solange der Prozess
-    // in der Liste steht -- auch wenn er laengst nichts mehr tut
-    const beendet = stueck(bis, xNeu - 40, xNeu - 10);
-    const chip = beendet >= 1 && bis < xNeu ? T("beendet", "ended") : klein ? T("Liste: läuft", "list: running") : T("in der Prozessliste: läuft", "in the process list: running");
-    const chipFarbe = beendet >= 1 && bis < xNeu ? F.rot : F.gruen;
+    // wo in der Sicht der Stillstand liegt (es kann einer zu sehen sein)
+    const k = Math.floor((schub + standVon) / P);
+    for (let r = k - 1; r <= k + 1; r++) {
+      const xs = x0 + r * P + standVon - schub, xe = xs + (standBis - standVon);
+      if (xe < x0 || xs > sichtbar) continue;
+      const links = Math.max(xs, x0), rechts = Math.min(xe, sichtbar);
+      if (xs >= x0 && xs <= sichtbar) text(T("Prozess läuft, Arbeit steht", "process runs, work stalls"), xs + 6, yM - amp - 10, mono(11), F.rot);
+      if (rechts - links > 60) {
+        ctx.strokeStyle = F.rot; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(links, yM + amp * 0.7); ctx.lineTo(rechts - 8, yM + amp * 0.7); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(links, yM + amp * 0.5); ctx.lineTo(links, yM + amp * 0.9); ctx.moveTo(rechts - 8, yM + amp * 0.5); ctx.lineTo(rechts - 8, yM + amp * 0.9); ctx.stroke();
+        text(T("Wächter: beendet", "watchdog: ended"), links, yM + amp + 16, mono(11), F.rot);
+      }
+      if (xe >= x0 && xe <= sichtbar) {
+        if (klein) text(T("nächster Durchgang: neu", "next pass: restarted"), Math.min(xe + 4, x0 + b - 150), yM + amp + 32, mono(11), F.gruen);
+        else text(T("nächster Durchgang: neu, nie zwei zugleich", "next pass: restarted, never two at once"), Math.min(xe + 4, x0 + b - 290), yM - amp - 10, mono(11), F.gruen);
+      }
+    }
+    // der Zustand, wie die Prozessliste ihn sieht: "laeuft" -- immer, auch wenn der
+    // Prozess laengst nichts mehr tut; und der Zaehler des Lebenszeichens
+    const chip = klein ? T("Liste: läuft", "list: running") : T("in der Prozessliste: läuft", "in the process list: running");
     ctx.font = mono(12);
     const cb = ctx.measureText(chip).width + 22;
     const cx = x0 + b - cb, cy = A.y + 4;
-    ctx.strokeStyle = chipFarbe; ctx.lineWidth = 1;
+    ctx.strokeStyle = F.gruen; ctx.lineWidth = 1;
     ctx.strokeRect(cx + 0.5, cy + 0.5, cb - 1, 24);
-    text(chip, cx + 11, cy + 16, mono(12), chipFarbe);
-    text((klein ? T("Lebenszeichen ", "sign of life ") : T("Lebenszeichen: Uhrzeit + Zähler ", "sign of life: wall time + counter ")) + String(zaehler).padStart(4, "0"), x0, A.y + 20, mono(12), F.matt);
-    // der Stillstand und der Waechter
-    if (bis > xStand) {
-      const a = stueck(bis, xStand + 30, xStand + 70);
-      ctx.globalAlpha *= a;
-      text(T("Prozess läuft, Arbeit steht", "process runs, work stalls"), xStand + 6, yM - amp - 10, mono(11), F.rot);
-      ctx.globalAlpha /= a;
-    }
-    if (bis > xNeu - 40) {
-      const a = beendet;
-      ctx.globalAlpha *= a;
-      ctx.strokeStyle = F.rot; ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.moveTo(xStand, yM + amp * 0.7); ctx.lineTo(xNeu - 8, yM + amp * 0.7); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(xStand, yM + amp * 0.5); ctx.lineTo(xStand, yM + amp * 0.9); ctx.moveTo(xNeu - 8, yM + amp * 0.5); ctx.lineTo(xNeu - 8, yM + amp * 0.9); ctx.stroke();
-      text(T("Wächter: beendet", "watchdog: ended"), xStand, yM + amp + 16, mono(11), F.rot);
-      ctx.globalAlpha /= a;
-    }
-    if (bis > xNeu) {
-      const a = stueck(bis, xNeu, xNeu + 30);
-      ctx.globalAlpha *= a;
-      if (klein) text(T("nächster Durchgang: neu", "next pass: restarted"), x0 + b, yM + amp + 32, mono(11), F.gruen, "right");
-      else text(T("nächster Durchgang: neu, nie zwei zugleich", "next pass: restarted, never two at once"), xNeu + 4, yM - amp - 10, mono(11), F.gruen);
-      ctx.globalAlpha /= a;
-    }
+    text(chip, cx + 11, cy + 16, mono(12), F.gruen);
+    const schlaege = Math.floor(schub / takt) - Math.floor(schub / P) * Math.floor((standBis - standVon) / takt);
+    text((klein ? T("Lebenszeichen ", "sign of life ") : T("Lebenszeichen: Uhrzeit + Zähler ", "sign of life: wall time + counter ")) + String(Math.max(0, schlaege) % 10000).padStart(4, "0"), x0, A.y + 20, mono(12), F.matt);
   }
 
-  // Belastungsproben: sechs Ausfaelle
+  // 06 Belastungsproben: sechs Ausfaelle; danach trifft es sie reihum wieder
   const PROBEN = [
     [T("Abriss mitten in der Order", "connection lost mid-order"), T("kein Trade gebucht, der Platz bleibt gesperrt", "no trade booked, the slot stays taken")],
     [T("Neustart mitten am Tag", "restart in mid-session"), T("Kontostand und Tagesverlust überleben", "balance and daily loss survive")],
@@ -549,19 +647,19 @@
     ctx.strokeStyle = farbe; ctx.fillStyle = farbe; ctx.lineWidth = 1.6; ctx.lineCap = "round";
     const r = gr / 2;
     ctx.beginPath();
-    if (art === 0) {          // Abriss: eine Leitung mit Luecke
+    if (art === 0) {
       ctx.moveTo(-r, 0); ctx.lineTo(-r * 0.25, 0); ctx.moveTo(r * 0.25, 0); ctx.lineTo(r, 0);
       ctx.moveTo(-r * 0.25, -r * 0.35); ctx.lineTo(-r * 0.25, r * 0.35); ctx.moveTo(r * 0.25, -r * 0.35); ctx.lineTo(r * 0.25, r * 0.35);
-    } else if (art === 1) {   // Neustart: Kreis mit Luecke und Strich
+    } else if (art === 1) {
       ctx.arc(0, 0, r * 0.8, -Math.PI * 0.3, Math.PI * 1.3); ctx.moveTo(0, -r); ctx.lineTo(0, -r * 0.2);
-    } else if (art === 2) {   // zwei Schreiber: zwei Pfeile in ein Blatt
+    } else if (art === 2) {
       ctx.rect(-r * 0.3, -r * 0.8, r * 1.1, r * 1.6);
       ctx.moveTo(-r, -r * 0.4); ctx.lineTo(-r * 0.35, -r * 0.4); ctx.moveTo(-r, r * 0.4); ctx.lineTo(-r * 0.35, r * 0.4);
-    } else if (art === 3) {   // halbe Zeile: drei Zeilen, die letzte abgeschnitten
+    } else if (art === 3) {
       ctx.moveTo(-r, -r * 0.5); ctx.lineTo(r, -r * 0.5); ctx.moveTo(-r, 0); ctx.lineTo(r, 0); ctx.moveTo(-r, r * 0.5); ctx.lineTo(0, r * 0.5);
-    } else if (art === 4) {   // steht: eine flache Linie mit letztem Schlag
+    } else if (art === 4) {
       ctx.moveTo(-r, 0); ctx.lineTo(-r * 0.5, 0); ctx.lineTo(-r * 0.3, -r * 0.7); ctx.lineTo(-r * 0.1, 0); ctx.lineTo(r, 0);
-    } else {                  // Wechsel: Schalter
+    } else {
       ctx.rect(-r, -r * 0.35, 2 * r, r * 0.7);
       ctx.moveTo(-r * 0.3, -r * 0.35); ctx.lineTo(-r * 0.3, r * 0.35);
     }
@@ -569,22 +667,23 @@
     if (art === 5) { ctx.font = mono(Math.round(gr * 0.5), 700); ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("?", r * 0.35, 1); }
     ctx.restore();
   }
-  function s6(t) {
-    const A = flaeche();
+  function s6(t, zeit, A) {
     const n = PROBEN.length;
     const zeile = Math.min(44, (A.h - 10) / n);
     const y0 = A.y + (A.h - zeile * n) / 2;
     const xG = A.x + 22, xN = A.x + 56;
     const xE = klein ? xN : A.x + Math.min(A.b * 0.5, 420);
+    const wieder = t >= 1 ? Math.floor(zeit * 1.1) % n : -1;   // welche Probe gerade wieder trifft
     for (let i = 0; i < n; i++) {
       const an = (i / n) * 0.84;
       const a = stueck(t, an, an + 0.06);
       if (a <= 0) continue;
       const y = y0 + i * zeile + zeile / 2;
       ctx.globalAlpha *= a;
-      // der Schlag: der Glyph kommt von links herein
-      const dx = (1 - a) * -30;
-      glyph(i, xG + dx, y, 22, F.tinte);
+      let dx = (1 - a) * -30;
+      let farbe = F.tinte;
+      if (i === wieder) { const ph = (zeit * 1.1) % 1; dx += Math.sin(ph * Math.PI * 6) * 2 * (1 - ph); farbe = ph < 0.5 ? F.rot : F.tinte; }
+      glyph(i, xG + dx, y, 22, farbe);
       text(PROBEN[i][0], xN, y + (klein ? -3 : 4), mono(klein ? 11 : 12), F.tinte);
       const e = stueck(t, an + 0.05, an + 0.11);
       if (e > 0) {
@@ -599,45 +698,9 @@
     }
   }
 
-  // Grenze: die fuenf Stufen in einer Reihe, darunter der Strich, der vor dem Broker endet
-  function s7(t) {
-    const A = flaeche();
-    const n = 5;
-    const w = Math.min(120, (A.b - 40) / n);
-    const x0 = A.x + (A.b - w * n) / 2;
-    const y = A.y + A.h * 0.36;
-    const gr = Math.min(56, w * 0.6);
-    for (let i = 0; i < n; i++) {
-      const a = stueck(t, i * 0.08, i * 0.08 + 0.1);
-      if (a <= 0) continue;
-      ctx.globalAlpha *= a;
-      const cx = x0 + w * i + w / 2;
-      ctx.save();
-      ctx.translate(cx, y);
-      ctx.strokeStyle = F.tinte; ctx.fillStyle = F.tinte; ctx.lineWidth = 1.5;
-      const r = gr / 2;
-      if (i === 0) {            // das Feld: 3x3 Kaestchen, eins leer
-        const k = gr / 3.4;
-        for (let j = 0; j < 9; j++) {
-          const kx = -r + (j % 3) * (k + 3), ky = -r + Math.floor(j / 3) * (k + 3);
-          if (j === 7) ctx.strokeRect(kx + 0.5, ky + 0.5, k - 1, k - 1); else ctx.fillRect(kx, ky, k, k);
-        }
-      } else if (i === 1) {     // zwei Baender
-        for (let j = 0; j < 6; j++) { const bx = -r + j * (gr / 6); if (j % 2 === 0) { ctx.fillRect(bx, -r, gr / 6 - 3, r * 0.7); ctx.fillRect(bx, r * 0.3, gr / 6 - 3, r * 0.7); } else { ctx.strokeRect(bx + 0.5, -r + 0.5, gr / 6 - 4, r * 0.7 - 1); ctx.strokeRect(bx + 0.5, r * 0.3 + 0.5, gr / 6 - 4, r * 0.7 - 1); } }
-      } else if (i === 2) {     // eine Reihe mit der Grenze
-        linie(REIHE, -r, -r, gr, gr, 1, F.tinte, 1.4);
-        ctx.beginPath(); ctx.moveTo(r * 0.24, -r); ctx.lineTo(r * 0.24, r); ctx.stroke();
-      } else if (i === 3) {     // drei Sperren
-        for (let j = 0; j < 3; j++) { const sx = -r + (j + 0.5) * (gr / 3); ctx.beginPath(); ctx.moveTo(sx, -r); ctx.lineTo(sx, -4); ctx.moveTo(sx, 4); ctx.lineTo(sx, r); ctx.stroke(); }
-        ctx.beginPath(); ctx.arc(-r - 6, 0, 3, 0, Math.PI * 2); ctx.fill();
-      } else {                  // das Lebenszeichen
-        ctx.beginPath(); ctx.moveTo(-r, 0); ctx.lineTo(-r * 0.5, 0); ctx.lineTo(-r * 0.3, -r * 0.8); ctx.lineTo(-r * 0.1, 0); ctx.lineTo(r * 0.3, 0); ctx.lineTo(r * 0.5, -r * 0.8); ctx.lineTo(r * 0.7, 0); ctx.lineTo(r, 0); ctx.stroke();
-      }
-      ctx.restore();
-      text("0" + (i + 1), cx, y + r + 22, mono(12), F.matt, "center");
-      ctx.globalAlpha /= a;
-    }
-    // der Strich: bis zur Grenze, dahinter nichts -- dort wuerde der Broker stehen
+  // 07 Grenze: die fuenf Stufen als Zeichen, darunter der Strich, der vor dem Broker endet
+  function s7(t, zeit, A) {
+    stufenReihe(A, t, zeit, 1, true);
     const a = stueck(t, 0.5, 0.7);
     if (a > 0) {
       ctx.globalAlpha *= a;
@@ -645,117 +708,124 @@
       const bis = A.x + A.b * 0.72;
       ctx.strokeStyle = F.tinte; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(A.x, yS); ctx.lineTo(bis, yS); ctx.stroke();
+      const blink = 0.55 + 0.45 * Math.sin(zeit * 2.5);
+      ctx.globalAlpha *= blink;
       ctx.beginPath(); ctx.moveTo(bis, yS - 10); ctx.lineTo(bis, yS + 10); ctx.stroke();
+      ctx.globalAlpha /= blink;
       text(T("bis hierher geprüft", "tested up to here"), A.x, yS - 10, mono(11), F.matt);
       text(T("echter Broker: noch keiner", "real broker: none yet"), bis + 10, yS + 4, mono(11), F.matt);
       ctx.globalAlpha /= a;
     }
   }
 
-  // ---- Das Ende: alles wird zu Punkten, die zum Zeichen und zum Spruch fliessen ----
-  let teilchen = null;
-  function logoMasse() {
-    const balken = klein ? 72 : 104;          // Hoehe des Zeichens
-    const wort = klein ? 20 : 26;             // JKHD
-    const spruch = klein ? 12 : 14;           // Just Know How to Dominate.
-    const gesamt = balken + 22 + wort + 14 + spruch;
-    const oben = (H - gesamt) / 2 - (klein ? 10 : 20);
-    return { balken, wort, spruch, oben, cx: B / 2 };
+  // ---- Das Ende: Punkte steigen von unten auf und werden zum Zeichen der Startseite ----
+  // Das Zeichen, wie es ganz oben auf der Startseite steht: die Balken, JKHD, ein
+  // Strich, "Quant Systems" und darunter "Just Know How to Dominate." -- hier
+  // groesser, in der Mitte der Buehne
+  function wortBreite(c, s, abst) {
+    let w = 0;
+    for (const ch of s) w += c.measureText(ch).width + abst;
+    return w - abst;
   }
-  // Das Zeichen und der Spruch, klar gezeichnet -- auf die Leinwand oder (zum
-  // Abtasten) auf eine Hilfsleinwand `g`, dort in einer Farbe
-  function logoZeichnen(a, g, farbe) {
+  function gesperrt(c, s, x, y, abst) {
+    for (const ch of s) { c.fillText(ch, x, y); x += c.measureText(ch).width + abst; }
+  }
+  function lockupMasse(c) {
+    const k = klein ? 1.0 : B < 1100 ? 1.7 : 2.1;   // Vergroesserung gegen den Hero (38 px Balken)
+    const bal = 38 * k, luecke = 16 * k;
+    const wort = 19.2 * k, strich = 40 * k, zeile1 = 16 * k, zeile2 = 11.5 * k;
+    c.save();
+    c.font = sans(wort, 800);
+    const wortB = wortBreite(c, "JKHD", wort * 0.34);
+    c.font = sans(zeile1, 700);
+    const z1B = wortBreite(c, "Quant Systems", zeile1 * 0.05);
+    c.font = mono(zeile2);
+    const z2B = wortBreite(c, "Just Know How to Dominate.", zeile2 * 0.03);
+    c.restore();
+    const tagB = Math.max(z1B, z2B);
+    const gesamt = bal + luecke + wortB + luecke + 1 + luecke + tagB;
+    return { k, bal, luecke, wort, strich, zeile1, zeile2, wortB, x0: B / 2 - gesamt / 2, cy: H * 0.46 };
+  }
+  function lockupZeichnen(a, g, farbe) {
     const c = g || ctx;
-    const m = logoMasse();
+    const m = lockupMasse(c);
     c.save();
     c.globalAlpha *= a;
+    c.textAlign = "left";
+    c.textBaseline = "middle";
+    // die Balken (viewBox 100: Rechtecke 10/22/20/56, 40/8/20/84, 70/22/20/56)
     c.fillStyle = farbe || F.tinte;
-    const k = m.balken / 100;
-    const bx = m.cx - 50 * k, by = m.oben;
-    c.fillRect(bx + 10 * k, by + 22 * k, 20 * k, 56 * k);
-    c.fillRect(bx + 40 * k, by + 8 * k, 20 * k, 84 * k);
-    c.fillRect(bx + 70 * k, by + 22 * k, 20 * k, 56 * k);
-    const yW = by + m.balken + 22 + m.wort * 0.8;
+    const s = m.bal / 100, bx = m.x0, by = m.cy - m.bal / 2;
+    c.fillRect(bx + 10 * s, by + 22 * s, 20 * s, 56 * s);
+    c.fillRect(bx + 40 * s, by + 8 * s, 20 * s, 84 * s);
+    c.fillRect(bx + 70 * s, by + 22 * s, 20 * s, 56 * s);
+    // JKHD
+    let x = bx + m.bal + m.luecke;
     c.font = sans(m.wort, 800);
-    c.textAlign = "center";
-    c.textBaseline = "alphabetic";
-    if ("letterSpacing" in c) { c.letterSpacing = "0.34em"; c.fillText("JKHD", m.cx + m.wort * 0.17, yW); c.letterSpacing = "0px"; }
-    else {
-      const abst = m.wort * 0.34;
-      c.textAlign = "left";
-      let w = 0; for (const ch of "JKHD") w += c.measureText(ch).width + abst;
-      let x = m.cx - (w - abst) / 2;
-      for (const ch of "JKHD") { c.fillText(ch, x, yW); x += c.measureText(ch).width + abst; }
-      c.textAlign = "center";
-    }
+    gesperrt(c, "JKHD", x, m.cy + m.wort * 0.04, m.wort * 0.34);
+    x += m.wortB + m.luecke;
+    // der Strich
+    c.fillStyle = farbe || F.rand2;
+    c.fillRect(x, m.cy - m.strich / 2, Math.max(1, m.k * 0.6), m.strich);
+    x += 1 + m.luecke;
+    // Quant Systems / Just Know How to Dominate.
+    c.fillStyle = farbe || F.tinte;
+    c.font = sans(m.zeile1, 700);
+    gesperrt(c, "Quant Systems", x, m.cy - m.zeile1 * 0.55, m.zeile1 * 0.05);
     c.fillStyle = farbe || F.matt;
-    c.font = mono(m.spruch);
-    c.fillText("Just Know How to Dominate.", m.cx, yW + 14 + m.spruch);
+    c.font = mono(m.zeile2);
+    gesperrt(c, "Just Know How to Dominate.", x, m.cy + m.zeile2 * 0.85, m.zeile2 * 0.03);
     c.restore();
   }
-  // Die Punkte: Herkunft = was gerade auf der Leinwand steht, Ziel = das Zeichen
+  let teilchen = null;
   function teilchenBauen() {
-    // 1. die Leinwand abtasten (alles, was nicht Grund ist)
-    const d = ctx.getImageData(0, 0, leinwand.width, leinwand.height).data;
-    const W = leinwand.width, Hh = leinwand.height;
-    const [gr, gg, gb] = F.grundRgb;
-    const hoechstens = klein ? 2000 : 3200;
-    let schritt = Math.max(2, Math.round(2 * dpr)), quellen = [];
-    for (;;) {
-      quellen = [];
-      for (let y = 0; y < Hh; y += schritt) {
-        for (let x = 0; x < W; x += schritt) {
-          const i = (y * W + x) * 4;
-          const abstand = Math.abs(d[i] - gr) + Math.abs(d[i + 1] - gg) + Math.abs(d[i + 2] - gb);
-          if (abstand > 90) quellen.push([x / dpr, y / dpr]);
-        }
-      }
-      if (quellen.length <= hoechstens || schritt > 6 * dpr) break;
-      schritt++;
-    }
-    // 2. das Zeichen abtasten (weiss auf schwarz auf einer Hilfsleinwand)
+    // das Zeichen abtasten (weiss auf schwarz auf einer Hilfsleinwand)
     const c = document.createElement("canvas");
     c.width = B; c.height = H;
     const g = c.getContext("2d");
     g.fillStyle = "#000"; g.fillRect(0, 0, B, H);
-    logoZeichnen(1, g, "#fff");
-    const ld = g.getImageData(0, 0, B, H).data;
+    lockupZeichnen(1, g, "#fff");
+    const d = g.getImageData(0, 0, B, H).data;
     const ziele = [];
-    const s2 = klein ? 2 : 2;
-    for (let y = 0; y < H; y += s2) for (let x = 0; x < B; x += s2) { if (ld[(y * B + x) * 4] > 110) ziele.push([x, y]); }
+    const hoechstens = klein ? 2000 : 3400;
+    let schritt = 2;
+    for (;;) {
+      ziele.length = 0;
+      for (let y = 0; y < H; y += schritt) for (let x = 0; x < B; x += schritt) { if (d[(y * B + x) * 4] > 110) ziele.push([x, y]); }
+      if (ziele.length <= hoechstens || schritt >= 5) break;
+      schritt++;
+    }
     if (!ziele.length) return null;
-    // 3. zuordnen: jeder Zielpunkt bekommt mindestens eine Quelle, Quellen reihum
+    // jeder Zielpunkt bekommt einen Punkt, der unten ausserhalb der Buehne beginnt und
+    // auf einem Bogen aufsteigt; die linken etwas frueher als die rechten
     const z = zufall(23);
     const punkte = [];
-    const anzahl = Math.max(ziele.length, quellen.length);
-    for (let i = 0; i < anzahl; i++) {
-      const q = quellen.length ? quellen[i % quellen.length] : [B / 2 + (z() - 0.5) * B * 0.6, H * 0.35 + (z() - 0.5) * H * 0.4];
-      const zi = ziele[i % ziele.length];
-      const dx = zi[0] - q[0], dy = zi[1] - q[1];
+    let xl = Infinity, xr = -Infinity;
+    for (const zi of ziele) { xl = Math.min(xl, zi[0]); xr = Math.max(xr, zi[0]); }
+    for (const zi of ziele) {
+      const x0 = misch(xl, xr, z()) + (z() - 0.5) * B * 0.3;
+      const y0 = H + 10 + z() * H * 0.45;
       punkte.push({
-        x0: q[0] + (z() - 0.5) * 1.5, y0: q[1] + (z() - 0.5) * 1.5,
+        x0, y0,
         x1: zi[0] + (z() - 0.5) * 0.8, y1: zi[1] + (z() - 0.5) * 0.8,
-        // Bogen: der Kontrollpunkt liegt seitlich des geraden Wegs -- alles schwingt ein
-        kx: (q[0] + zi[0]) / 2 - dy * (0.25 + z() * 0.3) * (z() < 0.5 ? 1 : -1),
-        ky: (q[1] + zi[1]) / 2 + dx * (0.25 + z() * 0.3) * (z() < 0.5 ? 1 : -1),
-        start: z() * 0.35,
+        kx: (x0 + zi[0]) / 2 + (z() - 0.5) * B * 0.25,
+        ky: (y0 + zi[1]) / 2 + (z() - 0.3) * H * 0.3,
+        start: ((zi[0] - xl) / Math.max(1, xr - xl)) * 0.14 + z() * 0.16,
         gr: 1.4 + z() * 1.2,
       });
     }
     return { punkte };
   }
   function ende(t) {
-    if (!teilchen) {
-      // ohne Herkunft (z. B. nach einem Groessenwechsel): nur das Zeichen
-      logoZeichnen(stueck(t, 0, 0.3));
-      return;
-    }
-    if (t >= 1) { logoZeichnen(1); return; }   // angekommen: nur noch das Zeichen
+    if (t >= 1) { lockupZeichnen(1); return; }
+    if (!teilchen) teilchen = teilchenBauen();
+    if (!teilchen) { lockupZeichnen(stueck(t, 0, 0.3)); return; }
     const DAUER = 0.6;
     ctx.fillStyle = F.tinte;
     ctx.globalAlpha = 0.9 * (1 - stueck(t, 0.9, 1) * 0.85);
     for (const pt of teilchen.punkte) {
-      const e = glatt(clamp((t - pt.start) / DAUER, 0, 1));
+      // schnell herein, langsam ankommen
+      const e = 1 - Math.pow(1 - clamp((t - pt.start) / DAUER, 0, 1), 2.2);
       const u = 1 - e;
       const x = u * u * pt.x0 + 2 * u * e * pt.kx + e * e * pt.x1;
       const y = u * u * pt.y0 + 2 * u * e * pt.ky + e * e * pt.y1;
@@ -763,70 +833,57 @@
       ctx.fillRect(x - gr / 2, y - gr / 2, gr, gr);
     }
     ctx.globalAlpha = 1;
-    // sobald die Punkte da sind, wird das Zeichen klar
-    logoZeichnen(stueck(t, 0.86, 1));
+    lockupZeichnen(stueck(t, 0.86, 1));
   }
 
-  // ---- Die Lage eines Bildes bei p ----
-  const ZEICHNER = [s1, s2, s3, s4, s5, s6, s7];
-  const GESAMT = ZEICHNER.length * SZENE + ENDE;
+  // ---- Die Bilder: Reihenfolge und Platz auf dem Scrollweg (Einheiten, s. oben) ----
+  const ZEICHNER = [s0, s1, s2, s3, s4, s5, s6, s7];
+  const LAENGEN = [2.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5];
+  const ENDE = 2.0;
+  const GESAMT = LAENGEN.reduce((a, b) => a + b, 0) + ENDE;
   const SCHUB = 0.6 / GESAMT;     // so lange schiebt sich ein Bild herein (und das vorige hinaus)
   const AUFBAU = 1.0 / GESAMT;    // so lange baut sich ein Bild auf, vom Beginn des Schubs an
-  const ENDE_VON = (ZEICHNER.length * SZENE) / GESAMT;   // ab hier fliessen die Punkte
+  const ANFANG = [];
+  { let s = 0; for (const l of LAENGEN) { ANFANG.push(s / GESAMT); s += l; } }
+  const ENDE_VON = (GESAMT - ENDE) / GESAMT;   // hier ist die Grenze hinaus; die Punkte steigen schon einen Schub frueher auf
   // null, wenn das Bild nicht im Blick ist; sonst der Versatz dy (nach unten positiv)
-  // und der Aufbau t (0..1). Das erste Bild schiebt sich nicht herein, das letzte
-  // nicht hinaus (aus ihm werden die Punkte).
+  // und der Aufbau t (0..1). Das erste Bild schiebt sich nicht herein.
   function lage(i, p) {
-    const von = (i * SZENE) / GESAMT, bis = ((i + 1) * SZENE) / GESAMT;
-    const erstes = i === 0, letztes = i === ZEICHNER.length - 1;
+    const von = ANFANG[i], bis = i + 1 < ANFANG.length ? ANFANG[i + 1] : ENDE_VON;
+    const erstes = i === 0;
     const ab = erstes ? 0 : von - SCHUB;
-    if (p < ab || (!letztes && p >= bis) || (letztes && p >= ENDE_VON)) return null;
+    if (p < ab || p >= bis) return null;
     let dy = 0;
     if (!erstes) dy += (1 - stueck(p, von - SCHUB, von)) * H;
-    if (!letztes) dy -= stueck(p, bis - SCHUB, bis) * H;
+    dy -= stueck(p, bis - SCHUB, bis) * H;
     return { dy, t: clamp((p - ab) / AUFBAU, 0, 1) };
   }
 
   // ---- Ein Bild ----
-  function bild(p, still) {
+  function bild(p, still, zeit) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
     ctx.fillStyle = F.grund;
     ctx.fillRect(0, 0, B, H);
-    if (still) { logoZeichnen(1); return; }
+    if (still) { lockupZeichnen(1); return; }
     for (let i = 0; i < ZEICHNER.length; i++) {
       const l = lage(i, p);
       if (!l) continue;
       ctx.save();
       ctx.translate(0, l.dy);
-      ZEICHNER[i](l.t);
+      ZEICHNER[i](l.t, zeit, flaeche(i));
       ctx.restore();
     }
-    if (p >= ENDE_VON) {
-      if (!teilchen && !teilchenVersucht) {
-        // die Punkte entstehen aus dem Bild der Grenze: einmal zeichnen, abtasten
-        teilchenVersucht = true;
-        ctx.save(); ctx.globalAlpha = 1; s7(1); ctx.restore();
-        teilchen = teilchenBauen();
-        ctx.fillStyle = F.grund; ctx.fillRect(0, 0, B, H);
-      }
-      ende(clamp((p - ENDE_VON) / (1 - ENDE_VON), 0, 1));
-    } else if (teilchenVersucht && p < ENDE_VON - 0.02) {
-      teilchenVersucht = false;   // zurueckgescrollt: beim naechsten Mal neu abtasten
-      teilchen = null;
-    }
+    if (p >= ENDE_VON - SCHUB) ende(clamp((p - (ENDE_VON - SCHUB)) / (1 - ENDE_VON + SCHUB), 0, 1));
   }
-  let teilchenVersucht = false;
 
-  // ---- Die Texte: je Bild einer, mit dem Scrollen ein- und ausgeblendet ----
+  // ---- Die Texte: Text i gehoert zu Bild i und bewegt sich mit ihm ----
   function texteZeigen(p) {
     for (let i = 0; i < texte.length; i++) {
       const el = texte[i];
       const l = i < ZEICHNER.length ? lage(i, p) : null;
-      let a = l ? 1 : 0, dy = l ? l.dy : 0;
-      // der Text der Grenze geht, wenn die Punkte fliegen
-      if (i === ZEICHNER.length - 1 && p >= ENDE_VON) { a = 1 - stueck(p, ENDE_VON, ENDE_VON + (0.5 * ENDE) / GESAMT); dy = 0; }
+      const a = l ? 1 : 0, dy = l ? l.dy : 0;
       el.style.opacity = a.toFixed(3);
       el.style.transform = Math.abs(dy) > 0.5 ? `translateY(${dy.toFixed(1)}px)` : "none";
       el.classList.toggle("ist-weg", a <= 0);
@@ -846,7 +903,7 @@
     const p = clamp((kleben - r.top) / weg, 0, 1);
     return clamp(p / Math.max(0.01, 1 - zugabe), 0, 1);
   }
-  let p = 0, laeuft = false, letzte = 0, bildNr = 0;
+  let p = 0, laeuft = false, letzte = 0;
   function schleife(jetzt) {
     if (!laeuft) return;
     const dt = Math.min(0.05, (jetzt - letzte) / 1000 || 0.016);
@@ -854,9 +911,9 @@
     const zielP = zielFortschritt();
     p += (zielP - p) * (1 - Math.exp(-dt * 7));
     if (Math.abs(zielP - p) < 0.0003) p = zielP;
-    const ruhig = Math.abs(zielP - p) < 0.00001;
-    bildNr++;
-    if (!ruhig || bildNr % 3 === 0) { bild(p, false); texteZeigen(p); }
+    // jedes Bild wird gezeichnet: die Bilder bewegen sich auch, wenn niemand scrollt
+    bild(p, false, jetzt / 1000);
+    texteZeigen(p);
     requestAnimationFrame(schleife);
   }
   function starten() {
@@ -872,15 +929,15 @@
     abschnitt.classList.toggle("ist-still", reduziert.matches);
     kleben = parseFloat(getComputedStyle(buehne).top) || 0;
     groesseAnpassen();
-    if (reduziert.matches) { anhalten(); bild(1, true); for (const el of texte) { el.style.opacity = ""; el.style.transform = ""; el.classList.remove("ist-weg"); } }
+    if (reduziert.matches) { anhalten(); bild(1, true, 0); for (const el of texte) { el.style.opacity = ""; el.style.transform = ""; el.classList.remove("ist-weg"); } }
   }
 
   abschnitt.classList.add("ist-aktiv");
   einrichten();
   new IntersectionObserver((eintraege) => { if (eintraege.some((e) => e.isIntersecting)) starten(); else anhalten(); }).observe(abschnitt);
-  window.addEventListener("resize", () => { groesseAnpassen(); if (reduziert.matches) bild(1, true); });
+  window.addEventListener("resize", () => { groesseAnpassen(); if (reduziert.matches) bild(1, true, 0); });
   if (reduziert.addEventListener) reduziert.addEventListener("change", einrichten);
   // Farben wechseln mit der Darstellung (hell/dunkel): der Schalter setzt data-theme
-  new MutationObserver(() => { farbenLesen(); if (reduziert.matches) bild(1, true); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { groesseAnpassen(); if (reduziert.matches) bild(1, true); });
+  new MutationObserver(() => { farbenLesen(); teilchen = null; if (reduziert.matches) bild(1, true, 0); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { groesseAnpassen(); if (reduziert.matches) bild(1, true, 0); });
 })();
