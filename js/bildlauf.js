@@ -24,7 +24,8 @@
 // Der Scrollweg ist in Einheiten von je etwa einer Bildschirmhoehe geteilt (die
 // Fabrik nennt je Bild seine Laenge). Jedes Bild schiebt sich von unten herein
 // (SCHUB), baut sich auf (AUFBAU) und steht dann still, bis das naechste es nach
-// oben hinausschiebt -- Text und Zeichnung als ein Block. Am Ende (ENDE Einheiten)
+// oben hinausschiebt -- Text und Zeichnung als ein Block. (Julian, 11.10.2026
+// abends: die Haltezeit wieder halbiert -- je Bild 2,75 Einheiten, der Titel 2.) Am Ende (ENDE Einheiten)
 // steigen Punkte von unterhalb der Buehne auf und werden zum Zeichen der
 // Startseite (Balken, JKHD, Strich, Quant Systems, Just Know How to Dominate.);
 // danach steht es eine Bildschirmhoehe lang (zugabe).

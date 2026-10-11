@@ -969,8 +969,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
    .ist-aktiv) und bei reduzierter Bewegung (.ist-still) stehen die Texte als
    Liste untereinander, bei .ist-still mit dem Schlussbild still darueber. */
 .bildlauf { position: relative; background: var(--bg); }
-.bildlauf.ist-aktiv { height: 3600vh; }
-.bildlauf[data-bilder="sicherheit"].ist-aktiv { height: 5000vh; }
+.bildlauf.ist-aktiv { height: 2400vh; }
+.bildlauf[data-bilder="sicherheit"].ist-aktiv { height: 3300vh; }
 .bildlauf-buehne {
   position: sticky;
   top: var(--header-h);
@@ -1003,8 +1003,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .bildlauf.ist-still .bildlauf-text { position: static; opacity: 1; transform: none; visibility: visible; }
 .bildlauf.ist-still .bildlauf-leinwand { height: 60vh; min-height: 360px; }
 @media (max-width: 560px) {
-  .bildlauf.ist-aktiv { height: 3200vh; }
-  .bildlauf[data-bilder="sicherheit"].ist-aktiv { height: 4500vh; }
+  .bildlauf.ist-aktiv { height: 2200vh; }
+  .bildlauf[data-bilder="sicherheit"].ist-aktiv { height: 3000vh; }
   .bildlauf-texte { bottom: 36px; }
   .bildlauf-text { left: 20px; right: 20px; }
   .bildlauf-text h1 { font-size: 1.7rem; }

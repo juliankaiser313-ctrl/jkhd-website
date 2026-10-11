@@ -599,5 +599,5 @@ window.JKHDBilder.sicherheit = function (k) {
     }
   }
 
-  return { laengen: [2.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5], zeichner: [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10] };
+  return { laengen: [2.0, 2.75, 2.75, 2.75, 2.75, 2.75, 2.75, 2.75, 2.75, 2.75, 2.75], zeichner: [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10] };
 };
