@@ -37,6 +37,8 @@ datenschutz.html   Datenschutzerklärung
 404.html           Fehlerseite (zweisprachig)
 ueber/leistungen/projekte/technologie/ansatz.html   Weiterleitungen auf die neuen Seiten
 holding/           Alte Deckseite (bis 20.09.2026); seit 10.10.2026 nur noch Weiterleitungen auf Startseite, Impressum, Datenschutz
+fehlerberichte/    Fehlerberichte zur Website, eine Datei je Fehler, auch direkt auf GitHub anlegbar (Regeln, Vorlage und
+                   Pflege-Hinweis in fehlerberichte/README.md; behobene unter fehlerberichte/behoben/; per robots.txt nicht indexiert)
 
 en/index.html      Englische Fassung der Startseite
 en/system.html     "How a system tries to make money" (die Grundarten als Animation)
