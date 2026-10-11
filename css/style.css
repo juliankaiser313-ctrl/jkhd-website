@@ -2608,6 +2608,15 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 }
 .sp-order-was svg { width: 12px; height: 12px; flex-shrink: 0; }
 .sp-order-wo { font-family: var(--mono); font-size: 0.74rem; color: var(--muted); }
+/* Menge, Kurs und Hoechstmenge in Kaufen/Verkaufen: Jede Zahl bekommt die Breite ihres
+   laengsten Werts (Menge "1.234", Kurs "zu 2.150,99 $", "max. 2.000"), die Ziffern sind
+   gleich breit und nichts bricht mitten im Wert um. So bleibt der Knopf gleich gross,
+   obwohl sich die Zahlen jeden Takt aendern (Julian, 11.10.2026: der Knopf wuchs um
+   19 px, sobald die Kurszeile bei vier Stellen umbrach). */
+.sp-order-was [data-sp^="menge-"] { display: inline-block; min-width: 4.6ch; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sp-order-wo-kurs { display: flex; flex-wrap: wrap; gap: 0 1ch; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sp-order-wo-kurs [data-sp^="preis-"] { min-width: 13ch; }
+.sp-order-wo-kurs [data-sp^="max-"] { min-width: 10ch; }
 /* Kaufen blau, Verkaufen rot (Julian, 10.10.2026): die einzige Farbe auf der Seite,
    Form und Lage unterscheiden die beiden weiterhin. Weiss auf beiden Toenen liegt
    ueber 5:1 (WCAG AA), hell wie dunkel. Gesperrt bleiben sie farbig, nur blass. */
@@ -2850,9 +2859,10 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   .sp-menge-einheit { display: none; }
   .sp-orders { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .sp-order-glatt { grid-column: 1 / -1; }
-  /* Order-Knoepfe einzeilig je Zeile (sonst bricht "Verkaufen 99 S" dreizeilig um) */
-  .sp-order { min-height: 50px; padding: 6px 12px; gap: 2px; }
-  .sp-order-was { font-size: 0.72rem; letter-spacing: 0.06em; }
+  /* Order-Knoepfe einzeilig je Zeile: Mit 10 px Rand und 6 px Abstand passt auch
+     "Verkaufen 1.234 S" (157 px) in die 164 px des 186-px-Knopfs, gemessen 11.10.2026 */
+  .sp-order { min-height: 50px; padding: 6px 10px; gap: 2px; }
+  .sp-order-was { gap: 4px 6px; font-size: 0.72rem; letter-spacing: 0.06em; }
   .sp-order-wo { font-size: 0.68rem; }
   .sp-meldung { min-height: 1.3em; font-size: 0.8rem; }
   .sp-schutz { gap: 4px; padding-top: 8px; }

@@ -1177,7 +1177,7 @@
       setzeAttribut(orderKnoepfe[aktion], "aria-disabled", String(!(aktiv && n >= 1 && n <= erlaubt)));
       setzeText(texte.menge, FORMAT_GANZ.format(n));
       setzeText(texte.preis, T("zu ", "at ") + kurs(aktion === "kauf" ? z.brief : z.geld));
-      setzeText(texte.max, "\u00b7 max. " + FORMAT_GANZ.format(erlaubt));
+      setzeText(texte.max, "max. " + FORMAT_GANZ.format(erlaubt));
     });
     setzeAttribut(orderKnoepfe.glatt, "aria-disabled", String(!(aktiv && z.du.position !== 0)));
     setzeText(glattPosition, z.du.position === 0 ? T("keine Position", "no position") : positionText(z.du.position));
