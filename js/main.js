@@ -230,7 +230,7 @@ if (siteHeader) {
 // Die Blase ist ein Chat: Man stellt eine eigene Frage. Die sechs festen Antworten
 // (sofort, ohne Server) erscheinen nur, wenn die KI gerade nicht antwortet -- unter
 // der Fehlermeldung, bis zur naechsten Frage (Julian 27.09.2026: „die Standardfragen
-// nur, wenn die KI gerade nicht mehr geht"). Eine Frage geht an
+// nur, wenn die KI gerade nicht mehr geht“). Eine Frage geht an
 // unseren eigenen Server (KI_API, JKHD-Partner-Server), und erst der fragt das
 // Sprachmodell (OVHcloud AI Endpoints; Rechenzentrum laut OVH-Doku, 26.09.2026, in
 // Frankreich -- schriftlich noch nicht bestaetigt, README des Servers). Im Browser
@@ -759,7 +759,7 @@ const PartnerSitzung = {
 };
 
 // Passwort zeigen/verbergen (Julian 26.09.2026: „manchmal vertippt man sich und will
-// wissen wo"). Ein Augen-Knopf rechts im Feld schaltet type password <-> text; die
+// wissen wo“). Ein Augen-Knopf rechts im Feld schaltet type password <-> text; die
 // Tastatur auf dem Handy bleibt dabei offen (pointerdown ohne Fokuswechsel). Vor jedem
 // Absenden wird das Feld wieder verdeckt: Browser erkennen ein Passwort nur an
 // type="password" und bieten es sonst nicht zum Speichern an.
@@ -801,7 +801,7 @@ async function antwortKoerper(r) {
 
 // 429 {"grenze":"netz"}: aus diesem Netz kamen zu viele Anmeldeversuche. Dann
 // kaeme auch ein Code nicht an -- deshalb steht bei diesem Text nie der
-// Knopf „Code per E-Mail schicken".
+// Knopf „Code per E-Mail schicken“.
 const NETZ_VOLL = () => T(
   "Von Ihrem Internetanschluss kamen in der letzten Stunde zu viele Anmeldeversuche. Bitte in einer Stunde erneut — auch ein Code käme bis dahin nicht an.",
   "Too many sign-in attempts came from your internet connection in the last hour. Please try again in an hour — until then, a code would not arrive either."
@@ -843,10 +843,10 @@ const NETZ_VOLL = () => T(
   if (api && PartnerSitzung.lies()) startKnopf.textContent = T("Zur Partnerseite", "To the partner page");
   const startHtml = koerper.innerHTML;
 
-  // Merker „neues Passwort festlegen" (von „Passwort vergessen?" oder
+  // Merker „neues Passwort festlegen“ (von „Passwort vergessen?“ oder
   // partnerzugang.html#partner-passwort): nach der Anmeldung geht es dann auf
   // partner.html#neues-passwort. Bewusst nur eine Variable, kein
-  // Sitzungsspeicher; „Abbrechen" nimmt ihn zurueck.
+  // Sitzungsspeicher; „Abbrechen“ nimmt ihn zurueck.
   let neuesPasswort = false;
 
   const OHNE_SERVER = () => T(
@@ -873,7 +873,7 @@ const NETZ_VOLL = () => T(
        <button type="button" class="btn btn-ghost" data-partner="${nebenAktion}">${nebenText}</button>
      </div>`;
 
-  // Hinweis + „Text kopieren" nach einem mailto-Aufruf. Klappt das Kopieren
+  // Hinweis + „Text kopieren“ nach einem mailto-Aufruf. Klappt das Kopieren
   // nicht (kein Clipboard, unsicherer Kontext), erscheint der Text selbst zum
   // Markieren. bauen() liefert den Text frisch, falls jemand nach dem ersten
   // Versuch noch ein Feld aendert.
@@ -936,13 +936,13 @@ const NETZ_VOLL = () => T(
   }
 
   // Jeder Schritt bekommt eine laufende Nummer: eine Antwort, die erst nach
-  // „Abbrechen" oder „Andere Adresse" eintrifft, darf den Kasten nicht mehr
+  // „Abbrechen“ oder „Andere Adresse“ eintrifft, darf den Kasten nicht mehr
   // umbauen. Und waehrend eine Anfrage laeuft, ist der Knopf gesperrt —
   // ein Doppelklick wuerde sonst zwei Codes verbrauchen.
   let lauf = 0;
   function neuerLauf() { return ++lauf; }
   function veraltet(meins) { return meins !== lauf; }
-  // Waehrend eine Anfrage laeuft, ist der Senden-Knopf zu — „Abbrechen"
+  // Waehrend eine Anfrage laeuft, ist der Senden-Knopf zu — „Abbrechen“
   // bleibt offen, sonst sitzt fest, wer auf eine haengende Antwort wartet.
   function gesperrt(form, ja) {
     form.querySelectorAll("button").forEach((b) => {
@@ -951,7 +951,7 @@ const NETZ_VOLL = () => T(
   }
 
   // Schritt 1: E-Mail-Adresse und, falls festgelegt, Passwort -- EIN Formular
-  // mit festem Knopf „Anmelden". Welcher Weg laeuft, entscheidet erst das
+  // mit festem Knopf „Anmelden“. Welcher Weg laeuft, entscheidet erst das
   // Absenden: Passwortfeld leer = Code per E-Mail genau wie bisher, sonst
   // /passwort_login. Ob eine Adresse ein Passwort hat, fragt die Seite nie ab.
   // `status` steht als Hinweis ueber den Feldern (partnerzugang.html#partner-passwort).
@@ -1001,7 +1001,7 @@ const NETZ_VOLL = () => T(
     }
 
     // Einen Code anfordern: vom leeren Passwortfeld, vom Knopf „Code per
-    // E-Mail schicken" oder von „Passwort vergessen?".
+    // E-Mail schicken“ oder von „Passwort vergessen?“.
     async function codeAnfordern(email, text) {
       if (!api) { ohneServer(); return; }
       meldung.innerHTML = hinweis(text);
@@ -1093,7 +1093,7 @@ const NETZ_VOLL = () => T(
       }
     }
 
-    // „Passwort vergessen?": ein Code wie sonst auch -- nur steht danach der
+    // „Passwort vergessen?“: ein Code wie sonst auch -- nur steht danach der
     // Merker, und die Partnerseite zeigt die Passwortkarte ganz oben.
     function vergessen() {
       const email = adresse();
@@ -1103,9 +1103,9 @@ const NETZ_VOLL = () => T(
     }
   }
 
-  // Schritt 2: Code aus der E-Mail. Nach „Passwort vergessen?" sagt ein
+  // Schritt 2: Code aus der E-Mail. Nach „Passwort vergessen?“ sagt ein
   // Zusatzsatz, dass die Code-Mail die richtige ist -- gesucht wird im
-  // Postfach sonst nach „Passwort".
+  // Postfach sonst nach „Passwort“.
   function codeSchritt(email) {
     const meins = neuerLauf();
     koerper.innerHTML =
@@ -1114,7 +1114,7 @@ const NETZ_VOLL = () => T(
            "Wenn diese Adresse bei uns als Partner hinterlegt ist, haben wir Ihnen gerade einen Code geschickt. Er gilt zehn Minuten und nur einmal.",
            "If this address is registered with us as a partner, we have just sent you a code. It is valid for ten minutes and can be used once."
          ) + (neuesPasswort ? " " + T(
-           `Geben Sie den Code aus der E-Mail „Ihr Code für den JKHD-Partnerzugang" ein. Danach legen Sie auf Ihrer Partnerseite ein neues Passwort fest; ein bisheriges gilt weiter, bis Sie das tun.`,
+           `Geben Sie den Code aus der E-Mail „Ihr Code für den JKHD-Partnerzugang“ ein. Danach legen Sie auf Ihrer Partnerseite ein neues Passwort fest; ein bisheriges gilt weiter, bis Sie das tun.`,
            `Enter the code from the e-mail "Ihr Code für den JKHD-Partnerzugang". Then set a new password on your partner page; any previous one stays valid until you do.`
          ) : ""))}
          <div class="field">
@@ -1179,7 +1179,7 @@ const NETZ_VOLL = () => T(
     window.location.href = neuesPasswort ? "partner.html#neues-passwort" : "partner.html";
   }
 
-  // Anfrage: ein fester Fragebogen. „Senden" schickt die Antworten an den
+  // Anfrage: ein fester Fragebogen. „Senden“ schickt die Antworten an den
   // Zugang; der leitet sie an service@ weiter und bestaetigt dem Einsender
   // sofort per E-Mail (Julians Wunsch, 24.09.2026). Klappt das nicht — kein
   // Server, kein Netz, Bremse —, oeffnet sich wie bisher das E-Mail-Programm
@@ -1343,7 +1343,7 @@ const NETZ_VOLL = () => T(
     window.location.href = mailto(ANFRAGE_AN, betreff, bauen());
   }
 
-  // Erfolg: die Anfrage liegt beim Zugang. „Unterwegs" ist die ehrliche
+  // Erfolg: die Anfrage liegt beim Zugang. „Unterwegs“ ist die ehrliche
   // Formulierung — der Versand laeuft in einer zweiten Anfrage des Servers und
   // kann noch scheitern, deshalb steht auch der Weg dahinter da.
   // Erfolg. Die Anfrage liegt bei uns — das ist die Aussage, die traegt.
@@ -1389,7 +1389,7 @@ const NETZ_VOLL = () => T(
   if (anfrageKnopf) anfrageKnopf.addEventListener("click", anfrageSchritt);
 
   // Kommt die Seite aus dem Zurueck-Cache des Browsers, steht sonst noch
-  // „Angemeldet — einen Moment …" oder ein halb ausgefuelltes Formular da.
+  // „Angemeldet — einen Moment …“ oder ein halb ausgefuelltes Formular da.
   window.addEventListener("pageshow", (e) => {
     if (e.persisted && koerper.querySelector("form, .partner-hinweis")) zurueck();
   });
@@ -1401,8 +1401,8 @@ const NETZ_VOLL = () => T(
     if (kopf) kopf.insertAdjacentHTML("beforeend", hinweis(OHNE_SERVER()));
   }
 
-  // Von der Partnerseite („Abmelden und Code anfordern"): der Kasten steht
-  // gleich offen wie nach „Anmelden", der Merker ist gesetzt. Die Adresse
+  // Von der Partnerseite („Abmelden und Code anfordern“): der Kasten steht
+  // gleich offen wie nach „Anmelden“, der Merker ist gesetzt. Die Adresse
   // traegt der Link bewusst nicht mit -- die fuellt das Autofill. Der Anker
   // verschwindet sofort: er heisst wie das Passwortfeld, und der Browser
   // setzte den Fokus sonst dorthin statt auf die Adresse.
@@ -1413,7 +1413,7 @@ const NETZ_VOLL = () => T(
       ohneServer();
     } else {
       mailSchritt(T(
-        `Neues Passwort festlegen: E-Mail-Adresse eingeben und „Passwort vergessen?" wählen.`,
+        `Neues Passwort festlegen: E-Mail-Adresse eingeben und „Passwort vergessen?“ wählen.`,
         `Set a new password: enter your e-mail address and choose "Forgot password?".`
       ));
     }
@@ -1427,18 +1427,18 @@ const NETZ_VOLL = () => T(
 // verdeckt, bis der Partner sie aufdeckt — im Quelltext der Seite steht sie nie.
 //   POST {api}/daten    {"token": "..."} -> 200 {"name", "felder", "vip", "module", "freigaben"} | 401
 //   POST {api}/abmelden {"token": "..."} -> 204
-// „module" ist der VIP-Katalog (api-daten/vip.json, pflegt Julian), „freigaben"
+// „module“ ist der VIP-Katalog (api-daten/vip.json, pflegt Julian), „freigaben“
 // die Modul-IDs, die fuer diesen Partner freigeschaltet sind. Anfordern =
 // Auswahl per Haekchen, dann mailto an die VIP-Adresse; an den Server geht nichts.
-// Seit 25.09.2026 zusaetzlich (Partner-App): „dateien" [{id, name, typ, groesse,
-// datum, text}] -- Download ueber POST {api}/datei {token, id} -- und „ansicht"
+// Seit 25.09.2026 zusaetzlich (Partner-App): „dateien“ [{id, name, typ, groesse,
+// datum, text}] -- Download ueber POST {api}/datei {token, id} -- und „ansicht“
 // {begruessung, daten, dateien, module, vip}: was ausgeblendet ist, schickt der
 // Server gar nicht erst. VORSCHAU: die Partner-App laedt diese Seite auf
 // 127.0.0.1 mit window.JKHD_VORSCHAU = true und schickt die Daten per
 // postMessage (nur vom eigenen Ursprung) -- auf www.jkhd.de gibt es das nie.
-// Seit 25.09.2026 ausserdem die Passwortkarte: /daten liefert „email" (wie in
-// partner.json) und „passwort" {gesetzt, seit: "JJJJ-MM-TT"|"", ohne_altes_bis:
-// Unix-Sekunden|0}; fehlt „passwort", gibt es keine Karte.
+// Seit 25.09.2026 ausserdem die Passwortkarte: /daten liefert „email“ (wie in
+// partner.json) und „passwort“ {gesetzt, seit: "JJJJ-MM-TT"|"", ohne_altes_bis:
+// Unix-Sekunden|0}; fehlt „passwort“, gibt es keine Karte.
 //   POST {api}/passwort_setzen    {token, passwort, altes_passwort?} -> 200 {ok, passwort} | 400 {fehler} | 401
 //                                  | 403 {fehler} | 409 {fehler: "geaendert"} | 429 {grenze}
 //   POST {api}/passwort_entfernen {token, altes_passwort?}           -> 200 {entfernt, passwort} | sonst wie oben ohne 400
@@ -1447,7 +1447,7 @@ const NETZ_VOLL = () => T(
   if (!seite) return;
   const api = (seite.dataset.api || "").replace(/\/+$/, "");
   const VORSCHAU = window.JKHD_VORSCHAU === true;
-  // Nach „Passwort vergessen?" kommt der Partner mit #neues-passwort: dann
+  // Nach „Passwort vergessen?“ kommt der Partner mit #neues-passwort: dann
   // steht die Passwortkarte ganz oben, solange diese Seite offen ist.
   const passwortOben = window.location.hash === "#neues-passwort";
 
@@ -1522,7 +1522,7 @@ const NETZ_VOLL = () => T(
 
   // Ein Modul des VIP-Katalogs: freigeschaltet (mit Link), auf Anfrage
   // (auswaehlbar) oder bald.
-  // Ohne VIP-Adresse (Ansicht „vip" aus) gibt es weder den Hinweis auf sie noch
+  // Ohne VIP-Adresse (Ansicht „vip“ aus) gibt es weder den Hinweis auf sie noch
   // Haekchen zum Anfordern -- angefordert wird ja per Mail an genau diese Adresse.
   function modulHtml(m, frei, vip) {
     const lage = m.status === "bald" ? "bald" : (frei.has(m.id) ? "frei" : "anfrage");
@@ -1576,7 +1576,7 @@ const NETZ_VOLL = () => T(
 
   // Eingebaute Browser von Apps (Instagram, Facebook, TikTok ...) laden keine Datei herunter,
   // die die Seite selbst bereitstellt (Blob) -- es passiert einfach nichts (gemeldet: Instagram
-  // auf Android, 26.09.2026). Dann sagt die Seite das, statt still „Lädt …" zu zeigen.
+  // auf Android, 26.09.2026). Dann sagt die Seite das, statt still „Lädt …“ zu zeigen.
   // Name der App, "" fuer einen anderen eingebauten Browser (Android-WebView), sonst null.
   function appBrowser() {
     const ua = navigator.userAgent || "";
@@ -1614,7 +1614,7 @@ const NETZ_VOLL = () => T(
         return;
       }
       if (r.status === 404) {
-        // Die Datei ist nicht mehr fuer ihn da (entfernt oder ausgeblendet): Liste neu holen statt „spaeter nochmal".
+        // Die Datei ist nicht mehr fuer ihn da (entfernt oder ausgeblendet): Liste neu holen statt „spaeter nochmal“.
         await laden();
         const m = seite.querySelector("[data-dateien-meldung]");
         const text = T("Diese Datei ist nicht mehr für Sie hinterlegt. Die Liste wurde aktualisiert.",
@@ -1717,7 +1717,7 @@ const NETZ_VOLL = () => T(
     // als Restzeit (ohne_altes_rest). Gemessen wird ab Empfang mit der Uhr
     // dieses Browsers, nie gegen dessen Datum: eine vorgehende Uhr schloesse das
     // Fenster sonst vorzeitig oder nie (Pruefung 25.09.2026). ohne_altes_bis ist
-    // nur fuer „bis HH:MM Uhr". Die Frist reist mit `stand` in jedes Neuzeichnen.
+    // nur fuer „bis HH:MM Uhr“. Die Frist reist mit `stand` in jedes Neuzeichnen.
     if (stand.frist === undefined) {
       const rest = stand.ohne_altes_rest !== undefined
         ? Number(stand.ohne_altes_rest) || 0
@@ -1825,7 +1825,7 @@ const NETZ_VOLL = () => T(
       ));
     }
 
-    // „Passwort entfernen": erst die Rueckfrage in der Karte, dann senden
+    // „Passwort entfernen“: erst die Rueckfrage in der Karte, dann senden
     const entfernen = knopf("entfernen");
     if (entfernen) {
       entfernen.addEventListener("click", () => {
@@ -1987,7 +1987,7 @@ const NETZ_VOLL = () => T(
          <span class="kachel-label">VIP</span>
          <h2 id="vip-bereich-titel">${T("Zugänge", "Access")}</h2>
          <p>${waehlbar ? T(
-           "Was für Sie freigeschaltet ist — und was Sie anfordern können. Auswählen und „Auswahl anfordern\": Ihr E-Mail-Programm öffnet sich mit dem fertigen Text.",
+           "Was für Sie freigeschaltet ist — und was Sie anfordern können. Auswählen und „Auswahl anfordern\“: Ihr E-Mail-Programm öffnet sich mit dem fertigen Text.",
            "What is unlocked for you — and what you can request. Select and press \"Request selection\": your e-mail program opens with the finished text."
          ) : T("Was für Sie freigeschaltet ist.", "What is unlocked for you.")}</p>
          <form class="module" novalidate>
@@ -2062,7 +2062,7 @@ const NETZ_VOLL = () => T(
     seite.querySelector('[data-partner="abmelden"]').addEventListener("click", abmelden);
 
     if (passwort) passwortKarte(seite.querySelector(".partner-passwort"), passwort, typeof daten.email === "string" ? daten.email : "", "");
-    // Einmal nach „Passwort vergessen?": Fokus auf die Karte, dann den Anker
+    // Einmal nach „Passwort vergessen?“: Fokus auf die Karte, dann den Anker
     // weg -- neu geladen zeigt die Seite wieder die gewohnte Reihenfolge.
     if (window.location.hash === "#neues-passwort") {
       const kopf = seite.querySelector("#passwort-titel");

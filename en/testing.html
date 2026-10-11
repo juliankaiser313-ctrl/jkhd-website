@@ -35,8 +35,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/pruefung.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/testing.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/pruefung.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20261011n">
-  <link rel="stylesheet" href="../css/style.css?v=20261011n">
+  <link rel="stylesheet" href="../css/fonts.css?v=20261011o">
+  <link rel="stylesheet" href="../css/style.css?v=20261011o">
 </head>
 <body>
 
@@ -90,14 +90,10 @@
 
   <main id="main">
 
-  <!-- Die Pruefungen als Animation (Julian, 11.10.2026: "alles wegmachen und
-       stattdessen eine Animation, die beim Runterscrollen erklaert, was genau
-       geprueft wird und wie -- wenig Text, mehr Animation; ganz am Ende soll alles
-       in Form des Zeichens und des Spruchs fliessen"). js/bildlauf.js (der Motor)
-       und js/bilder-pruefung.js (die Bilder) zeichnen auf die Leinwand; die Texte je Bild sind echter Inhalt (die Ueberschrift der
-       Seite als erstes Bild, dann die fuenf Stufen, die Belastungsproben und die
-       Grenze der Seite vom 23.09.2026, gekuerzt) und stehen ohne JavaScript als
-       Liste untereinander. -->
+  <!-- Die Pruefungen als Animation beim Scrollen: js/bildlauf.js (der Motor) und js/bilder-pruefung.js (die
+       Bilder) zeichnen auf die Leinwand; die Texte je Bild sind der Inhalt (Ueberschrift, fuenf Stufen, Belastungsproben, Grenze) und
+       stehen ohne JavaScript als Liste untereinander. Herkunft: README, Abschnitt
+       "Herkunft der Seiteninhalte". -->
   <section class="bildlauf" id="bildlauf" data-bilder="pruefung">
     <div class="bildlauf-buehne">
       <canvas class="bildlauf-leinwand" aria-hidden="true"></canvas>
@@ -120,7 +116,7 @@
         <div class="bildlauf-text">
           <p class="kicker">03 · Searching against chance</p>
           <h2>Search on the earlier part, confirm on the later one.</h2>
-          <p>The edge zone is dropped, costs and slippage sit inside the figure. The same search runs over series with no link left and over one with an effect built in.</p>
+          <p>The boundary zone (embargo) is dropped, costs and slippage sit inside the figure. The same search runs over shuffled series with no relationship left and over one with an effect built in.</p>
         </div>
         <div class="bildlauf-text">
           <p class="kicker">04 · Shadow operation</p>
@@ -130,12 +126,12 @@
         <div class="bildlauf-text">
           <p class="kicker">05 · Monitored continuous operation</p>
           <h2>A process being listed proves nothing.</h2>
-          <p>The clock writes its own sign of life. A watchdog ends a stalled run and restarts it only on the next pass.</p>
+          <p>Each cycle writes its own heartbeat. A watchdog ends a stalled run and restarts it only on the next pass.</p>
         </div>
         <div class="bildlauf-text">
           <p class="kicker">Stress tests</p>
           <h2>What we break on purpose.</h2>
-          <p>Six failures, brought forward on purpose — and what has to come out of them.</p>
+          <p>Six failures, caused deliberately in advance — and what has to come out of them.</p>
         </div>
         <div class="bildlauf-text">
           <p class="kicker">Limits</p>
@@ -198,8 +194,8 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20261011n"></script>
-  <script src="../js/bilder-pruefung.js?v=20261011n"></script>
-  <script src="../js/bildlauf.js?v=20261011n"></script>
+  <script src="../js/main.js?v=20261011o"></script>
+  <script src="../js/bilder-pruefung.js?v=20261011o"></script>
+  <script src="../js/bildlauf.js?v=20261011o"></script>
 </body>
 </html>

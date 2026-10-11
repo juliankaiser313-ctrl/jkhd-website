@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Quelltext und ausgelieferte Seiten (Chrome 155)
 - **Sprache / Darstellung:** Deutsch und Englisch
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (Typografie)
 - **Gewicht:** niedrig
 
@@ -55,9 +55,9 @@ Leerzeichen nach dem Pfeil.
 Suche im Quelltext nach `„` gefolgt von einem geraden `"` (bzw. `&quot;`); Kommentare im
 Quelltext sind in der Liste oben schon herausgenommen.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Texte aus verschiedenen Werkzeugen und Zeitpunkten; ein gerades Schlusszeichen fiel beim Lesen nicht auf.
+- **Änderung:** Deutsch „…“: datenschutz.html (14 Stellen), impressum.html (1), kontakt.html (2), js/main.js (38, auch Kommentare). Englisch “…”: en/privacy.html (12), en/contact.html (2), en/partner-access.html (6). Die Grundlagen-Seite über ihre Quelle (JKHD-Formeln, quellen/grundlagen-de_01.json, 3 Stellen, Commit fdb3139 dort) neu gebaut. „mutiger → geht nicht“ mit einem Leerzeichen seit Runde A. Commit 20321ce, Cache-Stempel 20261011o.
+- **Geprüft mit:** Suche nach „ gefolgt von einem geraden Schlusszeichen in allen ausgelieferten HTML-Dateien und js/main.js nach der Änderung: 0 Treffer; node --check für js/main.js; Regressionslauf pruefung_fehler.js (29 Prüfungen grün).

@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Quelltext der ausgelieferten Seiten
 - **Sprache / Darstellung:** —
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Verbesserung
 - **Gewicht:** niedrig
 
@@ -36,9 +36,9 @@ keine); die Notizen ins README bzw. in die Commit-Nachrichten.
 
 Auswertung aller Kommentare per Skript; Beispiele oben.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Arbeitsnotizen wurden beim Bauen direkt in die Seiten geschrieben.
+- **Änderung:** 16 Kommentare ersetzt oder entfernt: Impressum/Imprint (Begründung des zweiten Kontaktwegs), Startseite DE/EN (Julians Wortlaut), Prüfungen/Sicherheit/System DE/EN (Julians Aufträge), Unternehmen/Company (Herkunft der Überschrift), Kontakt/Contact, Partnerzugang/Partner-access, Partner (Anmeldeablauf, Serverdetails); die Formelseiten über bauen.js ohne lokalen Pfad. Alle Inhalte stehen jetzt im README, Abschnitt „Herkunft der Seiteninhalte“. Geblieben sind Abschnittsmarken und technische Hinweise ohne Zitate, Pfade oder Betriebsdetails (Hero-Messung, Simulation, 404, FORMELHINTERGRUND). Commit 20321ce, Cache-Stempel 20261011o.
+- **Geprüft mit:** Kommentar-Inventar per Skript vor (64) und nach der Änderung durchgesehen; keine Julian-Zitate, keine lokalen Pfade, keine Serverdetails mehr in den ausgelieferten Seiten.

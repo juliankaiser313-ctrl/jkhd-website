@@ -39,6 +39,10 @@ gehen, wie er stimmt.
 
 Text der Seiten wie zitiert; Abgleich mit dem Quelltext des Systems (nicht öffentlich).
 
+## Hinweis (Claude, 11.10.2026)
+
+Nicht ohne Julian: der Bericht stützt sich auf einen Abgleich mit dem Quelltext des Systems, dessen Einzelheiten nicht in diesen Ordner gehören. Der Satz auf was-wir-machen.html sagt heute „dieselben Sperren wie mit Geld; nur die Grenzen fürs Geld entfallen“; ob darüber hinaus Sperren fehlen, muss Julian am System nachsehen und den Wortlaut festlegen (Vorschlag im Bericht: „dieselben Sperren, die über das Signal entscheiden“).
+
 ## Behebung (wird beim Beheben ausgefüllt)
 
 - **Wer, wann:**

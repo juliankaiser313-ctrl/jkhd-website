@@ -41,6 +41,10 @@ GitHub-Datenschutzerklärung verweisen.
   Verarbeitung ändert das nichts, aber beim nächsten Stand mitprüfen.
 - Anführungszeichen siehe eigener Bericht `2026-10-11-anfuehrungszeichen-uneinheitlich.md`.
 
+## Hinweis (Claude, 11.10.2026)
+
+Braucht Fakten und Wortlaut von Julian: (1) Ist der Auftragsverarbeitungsvertrag mit IONOS im Kundenbereich abgeschlossen? Erst dann der Satz wie bei OVHcloud. (2) Satz zu den Postfächern bei IONOS (kontakt@, service@, info@) und zum SMTP-Versand der Anfrage-Mails. (3) Speicherdauer der GitHub-Protokolle oder Verweis auf die GitHub-Datenschutzerklärung. Anführungszeichen sind seit Runde B einheitlich; der „Stand“ wird beim nächsten Rechtstext mit angehoben.
+
 ## Behebung (wird beim Beheben ausgefüllt)
 
 - **Wer, wann:**

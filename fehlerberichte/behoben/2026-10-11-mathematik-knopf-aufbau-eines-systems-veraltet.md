@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720
 - **Sprache / Darstellung:** Deutsch und Englisch; hell
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (veralteter Text)
 - **Gewicht:** niedrig
 
@@ -30,9 +30,9 @@ Ein Knopftext, der zur Zielseite passt, z. B. „Die Grundarten“ / „The basi
 
 keine (Text der Seite).
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Knopftext aus der Zeit, als system.html den Aufbau des eigenen Systems beschrieb.
+- **Änderung:** mathematik.html: „Die Grundarten“, en/mathematics.html: „The basic kinds“ — die Seitentitel der Zielseite. Commit 20321ce, Cache-Stempel 20261011o.
+- **Geprüft mit:** Knopf und Zielseite im Diff gelesen.

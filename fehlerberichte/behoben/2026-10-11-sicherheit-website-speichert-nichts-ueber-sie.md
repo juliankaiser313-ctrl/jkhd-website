@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720
 - **Sprache / Darstellung:** Deutsch und Englisch; hell
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (Text)
 - **Gewicht:** mittel
 
@@ -48,9 +48,9 @@ Datenschutzerklärung.“ (Wortlaut entscheidet Julian.)
 
 Zitate oben; Netzwerk- und Speicherprüfung aller Seiten (keine Cookies, nur eigene Hosts).
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Der Satz stammte aus der Zeit vor Anfrage-Formular und Bestenliste.
+- **Änderung:** sicherheit.html / en/security.html, Bild „Daten“: „Diese Website legt kein Profil über Sie an: keine Cookies, keine Tracker. Gespeichert wird nur, was Sie selbst schicken — eine Anfrage, ein Spitzname in der Bestenliste. Der Partnerzugang behält …“ (englisch entsprechend). Die Zeichnung bleibt (keine Cookies, keine Tracker, nichts von fremden Servern, keine Fragen und Antworten gespeichert — alles belegt). Der Wortlaut ist ein Vorschlag im Sinne der Datenschutzerklärung; Julian kann ihn ändern. Commit 20321ce, Cache-Stempel 20261011o.
+- **Geprüft mit:** Abgleich mit der Datenschutzerklärung (Anfrage bis 30 Tage, Bestenliste, Prüfsummen, Protokolle): kein Widerspruch mehr; Text im Diff gelesen.

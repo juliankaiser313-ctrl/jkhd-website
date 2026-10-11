@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Text der ausgelieferten Seiten, Chrome 155
 - **Sprache / Darstellung:** Englisch
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (Text)
 - **Gewicht:** niedrig
 
@@ -37,9 +37,9 @@ etwas anderes bedeuten.
 Text der ausgelieferten Seiten; die Zeichnungen stehen in `js/bilder-pruefung.js` und
 `js/bilder-sicherheit.js`.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Wort-für-Wort-Übersetzungen, bei denen ein Fachbegriff im Englischen etwas anderes bedeutet.
+- **Änderung:** en/testing.html: „boundary zone (embargo) is dropped“, „shuffled series with no relationship left“, „Each cycle writes its own heartbeat.“, „caused deliberately in advance“; js/bilder-pruefung.js: „boundary zone dropped“, „no relationship left“. en/security.html: „trading starts with new entries blocked“, „Block new entries, prove nothing is open“; js/bilder-sicherheit.js: „block new entries“. en/company.html: „Exchange of ideas“. Die Zahlen im Regeltext der Simulation (1 move, 1st touch) sind seit Runde A richtig. Commit 20321ce, Cache-Stempel 20261011o.
+- **Geprüft mit:** Text der geänderten Seiten im Diff gelesen; node --check für beide Bilddateien; Regressionslauf pruefung_fehler.js.

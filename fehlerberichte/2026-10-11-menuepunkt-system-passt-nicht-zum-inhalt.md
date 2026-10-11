@@ -25,6 +25,10 @@ Ein Menüname, der den Inhalt trifft, z. B. „Grundarten“ / „Basic kinds“
 knapp (README: ein Eintrag muss unter ~80 px bleiben) — „Grundarten“ ist kaum länger als
 „Simulation“.
 
+## Hinweis (Claude, 11.10.2026)
+
+Wortwahl von Julian. Vorschlag aus dem Bericht: „Grundarten“ / „Basic kinds“ (passt in die Kopfzeile ab 1141 px). Der Knopf auf der Mathematik-Seite heißt seit Runde B „Die Grundarten“ / „The basic kinds“ (eigener Bericht, behoben).
+
 ## Behebung (wird beim Beheben ausgefüllt)
 
 - **Wer, wann:**

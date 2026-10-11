@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** —
 - **Sprache / Darstellung:** Deutsch
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (Dokumentation)
 - **Gewicht:** niedrig
 
@@ -25,9 +25,9 @@
 README auf den heutigen Stand bringen — andere Menschen oder KI-Systeme, die Fehler
 melden oder beheben, lesen zuerst dort.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Die README wuchs mit, die Einleitung nicht.
+- **Änderung:** Alle sechs Stellen: Startseite (Hero auf der Universum-Bühne, Laufleiste seit 10.10. weg), was-wir-machen (Kurz gesagt, Weg einer Idee, Sperren), Zusagen der Simulation (Spielmarke und Bestenlisten-Eintrag an api.jkhd.de), KI kennt die Simulation seit 11.10., „Live seit 20.09.2026“, Seitenpaare um was-wir-machen ↔ what-we-do und mathematik-grundlagen ↔ mathematics-basics ergänzt. Dazu der neue Abschnitt „Herkunft der Seiteninhalte“ (siehe Bericht interne-html-kommentare). Commit 20321ce, Cache-Stempel 20261011o.
+- **Geprüft mit:** README im Diff gelesen.

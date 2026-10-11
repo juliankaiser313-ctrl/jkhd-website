@@ -8,8 +8,10 @@ Deutsch in der Wurzel, Englisch unter `/en/`.
 ## Struktur
 
 ```
-index.html         Startseite = Menü: Hero mit Marken-Lockup und zwei Knöpfen, leere Laufleiste
-was-wir-machen.html  Was wir machen: ein Satz, ein Absatz in einfacher Sprache, Bäcker-Kasten, Kontaktkasten
+index.html         Startseite: Hero mit Marken-Lockup und zwei Knöpfen auf der Bühne der Universum-Animation (js/universum.js);
+                   die Laufleiste ist seit 10.10.2026 weg
+was-wir-machen.html  Was wir machen: „Kurz gesagt“ (ein Satz, ein Absatz, Bäcker-Kasten), „Weg einer Idee“ (6 Schritte),
+                   „Sperren“ (4), Kontaktkasten
 system.html        Die Grundarten — als Animation beim Scrollen (js/bildlauf.js + js/bilder-system.js): acht Grundarten
                    automatischer Handelssysteme, je ein Bild, das den Mechanismus und den Haken zeigt, dazu
                    „Und bei uns?“; je Bild zwei Sätze (11.10.2026; die Textfassung vom 23.09.2026 liegt in der Git-Historie)
@@ -128,9 +130,9 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
   im Prüffall auf die Seite zurück. Sprache und
   Darstellung kosten dort keine Breite mehr, die liegen im Feld. Der Block ist
   von den übrigen 940-px-Umbrüchen getrennt.
-- **Seitenpaare:** `pruefung.html ↔ en/testing.html`,
+- **Seitenpaare:** `was-wir-machen.html ↔ en/what-we-do.html`, `pruefung.html ↔ en/testing.html`,
   `sicherheit.html ↔ en/security.html`,
-  `mathematik.html ↔ en/mathematics.html`,
+  `mathematik.html ↔ en/mathematics.html`, `mathematik-grundlagen.html ↔ en/mathematics-basics.html`,
   `unternehmen.html ↔ en/company.html`, `kontakt.html ↔ en/contact.html`,
   `partnerzugang.html ↔ en/partner-access.html`,
   `impressum.html ↔ en/imprint.html`, `datenschutz.html ↔ en/privacy.html`,
@@ -201,9 +203,11 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   wer die Nummer während des Spiels kennt, kann jede Nachricht vorab ausrechnen.
 - **„Neues Spiel“** mitten im Spiel hält erst an und fragt nach („Wirklich
   neu?“), erst der zweite Druck verwirft das Spiel.
-- **Zusagen:** Das Spiel speichert nichts (kein Cookie, kein Web-Speicher),
-  sendet nichts und lädt nichts von fremden Servern — wie auf
-  `sicherheit.html` und `datenschutz.html` versprochen. Die Texte sagen nicht,
+- **Zusagen:** Das Spiel speichert nichts im Browser (kein Cookie, kein
+  Web-Speicher) und lädt nichts von fremden Servern; an api.jkhd.de gehen seit
+  der Bestenliste (11.10.2026) nur die Spielmarke beim Start und – nach einem
+  Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und Tempo, wie auf
+  `simulation.html` und in `datenschutz.html` beschrieben. Die Texte sagen nicht,
   dass JKHD Gold oder einen anderen Markt handelt, und der Gegner ist
   ausdrücklich ein vereinfachter Spiel-Algorithmus, nicht das Handelssystem.
 - **Messung und Abstimmung** liegen außerhalb dieses Repositorys in
@@ -212,8 +216,8 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   unschlagbar: menschenaehnliche Strategien gewinnen im Mittel unter 3 %),
   `pruefung.js` prüft den Motor. Nach jeder Änderung am Motor beide laufen
   lassen, dann den Versionsstempel hochzählen.
-- Die KI der Fragen-Blase kennt diese Seite noch nicht (sie steht nicht im
-  Wissen des Servers).
+- Die KI der Fragen-Blase kennt die Simulation seit 11.10.2026 (eigener
+  Abschnitt im Wissen des Servers).
 
 ## Partnerzugang — Server läuft unter https://api.jkhd.de
 
@@ -316,6 +320,37 @@ Partner pflegen = `api-daten/partner.json` auf dem Webspace (siehe README des
 Server-Repos). Die Datenschutzerklärung beschreibt die Verarbeitung im
 Abschnitt „Partnerzugang".
 
+## Herkunft der Seiteninhalte (aus den Quelltext-Kommentaren hierher verschoben, 11.10.2026)
+
+GitHub Pages liefert HTML-Kommentare mit aus; Arbeitsnotizen stehen deshalb hier und nicht
+in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffentlich“).
+
+- **Startseite (Hero im Universum):** Julian, 11.10.2026: „nicht erst schwarz, sondern das
+  Logo, der Text und die Vierecke im Hintergrund sollen sich in eine Galaxie verwandeln, und
+  dann geht es weiter.“ Der Hero liegt seither auf der Bühne der Animation (js/universum.js).
+- **Prüfungen:** Julian, 11.10.2026: „alles wegmachen und stattdessen eine Animation, die beim
+  Runterscrollen erklärt, was genau geprüft wird und wie — wenig Text, mehr Animation; ganz am
+  Ende soll alles in Form des Zeichens und des Spruchs fließen.“ Texte je Bild: Überschrift,
+  fünf Stufen, Belastungsproben, Grenze — die Textseite vom 23.09.2026, gekürzt.
+- **Sicherheit:** Julian, 11.10.2026: „Kannst du dasselbe bei Sicherheit auch machen?“ Texte:
+  die Seite vom 24.09.2026, gekürzt; Prinzip statt Bauplan (keine Pfade, Formate, Orte).
+- **System:** Julian, 11.10.2026: „bei System auch sowas machen — dort eher weniger Text und
+  eher mehr Animation.“ Texte: die Seite vom 23.09.2026, gekürzt; keine Anleitung, nur die Idee.
+- **Unternehmen:** Die Überschrift ist Julians eigener Satz vom 19.09.2026 (Kehrtwende: JKHD
+  verkauft nichts). Seit 26.09.2026 ohne das alte Angebot (Kunden, Leistungen, Aufträge) und
+  ohne die leeren Bildkästen.
+- **Impressum, zweiter Kontaktweg:** Neben der E-Mail verlangt § 5 Abs. 1 Nr. 2 DDG (EuGH
+  C-298/07) einen zweiten schnellen Kontaktweg; das ist der Knopf „Anfrage“ im Kasten
+  `#partner` auf kontakt.html. Wer den Kasten dort entfernt oder verschiebt, muss den Verweis
+  im Impressum (und en/imprint.html) mitziehen (26.09.2026).
+- **Partnerkasten (kontakt.html, partnerzugang.html, partner.html):** Ablauf E-Mail + Passwort
+  → Anmeldung, ohne Passwort E-Mail → Code → Anmeldung; leeres `data-api` = kein Server, der
+  Kasten sagt das offen. Die Partner-Adresse steht in keiner Datei der Website, sie erscheint
+  erst auf der Partnerseite; die VIP-Adresse liefert nur der Server (Katalog `vip.json`,
+  Freigaben `partner.json`). `#partner-passwort` öffnet den Kasten gleich zum Festlegen eines
+  Passworts (dorthin führt „Passwort vergessen“). „Anfrage“ ist ein Fragebogen an den Server;
+  nur wenn der nicht erreichbar ist, öffnet sich das E-Mail-Programm.
+
 ## Lokal ansehen
 
 ```
@@ -370,7 +405,7 @@ Arbeitsbranch ändert an der Live-Seite nichts, bis er in `main` liegt.
 
 ## Livegang: GitHub Pages + IONOS-Domain (jkhd.de)
 
-Live seit August 2026 (siehe Abschnitt oben — derzeit ausgesetzt). Repo
+Live seit 20.09.2026 (siehe Abschnitt oben). Repo
 `juliankaiser313-ctrl/jkhd-website`, GitHub Pages auf Branch `main`, Custom
 Domain `www.jkhd.de` (CNAME-Datei im Repo), IONOS-DNS zeigt auf GitHub.
 

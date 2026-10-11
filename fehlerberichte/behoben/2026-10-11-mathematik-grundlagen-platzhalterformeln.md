@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Text der ausgelieferten Seiten
 - **Sprache / Darstellung:** Deutsch und Englisch
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Verbesserung (Inhalt)
 - **Gewicht:** niedrig
 
@@ -39,9 +39,9 @@ Jede gezeigte Formel ist eine echte Formel; Überschrift und Inhalt passen zusam
 
 Text der ausgelieferten Seite.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Platzhalter aus dem ersten Entwurf der Grundlagen-Seite.
+- **Änderung:** Im Repo JKHD-Formeln (Commit fdb3139), deutsch und englisch: Mehrfachtests mit Bonferroni $\min(1, m\,p)$ und Šidák $1-(1-p)^m$ ($m$ = Anzahl der Versuche, auch im Text); Entwerteter Sharpe mit der vollständigen PSR-Formel aus der Quant-Sammlung ($n$, $\gamma_3$, $\gamma_4$ im Text benannt); Itôs Lemma selbst ($df = f'(X)\,dX + \tfrac12 f''(X)\,(dX)^2$) neben $(dW)^2 = dt$; Calmar-Formel im Kasten „Drawdown & Calmar“ und ein Satz dazu; Sortino-Formel neben Sharpe; Slippage mit „(beim Kauf; beim Verkauf umgekehrt)“. Seiten neu gebaut. Commit 20321ce, Cache-Stempel 20261011o.
+- **Geprüft mit:** node pruefe.js (0 Fehler); grep „Bonferroni“ in mathematik-grundlagen.html und en/mathematics-basics.html; Seiten im Diff gelesen.

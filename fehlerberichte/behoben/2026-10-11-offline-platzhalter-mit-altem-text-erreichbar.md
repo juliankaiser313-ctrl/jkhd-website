@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720
 - **Sprache / Darstellung:** Deutsch und Englisch; hell
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Verbesserung
 - **Gewicht:** niedrig
 
@@ -34,9 +34,9 @@ auslassen, solange die Seite live ist.
 
 keine (Text der Seite).
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Der englische Satz stammte aus der Zeit des alten Angebots; der Platzhalter ist zugleich der Offline-Schalter (README „Wieder offline“) und bleibt deshalb im Repository.
+- **Änderung:** offline/index.html: der englische Kasten sagt jetzt wie der deutsche „Messages still reach us by e-mail — we will get back to you.“ Die Datei bleibt erreichbar (noindex, nirgends verlinkt); sie beim Hochladen auszulassen hieße, den Offline-Schalter umzubauen — nicht nötig, der Text stimmt jetzt. Commit 20321ce, Cache-Stempel 20261011o.
+- **Geprüft mit:** Text im Diff gelesen; nach der Veröffentlichung https://jkhd.de/offline/ per curl.

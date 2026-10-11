@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website; alle 438 Formeln beider Sammlungen und die Erklärtexte durchgesehen)
 - **Gerät / Browser / Fenstergröße:** Text der ausgelieferten Seiten
 - **Sprache / Darstellung:** Deutsch
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (Inhalt)
 - **Gewicht:** mittel
 
@@ -60,9 +60,9 @@ anpassen („… der Hamilton-Mechanik, Abschnitt 4“).
 Text der ausgelieferten Seiten; zu 1. und 2. öffentliche Quellen (Borwein/Borwein 1987,
 „Pi and the AGM“; Mandelbrot 1963, „The Variation of Certain Speculative Prices“).
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Abschrift aus den PDF-Sammlungen; die Fehler standen schon in der Vorlage bzw. entstanden beim Kürzen.
+- **Änderung:** Im Repo JKHD-Formeln (Commit fdb3139): Ramanujan-Reihe „1985 rechnete Gosper damit 17 Millionen Stellen von π, bewiesen haben sie die Borwein-Brüder erst 1987“; Mandelbrot „von den Märkten (Baumwollpreise, 1963) zur Turbulenz“; Kalman-Filter mit der Zeile $P_t = (I - K_t H) P_{t|t-1}$; OU-Varianz als $\sigma^2/(2\theta)$; HJB-Querverweis auf den Hamilton-Formalismus in Abschnitt 4; VPIN „laut den Autoren … in der Literatur umstritten“; „Itô-Korrektur“. Seiten mit node bauen.js neu gebaut. Commit 20321ce, Cache-Stempel 20261011o.
+- **Geprüft mit:** node pruefe.js: 27 Dateien, 430 Formeln, 0 Fehler; die gebauten Seiten enthalten die neuen Stellen (grep „1987“, „Itô-Korrektur“); Kopf der gebauten Seiten unverändert bis auf den Stempel.

@@ -30,6 +30,10 @@ Bildnachweis NASA, Abgrenzung „keine Anlageberatung“.
 
 Geschäftsbezeichnung im Impressum; W-IdNr., sobald vorhanden.
 
+## Hinweis (Claude, 11.10.2026)
+
+Rechtstext — Wortlaut und Fakten von Julian: Geschäftsbezeichnung („JKHD — Inhaber Julian Lukas Kaiser“?) und die Wirtschafts-Identifikationsnummer, sobald sie im ELSTER-Postfach liegt.
+
 ## Behebung (wird beim Beheben ausgefüllt)
 
 - **Wer, wann:**

@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Text der ausgelieferten Seiten, Chrome 155
 - **Sprache / Darstellung:** Deutsch
-- **Status:** offen
+- **Status:** in Arbeit
 - **Art:** Verbesserung (Sprache)
 - **Gewicht:** niedrig
 
@@ -46,9 +46,13 @@ Die genannten Seiten lesen; bei den Animationsseiten bis zum jeweiligen Bild scr
 
 Volltextsuche über alle ausgelieferten Texte.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Hinweis (Claude, 11.10.2026)
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+Offen und Julians Entscheidung: 2 Webseite/Website (25 : 3 — welche Schreibweise?), 5 pruefung.html Bild 01 „Feld in der Aufgabenliste“ (halber Satz Erklärung von ihm), 6 ein Begriff je Sache (Einstieg/Trade/Position/Order), 8 „Elektrotechniker-Handwerk“ (freigegebener Text).
+
+## Behebung
+
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Texte aus mehreren Wochen und mehreren Händen.
+- **Änderung:** Erledigt: 1 „Not-Aus“ überall (unternehmen.html 3×); 3 „Sprechen wir direkt.“ / „Let’s talk directly.“ mit Punkt; 4 „Ist er gezogen, entstehen keine neuen Einstiege …“; 7 „Wiederholungsstopp“ (pruefung.html, js/bilder-pruefung.js). Commit 20321ce, Cache-Stempel 20261011o.
+- **Geprüft mit:** Diff gelesen; Regressionslauf pruefung_fehler.js.

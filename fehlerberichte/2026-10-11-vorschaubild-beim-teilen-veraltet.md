@@ -39,6 +39,10 @@ Ein Vorschaubild mit dem heutigen Lockup (Zeichen, JKHD, Quant Systems, Spruch),
 
 Die Bilddatei selbst.
 
+## Hinweis (Claude, 11.10.2026)
+
+Zurückgestellt: Julian hat am 23.09.2026 festgelegt, dass die alten Verkaufsformulierungen erst am Ende des Umbaus geändert werden; das Vorschaubild gehört dazu. Vorbereitet werden kann ein 1200×630-Bild mit dem heutigen Lockup (Zeichen, JKHD, Quant Systems, Spruch) in Deutsch und Englisch — auf Zuruf.
+
 ## Behebung (wird beim Beheben ausgefüllt)
 
 - **Wer, wann:**

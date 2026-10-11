@@ -20,7 +20,7 @@
 //      Verlustbremse ueber alles -- fehlt eine, startet nichts
 //   08 Spuren: verkettete Journale, nur angehaengt; wer eine Zeile aendert, bricht
 //      die Kette, und der Bruch wird gemeldet
-//   09 Daten: die Website speichert nichts, der Partnerzugang nur Pruefsummen und
+//   09 Daten: die Website legt kein Profil an, der Partnerzugang nur Pruefsummen und
 //      ablaufende Anmeldungen, Zahlungsdaten gibt es nicht
 //   10 Ehrlich gesagt: was wir nicht vorweisen koennen -- und der Geldweg, der vor
 //      dem echten Broker endet
@@ -338,7 +338,7 @@ window.JKHDBilder.sicherheit = function (k) {
   }
 
   // 06 Der Wechsel: eine Reihenfolge, kein Schalter
-  const SCHRITTE = [T("Einstiege sperren", "close entries"), T("nachweisen: nichts offen", "prove: nothing open"), T("den laufenden Ablauf beenden", "end the running process"), T("den Stillstand bezeugen", "witness the standstill"), T("Zielzustand starten", "start the target state")];
+  const SCHRITTE = [T("Einstiege sperren", "block new entries"), T("nachweisen: nichts offen", "prove: nothing open"), T("den laufenden Ablauf beenden", "end the running process"), T("den Stillstand bezeugen", "witness the standstill"), T("Zielzustand starten", "start the target state")];
   function s6(t, zeit, A) {
     const klein = k.klein;
     const n = SCHRITTE.length;

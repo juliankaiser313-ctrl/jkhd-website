@@ -13,7 +13,7 @@
 //      heraus, das rollende Fenster; dieselbe Suche ueber eine zerstoerte Reihe und
 //      eine mit eingebautem Effekt; die Reihen laufen weiter
 //   04 Schattenbetrieb: Signale laufen ohne Geld durch die Sperren (Regimefilter,
-//      Wiederholungs-Stop, eine Position) in die Evidenz, immer weiter
+//      Wiederholungsstopp, eine Position) in die Evidenz, immer weiter
 //   05 Ueberwachter Dauerbetrieb: das Lebenszeichen laeuft wie auf einem Monitor;
 //      der Prozess steht (steht aber noch in der Liste), der Waechter beendet, der
 //      naechste Durchgang startet neu -- und das wiederholt sich
@@ -260,7 +260,7 @@ window.JKHDBilder.pruefung = function (k) {
       }
       ctx.restore();
       ctx.globalAlpha *= aRand;
-      text(T("Randzone fällt heraus", "edge zone dropped"), x0 + b * rand - 8, y1 + hK - 6, mono(11), F.matt, "right");
+      text(T("Randzone fällt heraus", "boundary zone dropped"), x0 + b * rand - 8, y1 + hK - 6, mono(11), F.matt, "right");
       ctx.globalAlpha /= aRand;
     }
     // das rollende Fenster: rollt an der Uhr hin und her, solange das Bild steht
@@ -283,8 +283,8 @@ window.JKHDBilder.pruefung = function (k) {
     if (a2 > 0) {
       ctx.globalAlpha *= a2;
       linieRund(REIHE_ZERSTOERT, lauf, 160, x0, y2, b, hK, stueck(t, 0.5, 0.72), F.matt, 1.2);
-      text(klein ? T("Reihe ohne Zusammenhang: Treffer auf Rauschen", "no link left: hits on noise")
-        : T("dieselbe Suche über eine Reihe ohne Zusammenhang: zählt, wie oft sie auf Rauschen anspringt", "the same search over a series with no link left: counts how often it fires on noise"), x0, y2 + hK - 6, mono(11), F.matt);
+      text(klein ? T("Reihe ohne Zusammenhang: Treffer auf Rauschen", "no relationship left: hits on noise")
+        : T("dieselbe Suche über eine Reihe ohne Zusammenhang: zählt, wie oft sie auf Rauschen anspringt", "the same search over a shuffled series with no relationship left: counts how often it fires on noise"), x0, y2 + hK - 6, mono(11), F.matt);
       ctx.globalAlpha /= a2;
     }
     const y3 = y2 + hK + abst;
@@ -318,7 +318,7 @@ window.JKHDBilder.pruefung = function (k) {
     text(T("Markt, live", "market, live"), xChart, yM - hC / 2 - 10, mono(12), F.matt);
     if (!klein) text(T("Kandidat: ohne Geld", "candidate: no money"), xChart + bChart, yM - hC / 2 - 10, mono(12), F.matt, "right");
     const aS = stueck(t, 0.08, 0.25);
-    const namen = [T("Regimefilter", "regime filter"), T("Wiederholungs-Stop", "repetition stop"), T("eine Position", "one position")];
+    const namen = [T("Regimefilter", "regime filter"), T("Wiederholungsstopp", "repetition stop"), T("eine Position", "one position")];
     ctx.globalAlpha *= aS;
     for (let g = 0; g < 3; g++) {
       ctx.strokeStyle = F.tinte; ctx.lineWidth = 2;
