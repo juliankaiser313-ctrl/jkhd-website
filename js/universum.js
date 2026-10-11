@@ -72,6 +72,8 @@
 //   0,93-0,95  das Zeichen erscheint ploetzlich auf dem Monitor, dazu die Schrift
 //   0,96-0,98  alles wird schwarz
 //   0,97-1,00  "Nirgends und doch ueberall." (englisch: "Nowhere and yet everywhere.")
+//   danach     der Spruch steht noch eine gute Bildschirmhoehe Scrollweg lang (Anteil
+//              `zugabe`; Julian, 11.10.2026: "fuenfmal so lang wie jetzt")
 // Alles ausser den Erdbildern wird hier erzeugt (feste Saat, jedes Mal gleich);
 // nichts wird gespeichert. Bei "reduzierter Bewegung" steht der Computer mit dem
 // Zeichen still da, ohne Scrollweg und ohne Bilder; ohne JavaScript zeigt der
@@ -1427,6 +1429,7 @@ void main() {
   // Punkte stammen ja aus ihm). Im hellen Modus ist die Schrift Tinte: die Punkte
   // werden erst hell, wenn der Grund dunkel wird.
   let vorspann = 0;          // Anteil des Scrollwegs, der dem Vorspann gehoert
+  let zugabe = 0;            // Anteil am Ende, in dem der Spruch nur noch steht
   let heroTeilchen = null;   // die abgetasteten Punkte, je Groesse neu
   const VORSPANN_DAUER = 0.5;   // so lange (im Vorspann) fliegt ein Punkt
   const TOENE = [[175, 195, 255], [255, 255, 255], [255, 170, 205], [255, 228, 190]];   // wie das Bild der Galaxie
@@ -1434,11 +1437,12 @@ void main() {
   function vorspannMessen() {
     const weg = abschnitt.offsetHeight - buehne.offsetHeight;
     vorspann = hero && weg > 0 && !reduziert.matches ? clamp(H / weg, 0, 0.2) : 0;
+    zugabe = weg > 0 && !reduziert.matches ? clamp((1.1 * H) / weg, 0, 0.2) : 0;
   }
   function bild(p, zeit, still) {
-    const ohne = still || vorspann <= 0;
+    const ohne = still || (vorspann <= 0 && zugabe <= 0);
     const v = ohne ? 1 : clamp(p / vorspann, 0, 1);
-    const p2 = ohne ? p : clamp((p - vorspann) / (1 - vorspann), 0, 1);
+    const p2 = ohne ? p : clamp((p - vorspann) / Math.max(0.01, 1 - vorspann - zugabe), 0, 1);
     if (!still) heroZeigen(v);
     bildFlug(p2, zeit, still, v);
     if (v < 1) verwandlung(v);
