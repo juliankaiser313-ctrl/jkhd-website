@@ -286,7 +286,7 @@ window.JKHDBilder.system = function (k) {
     const yM = y0 + hK * 0.5;
     ctx.strokeStyle = F.rand2; ctx.lineWidth = 1; ctx.setLineDash([2, 4]);
     ctx.beginPath(); ctx.moveTo(x0, yM); ctx.lineTo(x0 + b, yM); ctx.stroke(); ctx.setLineDash([]);
-    text(T("das Mittel", "the mean"), x0 + b, yM - 6, mono(10), F.matt, "right");
+    k.textFrei(T("das Mittel", "the mean"), x0 + b, yM - 6, mono(10), F.matt, "right");   // Kasten dahinter: die Schwingung lief durch das Wort
     reiheLinie(MITTEL, lauf, fenster, x0, y0, b, hK, stueck(t, 0, 0.3), F.tinte, 1.5);
     const aE = stueck(t, 0.3, 0.55);
     ctx.globalAlpha *= aE;
@@ -444,7 +444,14 @@ window.JKHDBilder.system = function (k) {
     if (jetzt > x0 + b * 0.66) {
       const xL = x0 + b * 0.66;
       ctx.fillStyle = F.rot; ctx.beginPath(); ctx.arc(xL, y0 + hK - kurs(xL) * hK, 4, 0, Math.PI * 2); ctx.fill();
-      text(klein ? T("gelesen: die zweite Welle", "read it: the second wave") : T("wer die Nachricht erst liest, handelt die zweite Welle", "whoever reads the news first trades the second wave"), Math.min(xL + 8, x0 + b - (klein ? 160 : 330)), y0 + hK - kurs(xL) * hK - 12, mono(10), F.rot);
+      // die Beschriftung steht ueber dem hoechsten Punkt der Linie in ihrer Breite, sonst
+      // lief die zweite Welle durch den Text
+      const xT = Math.min(xL + 8, x0 + b - (klein ? 160 : 330));
+      let hoch = 0;
+      for (let x = xT; x <= x0 + b; x += 4) hoch = Math.max(hoch, kurs(x));
+      // am Handy unter die Linie, rechtsbuendig: ueber ihr stiesse der Text an "Zahlen, Beschluss, Termin"
+      if (klein) text(T("gelesen: die zweite Welle", "read it: the second wave"), x0 + b, y0 + hK - hoch * hK + 26, mono(10), F.rot, "right");
+      else text(T("wer die Nachricht erst liest, handelt die zweite Welle", "whoever reads the news first trades the second wave"), xT, y0 + hK - hoch * hK - 12, mono(10), F.rot);
     }
   }
 

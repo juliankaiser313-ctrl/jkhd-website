@@ -6,9 +6,12 @@
   <title>Die Grundarten — JKHD</title>
   <meta name="description" content="Die acht Grundarten automatischer Handelssysteme, beim Scrollen gezeigt: Arbitrage, Marktmachen, Trend, Rückkehr zum Mittel, Paarhandel, Halteprämie, Ereignisse, Orderbuch — je mit dem Haken, den sie hat.">
   <meta name="theme-color" content="#f7f6f3">
-  <meta property="og:type" content="article">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:locale:alternate" content="en_GB">
   <meta property="og:site_name" content="JKHD">
   <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
   <meta property="og:url" content="https://www.jkhd.de/system.html">
   <link rel="canonical" href="https://www.jkhd.de/system.html">
   <meta property="og:title" content="Die Grundarten — JKHD">
@@ -22,6 +25,7 @@
     // Laeuft absichtlich vor dem Stylesheet: verhindert das Aufblitzen
     // der falschen Farben beim Laden.
     (function () {
+      document.documentElement.classList.add("js");   // fuer css: ohne Skript steht das Menue offen
       try {
         var g = localStorage.getItem("jkhd-theme");
         var dunkel = g ? g === "dark"
@@ -33,8 +37,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/system.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/system.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/system.html">
-  <link rel="stylesheet" href="css/fonts.css?v=20261011m">
-  <link rel="stylesheet" href="css/style.css?v=20261011m">
+  <link rel="stylesheet" href="css/fonts.css?v=20261011n">
+  <link rel="stylesheet" href="css/style.css?v=20261011n">
 </head>
 <body>
 
@@ -102,7 +106,7 @@
         <div class="bildlauf-text bildlauf-titel">
           <p class="kicker">// System</p>
           <h1>Wie ein System Geld verdienen will.</h1>
-          <p>Ein Handelsprogramm hat immer eine Annahme darüber, warum ein Preis sich bewegt. Acht Grundarten, je mit ihrem Haken. Scrollen Sie.</p>
+          <p>Ein Handelsprogramm hat immer eine Annahme darüber, warum ein Preis sich bewegt. Acht Grundarten, je mit ihrem Haken. <span class="nur-bewegt">Scrollen Sie.</span></p>
         </div>
         <div class="bildlauf-text">
           <p class="kicker">01 · Arbitrage</p>
@@ -205,8 +209,8 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20261011m"></script>
-  <script src="js/bilder-system.js?v=20261011m"></script>
-  <script src="js/bildlauf.js?v=20261011m"></script>
+  <script src="js/main.js?v=20261011n"></script>
+  <script src="js/bilder-system.js?v=20261011n"></script>
+  <script src="js/bildlauf.js?v=20261011n"></script>
 </body>
 </html>

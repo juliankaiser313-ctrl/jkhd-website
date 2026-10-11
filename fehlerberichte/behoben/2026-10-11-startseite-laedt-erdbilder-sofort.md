@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720 und 1920×1050; Handy 390×844
 - **Sprache / Darstellung:** Deutsch und Englisch; hell und dunkel
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (Ladezeit)
 - **Gewicht:** mittel
 
@@ -51,9 +51,9 @@ Schwelle vor dem Erscheinen der Erde erreicht (genug Vorlauf für 2,3 MB), statt
 Abschnitt. Zusätzlich lohnt ein Blick auf `ziel-nacht.jpg` (930 KB): als WebP/AVIF oder
 mit etwas stärkerer Kompression wäre es deutlich kleiner.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Wie im Bericht nachgesehen: der Beobachter auf dem Abschnitt feuerte beim Öffnen, weil der Hero seit der elften Fassung im Abschnitt liegt.
+- **Änderung:** js/universum.js: erdeLaden() wird aus der Zeichenschleife ab Fortschritt 0,3 angestoßen (ERDE_LADEN_AB; die Erde erscheint bei rund 0,6 des Flugs, dazwischen liegen etwa neun Bildschirme Scrollweg); der Beobachter ist entfernt. Nicht gemacht: stärkere Kompression von ziel-nacht.jpg (930 KB) — bleibt als Vorschlag. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „Erdbilder“ (Netzwerkmitschnitt, 1280×720): beim Öffnen vorher 6 Erdbilder, nachher 0 (9 Anfragen gesamt statt 15); nach Scrollen zu 40 % des Abschnitts 6.

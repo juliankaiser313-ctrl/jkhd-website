@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720 und 1920×1050; Handy 390×844 (im aufgeklappten Menü)
 - **Sprache / Darstellung:** Deutsch und Englisch; hell und dunkel
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler
 - **Gewicht:** hoch
 
@@ -50,9 +50,9 @@ Eine Regel `.site-nav .btn-primary, .site-nav .btn-primary:hover { color: var(--
 plus den Innenabstand von `.btn-sm` für `.site-nav .btn` wiederherstellen — oder
 `.site-nav a:not(.btn)` für die Linkfarben verwenden.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Wie im Bericht nachgesehen: `.site-nav a` (Klasse + Element) schlug `.btn-primary`, `.site-nav a:hover` färbte die Schrift in die Knopffarbe, und der Innenabstand war durch `.site-nav a { padding: 0 }` weg.
+- **Änderung:** css/style.css: `.site-nav a.btn { padding: 10px 20px; font-size: 0.7rem; font-weight: 800; }` und `.site-nav a.btn-primary, .site-nav a.btn-primary:hover { color: var(--bg); }`. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „Kontakt-Knopf hell/dunkel“ (Schriftfarbe, Hintergrund, Hover per bewegtem Mauszeiger, Innenabstand): vorher rgb(96, 95, 91) auf rgb(16, 16, 18), beim Überfahren = Hintergrund, Innenabstand 0; nachher rgb(247, 246, 243) bzw. dunkel rgb(11, 11, 12) auf rgb(244, 242, 238), beim Überfahren gleich, Innenabstand 20 px — derselbe Kontrast wie bei allen anderen .btn-primary.

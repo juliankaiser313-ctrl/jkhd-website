@@ -9,7 +9,9 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="JKHD">
   <meta property="og:locale" content="en_GB">
+  <meta property="og:locale:alternate" content="de_DE">
   <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
   <meta property="og:url" content="https://www.jkhd.de/en/simulation.html">
   <link rel="canonical" href="https://www.jkhd.de/en/simulation.html">
   <meta property="og:title" content="Simulation — JKHD">
@@ -21,6 +23,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <script>
     (function () {
+      document.documentElement.classList.add("js");   // fuer css: ohne Skript steht das Menue offen
       try {
         var g = localStorage.getItem("jkhd-theme");
         var dunkel = g ? g === "dark"
@@ -32,8 +35,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/simulation.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/simulation.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/simulation.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20261011m">
-  <link rel="stylesheet" href="../css/style.css?v=20261011m">
+  <link rel="stylesheet" href="../css/fonts.css?v=20261011n">
+  <link rel="stylesheet" href="../css/style.css?v=20261011n">
 </head>
 <body>
 
@@ -360,8 +363,9 @@
         <p class="kicker">// Leaderboard</p>
         <h2 id="sp-besten-titel">The fastest wins against the JKHD Algo</h2>
         <p>Only those who reach the million first make the list – sorted by
-           game time. For that, nickname and game time go to our server,
-           nothing more (see the privacy policy).</p>
+           game time. For that, nickname, game time, game number, speed and
+           the game token go to our server, nothing more (see the privacy
+           policy).</p>
       </div>
       <ol class="sp-besten" data-sp="besten-liste"></ol>
       <p class="sp-besten-leer" data-sp="besten-leer" hidden>No entry yet – the first win starts the list.</p>
@@ -561,24 +565,24 @@
               before trading the next trend.</li>
           <li>Its stop sits behind the last turning point, at least
               <span data-sp-zahl="ALGO.STOP" data-sp-art="zahl">3</span> and at most <span data-sp-zahl="ALGO.STOP_MAX" data-sp-art="zahl">4</span> usual moves
-              away, and <span data-sp-zahl="ALGO.ZONE_PUFFER" data-sp-art="zahl">3</span> moves behind a zone – never
+              away, and <span data-sp-zahl="ALGO.ZONE_PUFFER" data-sp-art="zahl" data-sp-wort="move|moves">3 moves</span> behind a zone – never
               just behind it, where everyone else’s stops sit. Each candle it
               trails the stop: behind the last turning point, at most
-              <span data-sp-zahl="ALGO.NACHZIEHEN" data-sp-art="zahl">20</span> moves behind the best price since entry,
-              never backwards. Once the price is <span data-sp-zahl="ALGO.BREAKEVEN" data-sp-art="zahl">4</span> moves
+              <span data-sp-zahl="ALGO.NACHZIEHEN" data-sp-art="zahl" data-sp-wort="move|moves">20 moves</span> behind the best price since entry,
+              never backwards. Once the price is <span data-sp-zahl="ALGO.BREAKEVEN" data-sp-art="zahl" data-sp-wort="move|moves">4 moves</span>
               in profit, the stop moves to the entry price.</li>
           <li>It finds highs and lows in the price history itself: it treats a
               turning point as a zone once the price has run back at least
               <span data-sp-zahl="ALGO.ZONE" data-sp-art="zahl">6</span> usual moves from it; the zone counts as touched
-              as soon as the price comes within <span data-sp-zahl="ALGO.NAEHE" data-sp-art="zahl">1.5</span> moves. In a
+              as soon as the price comes within <span data-sp-zahl="ALGO.NAEHE" data-sp-art="zahl" data-sp-wort="move|moves">1.5 moves</span>. In a
               sideways market it trades against the zone as soon as the price
-              turns away from it – up to the <span data-sp-zahl="ALGO.ABPRALLER" data-sp-art="zahl">1</span>. touch,
-              stop <span data-sp-zahl="ALGO.ZONE_STOP" data-sp-art="zahl">3</span> moves behind the zone, profit target
-              <span data-sp-zahl="ALGO.ZIEL" data-sp-art="zahl">6</span> moves or just short of the next zone.</li>
-          <li>If the price pierces a zone by at least <span data-sp-zahl="ALGO.ABHOLUNG" data-sp-art="zahl">1</span> move
+              turns away from it – up to the <span data-sp-zahl="ALGO.ABPRALLER" data-sp-art="ordnungszahl">1st</span> touch,
+              stop <span data-sp-zahl="ALGO.ZONE_STOP" data-sp-art="zahl" data-sp-wort="move|moves">3 moves</span> behind the zone, profit target
+              <span data-sp-zahl="ALGO.ZIEL" data-sp-art="zahl" data-sp-wort="move|moves">6 moves</span> or just short of the next zone.</li>
+          <li>If the price pierces a zone by at least <span data-sp-zahl="ALGO.ABHOLUNG" data-sp-art="zahl" data-sp-wort="move|moves">1 move</span>
               and is back within <span data-sp-zahl="ALGO.ABHOLUNG_TAKTE" data-sp-art="sekunden">3</span> seconds, it
               treats that as a liquidity grab and enters against it at once,
-              stop <span data-sp-zahl="ALGO.ABHOLUNG_PUFFER" data-sp-art="zahl">1</span> moves behind the spike, target
+              stop <span data-sp-zahl="ALGO.ABHOLUNG_PUFFER" data-sp-art="zahl" data-sp-wort="move|moves">1 move</span> behind the spike, target
               as at a zone. If the price stays beyond for longer, it was a
               breakout: the high becomes support for it, the low becomes
               resistance.</li>
@@ -609,10 +613,10 @@
         here says nothing about which markets JKHD trades. The opponent is a
         simplified game algorithm with fixed rules, not JKHD’s trading system.
         Not investment advice. The game is computed in your browser and stores
-        nothing there. Only the leaderboard (when you open the page), a random
-        game token at the start and – if you enter a nickname after a win –
-        that nickname with game time, game number and speed go to our server
-        (api.jkhd.de); see the privacy policy.
+        nothing there. When you open the page it fetches the leaderboard from
+        our server (api.jkhd.de); the only things sent to it are a random game
+        token at the start and – if you enter a nickname after a win – that
+        nickname with game time, game number and speed; see the privacy policy.
       </div>
     </div>
   </section>
@@ -669,8 +673,8 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20261011m"></script>
-  <script src="../js/spiel-motor.js?v=20261011m"></script>
-  <script src="../js/spiel.js?v=20261011m"></script>
+  <script src="../js/main.js?v=20261011n"></script>
+  <script src="../js/spiel-motor.js?v=20261011n"></script>
+  <script src="../js/spiel.js?v=20261011n"></script>
 </body>
 </html>

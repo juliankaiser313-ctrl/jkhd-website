@@ -6,10 +6,12 @@
   <title>Testing — JKHD</title>
   <meta name="description" content="How JKHD tests its own trading system, shown as you scroll: five stages before a program may touch money, six stress tests — and the limits of what tests can do.">
   <meta name="theme-color" content="#f7f6f3">
-  <meta property="og:type" content="article">
+  <meta property="og:type" content="website">
   <meta property="og:site_name" content="JKHD">
   <meta property="og:locale" content="en_GB">
+  <meta property="og:locale:alternate" content="de_DE">
   <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
   <meta property="og:url" content="https://www.jkhd.de/en/testing.html">
   <link rel="canonical" href="https://www.jkhd.de/en/testing.html">
   <meta property="og:title" content="Testing — JKHD">
@@ -21,6 +23,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <script>
     (function () {
+      document.documentElement.classList.add("js");   // fuer css: ohne Skript steht das Menue offen
       try {
         var g = localStorage.getItem("jkhd-theme");
         var dunkel = g ? g === "dark"
@@ -32,8 +35,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/pruefung.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/testing.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/pruefung.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20261011m">
-  <link rel="stylesheet" href="../css/style.css?v=20261011m">
+  <link rel="stylesheet" href="../css/fonts.css?v=20261011n">
+  <link rel="stylesheet" href="../css/style.css?v=20261011n">
 </head>
 <body>
 
@@ -102,7 +105,7 @@
         <div class="bildlauf-text bildlauf-titel">
           <p class="kicker">// Testing</p>
           <h1>How we test our own system.</h1>
-          <p>Five stages before a program may touch money — every one is allowed to stop the process. Scroll.</p>
+          <p>Five stages before a program may touch money — every one is allowed to stop the process. <span class="nur-bewegt">Scroll.</span></p>
         </div>
         <div class="bildlauf-text">
           <p class="kicker">01 · Red first</p>
@@ -195,8 +198,8 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20261011m"></script>
-  <script src="../js/bilder-pruefung.js?v=20261011m"></script>
-  <script src="../js/bildlauf.js?v=20261011m"></script>
+  <script src="../js/main.js?v=20261011n"></script>
+  <script src="../js/bilder-pruefung.js?v=20261011n"></script>
+  <script src="../js/bildlauf.js?v=20261011n"></script>
 </body>
 </html>

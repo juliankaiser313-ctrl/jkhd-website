@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720 und 390×844
 - **Sprache / Darstellung:** Deutsch und Englisch; hell und dunkel
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Verbesserung (Bedienung, Barrierefreiheit)
 - **Gewicht:** niedrig
 
@@ -26,9 +26,9 @@ Der Menüpunkt der aktuellen Seite ist hervorgehoben (z. B. Textfarbe `--text` s
 
 Quelltext der Kopfzeile auf allen Seiten.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Nie gebaut.
+- **Änderung:** js/main.js setzt aria-current="page" am Menüpunkt der aktuellen Seite (Pfadvergleich, index.html = /); css/style.css: Textfarbe --text, ab 1141 px zusätzlich eine feine Unterstreichung; der Kontakt-Knopf ist ausgenommen. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „aktuelle Seite markiert“ auf pruefung.html: genau ein Eintrag „Prüfungen“, Farbe rgb(16, 16, 18); Fotos der Kopfzeile auf system.html mit Unterstrich unter „System“.

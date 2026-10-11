@@ -763,6 +763,11 @@
   // ---- Die Erde in WebGL: je Bildpunkt eine Kugel, Bilder der NASA darauf ----
   const erde = { gl: null, leinwand: null, prog: null, u: {}, bereit: false, geladen: 0, angestossen: false, fehl: false };
   const ERDE_BILDER = ["welt-tag", "welt-nacht", "wolken", "europa-tag", "europa-nacht", "ziel-nacht"];
+  // Ab diesem Fortschritt werden die Erdbilder (2,3 MB) geholt: die Erde kommt bei
+  // rund 60 % des Flugs ins Bild, dazwischen liegen etwa neun Bildschirme Scrollweg.
+  // Vorher hing das an einem Beobachter auf dem Abschnitt -- der feuerte sofort beim
+  // Oeffnen, weil der Hero seit der elften Fassung im Abschnitt liegt (Vollpruefung 11.10.2026).
+  const ERDE_LADEN_AB = 0.3;
   const VS = "attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }";
   const FS = `
 precision highp float;
@@ -933,7 +938,7 @@ void main() {
     erde.leinwand = c;
     return true;
   }
-  // Die Bilder laden (erst, wenn der Abschnitt in die Naehe kommt) und als Texturen ablegen
+  // Die Bilder laden (erst ab ERDE_LADEN_AB, aus der Zeichenschleife) und als Texturen ablegen
   function erdeLaden() {
     if (erde.angestossen || reduziert.matches) return;
     erde.angestossen = true;
@@ -2322,6 +2327,7 @@ void main() {
     const zielP = zielFortschritt();
     p += (zielP - p) * (1 - Math.exp(-dt * 6));   // weich, unabhaengig von der Bildrate
     if (Math.abs(zielP - p) < 0.0004) p = zielP;
+    if (p > ERDE_LADEN_AB) erdeLaden();   // kehrt nach dem ersten Mal sofort zurueck
     const ruhig = Math.abs(zielP - p) < 0.00001;
     bildNr++;
     if (!ruhig || bildNr % 2 === 0) {   // bei Stillstand reicht jedes zweite Bild
@@ -2375,10 +2381,6 @@ void main() {
     if (eintraege.some((e) => e.isIntersecting)) starten();
     else anhalten();
   }).observe(abschnitt);
-  // Die Erdbilder holen, sobald der Abschnitt in die Naehe kommt (einen Bildschirm davor)
-  new IntersectionObserver((eintraege) => {
-    if (eintraege.some((e) => e.isIntersecting)) erdeLaden();
-  }, { rootMargin: "100% 0px" }).observe(abschnitt);
 
   window.addEventListener("resize", () => { groesseAnpassen(); if (reduziert.matches) bild(0.95, 0, true); });
   if (reduziert.addEventListener) reduziert.addEventListener("change", einrichten);

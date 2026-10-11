@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, Handy-Ansicht 390×844
 - **Sprache / Darstellung:** Deutsch und Englisch; hell und dunkel
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (rechtliches Risiko)
 - **Gewicht:** mittel
 
@@ -48,9 +48,9 @@ im Block `@media (min-width: 1141px)`.
 Darstellung). Alternativ ein dezenter Textlink „Impressum · Datenschutz“ im Hero der
 Startseite.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** `.nav-legal { display: none; }` unter 1141 px — bewusst, weil die Fußzeile reichen sollte; auf der Startseite liegt sie seit der Universum-Animation rund 23.000 px tief.
+- **Änderung:** css/style.css: .nav-legal immer sichtbar, im Handy-Menü etwas kleiner (0,78 rem, Stärke 500) unter Partnerzugang; Kommentare angepasst. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „Impressum/Datenschutz im Handy-Menue“ (390×844, Menü per Knopf geöffnet): beide Einträge sichtbar und im Bild; Foto des Menüs.

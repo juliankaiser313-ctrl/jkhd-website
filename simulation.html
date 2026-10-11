@@ -7,8 +7,11 @@
   <meta name="description" content="Ein kleines Spiel im Browser: Sie gegen den JKHD-Algo auf einem erfundenen Goldmarkt. Beide starten mit 100.000 $ — wer zuerst 1.000.000 $ hat, gewinnt. Kein echtes Geld, keine echten Kurse.">
   <meta name="theme-color" content="#f7f6f3">
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:locale:alternate" content="en_GB">
   <meta property="og:site_name" content="JKHD">
   <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
   <meta property="og:url" content="https://www.jkhd.de/simulation.html">
   <link rel="canonical" href="https://www.jkhd.de/simulation.html">
   <meta property="og:title" content="Simulation — JKHD">
@@ -22,6 +25,7 @@
     // Laeuft absichtlich vor dem Stylesheet: verhindert das Aufblitzen
     // der falschen Farben beim Laden.
     (function () {
+      document.documentElement.classList.add("js");   // fuer css: ohne Skript steht das Menue offen
       try {
         var g = localStorage.getItem("jkhd-theme");
         var dunkel = g ? g === "dark"
@@ -33,8 +37,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/simulation.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/simulation.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/simulation.html">
-  <link rel="stylesheet" href="css/fonts.css?v=20261011m">
-  <link rel="stylesheet" href="css/style.css?v=20261011m">
+  <link rel="stylesheet" href="css/fonts.css?v=20261011n">
+  <link rel="stylesheet" href="css/style.css?v=20261011n">
 </head>
 <body>
 
@@ -361,8 +365,9 @@
         <p class="kicker">// Bestenliste</p>
         <h2 id="sp-besten-titel">Die schnellsten Siege gegen den JKHD-Algo</h2>
         <p>Nur wer die Million zuerst erreicht, kommt in die Liste – sortiert
-           nach Spielzeit. Dafür gehen Spitzname und Spielzeit an unseren
-           Server, mehr nicht (siehe Datenschutzerklärung).</p>
+           nach Spielzeit. Dafür gehen Spitzname, Spielzeit, Spielnummer, Tempo
+           und die Spielmarke des Spiels an unseren Server, mehr nicht (siehe
+           Datenschutzerklärung).</p>
       </div>
       <ol class="sp-besten" data-sp="besten-liste"></ol>
       <p class="sp-besten-leer" data-sp="besten-leer" hidden>Noch kein Eintrag – der erste Sieg macht den Anfang.</p>
@@ -572,26 +577,26 @@
               handelt.</li>
           <li>Sein Stop liegt hinter dem letzten Umkehrpunkt, mindestens
               <span data-sp-zahl="ALGO.STOP" data-sp-art="zahl">3</span> und höchstens <span data-sp-zahl="ALGO.STOP_MAX" data-sp-art="zahl">4</span> übliche
-              Bewegungen entfernt, und <span data-sp-zahl="ALGO.ZONE_PUFFER" data-sp-art="zahl">3</span> Bewegungen
+              Bewegungen entfernt, und <span data-sp-zahl="ALGO.ZONE_PUFFER" data-sp-art="zahl" data-sp-wort="Bewegung|Bewegungen">3 Bewegungen</span>
               hinter einer Zone – nie knapp dahinter, wo die Stops der anderen
               liegen. Je Kerze zieht er ihn nach: hinter den letzten
-              Umkehrpunkt, höchstens <span data-sp-zahl="ALGO.NACHZIEHEN" data-sp-art="zahl">20</span> Bewegungen hinter
+              Umkehrpunkt, höchstens <span data-sp-zahl="ALGO.NACHZIEHEN" data-sp-art="zahl" data-sp-wort="Bewegung|Bewegungen">20 Bewegungen</span> hinter
               dem besten Kurs seit dem Einstieg, nie zurück. Liegt der Kurs
-              <span data-sp-zahl="ALGO.BREAKEVEN" data-sp-art="zahl">4</span> Bewegungen im Gewinn, rückt der Stop auf
+              <span data-sp-zahl="ALGO.BREAKEVEN" data-sp-art="zahl" data-sp-wort="Bewegung|Bewegungen">4 Bewegungen</span> im Gewinn, rückt der Stop auf
               den Einstand.</li>
           <li>Hochs und Tiefs erkennt er selbst im Kursverlauf: Als Zone gilt ihm
               ein Umkehrpunkt, von dem der Kurs mindestens <span data-sp-zahl="ALGO.ZONE" data-sp-art="zahl">6</span> übliche
               Bewegungen zurückgelaufen ist; berührt ist sie, sobald der Kurs
-              bis auf <span data-sp-zahl="ALGO.NAEHE" data-sp-art="zahl">1,5</span> Bewegungen herankommt. Im
+              bis auf <span data-sp-zahl="ALGO.NAEHE" data-sp-art="zahl" data-sp-wort="Bewegung|Bewegungen">1,5 Bewegungen</span> herankommt. Im
               Seitwärtsmarkt handelt er gegen die Zone, sobald der Kurs von ihr
-              wegdreht – bis zur <span data-sp-zahl="ALGO.ABPRALLER" data-sp-art="zahl">1</span>. Berührung, Stop
-              <span data-sp-zahl="ALGO.ZONE_STOP" data-sp-art="zahl">3</span> Bewegungen hinter der Zone, Gewinnziel
-              <span data-sp-zahl="ALGO.ZIEL" data-sp-art="zahl">6</span> Bewegungen oder bis kurz vor die nächste
+              wegdreht – bis zur <span data-sp-zahl="ALGO.ABPRALLER" data-sp-art="ordnungszahl">1.</span> Berührung, Stop
+              <span data-sp-zahl="ALGO.ZONE_STOP" data-sp-art="zahl" data-sp-wort="Bewegung|Bewegungen">3 Bewegungen</span> hinter der Zone, Gewinnziel
+              <span data-sp-zahl="ALGO.ZIEL" data-sp-art="zahl" data-sp-wort="Bewegung|Bewegungen">6 Bewegungen</span> oder bis kurz vor die nächste
               Zone.</li>
-          <li>Sticht der Kurs um mindestens <span data-sp-zahl="ALGO.ABHOLUNG" data-sp-art="zahl">1</span> Bewegung durch
+          <li>Sticht der Kurs um mindestens <span data-sp-zahl="ALGO.ABHOLUNG" data-sp-art="zahl" data-sp-wort="Bewegung|Bewegungen">1 Bewegung</span> durch
               eine Zone und ist binnen <span data-sp-zahl="ALGO.ABHOLUNG_TAKTE" data-sp-art="sekunden">3</span> Sekunden
               zurück, wertet er das als Abholung und steigt sofort dagegen ein,
-              Stop <span data-sp-zahl="ALGO.ABHOLUNG_PUFFER" data-sp-art="zahl">1</span> Bewegungen hinter dem Stich,
+              Stop <span data-sp-zahl="ALGO.ABHOLUNG_PUFFER" data-sp-art="zahl" data-sp-wort="Bewegung|Bewegungen">1 Bewegung</span> hinter dem Stich,
               Ziel wie an der Zone. Bleibt der Kurs länger dahinter, war es ein
               Ausbruch: Aus dem Hoch wird für ihn eine Unterstützung, aus dem
               Tief ein Widerstand.</li>
@@ -621,9 +626,9 @@
         wird, sagt nichts darüber, welche Märkte JKHD handelt. Der Gegner ist
         ein vereinfachter Spiel-Algorithmus mit festen Regeln, nicht das
         Handelssystem von JKHD. Keine Anlageberatung. Das Spiel rechnet in
-        Ihrem Browser und speichert dort nichts. An unseren Server (api.jkhd.de)
-        gehen nur die Bestenliste beim Öffnen der Seite, beim Start eine
-        zufällige Spielmarke und – wenn Sie nach einem Sieg einen Spitznamen
+        Ihrem Browser und speichert dort nichts. Beim Öffnen holt die Seite die
+        Bestenliste von unserem Server (api.jkhd.de); an ihn gehen nur beim Start
+        eine zufällige Spielmarke und – wenn Sie nach einem Sieg einen Spitznamen
         eintragen – dieser Spitzname mit Spielzeit, Spielnummer und Tempo
         (siehe Datenschutzerklärung).
       </div>
@@ -682,8 +687,8 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20261011m"></script>
-  <script src="js/spiel-motor.js?v=20261011m"></script>
-  <script src="js/spiel.js?v=20261011m"></script>
+  <script src="js/main.js?v=20261011n"></script>
+  <script src="js/spiel-motor.js?v=20261011n"></script>
+  <script src="js/spiel.js?v=20261011n"></script>
 </body>
 </html>

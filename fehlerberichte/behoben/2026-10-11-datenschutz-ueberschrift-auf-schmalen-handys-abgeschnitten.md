@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, Handy-Ansicht 320×640 und 360×760
 - **Sprache / Darstellung:** Deutsch; hell und dunkel
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler
 - **Gewicht:** niedrig
 
@@ -44,9 +44,9 @@ oder etwas kleiner.
 deutsch) oder `overflow-wrap: anywhere` für `.page-head h1`; alternativ ein weiches
 Trennzeichen im Markup: `Datenschutz&shy;erklärung`.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Ein Wort ohne Trennstelle, unter 375 px breiter als die Spalte.
+- **Änderung:** datenschutz.html: `Datenschutz&shy;erklärung` (weiches Trennzeichen, bricht nur, wenn es nötig ist). Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „Datenschutz-Ueberschrift“ bei 320 und 360 px: vorher scrollWidth 324 px bei 280 / 320 px Spalte (abgeschnitten), nachher zwei Zeilen innerhalb der Spalte; ab 375 px unverändert eine Zeile.

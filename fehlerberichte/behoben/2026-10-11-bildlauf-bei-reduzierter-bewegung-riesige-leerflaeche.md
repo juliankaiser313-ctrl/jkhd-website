@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720, Einstellung „prefers-reduced-motion: reduce“ (in Windows: Einstellungen → Barrierefreiheit → Animationseffekte aus; iPhone: Bewegung reduzieren)
 - **Sprache / Darstellung:** Deutsch und Englisch; hell
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler
 - **Gewicht:** hoch
 
@@ -61,9 +61,9 @@ setzt Bühne und Texte auf `position: static`, aber keine Regel nimmt
 Form ist nötig, weil `[data-bilder="…"].ist-aktiv` spezifischer ist), auch im
 Handy-Block. „Scrollen Sie.“ im stillen Zustand ausblenden.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Wie im Bericht vermutet: keine Regel nahm die Scrollhöhe (2400–3300vh) im stillen Zustand zurück.
+- **Änderung:** css/style.css: `.bildlauf.ist-aktiv.ist-still, .bildlauf[data-bilder].ist-aktiv.ist-still { height: auto; }` (spezifischer als die Höhen je data-bilder, auch im Handy-Block). „Scrollen Sie.“ / „Scroll.“ steht in den sechs Seiten in `<span class="nur-bewegt">` und ist ohne Bewegung und ohne JavaScript ausgeblendet. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „reduzierte Bewegung“ (prefers-reduced-motion: reduce, 1280×720): Leerfläche zwischen Listenende und Fußzeile vorher 14.865 / 20.243 / 18.541 px (Prüfungen / Sicherheit / System), nachher 72 px; der Hinweis „Scrollen Sie.“ ist unsichtbar.

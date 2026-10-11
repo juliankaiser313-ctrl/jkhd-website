@@ -8,19 +8,37 @@ const IST_EN = document.documentElement.lang === "en";
 const T = (de, en) => (IST_EN ? en : de);
 
 // ---------- Navigation ----------
-// Die Menuepunkte liegen auf jeder Bildschirmbreite hinter dem Menueknopf.
-// Weil das der einzige Weg zu den Seiten ist, schliesst das Feld auch wieder:
-// per Escape und beim Klick irgendwo daneben.
+// Unter 1141 px liegen alle Menuepunkte hinter dem Menueknopf, darueber nur das
+// Klappfeld (Mathematik, Unternehmen, Partnerzugang, Rechtliches, Darstellung).
+// Das Feld schliesst auch wieder: per Escape und beim Klick irgendwo daneben.
+// Der Knopf steht im Markup hinter der Navigation; damit Tab nach dem Oeffnen
+// ins Menue fuehrt und nicht in den Seiteninhalt, bekommt der erste Punkt den
+// Fokus (Vollpruefung 11.10.2026).
 const navToggle = document.querySelector(".nav-toggle");
 const siteNav = document.querySelector(".site-nav");
 
 if (navToggle && siteNav) {
-  const zeigen = (auf) => {
+  if (!siteNav.id) siteNav.id = "site-nav";
+  navToggle.setAttribute("aria-controls", siteNav.id);
+  const zeigen = (auf, fokus) => {
     siteNav.classList.toggle("open", auf);
     navToggle.setAttribute("aria-expanded", String(auf));
+    navToggle.setAttribute("aria-label", auf ? T("Menü schließen", "Close menu") : T("Menü öffnen", "Open menu"));
+    if (auf && fokus) {
+      const erster = siteNav.querySelector("a[href]:not(.nav-nur-breit)");
+      if (erster && erster.getBoundingClientRect().height > 0) erster.focus();
+    }
   };
 
   zeigen(false);
+
+  // Die aktuelle Seite im Menue markieren (Farbe per CSS, Bildschirmleser sagen
+  // "aktuelle Seite"); der Kontakt-Knopf bleibt ein Knopf.
+  const hier = location.pathname.replace(/\/index\.html$/, "/");
+  siteNav.querySelectorAll("a[href]:not(.btn)").forEach((a) => {
+    const ziel = new URL(a.getAttribute("href"), location.href).pathname.replace(/\/index\.html$/, "/");
+    if (ziel === hier) a.setAttribute("aria-current", "page");
+  });
 
   // Wie bei der Fragen-Blase weiter unten: In der Abwaertsphase merken, dass
   // der Klick aus dem Menuebereich kam. Kein stopPropagation — sonst erfaehrt
@@ -30,8 +48,10 @@ if (navToggle && siteNav) {
   siteNav.addEventListener("click", merken, true);
   navToggle.addEventListener("click", merken, true);
 
-  navToggle.addEventListener("click", () => {
-    zeigen(!siteNav.classList.contains("open"));
+  // Mit Tastatur geoeffnet (Enter/Leertaste erzeugen einen Klick ohne Mausposition):
+  // Fokus auf den ersten Punkt; mit der Maus bleibt der Fokus am Knopf.
+  navToggle.addEventListener("click", (e) => {
+    zeigen(!siteNav.classList.contains("open"), e.detail === 0);
   });
 
   // Ein Klick auf einen Menuepunkt schliesst das Feld. Bei einem Sprung auf
@@ -118,241 +138,6 @@ if (siteHeader) {
   onScroll();
 }
 
-// ---------- Daten-Hintergrund: rohes Time-&-Sales-Tape (monochrom) ----------
-// Kein Chart — Quants schauen auf Rohdaten. Im Hintergrund läuft ein Tick-Feed
-// (Zeit, Preis, Volumen, Seite), der langsam nach oben durchläuft. Das
-// Markenzeichen selbst bleibt statisch.
-(function () {
-  const canvas = document.getElementById("dataviz");
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  const ROW_H = 26;      // Zeilenhöhe (px)
-  const SPEED = 0.32;    // Scroll-Geschwindigkeit (px/Frame)
-
-  let width = 0, height = 0;
-  let rows = [];
-  let offset = 0;
-  let grad = null;
-
-  // synthetischer Feed
-  let price = 23400 + Math.random() * 200;
-  let clock = (15 * 3600 + 30 * 60) * 1000 + Math.floor(Math.random() * 3600000);
-
-  function fmtTime(ms) {
-    const h = Math.floor(ms / 3600000) % 24;
-    const m = Math.floor(ms / 60000) % 60;
-    const s = Math.floor(ms / 1000) % 60;
-    const f = Math.floor(ms % 1000);
-    const p = (n, l) => String(n).padStart(l, "0");
-    return `${p(h, 2)}:${p(m, 2)}:${p(s, 2)}.${p(f, 3)}`;
-  }
-
-  function fmtPrice(p) {
-    return p.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-
-  function nextRow() {
-    clock += 20 + Math.floor(Math.random() * 850);
-    price += (Math.random() - 0.5) * price * 0.00013;
-    return {
-      time: fmtTime(clock),
-      price: fmtPrice(price),
-      size: "×" + (1 + Math.floor(Math.random() * 24)),
-      side: Math.random() < 0.5 ? "BID" : "ASK",
-    };
-  }
-
-  function resize() {
-    const rect = canvas.parentElement.getBoundingClientRect();
-    if (!rect.width || !rect.height) return; // Layout noch nicht da (z. B. Tab unsichtbar)
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    width = rect.width;
-    height = rect.height;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    // Nach links ausblenden, damit die Headline frei bleibt
-    grad = ctx.createLinearGradient(0, 0, width, 0);
-    grad.addColorStop(0, "rgba(255,255,255,0)");
-    grad.addColorStop(0.45, "rgba(255,255,255,0.025)");
-    grad.addColorStop(1, "rgba(255,255,255,0.16)");
-
-    rows = [];
-    const count = Math.ceil(height / ROW_H) + 2;
-    for (let i = 0; i < count; i++) rows.push(nextRow());
-
-    if (reduced) draw(); // Standbild aktualisieren
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-    ctx.font = "12px Consolas, 'Cascadia Code', monospace";
-    ctx.fillStyle = grad;
-    ctx.textAlign = "right";
-
-    // Spalten von rechts: Seite, Volumen, Preis, Zeit
-    const xSide = width - 28;
-    const xSize = width - 118;
-    const xPrice = width - 208;
-    const xTime = width - 372;
-
-    for (let i = 0; i < rows.length; i++) {
-      const y = i * ROW_H - offset + ROW_H * 0.7;
-      const r = rows[i];
-      ctx.fillText(r.time, xTime, y);
-      ctx.fillText(r.price, xPrice, y);
-      ctx.fillText(r.size, xSize, y);
-      ctx.fillText(r.side, xSide, y);
-    }
-  }
-
-  function step() {
-    if (width > 0) {
-      offset += SPEED;
-      if (offset >= ROW_H) {
-        offset -= ROW_H;
-        rows.shift();
-        rows.push(nextRow());
-      }
-      draw();
-    }
-    requestAnimationFrame(step);
-  }
-
-  // ResizeObserver greift auch, wenn das Layout erst später Breite bekommt
-  if ("ResizeObserver" in window) {
-    new ResizeObserver(resize).observe(canvas.parentElement);
-  } else {
-    window.addEventListener("resize", resize);
-  }
-  resize();
-  if (!reduced) step();
-})();
-
-// ---------- Tiefen-Raster: scrollgekoppelter Hintergrund (nur Startseite) ----------
-// Drei Ebenen aus Datenpunkten bewegen sich beim Scrollen unterschiedlich
-// schnell mit — wie eine Fahrt durch einen Datenraum. Dazu minimale Drift.
-(function () {
-  const canvas = document.getElementById("depthgrid");
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  // f = Scroll-Faktor (je näher die Ebene, desto schneller), link = Linien-Distanz
-  const LAYERS = [
-    { n: 90, r: 1.0, a: 0.045, f: 0.05 },
-    { n: 60, r: 1.5, a: 0.07,  f: 0.12 },
-    { n: 34, r: 2.0, a: 0.11,  f: 0.22, link: 130 },
-  ];
-
-  let w = 0, h = 0, dots = [], t = 0;
-
-  function resize() {
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    w = window.innerWidth;
-    h = window.innerHeight;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    dots = LAYERS.map((L) =>
-      Array.from({ length: L.n }, () => ({ x: Math.random() * w, y: Math.random() * h }))
-    );
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, w, h);
-    const sy = window.scrollY;
-
-    LAYERS.forEach((L, i) => {
-      const off = sy * L.f + t * (i + 1) * 0.05;
-      const pts = dots[i].map((d) => ({ x: d.x, y: (((d.y - off) % h) + h) % h }));
-
-      if (L.link) {
-        ctx.strokeStyle = "rgba(255,255,255,0.035)";
-        ctx.lineWidth = 1;
-        for (let a = 0; a < pts.length; a++) {
-          for (let b = a + 1; b < pts.length; b++) {
-            const dx = pts[a].x - pts[b].x;
-            const dy = pts[a].y - pts[b].y;
-            if (Math.hypot(dx, dy) < L.link) {
-              ctx.beginPath();
-              ctx.moveTo(pts[a].x, pts[a].y);
-              ctx.lineTo(pts[b].x, pts[b].y);
-              ctx.stroke();
-            }
-          }
-        }
-      }
-
-      ctx.fillStyle = `rgba(255,255,255,${L.a})`;
-      for (const p of pts) {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, L.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    });
-  }
-
-  function loop() {
-    t += 1;
-    draw();
-    requestAnimationFrame(loop);
-  }
-
-  window.addEventListener("resize", resize);
-  resize();
-  if (reduced) {
-    draw(); // statisch; bewegt sich nur durch aktives Scrollen
-    window.addEventListener("scroll", draw, { passive: true });
-  } else {
-    loop();
-  }
-})();
-
-// ---------- Scroll-Parallax + Fortschrittslinie ----------
-(function () {
-  const progress = document.getElementById("scrollProgress");
-  const pxEls = document.querySelectorAll("[data-parallax]");
-  if (!progress && !pxEls.length) return;
-
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let ticking = false;
-
-  function update() {
-    ticking = false;
-    const sy = window.scrollY;
-
-    if (progress) {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      progress.style.transform = `scaleX(${max > 0 ? (sy / max).toFixed(4) : 0})`;
-    }
-
-    if (!reduced) {
-      for (const el of pxEls) {
-        const f = parseFloat(el.dataset.parallax || "0");
-        el.style.transform = `translateY(${(sy * f).toFixed(1)}px)`;
-      }
-    }
-  }
-
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(update);
-      }
-    },
-    { passive: true }
-  );
-  update();
-})();
-
 // ---------- Startseite: der Hero fuellt genau den ersten Bildschirm ----------
 // Den ersten Wert setzt ein Inline-Skript in index.html direkt hinter der
 // Kopfzeile (sonst waere die Seite beim ersten Zeichnen zu hoch). Hier wird
@@ -396,14 +181,14 @@ if (siteHeader) {
 // Die Ziel-Elemente werden hier markiert, das CSS (.reveal/.in) macht den Rest.
 (function () {
   const targets = document.querySelectorAll(
-    ".section-head, .page-head, .statement, .kachel, .partner, .layer, .rail, .guard, .step-row, .creed-cell, .creed-close, .founder-card, .cta-panel, .prose"
+    ".section-head, .page-head, .statement, .kachel, .partner, .step-row, .creed-cell, .founder-card, .cta-panel, .prose"
   );
   if (!targets.length) return;
 
   targets.forEach((el) => el.classList.add("reveal"));
 
   // Raster-Elemente leicht versetzt einblenden
-  document.querySelectorAll(".kacheln, .guards, .creed").forEach((grid) => {
+  document.querySelectorAll(".kacheln, .creed").forEach((grid) => {
     Array.from(grid.children).forEach((card, i) => {
       card.style.transitionDelay = i * 90 + "ms";
     });
@@ -774,6 +559,23 @@ if (siteHeader) {
     ansEnde();
   }
 
+  // Das erste Vorkommen eines Worts in den Textknoten eines Elements in einen Link verwandeln
+  function verlinken(wurzel, wort, href) {
+    const lauf = document.createTreeWalker(wurzel, NodeFilter.SHOW_TEXT);
+    for (let kn = lauf.nextNode(); kn; kn = lauf.nextNode()) {
+      const i = kn.data.indexOf(wort);
+      if (i < 0 || kn.parentElement.closest("a")) continue;
+      const rest = kn.splitText(i);
+      rest.data = rest.data.slice(wort.length);
+      const a = document.createElement("a");
+      a.href = href;
+      a.textContent = wort;
+      kn.parentNode.insertBefore(a, rest);
+      return true;
+    }
+    return false;
+  }
+
   function zaehlen() {
     const n = feld.value.length;
     zaehler.textContent = `${n} / ${KI_FRAGE_MAX}`;
@@ -835,6 +637,9 @@ if (siteHeader) {
         true
       );
       el.dataset.kiGeneriert = sperre ? "false" : "true";
+      // Die festen Antworten des Servers nennen die Kontaktseite -- hier wird das Wort
+      // zum Link (die E-Mail-Adresse ist schon einer)
+      if (sperre) verlinken(el, T("Kontaktseite", "contact page"), KONTAKT);
       if (d.art === "ki" && typeof d.sig === "string" && /^[0-9a-f]{64}$/.test(d.sig)) {
         verlauf.push({ frage, antwort: d.antwort, sig: d.sig });
         if (verlauf.length > KI_VERLAUF_MAX) verlauf.shift();
@@ -1434,8 +1239,8 @@ const NETZ_VOLL = () => T(
          ${fragen.slice(4).map(feldHtml).join("")}
          ${aktionen(T("Senden", "Send"), T("Abbrechen", "Cancel"), "zurueck")}
          ${hinweis(T(
-           `Pflichtfelder sind markiert. Was mit Ihren Angaben passiert, steht in der <a href="${IST_EN ? "../datenschutz.html" : "datenschutz.html"}">Datenschutzerklärung</a>.`,
-           `Required fields are marked. What happens with your details is set out in the <a href="../datenschutz.html">privacy policy</a>.`
+           `Alle Felder außer „Website oder Profil“ sind Pflicht. Was mit Ihren Angaben passiert, steht in der <a href="datenschutz.html">Datenschutzerklärung</a>.`,
+           `All fields except “Website or profile” are required. What happens with your details is set out in the <a href="privacy.html">privacy policy</a>.`
          ))}
          <div class="partner-meldung"></div>
        </form>`;

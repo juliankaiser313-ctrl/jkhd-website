@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720
 - **Sprache / Darstellung:** Deutsch; hell
-- **Status:** offen
+- **Status:** in Arbeit
 - **Art:** Verbesserung
 - **Gewicht:** niedrig
 
@@ -42,9 +42,9 @@ Broker angeschlossen.“), oder wenigstens ein Hinweis auf die Seite „Sicherhe
 Antworttexte wie zitiert (Kennzeichnung „KI-Antwort“ bzw. „Automatische Antwort“ ist
 korrekt vorhanden).
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Zwei Dinge: (1) „Kontaktseite“ in den festen Antworten war reiner Text — die Antworten kommen vom Server, der Client zeigte sie unverändert. (2) Die Sperre gegen Anlagefragen prüft auf dem Server (api/index.php) auf ein Finanzinstrument plus eine Handels- oder Ratform; „Handelt JKHD … an der Börse“ trifft beides.
+- **Änderung:** Teil 1 erledigt: js/main.js wandelt in festen Antworten das erste Vorkommen von „Kontaktseite“ / „contact page“ in einen Link auf die Kontaktseite (Funktion verlinken). Commit b1fda60, Cache-Stempel 20261011n. Teil 2 offen: die Sperre auf dem Server braucht eine Ausnahme für Fragen, ob JKHD selbst mit echtem Geld handelt (ohne Instrument, ohne Rat) — Änderung am Server, Upload nur über den IONOS-Webspace.
+- **Geprüft mit:** Teil 1: node --check und Prüfung „keine Skriptfehler“; die Verlinkung greift nur bei art = sperre. Teil 2: noch nicht.

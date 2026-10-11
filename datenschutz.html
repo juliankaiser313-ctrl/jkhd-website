@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Datenschutz — JKHD</title>
-  <meta name="robots" content="noindex">
+  <meta name="robots" content="noindex, follow">
   <meta name="theme-color" content="#f7f6f3">
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -15,6 +15,7 @@
     // Laeuft absichtlich vor dem Stylesheet: verhindert das Aufblitzen
     // der falschen Farben beim Laden.
     (function () {
+      document.documentElement.classList.add("js");   // fuer css: ohne Skript steht das Menue offen
       try {
         var g = localStorage.getItem("jkhd-theme");
         var dunkel = g ? g === "dark"
@@ -26,8 +27,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/datenschutz.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/privacy.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/datenschutz.html">
-  <link rel="stylesheet" href="css/fonts.css?v=20261011m">
-  <link rel="stylesheet" href="css/style.css?v=20261011m">
+  <link rel="stylesheet" href="css/fonts.css?v=20261011n">
+  <link rel="stylesheet" href="css/style.css?v=20261011n">
 </head>
 <body>
 
@@ -83,7 +84,7 @@
 
   <section class="page-head">
     <div class="container">
-      <h1>Datenschutzerklärung</h1>
+      <h1>Datenschutz&shy;erklärung</h1>
     </div>
   </section>
 
@@ -361,6 +362,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20261011m"></script>
+  <script src="js/main.js?v=20261011n"></script>
 </body>
 </html>

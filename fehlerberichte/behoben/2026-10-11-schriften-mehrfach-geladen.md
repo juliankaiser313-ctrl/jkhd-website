@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Dateien im Repository, Netzwerkmitschnitt Chrome 155
 - **Sprache / Darstellung:** —
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Verbesserung (Ladezeit)
 - **Gewicht:** niedrig
 
@@ -28,9 +28,9 @@ Bereich, z. B. `font-weight: 400 700;`.
 
 `sha256sum assets/fonts/*.woff2`; `document.fonts` im Browser.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Beim Herunterladen von Google Fonts wurde dieselbe variable Datei je Stärke abgelegt (Tabellenverzeichnis der WOFF2 gelesen: fvar vorhanden, also variabel).
+- **Änderung:** assets/fonts: je Familie und Schnitt eine Datei (Manrope-variabel, PlayfairDisplay-variabel, PlayfairDisplay-variabel-italic), vier Dateien gelöscht; css/fonts.css mit `font-weight: 200 800` bzw. `400 900`; Verweise im Offline-Rezept der README und in offline/index.html angepasst. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „Schriften“ (Netzwerkmitschnitt auf system.html): vorher vier Dateien (Manrope 400, 600, 700 und Playfair 500), nachher zwei (Manrope 200–800, Playfair 400–900); Fotos der Seiten zeigen die gewohnten Stärken.

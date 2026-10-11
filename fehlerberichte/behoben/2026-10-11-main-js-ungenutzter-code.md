@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Quelltext
 - **Sprache / Darstellung:** —
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Verbesserung (Wartung, Ladezeit)
 - **Gewicht:** niedrig
 
@@ -34,9 +34,9 @@ Toten Code entfernen (oder klar als „für später“ markieren), damit die Dat
 
 Suche nach den Selektoren in allen HTML-Dateien: keine Treffer.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Reste früherer Fassungen der Startseite.
+- **Änderung:** js/main.js: die Abschnitte „Daten-Hintergrund“, „Tiefen-Raster“ und „Scroll-Parallax + Fortschrittslinie“ entfernt; Reveal-Selektoren ohne .layer/.rail/.guard/.creed-close, Stagger ohne .guards; der Kommentar zur Navigation beschreibt jetzt beide Breiten. Datei 110 KB → 105 KB. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** Suche nach den Selektoren in allen HTML-Dateien und in js/ (0 Treffer); node --check; pruefung_fehler.js „keine Skriptfehler“ auf acht Seiten, alle übrigen Prüfungen grün.

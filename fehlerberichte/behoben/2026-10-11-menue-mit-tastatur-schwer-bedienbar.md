@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 390×844 und 1280×720, Bedienung nur mit der Tastatur
 - **Sprache / Darstellung:** Deutsch und Englisch; hell
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (Barrierefreiheit)
 - **Gewicht:** mittel
 
@@ -43,9 +43,9 @@ Den Knopf im Markup vor die `<nav>` stellen (Optik per CSS-`order` unverändert)
 Öffnen den Fokus auf den ersten Menüpunkt setzen; in `js/main.js` in `zeigen(auf)` auch
 `aria-label` umschalten; `aria-controls` + `id` an der Navigation ergänzen.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Der Knopf steht im Markup hinter der Navigation; die Beschriftung war fest; aria-controls fehlte.
+- **Änderung:** js/main.js: Öffnet die Tastatur das Menü (Klick ohne Mausposition, e.detail === 0), bekommt der erste sichtbare Menüpunkt den Fokus; aria-label wechselt zu „Menü schließen“ / „Close menu“; aria-controls zeigt auf die Navigation (id site-nav). Das Markup bleibt, der Fokus macht die Reihenfolge wett. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „Menue per Tastatur“ (echte Tastendrücke per DevTools-Protokoll, 390×844): nach Enter aria-expanded true, Label „Menü schließen“, Fokus auf „Startseite“; nach Tab „Was wir machen“ im Menü. Vorher landete Tab auf „Kontaktseite“ im Seiteninhalt.

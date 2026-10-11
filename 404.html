@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- GitHub Pages liefert diese Seite unter jeder fehlenden Adresse aus, auch in
+       Unterordnern (/en/..., /assets/...). Mit base loesen sich Stylesheet, Skript
+       und alle Links von der Wurzel aus -- sonst suchte der Browser /en/css/style.css. -->
+  <base href="/">
   <title>404 — JKHD</title>
   <meta name="robots" content="noindex">
   <meta name="theme-color" content="#f7f6f3">
@@ -15,6 +19,7 @@
     // Laeuft absichtlich vor dem Stylesheet: verhindert das Aufblitzen
     // der falschen Farben beim Laden.
     (function () {
+      document.documentElement.classList.add("js");   // fuer css: ohne Skript steht das Menue offen
       try {
         var g = localStorage.getItem("jkhd-theme");
         var dunkel = g ? g === "dark"
@@ -23,8 +28,8 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="css/fonts.css?v=20261011m">
-  <link rel="stylesheet" href="css/style.css?v=20261011m">
+  <link rel="stylesheet" href="css/fonts.css?v=20261011n">
+  <link rel="stylesheet" href="css/style.css?v=20261011n">
 </head>
 <body>
 
@@ -99,6 +104,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20261011m"></script>
+  <script src="js/main.js?v=20261011n"></script>
 </body>
 </html>

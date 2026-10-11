@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720
 - **Sprache / Darstellung:** Deutsch und Englisch; hell
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (Text)
 - **Gewicht:** niedrig
 
@@ -41,9 +41,9 @@ Mehrzahl-Regel ergänzen) oder die betroffenen Sätze so formulieren, dass die Z
 Hauptwort steht; für Englisch Ordinalzahlen mit Endung (1st, 2nd, 3rd …). Daran denken:
 der Text im HTML ist auch die Fassung ohne JavaScript.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Das Hauptwort stand außerhalb des Spans, es gab keine Einzahl-Regel; die Ordnungszahl wurde deutsch formatiert.
+- **Änderung:** simulation.html / en/simulation.html: die Spans tragen `data-sp-wort="Bewegung|Bewegungen"` bzw. „move|moves“ (8 Stellen je Sprache), js/spiel.js setzt bei 1 die Einzahl; neue Art `ordnungszahl` (deutsch „1.“, englisch „1st“, „2nd“ …). Der Text ohne JavaScript ist ebenfalls berichtigt. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „Simulation DE/EN Texte“: „Stop 1 Bewegung hinter dem Stich“, keine „1 Bewegungen“ / „1 moves“, „the 1st touch“.

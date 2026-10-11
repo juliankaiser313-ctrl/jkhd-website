@@ -23,7 +23,7 @@
 //      echten Broker endet
 window.JKHDBilder = window.JKHDBilder || {};
 window.JKHDBilder.pruefung = function (k) {
-  const { ctx, F, T, text, haken, kreuz, linie, linieRund, reiheRund, zerstoertRund, reiheDrift, puls, mono, stueck, clamp, misch, dreieck, zufall } = k;
+  const { ctx, F, T, text, textHalten, haken, kreuz, linie, linieRund, reiheRund, zerstoertRund, reiheDrift, puls, mono, stueck, clamp, misch, dreieck, zufall } = k;
   const REIHE = reiheRund(5, 320);
   const REIHE_ZERSTOERT = zerstoertRund(REIHE, 9);
   const REIHE_EFFEKT = reiheDrift(11, 160, 0.09);
@@ -400,7 +400,7 @@ window.JKHDBilder.pruefung = function (k) {
       const xs = x0 + r * P + standVon - schub, xe = xs + (standBis - standVon);
       if (xe < x0 || xs > sichtbar) continue;
       const links = Math.max(xs, x0), rechts = Math.min(xe, sichtbar);
-      if (xs >= x0 && xs <= sichtbar) text(T("Prozess läuft, Arbeit steht", "process runs, work stalls"), xs + 6, yM - amp - 10, mono(11), F.rot);
+      if (xs >= x0 && xs <= sichtbar) k.textHalten(T("Prozess läuft, Arbeit steht", "process runs, work stalls"), xs + 6, yM - amp - 10, mono(11), F.rot);
       if (rechts - links > 60) {
         ctx.strokeStyle = F.rot; ctx.lineWidth = 1.2;
         ctx.beginPath(); ctx.moveTo(links, yM + amp * 0.7); ctx.lineTo(rechts - 8, yM + amp * 0.7); ctx.stroke();
@@ -505,7 +505,9 @@ window.JKHDBilder.pruefung = function (k) {
       ctx.beginPath(); ctx.moveTo(bis, yS - 10); ctx.lineTo(bis, yS + 10); ctx.stroke();
       ctx.globalAlpha /= blink;
       text(T("bis hierher geprüft", "tested up to here"), A.x, yS - 10, mono(11), F.matt);
-      text(T("echter Broker: noch keiner", "real broker: none yet"), bis + 10, yS + 4, mono(11), F.matt);
+      // am Handy unter den Strich, rechtsbuendig -- rechts daneben ist kein Platz
+      if (k.klein) text(T("echter Broker: noch keiner", "real broker: none yet"), A.x + A.b, yS + 22, mono(11), F.matt, "right");
+      else text(T("echter Broker: noch keiner", "real broker: none yet"), bis + 10, yS + 4, mono(11), F.matt);
       ctx.globalAlpha /= a;
     }
   }

@@ -14,6 +14,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <script>
     (function () {
+      document.documentElement.classList.add("js");   // fuer css: ohne Skript steht das Menue offen
       try {
         var g = localStorage.getItem("jkhd-theme");
         var dunkel = g ? g === "dark"
@@ -25,8 +26,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/impressum.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/imprint.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/impressum.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20261011m">
-  <link rel="stylesheet" href="../css/style.css?v=20261011m">
+  <link rel="stylesheet" href="../css/fonts.css?v=20261011n">
+  <link rel="stylesheet" href="../css/style.css?v=20261011n">
 </head>
 <body>
 
@@ -152,6 +153,6 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20261011m"></script>
+  <script src="../js/main.js?v=20261011n"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720 (ebenso 1920×1050 und 390×844)
 - **Sprache / Darstellung:** Deutsch und Englisch; hell und dunkel
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler
 - **Gewicht:** hoch
 
@@ -52,9 +52,9 @@ stehen dort schon absolut. Die Links der Fragen-Blase in `js/main.js` (`kontakt.
 `unternehmen.html`) sind ebenfalls relativ und zeigen auf der Fehlerseite in
 Unterordnern ins Leere; dort ggf. ebenfalls absolut.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** 404.html verweist relativ auf css/, js/ und die Seiten. GitHub Pages liefert die Datei unter jeder fehlenden Adresse aus, also auch unter /en/… — dort lösten sich die Pfade falsch auf.
+- **Änderung:** `<base href="/">` im Kopf der 404.html: Stylesheet, Skript, alle Links und auch die Links der Fragen-Blase zeigen damit von der Wurzel aus. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „404 in Unterordner“ (Seite /en/gibt-es-nicht, Testserver liefert wie Pages die 404.html mit Status 404): vorher Schrift Times New Roman, Links auf /en/index.html, drei fehlgeschlagene Anfragen (/en/css/fonts.css, /en/css/style.css, /en/js/main.js); nachher Manrope, Links auf /index.html, keine fehlgeschlagene Anfrage.

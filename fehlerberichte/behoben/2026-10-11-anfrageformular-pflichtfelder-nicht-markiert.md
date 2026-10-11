@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720
 - **Sprache / Darstellung:** Deutsch und Englisch; hell
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (Text)
 - **Gewicht:** niedrig
 
@@ -39,9 +39,9 @@ Gemessen mit abgeschaltetem Versand (keine Anfrage ging an den Server). Quelle:
 `../datenschutz.html`; in `style.css` gibt es keine Regel, die `[required]`-Felder
 kennzeichnet.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Der Hinweis stammte aus einer Fassung, in der Pflichtfelder markiert waren; der englische Link war fest auf die deutsche Erklärung gesetzt.
+- **Änderung:** js/main.js, Funktion anfrageSchritt(): „Alle Felder außer „Website oder Profil“ sind Pflicht.“ bzw. „All fields except “Website or profile” are required.“; Link deutsch datenschutz.html, englisch privacy.html (je relativ zur Seite). Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „Formular-Hinweis“ auf kontakt.html und en/contact.html (Formular per Knopf geöffnet, Satz und Linkziel gelesen): vorher „Pflichtfelder sind markiert“ und /datenschutz.html auch auf der englischen Seite; nachher neuer Satz und /en/privacy.html.

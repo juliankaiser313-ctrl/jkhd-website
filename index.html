@@ -7,8 +7,11 @@
   <meta name="description" content="JKHD baut quantitative Systeme und betreibt sie selbst. Hier erklären wir in einfachen Worten, wie sie funktionieren und wie wir sie prüfen.">
   <meta name="theme-color" content="#f7f6f3">
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:locale:alternate" content="en_GB">
   <meta property="og:site_name" content="JKHD">
   <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
   <meta property="og:url" content="https://www.jkhd.de/">
   <link rel="canonical" href="https://www.jkhd.de/">
   <meta property="og:title" content="JKHD — Quantitative Systeme für den Eigenbedarf">
@@ -22,6 +25,7 @@
     // Laeuft absichtlich vor dem Stylesheet: verhindert das Aufblitzen
     // der falschen Farben beim Laden.
     (function () {
+      document.documentElement.classList.add("js");   // fuer css: ohne Skript steht das Menue offen
       try {
         var g = localStorage.getItem("jkhd-theme");
         var dunkel = g ? g === "dark"
@@ -33,8 +37,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/index.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/">
-  <link rel="stylesheet" href="css/fonts.css?v=20261011m">
-  <link rel="stylesheet" href="css/style.css?v=20261011m">
+  <link rel="stylesheet" href="css/fonts.css?v=20261011n">
+  <link rel="stylesheet" href="css/style.css?v=20261011n">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -207,7 +211,7 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20261011m"></script>
-  <script src="js/universum.js?v=20261011m"></script>
+  <script src="js/main.js?v=20261011n"></script>
+  <script src="js/universum.js?v=20261011n"></script>
 </body>
 </html>

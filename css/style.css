@@ -254,15 +254,25 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .site-nav a:hover { color: var(--text); }
 
 .site-nav .btn { margin: 14px 0 0; border: 1px solid var(--border-2); }
+/* Der Kontakt-Knopf bleibt ein Knopf: Schrift in Seitenfarbe auf Tinte, auch beim
+   Ueberfahren, mit Innenabstand und Knopfschrift. ".site-nav a" (Klasse + Element)
+   schlug sonst ".btn-primary", und ".site-nav a:hover" faerbte die Schrift in die
+   Knopffarbe -- der Knopf war grau und beim Ueberfahren leer (Vollpruefung 11.10.2026). */
+.site-nav a.btn { padding: 10px 20px; font-size: 0.7rem; font-weight: 800; }
+.site-nav a.btn-primary, .site-nav a.btn-primary:hover { color: var(--bg); }
+/* Der Punkt der aktuellen Seite ist hervorgehoben (js/main.js setzt aria-current) */
+.site-nav a[aria-current="page"] { color: var(--text); }
 
 /* Sprache und Darstellung sitzen in einem eigenen Behaelter — nur so lassen
    sie sich auf breiten Schirmen aus der Menuezeile herausloesen, waehrend die
    Seitenlinks darin stehen bleiben. */
 .nav-prefs { display: flex; flex-direction: column; }
 
-/* Rechtsverweise im Klappfeld: standardmaeszig aus, die Regel weiter unten
-   blendet sie ab 1141 px ein (auf dem Handy stehen sie in der Fusszeile). */
-.nav-legal { display: none; }
+/* Rechtsverweise: im Handy-Menue als kleinere Zeilen unter den Seiten, auf breiten
+   Schirmen im Klappfeld. Auf der Startseite liegt die Fusszeile hinter der ganzen
+   Animation (am Handy rund 27 Bildschirme) -- das Impressum muss von jeder Seite
+   mit einem Tipp erreichbar sein (Vollpruefung 11.10.2026). */
+.nav-legal { font-size: 0.78rem; font-weight: 500; }
 .nav-nur-breit { display: none; }   /* nur im Klappfeld breiter Schirme */
 
 /* Beide als eigene Punkte: links die Beschriftung wie bei den uebrigen
@@ -983,6 +993,11 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 .bildlauf-leinwand { display: block; width: 100%; height: 100%; }
 .bildlauf-texte { position: absolute; left: 0; right: 0; bottom: 56px; }
+/* Unter 900 px steht der Textblock hoeher: der Knopf der Fragen-Blase (unten rechts,
+   fest) lag sonst ueber dem Ende der letzten Zeile, und der Text wandert beim
+   Scrollen nicht mit -- das verdeckte Stueck war nie zu lesen (Vollpruefung 11.10.2026).
+   js/bildlauf.js liest den Abstand aus dem Stil, die Zeichnung bleibt darueber. */
+@media (max-width: 900px) { .bildlauf-texte { bottom: 84px; } }
 .bildlauf-text {
   position: absolute;
   left: 48px;
@@ -1008,7 +1023,6 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .bildlauf.ist-aktiv { height: 2200vh; }
   .bildlauf[data-bilder="sicherheit"].ist-aktiv { height: 3000vh; }
   .bildlauf[data-bilder="system"].ist-aktiv { height: 2700vh; }
-  .bildlauf-texte { bottom: 36px; }
   .bildlauf-text { left: 20px; right: 20px; }
   .bildlauf-text h1 { font-size: 1.7rem; }
   .bildlauf-text h2 { font-size: 1.3rem; }
@@ -1016,6 +1030,12 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .bildlauf:not(.ist-aktiv) .bildlauf-texte,
   .bildlauf.ist-still .bildlauf-texte { padding: 32px 20px 56px; }
 }
+/* Bei reduzierter Bewegung gibt es keinen Scrollweg: der Abschnitt ist so hoch wie
+   Schlussbild und Liste. Ohne diese Regel blieben 2400-3300vh Leerflaeche vor der
+   Fusszeile (Vollpruefung 11.10.2026). Spezifischer als die Hoehen je data-bilder. */
+.bildlauf.ist-aktiv.ist-still, .bildlauf[data-bilder].ist-aktiv.ist-still { height: auto; }
+/* "Scrollen Sie." gilt nur, wenn die Seite auch scrollt */
+.bildlauf:not(.ist-aktiv) .nur-bewegt, .bildlauf.ist-still .nur-bewegt { display: none; }
 
 /* ---------- Footer ---------- */
 
@@ -1194,9 +1214,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
     border-bottom: 1px solid var(--border);
   }
 
-  /* Impressum und Datenschutz stehen hier nur auf breiten Schirmen: Auf dem
-     Handy fuehrt sie die Fusszeile, das Menue bliebe sonst unnoetig lang. */
+  /* Impressum und Datenschutz als Zeilen des Klappfelds */
   .nav-legal { display: block; }
+  /* Auf breiten Schirmen bekommt die aktuelle Seite zusaetzlich eine feine Linie */
+  .site-nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 7px; text-decoration-thickness: 1px; }
 
   /* "Was wir machen" liegt hier im Klappfeld, die Kopfzeile fuehrt stattdessen
      die Startseite; auf dem Handy steht der Punkt oben in der Liste. */
@@ -1205,6 +1226,21 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
   /* Im Feld braucht die letzte Zeile keine Trennlinie */
   .nav-prefs > :last-child { border-bottom: none; padding-bottom: 4px; }
+}
+
+/* ---------- Ohne JavaScript ----------
+   Das Kopfskript jeder Seite setzt die Klasse "js" an <html>. Fehlt sie, kann der
+   Menueknopf nichts oeffnen: dann steht die Navigation als Block unter der Marke,
+   auf breiten Schirmen das Klappfeld als zweite Zeile; der Knopf und der
+   Darstellungsschalter (beide nur per Skript) sind weg (Vollpruefung 11.10.2026). */
+html:not(.js) .site-header { position: static; height: auto; }   /* die Kopfzeile waechst mit, statt ueber den Inhalt zu ragen */
+html:not(.js) .nav-wrap { height: auto; flex-wrap: wrap; padding: 12px 0; }
+html:not(.js) .site-nav { display: flex; position: static; width: 100%; order: 3; padding: 8px 0 12px; border-bottom: none; }
+html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
+@media (min-width: 1141px) {
+  html:not(.js) .site-nav { flex-wrap: wrap; justify-content: flex-end; width: auto; padding: 0; }
+  html:not(.js) .nav-prefs { display: flex; position: static; flex-direction: row; flex-wrap: wrap; gap: 28px; width: auto; padding: 0; border: none; box-shadow: none; }
+  html:not(.js) .nav-prefs > a { padding: 0; border-bottom: none; }
 }
 
 @media (max-width: 560px) {

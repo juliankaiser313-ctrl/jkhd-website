@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Quelltext aller 41 HTML-Dateien
 - **Sprache / Darstellung:** Deutsch und Englisch
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Verbesserung (Suchmaschinen, Vorschaukarten)
 - **Gewicht:** niedrig
 
@@ -40,9 +40,9 @@ Je Seite eine eigene Beschreibung; vollständige und einheitliche Open-Graph-Ang
 
 Auswertung aller `<head>`-Bereiche per Skript.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Angaben aus verschiedenen Bauphasen.
+- **Änderung:** Alle 26 Seiten mit Open-Graph-Angaben: og:type website, og:locale de_DE bzw. en_GB mit og:locale:alternate, twitter:card summary_large_image; eigene description und og:description für was-wir-machen.html und en/what-we-do.html; sitemap.xml mit lastmod je Seite (Datum des letzten Commits, der mehr als den Cache-Stempel änderte). Punkt 6 (kurze Adressen) bleibt zur Kenntnis, canonical deckt es ab. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** Zählung der Meta-Angaben per grep vor und nach der Änderung (og:type: 17 article + 9 website → 26 website; og:locale: 12 → 26 + 26 alternate; twitter:card: 0 → 26); sitemap.xml mit 24 lastmod-Einträgen.

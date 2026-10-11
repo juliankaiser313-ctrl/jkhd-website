@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720
 - **Sprache / Darstellung:** Deutsch und Englisch; hell
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (Text, Datenschutz-Transparenz)
 - **Gewicht:** mittel
 
@@ -44,9 +44,9 @@ unserem Server; an ihn gehen nur …“.
 Zitate oben aus der ausgelieferten Seite; Abgleich mit `js/spiel.js`
 (`bestenAnfrage("bestenliste_eintrag", { marke, name, sekunden, saat, tempo })`).
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Der Satz stammte aus der Zeit vor Spielnummer und Tempo; der Kasten verwechselte Holen und Senden.
+- **Änderung:** simulation.html und en/simulation.html: der Bestenlisten-Satz nennt Spitzname, Spielzeit, Spielnummer, Tempo und die Spielmarke; der Kasten sagt „Beim Öffnen holt die Seite die Bestenliste …; an ihn gehen nur …“. Die Datenschutzerklärung war schon vollständig und bleibt. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „Simulation DE/EN Texte“ (Seitentext nach dem Laden): beide Sätze vorhanden.

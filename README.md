@@ -357,7 +357,7 @@ diesen Schritt einsetzen, dann auf `main` pushen:
           cp CNAME       offline/CNAME          # Domain bleibt am Repository
           cp favicon.svg offline/favicon.svg
           mkdir -p offline/assets/fonts           # Schriften unter demselben Pfad wie live
-          cp assets/fonts/Manrope-400.woff2 assets/fonts/PlayfairDisplay-500.woff2 offline/assets/fonts/
+          cp assets/fonts/Manrope-variabel.woff2 assets/fonts/PlayfairDisplay-variabel.woff2 offline/assets/fonts/
           cp offline/index.html offline/404.html  # jede Adresse zeigt den Platzhalter
 ```
 

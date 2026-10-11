@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, 1280×720 und 390×844
 - **Sprache / Darstellung:** Deutsch; hell
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (Darstellung)
 - **Gewicht:** niedrig
 
@@ -35,9 +35,9 @@ haben einen schmalen Hintergrund in Seitenfarbe, damit die Linie sie nicht durch
 
 Bildschirmfotos aus der Prüfung (nicht abgelegt; leicht nachzustellen).
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Feste Positionen relativ zur Linie, die lebt.
+- **Änderung:** js/bildlauf.js: neue Zeichenhilfe `textFrei` (Kasten in Seitenfarbe hinter dem Text) für „das Mittel“; Bild 07: die Beschriftung steht über dem höchsten Punkt der Linie in ihrer Breite (Laptop) bzw. unter der Linie rechts (Handy — darüber stieße sie an „Zahlen, Beschluss, Termin“). Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** Fotos 1280×760 und 390×844 zu je zwei Zeitpunkten (bildlauf_fotos.js): keine Linie mehr durch eine Beschriftung.

@@ -213,13 +213,26 @@
     prozent,
     sekunden: (takte) => zahl(sekundenAusTakten(takte)),
     millisekunden: (ms) => zahl(ms / 1000),
-    kompakt: (wert) => FORMAT_KOMPAKT.format(wert)
+    kompakt: (wert) => FORMAT_KOMPAKT.format(wert),
+    // Ordnungszahl: deutsch "1.", englisch "1st" (die Regeln sagen "bis zur 1. Beruehrung")
+    ordnungszahl: (wert) => {
+      if (!IST_EN) return zahl(wert) + ".";
+      const n = Math.round(wert), rest = n % 100;
+      const endung = rest >= 11 && rest <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th";
+      return n + endung;
+    }
   };
   document.querySelectorAll("[data-sp-zahl]").forEach((stelle) => {
     const [quelle, name] = stelle.dataset.spZahl.split(".");
     const art = ARTEN[stelle.dataset.spArt];
     const wert = QUELLEN[quelle] ? QUELLEN[quelle][name] : undefined;
-    if (art && typeof wert === "number") stelle.textContent = art(wert);
+    if (!art || typeof wert !== "number") return;
+    // data-sp-wort="Bewegung|Bewegungen": das Hauptwort steht im Span, Einzahl bei 1
+    const wort = stelle.dataset.spWort;
+    if (wort) {
+      const [einzahl, mehrzahl] = wort.split("|");
+      stelle.textContent = art(wert) + " " + (wert === 1 ? einzahl : mehrzahl);
+    } else stelle.textContent = art(wert);
   });
 
   // ---------- Teile der Seite ----------

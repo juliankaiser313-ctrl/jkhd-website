@@ -6,9 +6,12 @@
   <title>Die härtesten Formeln — JKHD</title>
   <meta name="description" content="Die härtesten Formeln aus Mathematik und Physik — von der Riemannschen Zetafunktion bis zur stochastischen Analysis, jeweils mit Erklärung, Bedeutung und Brücke zum Quant-Trading.">
   <meta name="theme-color" content="#f7f6f3">
-  <meta property="og:type" content="article">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:locale:alternate" content="en_GB">
   <meta property="og:site_name" content="JKHD">
   <meta property="og:image" content="https://www.jkhd.de/assets/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
   <meta property="og:url" content="https://www.jkhd.de/monster-formelsammlung.html">
   <link rel="canonical" href="https://www.jkhd.de/monster-formelsammlung.html">
   <meta property="og:title" content="Die härtesten Formeln — JKHD">
@@ -22,6 +25,7 @@
     // Laeuft absichtlich vor dem Stylesheet: verhindert das Aufblitzen
     // der falschen Farben beim Laden.
     (function () {
+      document.documentElement.classList.add("js");   // fuer css: ohne Skript steht das Menue offen
       try {
         var g = localStorage.getItem("jkhd-theme");
         var dunkel = g ? g === "dark"
@@ -30,8 +34,8 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="css/fonts.css?v=20261011m">
-  <link rel="stylesheet" href="css/style.css?v=20261011m">
+  <link rel="stylesheet" href="css/fonts.css?v=20261011n">
+  <link rel="stylesheet" href="css/style.css?v=20261011n">
   <link rel="stylesheet" href="css/katex/katex.min.css?v=0.18.9">
 </head>
 <body>
@@ -681,6 +685,6 @@ c-10,0,-16.667,5,-20,15z M188 15 H145 v585 v1800 v585 h43z"/></svg></span></span
     </div>
   </footer>
 
-  <script src="js/main.js?v=20261011m"></script>
+  <script src="js/main.js?v=20261011n"></script>
 </body>
 </html>

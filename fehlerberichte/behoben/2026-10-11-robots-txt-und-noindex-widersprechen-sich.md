@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Quelltext und ausgelieferte Dateien
 - **Sprache / Darstellung:** —
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler (Suchmaschinen)
 - **Gewicht:** niedrig
 
@@ -38,9 +38,9 @@ schadet ein Impressum nicht.
 
 Beide Dateien wie ausgeliefert.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Zwei Methoden zugleich.
+- **Änderung:** robots.txt ohne die beiden Disallow-Zeilen; impressum.html und datenschutz.html tragen wie die englischen Seiten `noindex, follow`. `/fehlerberichte/` bleibt in der robots.txt (Markdown trägt kein noindex). Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** Dateien im Diff gelesen; nach der Veröffentlichung robots.txt live per curl mit dem Release verglichen.

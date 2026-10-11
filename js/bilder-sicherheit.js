@@ -176,7 +176,7 @@ window.JKHDBilder.sicherheit = function (k) {
     ctx.beginPath(); ctx.moveTo(xV, y - 26); ctx.lineTo(xV, y + 26); ctx.stroke();
     text(T("Vorgabe", "the setting"), xV, y - 34, mono(12), F.tinte, "center");
     text(T("← vorsichtiger", "← more careful"), x0, y + 44, mono(11), F.matt);
-    text(T("mutiger →  geht nicht", "bolder →  not possible"), x0 + b, y + 44, mono(11), F.rot, "right");
+    text(T("mutiger → geht nicht", "bolder → not possible"), x0 + b, y + 44, mono(11), F.rot, "right");
     ctx.globalAlpha /= aS;
     // der Knopf: ein Versuch darueber hinaus (springt zurueck), dann vorsichtiger, dann zurueck zur Vorgabe
     const aK = stueck(t, 0.25, 0.45);
@@ -332,8 +332,8 @@ window.JKHDBilder.sicherheit = function (k) {
     hand(xK, yH - hub, 30, F.tinte);
     pfeil(xK, yH - hub - 22, xK, yM + hK / 2 + 26, F.rand2, true);
     kreuz(xK, yM + hK / 2 + 14, 14, F.rot, 1);
-    text(klein ? T("kein Weg von Hand", "no path by hand") : T("kein Weg für Handgeschäfte — auch nicht für uns", "no path for manual trades — not for us either"), xK + 22, yM + hK / 2 + 36, mono(11), F.rot);
-    text(klein ? T("sonst nicht mehr prüfbar", "else no longer testable") : T("sonst wären Maschine und Hand nicht mehr zu trennen", "otherwise machine and hand could no longer be told apart"), xK + 22, yM + hK / 2 + 52, mono(11), F.matt);
+    k.textHalten(klein ? T("kein Weg von Hand", "no path by hand") : T("kein Weg für Handgeschäfte — auch nicht für uns", "no path for manual trades — not for us either"), xK + 22, yM + hK / 2 + 36, mono(11), F.rot);
+    k.textHalten(klein ? T("sonst nicht mehr prüfbar", "else no longer testable") : T("sonst wären Maschine und Hand nicht mehr zu trennen", "otherwise machine and hand could no longer be told apart"), xK + 22, yM + hK / 2 + 52, mono(11), F.matt);
     ctx.globalAlpha /= aH;
   }
 
@@ -490,7 +490,10 @@ window.JKHDBilder.sicherheit = function (k) {
     if (geaendert) {
       const a = stueck(tz, 4.3, 4.8);
       ctx.globalAlpha *= a;
-      text(T("Kette gebrochen → beim Start gemeldet; ein Beweislauf bricht ab", "chain broken → reported at start-up; an evidence run stops"), A.x + A.b / 2, A.y + A.h - 4, mono(11), F.rot, "center");
+      if (klein) {   // am Handy zwei Zeilen, eine liefe ueber beide Raender
+        text(T("Kette gebrochen → beim Start gemeldet;", "chain broken → reported at start-up;"), A.x + A.b / 2, A.y + A.h - 18, mono(11), F.rot, "center");
+        text(T("ein Beweislauf bricht ab", "an evidence run stops"), A.x + A.b / 2, A.y + A.h - 4, mono(11), F.rot, "center");
+      } else text(T("Kette gebrochen → beim Start gemeldet; ein Beweislauf bricht ab", "chain broken → reported at start-up; an evidence run stops"), A.x + A.b / 2, A.y + A.h - 4, mono(11), F.rot, "center");
       ctx.globalAlpha /= a;
     }
     ctx.globalAlpha /= aK;

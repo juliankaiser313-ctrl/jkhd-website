@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, Handy-Ansicht 390×844
 - **Sprache / Darstellung:** Deutsch; hell (englisch vermutlich ebenso, nicht einzeln geprüft)
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler
 - **Gewicht:** mittel
 
@@ -47,9 +47,9 @@ Handy-Fassung (kürzer oder zweizeilig) bzw. die x-Position auf `B - Textbreite 
 begrenzen; allgemein könnte der Werkzeugkasten `k.text` eine Option „im Bild halten“
 bekommen, die den Text an den Rändern einrückt.
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Feste x-Positionen rechts neben einem Element bzw. Texte breiter als die schmale Leinwand.
+- **Änderung:** js/bildlauf.js: neue Zeichenhilfe `textHalten` (hält den Text zwischen den Rändern). Prüfungen 05: textHalten; Grenze: „echter Broker: noch keiner“ am Handy rechtsbündig unter dem Strich. Sicherheit 05: textHalten für beide Zeilen; Spuren: „Kette gebrochen …“ am Handy in zwei Zeilen. Dazu „mutiger → geht nicht“ mit einem Leerzeichen (aus dem Bericht Anführungszeichen). Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** Fotos 390×844 (bildlauf_fotos.js) der vier Bilder zu je zwei Zeitpunkten: alle Beschriftungen vollständig im Bild („Prozess läuft, Arbeit steht“, „echter Broker: noch keiner“, „sonst nicht mehr prüfbar“, beide Zeilen „Kette gebrochen …“).

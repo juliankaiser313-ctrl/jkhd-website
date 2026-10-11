@@ -5,7 +5,7 @@
 - **Gemeldet von:** Claude (Vollprüfung der Website)
 - **Gerät / Browser / Fenstergröße:** Windows 11, Chrome 155, Handy-Ansicht 390×844
 - **Sprache / Darstellung:** Deutsch und Englisch; hell und dunkel
-- **Status:** offen
+- **Status:** behoben
 - **Art:** Fehler
 - **Gewicht:** mittel
 
@@ -42,9 +42,9 @@ Auf schmalen Schirmen den Texten der Bildlauf-Bühne rechts so viel Innenabstand
 wie der Knopf breit ist (z. B. `.bildlauf-text { right: 84px }` unter 700 px), oder den
 Textblock höher setzen (`bottom` größer als Knopfhöhe + Abstand).
 
-## Behebung (wird beim Beheben ausgefüllt)
+## Behebung
 
-- **Wer, wann:**
-- **Ursache:**
-- **Änderung:** Commit …, Cache-Stempel …
-- **Geprüft mit:**
+- **Wer, wann:** Claude, 11.10.2026
+- **Ursache:** Der Textblock stand 36 px (Handy) bzw. 56 px über dem unteren Rand, der Knopf der Fragen-Blase 24 px darüber mit rund 50 px Höhe — beide überlappten.
+- **Änderung:** css/style.css: `@media (max-width: 900px) { .bildlauf-texte { bottom: 84px; } }`, die Handy-Regel mit 36 px entfernt; js/bildlauf.js liest den Abstand aus dem Stil, damit die Zeichenfläche weiter über dem Text liegt. Commit b1fda60, Cache-Stempel 20261011n.
+- **Geprüft mit:** pruefung_fehler.js, Prüfung „Fragen-Knopf ueber Text (Handy)“ auf system.html, Bild 04 (390×844): Unterkante des Textblocks vorher 808 px bei Knopfoberkante 778 px (Überlappung), nachher 760 px; Foto.

@@ -92,7 +92,11 @@
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     leinwand.width = Math.round(B * dpr);
     leinwand.height = Math.round(H * dpr);
-    textHoehen = texte.map((el) => (el.offsetHeight || 160) + (klein ? 60 : 84));
+    // Abstand des Textblocks vom unteren Rand aus dem Stil (56 px, unter 900 px 84 px
+    // wegen des Fragen-Knopfs) plus Luft zur Zeichnung
+    const box = texte[0] && texte[0].parentElement;
+    const unten = (box && parseFloat(getComputedStyle(box).bottom)) || 56;
+    textHoehen = texte.map((el) => (el.offsetHeight || 160) + unten + 28);
     teilchen = null;
     k.B = B; k.H = H; k.klein = klein;
     zugabeMessen();
@@ -112,6 +116,28 @@
     ctx.textAlign = lage || "left";
     ctx.textBaseline = basis || "alphabetic";
     ctx.fillText(s, x, y);
+  }
+  // Wie text(), aber der Text bleibt im Bild: an den Seitenrand gedrueckt, wenn er
+  // sonst hinausliefe (am Handy liefen Beschriftungen ueber den Rand, Vollpruefung 11.10.2026)
+  function textHalten(s, x, y, font, farbe, lage, basis) {
+    ctx.font = font;
+    const w = ctx.measureText(s).width, rand = klein ? 10 : 16;
+    const l = lage || "left";
+    let links = l === "right" ? x - w : l === "center" ? x - w / 2 : x;
+    links = Math.max(rand, Math.min(B - rand - w, links));
+    text(s, links, y, font, farbe, "left", basis);
+  }
+  // Wie text(), aber mit einem Kasten in Seitenfarbe dahinter: Linien, die durch die
+  // Beschriftung liefen, sind dort verdeckt
+  function textFrei(s, x, y, font, farbe, lage, basis) {
+    ctx.font = font;
+    const m = ctx.measureText(s);
+    const w = m.width, oben = m.actualBoundingBoxAscent || 8, unten = m.actualBoundingBoxDescent || 3;
+    const l = lage || "left";
+    const links = l === "right" ? x - w : l === "center" ? x - w / 2 : x;
+    ctx.fillStyle = F.grund;
+    ctx.fillRect(links - 4, y - oben - 3, w + 8, oben + unten + 6);
+    text(s, x, y, font, farbe, lage, basis);
   }
   function haken(x, y, gr, farbe, a) {
     ctx.save();
@@ -234,7 +260,7 @@
   }
 
   // Der Werkzeugkasten fuer die Bilder (B, H, klein werden bei jeder Groesse neu gesetzt)
-  const k = { ctx, F, T, text, haken, kreuz, linie, linieRund, reiheRund, zerstoertRund, reiheDrift, wert, puls, schloss, mono, sans, stueck, clamp, glatt, misch, dreieck, zufall, B: 0, H: 0, klein: false };
+  const k = { ctx, F, T, text, textHalten, textFrei, haken, kreuz, linie, linieRund, reiheRund, zerstoertRund, reiheDrift, wert, puls, schloss, mono, sans, stueck, clamp, glatt, misch, dreieck, zufall, B: 0, H: 0, klein: false };
 
   // ---- Das Ende: Punkte steigen von unten auf und werden zum Zeichen der Startseite ----
   // Das Zeichen, wie es ganz oben auf der Startseite steht: die Balken, JKHD, ein
