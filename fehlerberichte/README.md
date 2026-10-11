@@ -27,6 +27,9 @@ Auf GitHub geht das ohne Werkzeuge: Ordner `fehlerberichte` öffnen → „Add f
 GitHub-Issue an (Reiter „Issues“): gleicher Inhalt, gleiche Felder.
 
 Ein Bericht je Fehler. Mehrere Fehler auf einer Seite sind mehrere Berichte.
+Verbesserungsvorschläge sind willkommen und kommen in denselben Ordner, mit
+`**Art:** Verbesserung` in der Kopfliste; `**Gewicht:**` (hoch, mittel, niedrig) hilft
+beim Sortieren. Beide Felder sind freiwillig.
 Screenshots dürfen daneben liegen (`JJJJ-MM-TT-kurzer-titel-1.png`), klein gehalten
 (unter 500 KB) und ohne private Daten.
 
@@ -36,6 +39,9 @@ Screenshots dürfen daneben liegen (`JJJJ-MM-TT-kurzer-titel-1.png`), klein geha
 - Personenbezogene Daten von Besuchern oder Partnern (Namen, E-Mail-Adressen,
   IP-Adressen). Wer meldet, nennt sich selbst — mehr nicht.
 - Inhalte des Partnerzugangs (alles hinter der Anmeldung).
+- Sicherheitslücken und alles, was einem Angreifer hilft (Schwachstellen, Umgehungen,
+  Hinweise auf Server, Abläufe oder Betrieb). Solche Funde direkt an Julian
+  (kontakt@jkhd.de), nicht hierher — dieser Ordner ist öffentlich.
 - Vermutungen über die Ursache sind erlaubt, aber als Vermutung gekennzeichnet. Ein
   Bericht beschreibt, was zu sehen ist; die Ursache findet, wer behebt.
 

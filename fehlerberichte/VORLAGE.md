@@ -6,6 +6,8 @@
 - **Gerät / Browser / Fenstergröße:** z. B. Windows 11, Chrome 141, 1920×1050 — oder iPhone 15, Safari
 - **Sprache / Darstellung:** Deutsch oder Englisch; hell oder dunkel
 - **Status:** offen
+- **Art:** Fehler oder Verbesserung (freiwillig; ohne Angabe gilt „Fehler“)
+- **Gewicht:** hoch, mittel oder niedrig (freiwillig; Schätzung, wie sehr es Besucher trifft)
 
 ## Was passiert
 
