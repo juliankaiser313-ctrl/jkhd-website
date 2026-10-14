@@ -3048,9 +3048,21 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .sp-besten-zeit { font-family: var(--mono); color: var(--text); }
 .sp-besten-datum { font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
 .sp-besten-leer { margin-top: 16px; color: var(--muted); }
+/* Statistik ueber der Liste (14.10.2026): drei Summen vom Server */
+.sp-besten-statistik {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 16px;
+  margin: 24px 0 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border-2);
+}
+.sp-besten-statistik dt { font-family: var(--mono); font-size: var(--label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.sp-besten-statistik dd { margin: 6px 0 0; font-family: var(--mono); font-size: 1.15rem; font-weight: 700; color: var(--text); }
 @media (max-width: 560px) {
   .sp-besten li { grid-template-columns: 2em minmax(0, 1fr) auto; gap: 8px 10px; }
   .sp-besten-datum { display: none; }
+  .sp-besten-statistik { grid-template-columns: 1fr; gap: 10px; }
 }
 
 /* ---------- Startseite: Flug durch ein Netz aus Mathematik (js/universum.js) ----------

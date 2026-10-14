@@ -205,9 +205,19 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   neu?“), erst der zweite Druck verwirft das Spiel.
 - **Zusagen:** Das Spiel speichert nichts im Browser (kein Cookie, kein
   Web-Speicher) und lädt nichts von fremden Servern; an api.jkhd.de gehen seit
-  der Bestenliste (11.10.2026) nur die Spielmarke beim Start und – nach einem
-  Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und Tempo, wie auf
-  `simulation.html` und in `datenschutz.html` beschrieben. Die Texte sagen nicht,
+  der Bestenliste (11.10.2026) nur die Spielmarke beim Start, seit der
+  Statistik (14.10.2026) am Ende jeder zu Ende gespielten Partie Marke und
+  Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
+  und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
+  Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Statistik über der Bestenliste** (14.10.2026, Julian: „wie viele es
+  schaffen, und wie viele Versuche man braucht“): zu Ende gespielte Partien,
+  Siege mit Anteil und die mittlere Zahl der Anläufe bis zum ersten Sieg —
+  Summen aus der Antwort von `bestenliste` (`statistik`), die der Server aus
+  den Ergebnis-Meldungen (`bestenliste_ende`) zählt. Ohne Server oder ohne
+  eine einzige Partie bleibt der Block (`.sp-besten-statistik`) verborgen.
+  Die Anläufe zählen nur innerhalb eines Seitenaufrufs (nichts wird im
+  Browser gespeichert), das Mittel ist also eher zu klein als zu groß. Die Texte sagen nicht,
   dass JKHD Gold oder einen anderen Markt handelt, und der Gegner ist
   ausdrücklich ein vereinfachter Spiel-Algorithmus, nicht das Handelssystem.
 - **Messung und Abstimmung** liegen außerhalb dieses Repositorys in

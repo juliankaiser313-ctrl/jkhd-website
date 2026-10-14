@@ -37,8 +37,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/simulation.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/simulation.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/simulation.html">
-  <link rel="stylesheet" href="css/fonts.css?v=20261011p">
-  <link rel="stylesheet" href="css/style.css?v=20261011p">
+  <link rel="stylesheet" href="css/fonts.css?v=20261014a">
+  <link rel="stylesheet" href="css/style.css?v=20261014a">
 </head>
 <body>
 
@@ -366,9 +366,16 @@
         <h2 id="sp-besten-titel">Die schnellsten Siege gegen den JKHD-Algo</h2>
         <p>Nur wer die Million zuerst erreicht, kommt in die Liste – sortiert
            nach Spielzeit. Dafür gehen Spitzname, Spielzeit, Spielnummer, Tempo
-           und die Spielmarke des Spiels an unseren Server, mehr nicht (siehe
-           Datenschutzerklärung).</p>
+           und die Spielmarke des Spiels an unseren Server. Am Ende jeder
+           Partie meldet die Seite außerdem nur das Ergebnis und beim ersten
+           Sieg die Zahl Ihrer Partien seit dem Öffnen der Seite – daraus
+           entsteht die Statistik; mehr nicht (siehe Datenschutzerklärung).</p>
       </div>
+      <dl class="sp-besten-statistik" data-sp="besten-statistik" hidden>
+        <div><dt>Zu Ende gespielt</dt><dd data-sp="statistik-spiele">–</dd></div>
+        <div><dt>Siege gegen den Algo</dt><dd data-sp="statistik-siege">–</dd></div>
+        <div><dt>Anläufe bis zum ersten Sieg</dt><dd data-sp="statistik-anlaeufe">–</dd></div>
+      </dl>
       <ol class="sp-besten" data-sp="besten-liste"></ol>
       <p class="sp-besten-leer" data-sp="besten-leer" hidden>Noch kein Eintrag – der erste Sieg macht den Anfang.</p>
     </div>
@@ -687,8 +694,8 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20261011p"></script>
-  <script src="js/spiel-motor.js?v=20261011p"></script>
-  <script src="js/spiel.js?v=20261011p"></script>
+  <script src="js/main.js?v=20261014a"></script>
+  <script src="js/spiel-motor.js?v=20261014a"></script>
+  <script src="js/spiel.js?v=20261014a"></script>
 </body>
 </html>

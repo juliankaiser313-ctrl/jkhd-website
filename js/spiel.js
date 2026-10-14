@@ -115,6 +115,7 @@
   const FORMAT_GANZ = new Intl.NumberFormat(SPRACHE, { maximumFractionDigits: 0 });
   const FORMAT_CENT = new Intl.NumberFormat(SPRACHE, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const FORMAT_ZAHL = new Intl.NumberFormat(SPRACHE, { maximumFractionDigits: 2 });
+  const FORMAT_EINE = new Intl.NumberFormat(SPRACHE, { maximumFractionDigits: 1 });
   // In den Eingabefeldern ohne Tausenderpunkt, damit sich der Preis leicht aendern laesst
   const FORMAT_EINGABE = new Intl.NumberFormat(SPRACHE, { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false });
   // Kurzform fuer die Skala unter dem Balken. Englisch mit en-US: en-GB schreibt
@@ -265,6 +266,7 @@
   const bestenAbschnitt = document.querySelector('[data-sp="besten"]');
   const bestenOl = document.querySelector('[data-sp="besten-liste"]');
   const bestenLeer = document.querySelector('[data-sp="besten-leer"]');
+  const bestenStatistik = document.querySelector('[data-sp="besten-statistik"]');
   const tempoKnoepfe = wurzel.querySelectorAll("[data-sp-tempo]");
   const mengenKnoepfe = wurzel.querySelectorAll("[data-sp-menge]");
   const orderKnoepfe = {
@@ -333,6 +335,8 @@
   let markeSpiel = null;         // ... und fuer welches Spiel sie geholt wurde
   let tempoMax = 1;              // hoechstes Tempo in diesem Spiel
   let bestenOffen = null;        // Sieg, der eingetragen werden kann
+  let partienBeendet = 0;        // zu Ende gespielte Partien seit dem Oeffnen der Seite
+  let ersterSiegGemeldet = false; // die Zahl der Anlaeufe geht nur mit dem ersten Sieg
   let modus = "start";           // "start" | "laeuft" | "pause" | "ende"
   let tempo = 1;
   // Voreingestellt ist "max": Mit einer kleinen festen Menge je Order kommt
@@ -964,6 +968,7 @@
     setzeText(teil("ende-trades-du"), FORMAT_GANZ.format(z.du.trades));
     setzeText(teil("ende-trades-algo"), FORMAT_GANZ.format(z.algo.trades));
     bestenAnbieten(e);
+    endeMelden(e);
 
     const fokusImSpiel = wurzel.contains(document.activeElement);
     schichtEnde.hidden = false;
@@ -1031,6 +1036,36 @@
       if (r.status !== 200 || !r.json || !Array.isArray(r.json.liste)) return;
       bestenListe = r.json.liste.filter((e) => e && typeof e.name === "string" && Number.isFinite(e.sekunden));
       bestenZeigen(bestenListe, 0);
+      statistikZeigen(r.json.statistik);
+    });
+  }
+
+  // Die Statistik ueber der Liste: zu Ende gespielte Partien, Siege mit
+  // Anteil, mittlere Anlaeufe bis zum ersten Sieg -- Summen vom Server,
+  // ohne Bezug zu Personen. Ohne Partien bleibt der Block verborgen.
+  function statistikZeigen(s) {
+    if (!bestenStatistik || !s || !Number.isFinite(s.spiele) || !Number.isFinite(s.siege) || s.spiele < 1) return;
+    const wert = (name) => bestenStatistik.querySelector('[data-sp="statistik-' + name + '"]');
+    const prozent = FORMAT_EINE.format(Math.round(s.siege / s.spiele * 1000) / 10);
+    setzeText(wert("spiele"), FORMAT_GANZ.format(s.spiele));
+    setzeText(wert("siege"), FORMAT_GANZ.format(s.siege) + " (" + prozent + "\u00a0%)");
+    setzeText(wert("anlaeufe"), Number.isFinite(s.anlaeufe) && s.anlaeufe > 0 ? "\u00d8 " + FORMAT_EINE.format(s.anlaeufe) : "\u2013");
+    bestenStatistik.hidden = false;
+  }
+
+  // Das Ergebnis jeder zu Ende gespielten Partie: nur Marke und Sieger, beim
+  // ersten Sieg dazu die Zahl der Partien seit dem Oeffnen der Seite. Ohne
+  // Marke (kein Server beim Start) wird nichts gemeldet.
+  function endeMelden(e) {
+    partienBeendet += 1;
+    if (!bestenForm || !marke || markeSpiel !== spiel) return;
+    const daten = { marke, sieger: e.sieger === "du" ? "du" : e.sieger === "algo" ? "algo" : "keiner" };
+    if (daten.sieger === "du" && !ersterSiegGemeldet) {
+      ersterSiegGemeldet = true;
+      daten.anlaeufe = partienBeendet;
+    }
+    bestenAnfrage("bestenliste_ende", daten).then((r) => {
+      if (r.status === 200 && r.json) statistikZeigen(r.json.statistik);
     });
   }
 

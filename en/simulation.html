@@ -35,8 +35,8 @@
   <link rel="alternate" hreflang="de" href="https://www.jkhd.de/simulation.html">
   <link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/simulation.html">
   <link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/simulation.html">
-  <link rel="stylesheet" href="../css/fonts.css?v=20261011p">
-  <link rel="stylesheet" href="../css/style.css?v=20261011p">
+  <link rel="stylesheet" href="../css/fonts.css?v=20261014a">
+  <link rel="stylesheet" href="../css/style.css?v=20261014a">
 </head>
 <body>
 
@@ -364,9 +364,16 @@
         <h2 id="sp-besten-titel">The fastest wins against the JKHD Algo</h2>
         <p>Only those who reach the million first make the list – sorted by
            game time. For that, nickname, game time, game number, speed and
-           the game token go to our server, nothing more (see the privacy
-           policy).</p>
+           the game token go to our server. At the end of every game the
+           page also reports only the result and, with your first win, the
+           number of games since you opened the page – that is what the
+           statistics are made of; nothing more (see the privacy policy).</p>
       </div>
+      <dl class="sp-besten-statistik" data-sp="besten-statistik" hidden>
+        <div><dt>Played to the end</dt><dd data-sp="statistik-spiele">–</dd></div>
+        <div><dt>Wins against the Algo</dt><dd data-sp="statistik-siege">–</dd></div>
+        <div><dt>Attempts until the first win</dt><dd data-sp="statistik-anlaeufe">–</dd></div>
+      </dl>
       <ol class="sp-besten" data-sp="besten-liste"></ol>
       <p class="sp-besten-leer" data-sp="besten-leer" hidden>No entry yet – the first win starts the list.</p>
     </div>
@@ -673,8 +680,8 @@
     </div>
   </footer>
 
-  <script src="../js/main.js?v=20261011p"></script>
-  <script src="../js/spiel-motor.js?v=20261011p"></script>
-  <script src="../js/spiel.js?v=20261011p"></script>
+  <script src="../js/main.js?v=20261014a"></script>
+  <script src="../js/spiel-motor.js?v=20261014a"></script>
+  <script src="../js/spiel.js?v=20261014a"></script>
 </body>
 </html>
