@@ -218,14 +218,11 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   eine einzige Partie bleibt der Block (`.sp-besten-statistik`) verborgen.
   Die Anläufe zählen nur innerhalb eines Seitenaufrufs (nichts wird im
   Browser gespeichert), das Mittel ist also eher zu klein als zu groß.
-- **Vergleichssatz unter der Statistik** (14.10.2026, Julian: „1000 Tests … in die
-  Statistik“): `.sp-besten-simuliert` nennt das Ergebnis einer echten Simulation aus
-  `C:\Quant Arbeit\JKHD-Spiel` (`balance.js --saaten 1000 --json`, Ergebnis dort unter
-  `messungen/balance-1000-2026-10-14.json`): 19 menschenähnliche Spielweisen × 1.000
-  Partien, 427 Siege (2,3 %), beste Spielweise 12 %. Der Satz ist als Simulation
-  gekennzeichnet und bleibt getrennt von den Besucherzahlen; erfundene Partien oder
-  ausgedachte Gewinner kommen nicht in Statistik oder Liste. Nach einer neuen Abstimmung
-  des Algos die Zahlen neu messen und den Stand im Satz anheben.
+- **Kein Vergleichssatz mit Simulationszahlen** (14.10.2026): Julian wollte erst
+  1.000 simulierte Partien in der Statistik, dann den Satz wieder weg — unter der
+  Statistik steht nichts Simuliertes. Erfundene Partien oder ausgedachte Gewinner
+  kommen nicht in Statistik oder Liste (Messung dazu liegt in
+  `C:\Quant Arbeit\JKHD-Spiel\messungen\`).
 - **Gold, Silber, Bronze und Podest** (14.10.2026, Julian): die drei Schnellsten
   tragen in der Liste einen Pokal vor dem Rang in Gold, Silber oder Bronze
   (`--gold`, `--silber`, `--bronze`, Klassen `ist-gold` …); daneben steht ein
