@@ -2384,7 +2384,9 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .sp-uhr .sp-label { margin-right: 6px; }
 .sp-steuerung { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
 
-.sp-tasten { margin-right: 6px; font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
+/* 35 Zeichen: so lang ist die laengste der drei Fassungen ("Keys off: you are typing in a
+   field"); die Knoepfe daneben bleiben stehen, wenn der Hinweis wechselt */
+.sp-tasten { min-width: 35ch; margin-right: 6px; font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
 .sp-tasten-an,
 .sp-tasten-feld { display: none; color: var(--text); }
 .sp:focus-within .sp-tasten-an { display: inline; }
@@ -2495,6 +2497,9 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 }
 .sp-werte dd,
 .sp-ende-werte dd { font-family: var(--mono); font-size: 0.86rem; color: var(--text); overflow-wrap: anywhere; }
+/* Ein Wert bricht nie mitten im Wert um: Sonst wuerde die Tafel hoeher, sobald aus
+   "keine" ein "Short 1.234" wird, und alles darunter rutschte (Julian, 14.10.2026) */
+.sp-werte dd { white-space: nowrap; font-variant-numeric: tabular-nums; }
 
 /* Nachrichten: angekuendigt in Tinte (nicht zu uebersehen), eingetreten mit
    kraeftigem Rand, sonst leise gestrichelt. Die Hoehe bleibt immer gleich. */
@@ -2636,7 +2641,10 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .sp-order[data-sp-order="verkauf"] kbd { color: #fff; border-color: rgba(255, 255, 255, 0.55); }
 .sp-order[data-sp-order="kauf"]:focus-visible,
 .sp-order[data-sp-order="verkauf"]:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
-.sp-meldung { min-height: 1.6em; font-size: 0.88rem; color: var(--text); }
+/* Die Meldung haelt so viele Zeilen frei, wie die laengste Ausfuehrungsmeldung braucht
+   (gemessen 14.10.2026: zwei bei 561-1140 px, drei ab 1141 px, vier bis 560 px). Sonst
+   wuechse die rechte Spalte mit jedem Satz, und der Chart daneben wuerde neu hoch. */
+.sp-meldung { min-height: calc(2 * 1.7em); min-height: 2lh; font-size: 0.88rem; color: var(--text); }
 
 /* SL und TP ohne Ziehen: je Zeile Name, Preisfeld mit - / +, Setzen,
    Entfernen und darunter, was die Marke dort ergaebe */
@@ -2837,10 +2845,13 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   .sp-tafel { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 14px; padding: 8px 14px; }
   .sp-tafel-kopf { flex: 0 0 auto; margin: 0; }
   .sp-tafel > .sp-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }   /* "Kapital" nur zum Vorlesen */
-  .sp-kapital { font-size: 1.15rem; }
+  .sp-kapital { min-width: 11ch; font-size: 1.15rem; font-variant-numeric: tabular-nums; }   /* "1.000.000 $": der Balken beginnt immer an derselben Stelle */
   .sp-weg { flex: 1 1 120px; margin: 0; }
   .sp-weg-skala { display: none; }
-  .sp-werte { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 2px 16px; margin-top: 6px; padding-top: 6px; }
+  /* Immer zwei Reihen zu drei Werten -- als Fliesszeile brach die Tafel je nach Laenge
+     der Werte in eine, zwei oder drei Reihen um (gemessen 14.10.2026) */
+  .sp-werte { flex-basis: 100%; display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 2px 20px; margin-top: 6px; padding-top: 6px; }
+  .sp-werte dt { white-space: nowrap; }
   .sp-werte > div { display: flex; align-items: baseline; gap: 6px; }
   .sp-werte dd { font-size: 0.78rem; }
   .sp-nachricht { min-height: 38px; padding: 6px 12px; font-size: 0.84rem; }
@@ -2864,7 +2875,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   .sp-order { min-height: 50px; padding: 6px 10px; gap: 2px; }
   .sp-order-was { gap: 4px 6px; font-size: 0.72rem; letter-spacing: 0.06em; }
   .sp-order-wo { font-size: 0.68rem; }
-  .sp-meldung { min-height: 1.3em; font-size: 0.8rem; }
+  .sp-meldung { min-height: calc(3 * 1.7em); min-height: 3lh; font-size: 0.8rem; }
   .sp-schutz { gap: 4px; padding-top: 8px; }
   .sp-schutz-kopf p,
   .sp-schutz-tasten { display: none; }
@@ -2964,6 +2975,8 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   /* Das Nachrichtenband ist immer zwei Zeilen hoch: "Eingetreten: ..., Kurs
      -1,25 %" braucht schmal zwei, "Keine Nachricht angekuendigt" eine. */
   .sp-nachricht { min-height: calc(2 * 1.7em + 18px); padding: 8px 12px; font-size: 0.84rem; }
+  .sp-meldung { min-height: calc(4 * 1.7em); min-height: 4lh; }
+  .sp-schutz-info { min-height: calc(2 * 1.7em); min-height: 2lh; }
   .sp-chart { height: 240px; }
   .sp-orders { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .sp-order-glatt { grid-column: 1 / -1; }
