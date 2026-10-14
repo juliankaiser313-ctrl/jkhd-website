@@ -63,6 +63,8 @@
   --ok: #2e7d4f;                        /* "gruen" in der Pruefungen-Animation (js/pruefung.js) */
   --vip-wash: rgba(179, 38, 30, 0.06);
   --gold: #d9a400;                      /* die Krone ueber allem, was VIP heisst */
+  --silber: #7d858e;                    /* Platz 2 und 3 der Bestenliste (Simulation) */
+  --bronze: #a8632a;
 }
 
 /* ---------- Dunkel: dieselbe Seite bei Nacht ----------
@@ -81,6 +83,8 @@
   --accent-glow: rgba(244, 242, 238, 0.16);
   --kauf: #2461dc;
   --verkauf: #cf3730;
+  --silber: #c2c7ce;
+  --bronze: #d08f55;
 
   --header-bg: rgba(11, 11, 12, 0.72);
   --header-bg-scrolled: rgba(11, 11, 12, 0.9);
@@ -3049,7 +3053,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .sp-besten { margin-top: 28px; list-style: none; border-top: 1px solid var(--border-2); }
 .sp-besten li {
   display: grid;
-  grid-template-columns: 2.4em minmax(0, 1fr) auto auto;
+  grid-template-columns: 3em minmax(0, 1fr) auto auto;   /* Pokal und Rang */
   gap: 12px 16px;
   align-items: baseline;
   padding: 10px 8px;
@@ -3061,6 +3065,42 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .sp-besten-zeit { font-family: var(--mono); color: var(--text); }
 .sp-besten-datum { font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
 .sp-besten-leer { margin-top: 16px; color: var(--muted); }
+/* Gold, Silber, Bronze fuer die drei Schnellsten (Julian, 14.10.2026): Pokal vor dem
+   Rang in der Liste und ein Podest daneben mit Kranz, Pokal, Name und Zeit. Die Formen
+   sind Symbole in simulation.html, die Farbe kommt aus --medaille (currentColor). */
+.sp-symbole { position: absolute; width: 0; height: 0; overflow: hidden; }
+.sp-besten-koerper { display: grid; gap: 28px; margin-top: 28px; }
+.sp-besten-koerper .sp-besten { margin-top: 0; }
+.sp-besten li.ist-gold { --medaille: var(--gold); }
+.sp-besten li.ist-silber { --medaille: var(--silber); }
+.sp-besten li.ist-bronze { --medaille: var(--bronze); }
+.sp-besten-rang { display: inline-flex; align-items: center; gap: 0.3em; white-space: nowrap; }
+.sp-besten li.ist-gold .sp-besten-rang,
+.sp-besten li.ist-silber .sp-besten-rang,
+.sp-besten li.ist-bronze .sp-besten-rang { font-weight: 700; color: var(--medaille); }
+.sp-pokal { width: 1em; height: 1em; flex-shrink: 0; fill: currentColor; }
+.sp-podest { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.sp-podest-platz { --medaille: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; text-align: center; }
+.sp-podest-platz.ist-gold { --medaille: var(--gold); }
+.sp-podest-platz.ist-silber { --medaille: var(--silber); }
+.sp-podest-platz.ist-bronze { --medaille: var(--bronze); }
+.sp-podest-platz.ist-leer { --medaille: var(--border-2); }
+.sp-podest-ehrung { position: relative; width: 76px; height: 76px; color: var(--medaille); }
+.sp-podest-ehrung .sp-kranz { position: absolute; inset: 0; width: 100%; height: 100%; fill: currentColor; }
+.sp-podest-ehrung .sp-pokal { position: absolute; top: 50%; left: 50%; width: 30px; height: 30px; transform: translate(-50%, -46%); }
+.sp-podest-platz.ist-gold .sp-podest-ehrung { width: 92px; height: 92px; }
+.sp-podest-platz.ist-gold .sp-podest-ehrung .sp-pokal { width: 36px; height: 36px; }
+.sp-podest-name { max-width: 100%; font-weight: 700; font-size: 0.92rem; line-height: 1.3; overflow-wrap: anywhere; }
+.sp-podest-platz.ist-leer .sp-podest-name { font-weight: 500; color: var(--muted); }
+.sp-podest-zeit { min-height: 1.3em; font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
+.sp-podest-stufe { display: flex; justify-content: center; width: 100%; padding-top: 10px; font-family: var(--mono); font-size: 1.6rem; font-weight: 700; line-height: 1; color: var(--medaille); background: var(--wash-3); border-top: 3px solid var(--medaille); }
+.sp-podest-platz.ist-gold .sp-podest-stufe { height: 104px; }
+.sp-podest-platz.ist-silber .sp-podest-stufe { height: 78px; }
+.sp-podest-platz.ist-bronze .sp-podest-stufe { height: 60px; }
+@media (min-width: 1141px) {
+  .sp-besten-koerper { grid-template-columns: minmax(0, 1fr) 400px; gap: 40px; align-items: start; }
+  .sp-podest { padding-top: 12px; }
+}
 /* Statistik ueber der Liste (14.10.2026): drei Summen vom Server */
 .sp-besten-statistik {
   display: grid;
@@ -3073,7 +3113,13 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .sp-besten-statistik dt { font-family: var(--mono); font-size: var(--label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .sp-besten-statistik dd { margin: 6px 0 0; font-family: var(--mono); font-size: 1.15rem; font-weight: 700; color: var(--text); }
 @media (max-width: 560px) {
-  .sp-besten li { grid-template-columns: 2em minmax(0, 1fr) auto; gap: 8px 10px; }
+  .sp-besten li { grid-template-columns: 2.6em minmax(0, 1fr) auto; gap: 8px 10px; }
+  .sp-podest { order: -1; }   /* am Handy ueber der Liste */
+  .sp-podest-ehrung { width: 64px; height: 64px; }
+  .sp-podest-platz.ist-gold .sp-podest-ehrung { width: 76px; height: 76px; }
+  .sp-podest-platz.ist-gold .sp-podest-stufe { height: 84px; }
+  .sp-podest-platz.ist-silber .sp-podest-stufe { height: 64px; }
+  .sp-podest-platz.ist-bronze .sp-podest-stufe { height: 50px; }
   .sp-besten-datum { display: none; }
   .sp-besten-statistik { grid-template-columns: 1fr; gap: 10px; }
 }

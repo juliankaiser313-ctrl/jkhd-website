@@ -267,6 +267,7 @@
   const bestenOl = document.querySelector('[data-sp="besten-liste"]');
   const bestenLeer = document.querySelector('[data-sp="besten-leer"]');
   const bestenStatistik = document.querySelector('[data-sp="besten-statistik"]');
+  const podest = document.querySelector('[data-sp="podest"]');
   const tempoKnoepfe = wurzel.querySelectorAll("[data-sp-tempo]");
   const mengenKnoepfe = wurzel.querySelectorAll("[data-sp-menge]");
   const orderKnoepfe = {
@@ -1007,27 +1008,63 @@
     return IST_EN ? m[1] + "-" + m[2] + "-" + m[3] : m[3] + "." + m[2] + "." + m[1];
   }
 
+  // Gold, Silber, Bronze fuer die drei Schnellsten (Julian, 14.10.2026): Pokal vor
+  // dem Rang in der Liste, dazu das Podest neben der Liste (podestZeigen)
+  const MEDAILLEN = ["ist-gold", "ist-silber", "ist-bronze"];
+  function pokal() {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("class", "sp-pokal");
+    svg.setAttribute("aria-hidden", "true");
+    const use = document.createElementNS(ns, "use");
+    use.setAttribute("href", "#sp-pokal");
+    svg.appendChild(use);
+    return svg;
+  }
+
   // Die Liste anzeigen; hervor: Rang des eigenen Eintrags (0 = keiner)
   function bestenZeigen(liste, hervor) {
     if (!bestenAbschnitt || !bestenOl) return;
     bestenOl.textContent = "";
     liste.slice(0, BESTEN_PLAETZE).forEach((e, i) => {
       const li = document.createElement("li");
-      if (i + 1 === hervor) li.className = "ist-du";
+      const klassen = [];
+      if (i < MEDAILLEN.length) klassen.push(MEDAILLEN[i]);
+      if (i + 1 === hervor) klassen.push("ist-du");
+      li.className = klassen.join(" ");
       const zelle = (klasse, text) => {
         const s = document.createElement("span");
         s.className = klasse;
         s.textContent = text;
         li.appendChild(s);
+        return s;
       };
-      zelle("sp-besten-rang", String(i + 1) + ".");
+      const rang = zelle("sp-besten-rang", "");
+      if (i < MEDAILLEN.length) rang.appendChild(pokal());
+      rang.appendChild(document.createTextNode(String(i + 1) + "."));
       zelle("sp-besten-name", String(e.name));
       zelle("sp-besten-zeit", uhr(Number(e.sekunden)));
       zelle("sp-besten-datum", datumText(e.datum));
       bestenOl.appendChild(li);
     });
     if (bestenLeer) bestenLeer.hidden = liste.length > 0;
+    podestZeigen(liste);
     bestenAbschnitt.hidden = false;
+  }
+
+  // Das Podest: Platz 1 bis 3 mit Name und Zeit; ein Platz ohne Eintrag bleibt leer
+  // (Strich), ohne jeden Eintrag bleibt das Podest verborgen
+  function podestZeigen(liste) {
+    if (!podest) return;
+    for (let platz = 1; platz <= 3; platz++) {
+      const stufe = podest.querySelector('[data-sp="podest-' + platz + '"]');
+      if (!stufe) continue;
+      const e = liste[platz - 1];
+      stufe.classList.toggle("ist-leer", !e);
+      setzeText(stufe.querySelector('[data-sp="podest-name"]'), e ? String(e.name) : "\u2013");
+      setzeText(stufe.querySelector('[data-sp="podest-zeit"]'), e ? uhr(Number(e.sekunden)) : "");
+    }
+    podest.hidden = liste.length === 0;
   }
 
   function bestenLaden() {

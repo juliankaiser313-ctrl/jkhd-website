@@ -217,7 +217,15 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   den Ergebnis-Meldungen (`bestenliste_ende`) zählt. Ohne Server oder ohne
   eine einzige Partie bleibt der Block (`.sp-besten-statistik`) verborgen.
   Die Anläufe zählen nur innerhalb eines Seitenaufrufs (nichts wird im
-  Browser gespeichert), das Mittel ist also eher zu klein als zu groß. Die Texte sagen nicht,
+  Browser gespeichert), das Mittel ist also eher zu klein als zu groß.
+- **Gold, Silber, Bronze und Podest** (14.10.2026, Julian): die drei Schnellsten
+  tragen in der Liste einen Pokal vor dem Rang in Gold, Silber oder Bronze
+  (`--gold`, `--silber`, `--bronze`, Klassen `ist-gold` …); daneben steht ein
+  Podest (`.sp-podest`, am Laptop rechts neben der Liste, am Handy darüber)
+  mit Kranz, Pokal, Name und Zeit je Platz. Pokal und Kranz sind SVG-Symbole
+  in `simulation.html` (`.sp-symbole`), eingesetzt über `use href`; ein Platz
+  ohne Eintrag zeigt einen Strich, ohne jeden Eintrag bleibt das Podest
+  verborgen. Das Podest ist für Vorleser ausgeblendet (die Liste sagt dasselbe). Die Texte sagen nicht,
   dass JKHD Gold oder einen anderen Markt handelt, und der Gegner ist
   ausdrücklich ein vereinfachter Spiel-Algorithmus, nicht das Handelssystem.
 - **Messung und Abstimmung** liegen außerhalb dieses Repositorys in
