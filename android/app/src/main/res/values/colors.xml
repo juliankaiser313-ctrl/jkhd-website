@@ -2,4 +2,11 @@
 <resources>
     <!-- Hintergrund des App-Symbols: das Schwarz des Zeichens (wie favicon.svg / assets/logo.png). -->
     <color name="ic_launcher_background">#060607</color>
+
+    <!-- Farben der Oberflaeche: monochrom wie die Website, immer auf Schwarz. -->
+    <color name="text_hell">#F4F2EE</color>
+    <color name="text_gedaempft">#8C8A85</color>
+    <color name="kachel_flaeche">#121214</color>
+    <color name="kachel_rand">#2A2A2E</color>
+    <color name="kachel_druck">#33F4F2EE</color>
 </resources>

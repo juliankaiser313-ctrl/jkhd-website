@@ -1,11 +1,24 @@
 # JKHD-App (Android)
 
-Erste Stufe der App (21.10.2026): beim Öffnen ein schwarzer Bildschirm, sonst nichts.
-Auf dem Handy heißt sie „JKHD“ und trägt das Zeichen (drei Balken) als Symbol.
+Stand 21.10.2026 (Fassung 0.2): schwarzer Startbildschirm mit Vierecken, je eines pro Bereich —
+„Webseite“ (Dashboard, Partnerzugänge) und „Quant System“ (Steuerung); zwei Plätze sind frei für
+weitere Bereiche. Ein Tipp auf ein Viereck öffnet die Seite des Bereichs, bisher ein Platzhalter
+(„In Vorbereitung“) — dort entstehen später die Dashboards. Auf dem Handy heißt die App „JKHD“ und
+trägt das Zeichen (drei Balken) als Symbol.
 
 ```
-app/src/main/AndroidManifest.xml          eine Activity, Startsymbol, Thema
-app/src/main/java/de/jkhd/app/MainActivity.java   setzt eine schwarze Fläche als Inhalt
+app/src/main/AndroidManifest.xml          zwei Activities (Start, Bereich), Startsymbol, Thema
+app/src/main/java/de/jkhd/app/
+  Bereich.java                            die Bereiche: Titel, Untertitel, Beschreibung (Texte in strings.xml);
+                                          neuer Bereich = ein Eintrag hier, Platz auf dem Start ist für vier
+  MainActivity.java                       Startbildschirm, belegt die vier Plätze mit den Bereichen
+  BereichActivity.java                    Seite eines Bereichs (Platzhalter), Zurück
+  QuadratKachel.java                      FrameLayout, das immer quadratisch bleibt
+app/src/main/res/layout/activity_main.xml 2 × 2 Plätze (include kachel.xml), zentriert, scrollbar
+app/src/main/res/layout/kachel.xml        ein Viereck: Nummer, Titel, Untertitel
+app/src/main/res/layout/activity_bereich.xml  Platzhalterseite
+app/src/main/res/drawable/kachel_hintergrund.xml  Fläche, Rand, runde Ecken, Druck-Schimmer
+app/src/main/res/values/{colors,dimens}.xml  Farben (monochrom, wie die Website) und Maße
 app/src/main/res/values/styles.xml        Thema: Fenster, Status- und Navigationsleiste schwarz
 app/src/main/res/values-v29/styles.xml    ab Android 10: kein Schleier über den Leisten
 app/src/main/res/values-v31/styles.xml    ab Android 12: auch der Begrüßungsschirm schwarz, ohne Symbol
@@ -55,4 +68,4 @@ Update mit fremder Signatur zu.
 ## Werkzeuge
 
 Android Gradle Plugin 8.13.2, Gradle 8.14.3 (über `gradlew`), JDK 17, compileSdk 35.
-Keine Abhängigkeiten, kein Kotlin, kein AndroidX — die APK ist rund 26 KB groß.
+Keine Abhängigkeiten, kein Kotlin, kein AndroidX — die APK ist rund 35 KB groß.

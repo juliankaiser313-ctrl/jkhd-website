@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Startbildschirm: vier Plaetze fuer Vierecke (2 x 2). MainActivity belegt sie der Reihe nach
+     mit den Bereichen aus Bereich.java; freie Plaetze bleiben unsichtbar, damit spaetere Bereiche
+     dazukommen, ohne dass die vorhandenen verrutschen. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:id="@+id/raster"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/seitenrand">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <include
+                android:id="@+id/kachel_1"
+                layout="@layout/kachel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/kachel_abstand"
+                android:layout_weight="1" />
+
+            <include
+                android:id="@+id/kachel_2"
+                layout="@layout/kachel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/kachel_abstand"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <include
+                android:id="@+id/kachel_3"
+                layout="@layout/kachel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/kachel_abstand"
+                android:layout_weight="1" />
+
+            <include
+                android:id="@+id/kachel_4"
+                layout="@layout/kachel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/kachel_abstand"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

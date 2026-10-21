@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ein Viereck auf dem Startbildschirm: Nummer oben links, Titel und Untertitel unten links.
+     Quadratisch durch QuadratKachel (Hoehe = Breite). -->
+<de.jkhd.app.QuadratKachel xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/kachel_hintergrund"
+    android:clickable="true"
+    android:focusable="true"
+    android:padding="@dimen/kachel_innen">
+
+    <TextView
+        android:id="@+id/kachel_nummer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:fontFamily="monospace"
+        android:letterSpacing="0.12"
+        android:textColor="@color/text_gedaempft"
+        android:textSize="11sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/kachel_titel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="2"
+            android:textColor="@color/text_hell"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/kachel_untertitel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif"
+            android:maxLines="2"
+            android:textColor="@color/text_gedaempft"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</de.jkhd.app.QuadratKachel>

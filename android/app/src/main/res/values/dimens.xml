@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="seitenrand">20dp</dimen>
+    <dimen name="kachel_abstand">8dp</dimen>
+    <dimen name="kachel_innen">16dp</dimen>
+    <dimen name="kachel_radius">20dp</dimen>
+</resources>

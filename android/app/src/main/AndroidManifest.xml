@@ -9,6 +9,7 @@
         android:allowBackup="false"
         android:supportsRtl="true">
 
+        <!-- Startbildschirm mit den Vierecken der Bereiche -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -17,6 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Seite eines Bereichs (noch Platzhalter) -->
+        <activity
+            android:name=".BereichActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
 
     </application>
 

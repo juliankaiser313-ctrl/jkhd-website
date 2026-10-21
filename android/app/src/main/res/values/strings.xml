@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">JKHD</string>
+
+    <string name="zurueck">← Zurück</string>
+    <string name="in_vorbereitung">In Vorbereitung</string>
+
+    <!-- Die Bereiche (Vierecke auf dem Startbildschirm). Neue Bereiche: Texte hier, Eintrag in Bereich.java. -->
+    <string name="bereich_webseite_titel">Webseite</string>
+    <string name="bereich_webseite_untertitel">Dashboard · Partnerzugänge</string>
+    <string name="bereich_webseite_beschreibung">Hier entsteht das Dashboard mit voller Kontrolle über die Webseite und die Partnerzugänge.</string>
+
+    <string name="bereich_quant_titel">Quant System</string>
+    <string name="bereich_quant_untertitel">Steuerung</string>
+    <string name="bereich_quant_beschreibung">Hier entsteht die Steuerung des Quant-Systems.</string>
 </resources>

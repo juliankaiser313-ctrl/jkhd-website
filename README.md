@@ -70,9 +70,10 @@ js/universum.js    Startseite: der Hero liegt auf der Buehne und wird beim Scrol
 assets/erde/       Erdbilder der NASA fuer js/universum.js (Blue Marble Tag, Black Marble Nacht, Wolken; Welt, Europa, Oberrhein; *-k.jpg = kleine Fassung fuers Handy). Gemeinfrei, Bildnachweis im Impressum. Werden erst geladen, wenn jemand bis zur Animation scrollt (2,3 MB bzw. 0,7 MB)
 favicon.svg        Browser-Tab-Icon (drei Balken)
 
-android/           Die JKHD-App für Android (21.10.2026): beim Öffnen alles schwarz, Symbol = das Zeichen.
-                   Eigenes Gradle-Projekt, gebaut von .github/workflows/android.yml; wird nicht mit der
-                   Website ausgeliefert (siehe Abschnitt „Android-App“ und android/README.md)
+android/           Die JKHD-App für Android (21.10.2026): schwarzer Startbildschirm mit Vierecken je Bereich
+                   („Webseite“, „Quant System“, zwei Plätze frei), Symbol = das Zeichen. Eigenes Gradle-Projekt,
+                   gebaut von .github/workflows/android.yml; wird nicht mit der Website ausgeliefert
+                   (siehe Abschnitt „Android-App“ und android/README.md)
 ```
 
 ## Zweisprachigkeit — was beim Ändern zu beachten ist
@@ -380,10 +381,12 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
 
 ## Android-App (android/, seit 21.10.2026)
 
-Erste Stufe: eine App, die beim Öffnen nur einen schwarzen Bildschirm zeigt — Fenster, Status- und
-Navigationsleiste, ab Android 12 auch der Begrüßungsschirm — und auf dem Handy „JKHD“ heißt, mit dem
-Zeichen (drei Balken) als Symbol. Paket `de.jkhd.app`, Android 7 oder neuer, keine Bibliotheken,
-APK rund 26 KB. Aufbau, Bauen, Installieren und Signatur: `android/README.md`.
+Stand Fassung 0.2: schwarzer Startbildschirm (Fenster, Leisten, ab Android 12 auch der
+Begrüßungsschirm) mit einem Viereck je Bereich — „Webseite“ (Dashboard, Partnerzugänge) und
+„Quant System“ (Steuerung), zwei Plätze frei für weitere. Ein Tipp öffnet die Seite des Bereichs,
+bisher ein Platzhalter; dort entstehen später die Dashboards. Auf dem Handy heißt die App „JKHD“,
+Symbol ist das Zeichen (drei Balken). Paket `de.jkhd.app`, Android 7 oder neuer, keine Bibliotheken,
+APK rund 35 KB. Aufbau, Bauen, Installieren und Signatur: `android/README.md`.
 
 - **APK holen:** Jeder Push auf `main`, der `android/` berührt, baut sie (`.github/workflows/android.yml`)
   und legt sie als Veröffentlichung „app-aktuell“ ab:
