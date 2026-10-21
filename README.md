@@ -69,6 +69,10 @@ js/bilder-system.js     die Bilder der System-Seite: Ueberschrift, die acht Grun
 js/universum.js    Startseite: der Hero liegt auf der Buehne und wird beim Scrollen zu Punkten, die sich in die Milchstrasse drehen (Vorspann, 11.10.2026); dann der Flug in die Milchstrasse, mit waagerechter Kamera durch ein dichtes Sternfeld unter dem Band der Milchstrasse, weit auseinander an fest stehenden Planeten vorbei (Kugeln in WebGL, Karten aus Rauschen) zur Erde (WebGL, NASA-Bilder), der Zoom auf eine Stadt, in ein Rechenzentrum bis zum Computer, dessen Gehaeuse durchsichtig wird (Platine); der Monitor rechnet die Formeln durch, Zeile fuer Zeile beim Scrollen, dann erscheint dort das Zeichen, am Ende Schwarz und der Spruch der Fusszeile (nur index.html / en/index.html)
 assets/erde/       Erdbilder der NASA fuer js/universum.js (Blue Marble Tag, Black Marble Nacht, Wolken; Welt, Europa, Oberrhein; *-k.jpg = kleine Fassung fuers Handy). Gemeinfrei, Bildnachweis im Impressum. Werden erst geladen, wenn jemand bis zur Animation scrollt (2,3 MB bzw. 0,7 MB)
 favicon.svg        Browser-Tab-Icon (drei Balken)
+
+android/           Die JKHD-App für Android (21.10.2026): beim Öffnen alles schwarz, Symbol = das Zeichen.
+                   Eigenes Gradle-Projekt, gebaut von .github/workflows/android.yml; wird nicht mit der
+                   Website ausgeliefert (siehe Abschnitt „Android-App“ und android/README.md)
 ```
 
 ## Zweisprachigkeit — was beim Ändern zu beachten ist
@@ -373,6 +377,25 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
   Freigaben `partner.json`). `#partner-passwort` öffnet den Kasten gleich zum Festlegen eines
   Passworts (dorthin führt „Passwort vergessen“). „Anfrage“ ist ein Fragebogen an den Server;
   nur wenn der nicht erreichbar ist, öffnet sich das E-Mail-Programm.
+
+## Android-App (android/, seit 21.10.2026)
+
+Erste Stufe: eine App, die beim Öffnen nur einen schwarzen Bildschirm zeigt — Fenster, Status- und
+Navigationsleiste, ab Android 12 auch der Begrüßungsschirm — und auf dem Handy „JKHD“ heißt, mit dem
+Zeichen (drei Balken) als Symbol. Paket `de.jkhd.app`, Android 7 oder neuer, keine Bibliotheken,
+APK rund 26 KB. Aufbau, Bauen, Installieren und Signatur: `android/README.md`.
+
+- **APK holen:** Jeder Push auf `main`, der `android/` berührt, baut sie (`.github/workflows/android.yml`)
+  und legt sie als Veröffentlichung „app-aktuell“ ab:
+  https://github.com/juliankaiser313-ctrl/jkhd-website/releases/tag/app-aktuell → `JKHD.apk` auf dem
+  Handy herunterladen, öffnen, Installation aus dieser Quelle zulassen. Auf anderen Zweigen hängt die
+  APK als Artefakt am Workflow-Lauf.
+- **Signatur:** ohne eigene Secrets mit dem Entwicklungsschlüssel `android/signing/jkhd-dev.jks`
+  (öffentlich, nur zum Ausprobieren); für den Play Store eigenen Schlüssel als Secrets hinterlegen
+  (Tabelle in `android/README.md`).
+- **Website:** `pages.yml` entfernt `android/` vor dem Hochladen — der Quelltext der App landet nicht
+  auf www.jkhd.de.
+- **iPhone:** geht nicht per APK; Apple lässt nur App Store oder Xcode zu.
 
 ## Lokal ansehen
 

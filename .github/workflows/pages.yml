@@ -27,6 +27,8 @@ jobs:
       # Live: das ganze Verzeichnis wird veroeffentlicht. Wieder offline =
       # path auf ./offline und davor den Schritt aus README, Abschnitt
       # "Wieder offline", einsetzen (Platzhalter vervollstaendigen).
+      # Die Android-App (android/) ist Quelltext, keine Seite: vor dem Hochladen entfernen.
+      - run: rm -rf android
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .

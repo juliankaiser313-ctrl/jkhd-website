@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Alles schwarz: Fenster, Status- und Navigationsleiste, keine Titelleiste.
+         Die Fassungen in values-v29 und values-v31 ergaenzen nur neuere Android-Eigenschaften. -->
+    <style name="Base.Theme.JKHD" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/black</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="Theme.JKHD" parent="Base.Theme.JKHD" />
+</resources>

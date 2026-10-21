@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Ab Android 12 zeigt das System beim Start einen Begruessungsschirm. Auch der ist schwarz,
+         ohne Symbol — die App soll beim Oeffnen sofort nur schwarz sein. -->
+    <style name="Theme.JKHD" parent="Base.Theme.JKHD">
+        <item name="android:enforceStatusBarContrast">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
+        <item name="android:windowSplashScreenBackground">@android:color/black</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+    </style>
+</resources>

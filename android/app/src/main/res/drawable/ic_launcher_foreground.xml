@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Vordergrund des App-Symbols: die drei Balken aus favicon.svg, auf die 108-dp-Flaeche des
+     anpassbaren Symbols gelegt (sichtbar bleibt ein Kreis von 66 dp in der Mitte). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#F4F2EE"
+        android:pathData="M32,38.6h11v30.8h-11z M48.5,30.9h11v46.2h-11z M65,38.6h11v30.8h-11z" />
+</vector>
