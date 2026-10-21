@@ -84,6 +84,12 @@ public class MainActivity extends Activity {
                 kachel.setClickable(false);
             }
         }
+
+        // Eine ganz leere zweite Reihe (Hochformat) braucht keinen Platz.
+        View zweiteReihe = findViewById(R.id.zeile_2);
+        if (zweiteReihe != null) {
+            zweiteReihe.setVisibility(bereiche.length > 2 ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void belegen(View kachel, final Bereich bereich) {

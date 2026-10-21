@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Startbildschirm. Unten der Inhalt (Kontrollzentrum): oben links klein das Marken-Lockup,
-     darunter die Überschrift „Kontrollzentrum“, dann vier Plätze für Vierecke (2 x 2). MainActivity
-     belegt sie der Reihe nach mit den Bereichen aus Bereich.java; freie Plätze bleiben unsichtbar,
-     damit spätere Bereiche dazukommen, ohne dass die vorhandenen verrutschen.
-     Darüber der Ladebildschirm (ladebildschirm.xml), der nach dem Laden ausgeblendet wird. -->
+<!-- Startbildschirm (Hochformat; Querformat: layout-land/activity_main.xml mit vier Plätzen in
+     einer Reihe). Unten der Inhalt (Kontrollzentrum): oben links klein das Marken-Lockup, darunter
+     die Überschrift „Kontrollzentrum“, dann vier Plätze für Vierecke (2 x 2). MainActivity belegt
+     sie der Reihe nach mit den Bereichen aus Bereich.java; freie Plätze bleiben unsichtbar, eine
+     ganz leere Reihe verschwindet. Darüber der Ladebildschirm (ladebildschirm.xml), der nach dem
+     Laden ausgeblendet wird. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -47,6 +48,7 @@
                 android:text="@string/kontrollzentrum" />
 
             <LinearLayout
+                android:id="@+id/zeile_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -55,7 +57,7 @@
                     android:id="@+id/kachel_1"
                     layout="@layout/kachel"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_margin="@dimen/kachel_abstand"
                     android:layout_weight="1" />
 
@@ -63,12 +65,13 @@
                     android:id="@+id/kachel_2"
                     layout="@layout/kachel"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_margin="@dimen/kachel_abstand"
                     android:layout_weight="1" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/zeile_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -77,7 +80,7 @@
                     android:id="@+id/kachel_3"
                     layout="@layout/kachel"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_margin="@dimen/kachel_abstand"
                     android:layout_weight="1" />
 
@@ -85,7 +88,7 @@
                     android:id="@+id/kachel_4"
                     layout="@layout/kachel"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_margin="@dimen/kachel_abstand"
                     android:layout_weight="1" />
             </LinearLayout>

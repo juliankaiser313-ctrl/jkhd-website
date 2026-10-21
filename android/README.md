@@ -1,6 +1,6 @@
 # JKHD-App (Android)
 
-Stand 21.10.2026 (Fassung 0.4): Beim Öffnen zuerst der Ladebildschirm — schwarz, in der Mitte das
+Stand 21.10.2026 (Fassung 0.5): Beim Öffnen zuerst der Ladebildschirm — schwarz, in der Mitte das
 Marken-Lockup groß, unten ein Ladebalken, der in gut einer Sekunde volläuft (länger, wenn das Laden
 länger dauert) und dann ausblendet. Dahinter das Kontrollzentrum: oben links klein dasselbe Lockup
 (Zeichen, JKHD, „Quant Systems / Just Know How to Dominate.“), darunter die Überschrift
@@ -20,7 +20,8 @@ app/src/main/java/de/jkhd/app/
   Ladebildschirm.java                     steuert den Ladebalken: Grundlauf bis 85 %, voll + ausblenden, wenn die
                                           Arbeit gemeldet ist; später für Anmeldung/Daten wiederverwendbar
   BereichActivity.java                    Seite eines Bereichs (Platzhalter), Zurück
-  QuadratKachel.java                      FrameLayout, das immer quadratisch bleibt
+  QuadratKachel.java                      FrameLayout, das quadratisch bleibt (nur bei sehr großer Systemschrift
+                                          so viel höher wie nötig, statt Text abzuschneiden)
   Schriften.java                          lädt die Schriften aus assets/fonts (Playfair Display 500, Manrope 500/700)
 app/src/main/assets/fonts/                die Schriften als feste Schnitte, aus den variablen Dateien der Website
                                           (assets/fonts) erzeugt; OFL-Lizenztexte daneben
@@ -29,8 +30,10 @@ app/src/main/res/drawable-*dpi/lockup.png das Marken-Lockup, mit Chromium aus de
 app/src/main/res/drawable-*dpi/lockup_gross.png  dasselbe für den Ladebildschirm, 320 dp breit
 app/src/main/res/drawable/ladebalken.xml  der Ladebalken (dunkle Spur, heller Fortschritt)
 app/src/main/res/layout/ladebildschirm.xml  Ladebildschirm: Lockup groß in der Mitte, Balken unten
-app/src/main/res/layout/activity_main.xml Inhalt (Lockup, Überschrift, 2 × 2 Plätze, scrollbar) + Ladebildschirm darüber
-app/src/main/res/layout/kachel.xml        ein Viereck: Nummer, Titel, Untertitel
+app/src/main/res/layout/activity_main.xml Inhalt (Lockup, Überschrift, 2 × 2 Plätze, scrollbar) + Ladebildschirm darüber;
+                                          eine ganz leere zweite Reihe wird ausgeblendet
+app/src/main/res/layout-land/activity_main.xml  Querformat: dieselben Ids, die vier Plätze in einer Reihe
+app/src/main/res/layout/kachel.xml        ein Viereck: Nummer, dehnbarer Zwischenraum, Titel, Untertitel (mit „…“ bei Platznot)
 app/src/main/res/layout/activity_bereich.xml  Platzhalterseite
 app/src/main/res/drawable/kachel_hintergrund.xml  Fläche, Rand, runde Ecken, Druck-Schimmer
 app/src/main/res/values/{colors,dimens}.xml  Farben (monochrom, wie die Website) und Maße

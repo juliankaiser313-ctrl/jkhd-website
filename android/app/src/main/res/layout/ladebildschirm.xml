@@ -10,9 +10,11 @@
     android:clickable="true"
     android:focusable="true">
 
+    <!-- wrap_content, nicht match_parent: nur so greift maxWidth, und das Bild wird auf breiten
+         Bildschirmen nicht über seine gerenderte Größe hinaus vergrößert (unscharf). -->
     <ImageView
         android:id="@+id/lade_lockup"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginStart="28dp"

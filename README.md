@@ -381,7 +381,7 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
 
 ## Android-App (android/, seit 21.10.2026)
 
-Stand Fassung 0.4: schwarzer Startbildschirm (Fenster, Leisten, ab Android 12 auch der
+Stand Fassung 0.5: schwarzer Startbildschirm (Fenster, Leisten, ab Android 12 auch der
 Begrüßungsschirm). Beim Öffnen zuerst ein Ladebildschirm mit dem Marken-Lockup groß und einem
 Ladebalken unten, dann das Kontrollzentrum: oben links klein das Lockup, darunter die Überschrift
 „Kontrollzentrum“ und ein Viereck je Bereich — „Webseite“ (Dashboard, Partnerzugänge) und

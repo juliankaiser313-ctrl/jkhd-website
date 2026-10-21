@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Startbildschirm im Querformat: wie layout/activity_main.xml, aber die vier Plätze in EINER Reihe,
+     sonst wären die Vierecke höher als der Bildschirm. Dieselben Ids, MainActivity merkt keinen
+     Unterschied (zeile_2 gibt es hier nicht). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:fitsSystemWindows="true">
+
+    <ScrollView
+        android:id="@+id/inhalt"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/seitenrand">
+
+            <ImageView
+                android:id="@+id/lockup"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/lockup_hoehe"
+                android:layout_marginStart="@dimen/kachel_abstand"
+                android:layout_marginTop="4dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/lockup_beschreibung"
+                android:scaleType="fitStart"
+                android:src="@drawable/lockup" />
+
+            <TextView
+                android:id="@+id/ueberschrift"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/kachel_abstand"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="@dimen/kachel_abstand"
+                android:layout_marginBottom="8dp"
+                android:textColor="@color/text_hell"
+                android:textSize="30sp"
+                android:text="@string/kontrollzentrum" />
+
+            <LinearLayout
+                android:id="@+id/zeile_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <include
+                    android:id="@+id/kachel_1"
+                    layout="@layout/kachel"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/kachel_abstand"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/kachel_2"
+                    layout="@layout/kachel"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/kachel_abstand"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/kachel_3"
+                    layout="@layout/kachel"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/kachel_abstand"
+                    android:layout_weight="1" />
+
+                <include
+                    android:id="@+id/kachel_4"
+                    layout="@layout/kachel"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/kachel_abstand"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <include layout="@layout/ladebildschirm" />
+
+</FrameLayout>
