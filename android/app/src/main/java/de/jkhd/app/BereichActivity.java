@@ -35,11 +35,18 @@ public class BereichActivity extends Activity {
         setContentView(R.layout.activity_bereich);
 
         TextView kennzeile = findViewById(R.id.bereich_kennzeile);
-        kennzeile.setText(bereich.nummer() + " · " + getString(R.string.in_vorbereitung));
-        ((TextView) findViewById(R.id.bereich_titel)).setText(bereich.titel);
-        ((TextView) findViewById(R.id.bereich_beschreibung)).setText(bereich.beschreibung);
+        TextView titel = findViewById(R.id.bereich_titel);
+        TextView beschreibung = findViewById(R.id.bereich_beschreibung);
+        TextView zurueck = findViewById(R.id.zurueck);
 
-        findViewById(R.id.zurueck).setOnClickListener(new View.OnClickListener() {
+        kennzeile.setText(bereich.nummer() + " · " + getString(R.string.in_vorbereitung));
+        titel.setText(bereich.titel);
+        titel.setTypeface(Schriften.serif(this));
+        beschreibung.setText(bereich.beschreibung);
+        beschreibung.setTypeface(Schriften.sans(this));
+        zurueck.setTypeface(Schriften.sans(this));
+
+        zurueck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();

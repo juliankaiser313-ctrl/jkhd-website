@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">JKHD</string>
+    <string name="lockup_beschreibung">JKHD – Quant Systems</string>
+    <string name="kontrollzentrum">Kontrollzentrum</string>
 
     <string name="zurueck">← Zurück</string>
     <string name="in_vorbereitung">In Vorbereitung</string>

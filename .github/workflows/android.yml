@@ -1,7 +1,7 @@
 name: Android-App
 
 # Baut die JKHD-App (Ordner android/) als signierte APK.
-# - Bei jedem Push, der android/ beruehrt: APK als Artefakt des Laufs.
+# - Bei jedem Push auf einen Zweig, der android/ beruehrt: APK als Artefakt des Laufs.
 # - Auf main zusaetzlich: Veroeffentlichung "app-aktuell" mit der APK zum Herunterladen
 #   (https://github.com/<besitzer>/<repo>/releases/tag/app-aktuell).
 # Ohne eigene Secrets wird mit dem Entwicklungsschluessel android/signing/jkhd-dev.jks signiert
@@ -9,6 +9,9 @@ name: Android-App
 
 on:
   push:
+    # branches ist noetig: ohne Zweigfilter gilt der Pfadfilter nicht fuer Tags,
+    # und jeder von Hand gepushte Tag wuerde einen Bau starten.
+    branches: ['**']
     paths:
       - 'android/**'
       - '.github/workflows/android.yml'
@@ -26,13 +29,10 @@ jobs:
     name: APK bauen
     runs-on: ubuntu-latest
     env:
-      # Optional: eigener Schluessel als Secrets (Keystore base64-kodiert). Fehlen sie, bleiben
-      # die Variablen leer und der Bau nimmt den Entwicklungsschluessel.
-      JKHD_KEYSTORE_BASE64: ${{ secrets.JKHD_KEYSTORE_BASE64 }}
-      JKHD_KEYSTORE_PASSWORD: ${{ secrets.JKHD_KEYSTORE_PASSWORD }}
-      JKHD_KEY_ALIAS: ${{ secrets.JKHD_KEY_ALIAS }}
-      JKHD_KEY_PASSWORD: ${{ secrets.JKHD_KEY_PASSWORD }}
       JKHD_VERSION_CODE: ${{ github.run_number }}
+      # Nur ein Ja/Nein auf Job-Ebene. Die Secrets selbst bekommen allein die Schritte,
+      # die sie brauchen — nicht die fremden Actions (checkout, setup-java, upload-artifact).
+      JKHD_EIGENER_SCHLUESSEL: ${{ secrets.JKHD_KEYSTORE_BASE64 != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -44,14 +44,24 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Eigenen Schluessel entpacken (nur wenn Secret vorhanden)
-        if: env.JKHD_KEYSTORE_BASE64 != ''
+        if: env.JKHD_EIGENER_SCHLUESSEL == 'true'
+        env:
+          JKHD_KEYSTORE_BASE64: ${{ secrets.JKHD_KEYSTORE_BASE64 }}
         run: |
           echo "$JKHD_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/jkhd.jks"
           echo "JKHD_KEYSTORE_FILE=$RUNNER_TEMP/jkhd.jks" >> "$GITHUB_ENV"
 
       - name: APK bauen
         working-directory: android
+        env:
+          JKHD_KEYSTORE_PASSWORD: ${{ secrets.JKHD_KEYSTORE_PASSWORD }}
+          JKHD_KEY_ALIAS: ${{ secrets.JKHD_KEY_ALIAS }}
+          JKHD_KEY_PASSWORD: ${{ secrets.JKHD_KEY_PASSWORD }}
         run: ./gradlew --no-daemon :app:assembleRelease
+
+      - name: Entpackten Schluessel wieder loeschen
+        if: always()
+        run: rm -f "$RUNNER_TEMP/jkhd.jks"
 
       - name: APK bereitlegen
         run: cp android/app/build/outputs/apk/release/app-release.apk JKHD.apk
@@ -76,5 +86,11 @@ jobs:
           Installieren: JKHD.apk auf dem Handy herunterladen und oeffnen. Android fragt beim ersten
           Mal, ob Apps aus dieser Quelle installiert werden duerfen — zulassen. Eine neue Fassung
           laesst sich ueber die alte installieren, solange sie mit demselben Schluessel signiert ist.
+
+          Signatur: Ohne hinterlegte Secrets ist die APK mit dem oeffentlichen Entwicklungsschluessel
+          aus dem Repository signiert. Damit koennte jeder eine APK bauen, die Android als Update
+          ueber diese App annimmt — deshalb nur die APK von dieser Seite installieren und, bevor die
+          App Zugaenge speichert oder der Link weitergegeben wird, einen eigenen Schluessel als
+          Secrets hinterlegen (android/README.md, Abschnitt "Signatur").
           EOF
           )"

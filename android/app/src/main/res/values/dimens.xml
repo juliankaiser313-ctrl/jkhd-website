@@ -4,4 +4,6 @@
     <dimen name="kachel_abstand">8dp</dimen>
     <dimen name="kachel_innen">16dp</dimen>
     <dimen name="kachel_radius">20dp</dimen>
+    <!-- Hoehe des Marken-Lockups oben links; die PNGs in drawable-*dpi sind genau dafuer gerendert. -->
+    <dimen name="lockup_hoehe">24dp</dimen>
 </resources>

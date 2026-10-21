@@ -70,7 +70,7 @@ js/universum.js    Startseite: der Hero liegt auf der Buehne und wird beim Scrol
 assets/erde/       Erdbilder der NASA fuer js/universum.js (Blue Marble Tag, Black Marble Nacht, Wolken; Welt, Europa, Oberrhein; *-k.jpg = kleine Fassung fuers Handy). Gemeinfrei, Bildnachweis im Impressum. Werden erst geladen, wenn jemand bis zur Animation scrollt (2,3 MB bzw. 0,7 MB)
 favicon.svg        Browser-Tab-Icon (drei Balken)
 
-android/           Die JKHD-App für Android (21.10.2026): schwarzer Startbildschirm mit Vierecken je Bereich
+android/           Die JKHD-App für Android (21.10.2026): schwarzes „Kontrollzentrum“ mit Lockup und Vierecken je Bereich
                    („Webseite“, „Quant System“, zwei Plätze frei), Symbol = das Zeichen. Eigenes Gradle-Projekt,
                    gebaut von .github/workflows/android.yml; wird nicht mit der Website ausgeliefert
                    (siehe Abschnitt „Android-App“ und android/README.md)
@@ -381,21 +381,24 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
 
 ## Android-App (android/, seit 21.10.2026)
 
-Stand Fassung 0.2: schwarzer Startbildschirm (Fenster, Leisten, ab Android 12 auch der
-Begrüßungsschirm) mit einem Viereck je Bereich — „Webseite“ (Dashboard, Partnerzugänge) und
+Stand Fassung 0.3: schwarzer Startbildschirm (Fenster, Leisten, ab Android 12 auch der
+Begrüßungsschirm), oben links klein das Marken-Lockup der Website, darunter die Überschrift
+„Kontrollzentrum“ und ein Viereck je Bereich — „Webseite“ (Dashboard, Partnerzugänge) und
 „Quant System“ (Steuerung), zwei Plätze frei für weitere. Ein Tipp öffnet die Seite des Bereichs,
-bisher ein Platzhalter; dort entstehen später die Dashboards. Auf dem Handy heißt die App „JKHD“,
-Symbol ist das Zeichen (drei Balken). Paket `de.jkhd.app`, Android 7 oder neuer, keine Bibliotheken,
-APK rund 35 KB. Aufbau, Bauen, Installieren und Signatur: `android/README.md`.
+bisher ein Platzhalter; dort entstehen später die Dashboards. Schriften wie auf der Website. Auf dem
+Handy heißt die App „JKHD“, Symbol ist das Zeichen (drei Balken). Paket `de.jkhd.app`, Android 7
+oder neuer, keine Bibliotheken, APK rund 150 KB. Aufbau, Bauen, Installieren und Signatur:
+`android/README.md`.
 
 - **APK holen:** Jeder Push auf `main`, der `android/` berührt, baut sie (`.github/workflows/android.yml`)
   und legt sie als Veröffentlichung „app-aktuell“ ab:
   https://github.com/juliankaiser313-ctrl/jkhd-website/releases/tag/app-aktuell → `JKHD.apk` auf dem
   Handy herunterladen, öffnen, Installation aus dieser Quelle zulassen. Auf anderen Zweigen hängt die
   APK als Artefakt am Workflow-Lauf.
-- **Signatur:** ohne eigene Secrets mit dem Entwicklungsschlüssel `android/signing/jkhd-dev.jks`
-  (öffentlich, nur zum Ausprobieren); für den Play Store eigenen Schlüssel als Secrets hinterlegen
-  (Tabelle in `android/README.md`).
+- **Signatur:** ohne eigene Secrets mit dem Entwicklungsschlüssel `android/signing/jkhd-dev.jks`.
+  Der ist öffentlich — jeder könnte damit eine APK bauen, die als Update über die App installiert
+  wird. Bevor die App Zugänge speichert oder der Link weitergegeben wird, einen privaten Schlüssel
+  als Secrets hinterlegen (Tabelle in `android/README.md`).
 - **Website:** `pages.yml` entfernt `android/` vor dem Hochladen — der Quelltext der App landet nicht
   auf www.jkhd.de.
 - **iPhone:** geht nicht per APK; Apple lässt nur App Store oder Xcode zu.

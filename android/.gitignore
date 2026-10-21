@@ -5,3 +5,9 @@ local.properties
 *.iml
 .kotlin/
 captures/
+
+# Keine weiteren Schluessel ins (oeffentliche) Repository — nur der Entwicklungsschluessel.
+*.jks
+*.keystore
+*.p12
+!signing/jkhd-dev.jks

@@ -1,10 +1,12 @@
 # JKHD-App (Android)
 
-Stand 21.10.2026 (Fassung 0.2): schwarzer Startbildschirm mit Vierecken, je eines pro Bereich —
-„Webseite“ (Dashboard, Partnerzugänge) und „Quant System“ (Steuerung); zwei Plätze sind frei für
-weitere Bereiche. Ein Tipp auf ein Viereck öffnet die Seite des Bereichs, bisher ein Platzhalter
-(„In Vorbereitung“) — dort entstehen später die Dashboards. Auf dem Handy heißt die App „JKHD“ und
-trägt das Zeichen (drei Balken) als Symbol.
+Stand 21.10.2026 (Fassung 0.3): schwarzer Startbildschirm, oben links klein das Marken-Lockup der
+Website (Zeichen, JKHD, „Quant Systems / Just Know How to Dominate.“), darunter die Überschrift
+„Kontrollzentrum“ und die Vierecke, je eines pro Bereich — „Webseite“ (Dashboard, Partnerzugänge)
+und „Quant System“ (Steuerung); zwei Plätze sind frei für weitere Bereiche. Ein Tipp auf ein Viereck
+öffnet die Seite des Bereichs, bisher ein Platzhalter („In Vorbereitung“) — dort entstehen später
+die Dashboards. Schriften wie auf der Website (Playfair Display für Überschriften, Manrope sonst).
+Auf dem Handy heißt die App „JKHD“ und trägt das Zeichen (drei Balken) als Symbol.
 
 ```
 app/src/main/AndroidManifest.xml          zwei Activities (Start, Bereich), Startsymbol, Thema
@@ -14,7 +16,12 @@ app/src/main/java/de/jkhd/app/
   MainActivity.java                       Startbildschirm, belegt die vier Plätze mit den Bereichen
   BereichActivity.java                    Seite eines Bereichs (Platzhalter), Zurück
   QuadratKachel.java                      FrameLayout, das immer quadratisch bleibt
-app/src/main/res/layout/activity_main.xml 2 × 2 Plätze (include kachel.xml), zentriert, scrollbar
+  Schriften.java                          lädt die Schriften aus assets/fonts (Playfair Display 500, Manrope 500/700)
+app/src/main/assets/fonts/                die Schriften als feste Schnitte, aus den variablen Dateien der Website
+                                          (assets/fonts) erzeugt; OFL-Lizenztexte daneben
+app/src/main/res/drawable-*dpi/lockup.png das Marken-Lockup, mit Chromium aus dem Website-CSS (.brand, dunkel)
+                                          gerendert, je Dichte für 24 dp Höhe (Schriften Manrope + Cascadia Code)
+app/src/main/res/layout/activity_main.xml Lockup, Überschrift, 2 × 2 Plätze (include kachel.xml), scrollbar
 app/src/main/res/layout/kachel.xml        ein Viereck: Nummer, Titel, Untertitel
 app/src/main/res/layout/activity_bereich.xml  Platzhalterseite
 app/src/main/res/drawable/kachel_hintergrund.xml  Fläche, Rand, runde Ecken, Druck-Schimmer
@@ -49,10 +56,15 @@ und die Laufnummer (`versionCode`) nicht kleiner ist; GitHub setzt sie auf die N
 
 Android installiert nur signierte APKs. Ohne weitere Angaben signiert der Bau mit dem
 mitgelieferten Entwicklungsschlüssel `signing/jkhd-dev.jks` (Alias `jkhd`, Passwort `jkhd-dev`,
-gültig bis 2054). Der liegt im öffentlichen Repository und ist deshalb nur zum Ausprobieren gedacht,
-nicht für den Play Store. Für eine echte Veröffentlichung einen eigenen Schlüssel anlegen
-(`keytool -genkeypair …`) und dem Bau über Umgebungsvariablen geben — lokal direkt, auf GitHub als
-Secrets, die der Workflow `.github/workflows/android.yml` von selbst durchreicht:
+gültig bis 2054). **Der Schlüssel liegt samt Passwort im öffentlichen Repository.** Das heißt:
+Jeder kann damit eine APK mit dem Paketnamen `de.jkhd.app` bauen, die Android als Update über die
+installierte App annimmt und deren Daten und Rechte übernimmt. Für die jetzige App ohne Daten ist
+das tragbar — deshalb nur APKs von der eigenen Release-Seite oder aus diesem Gespräch installieren.
+**Bevor die App Zugänge speichert oder der Download-Link weitergegeben wird**, einen eigenen,
+privaten Schlüssel anlegen (`keytool -genkeypair …`, Datei **nicht** ins Repository — die
+`.gitignore` hier blockt `*.jks`) und dem Bau über Umgebungsvariablen geben — lokal direkt, auf
+GitHub als Secrets, die der Workflow `.github/workflows/android.yml` nur den zwei Schritten gibt,
+die sie brauchen:
 
 | Variable / Secret        | Bedeutung                                              |
 |--------------------------|--------------------------------------------------------|
@@ -68,4 +80,5 @@ Update mit fremder Signatur zu.
 ## Werkzeuge
 
 Android Gradle Plugin 8.13.2, Gradle 8.14.3 (über `gradlew`), JDK 17, compileSdk 35.
-Keine Abhängigkeiten, kein Kotlin, kein AndroidX — die APK ist rund 35 KB groß.
+Keine Abhängigkeiten, kein Kotlin, kein AndroidX — die APK ist rund 150 KB groß (davon rund
+125 KB die drei Schriftdateien).

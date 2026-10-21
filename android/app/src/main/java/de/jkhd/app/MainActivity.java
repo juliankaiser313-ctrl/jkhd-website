@@ -18,6 +18,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ((TextView) findViewById(R.id.ueberschrift)).setTypeface(Schriften.serif(this));
+
         Bereich[] bereiche = Bereich.values();
         for (int i = 0; i < PLAETZE.length; i++) {
             View kachel = findViewById(PLAETZE[i]);
@@ -33,9 +35,14 @@ public class MainActivity extends Activity {
     }
 
     private void belegen(View kachel, final Bereich bereich) {
-        ((TextView) kachel.findViewById(R.id.kachel_nummer)).setText(bereich.nummer());
-        ((TextView) kachel.findViewById(R.id.kachel_titel)).setText(bereich.titel);
-        ((TextView) kachel.findViewById(R.id.kachel_untertitel)).setText(bereich.untertitel);
+        TextView nummer = kachel.findViewById(R.id.kachel_nummer);
+        TextView titel = kachel.findViewById(R.id.kachel_titel);
+        TextView untertitel = kachel.findViewById(R.id.kachel_untertitel);
+        nummer.setText(bereich.nummer());
+        titel.setText(bereich.titel);
+        titel.setTypeface(Schriften.sansKraeftig(this));
+        untertitel.setText(bereich.untertitel);
+        untertitel.setTypeface(Schriften.sans(this));
         kachel.setVisibility(View.VISIBLE);
         kachel.setOnClickListener(new View.OnClickListener() {
             @Override

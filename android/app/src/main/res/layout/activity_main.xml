@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Startbildschirm: vier Plaetze fuer Vierecke (2 x 2). MainActivity belegt sie der Reihe nach
-     mit den Bereichen aus Bereich.java; freie Plaetze bleiben unsichtbar, damit spaetere Bereiche
-     dazukommen, ohne dass die vorhandenen verrutschen. -->
+<!-- Startbildschirm: oben links klein das Marken-Lockup, darunter die Überschrift „Kontrollzentrum“,
+     dann vier Plätze für Vierecke (2 x 2). MainActivity belegt sie der Reihe nach mit den Bereichen
+     aus Bereich.java; freie Plätze bleiben unsichtbar, damit spätere Bereiche dazukommen, ohne dass
+     die vorhandenen verrutschen. -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,13 +12,33 @@
     android:scrollbars="none">
 
     <LinearLayout
-        android:id="@+id/raster"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:gravity="center"
         android:orientation="vertical"
         android:padding="@dimen/seitenrand">
+
+        <ImageView
+            android:id="@+id/lockup"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/lockup_hoehe"
+            android:layout_marginStart="@dimen/kachel_abstand"
+            android:layout_marginTop="4dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/lockup_beschreibung"
+            android:scaleType="fitStart"
+            android:src="@drawable/lockup" />
+
+        <TextView
+            android:id="@+id/ueberschrift"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/kachel_abstand"
+            android:layout_marginTop="36dp"
+            android:layout_marginEnd="@dimen/kachel_abstand"
+            android:layout_marginBottom="12dp"
+            android:textColor="@color/text_hell"
+            android:textSize="30sp"
+            android:text="@string/kontrollzentrum" />
 
         <LinearLayout
             android:layout_width="match_parent"
