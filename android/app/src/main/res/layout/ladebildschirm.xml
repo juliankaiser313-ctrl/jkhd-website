@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Der Ladebildschirm: liegt beim Öffnen (und später beim Anmelden) über dem Inhalt —
+     schwarz, in der Mitte das Lockup groß, unten der Ladebalken. Gesteuert von Ladebildschirm.java,
+     das ihn nach dem Laden ausblendet und entfernt. Fängt Berührungen ab, solange er zu sehen ist. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ladebildschirm"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/lade_lockup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="28dp"
+        android:layout_marginEnd="28dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/lockup_beschreibung"
+        android:maxWidth="@dimen/lockup_gross_breite"
+        android:scaleType="fitCenter"
+        android:src="@drawable/lockup_gross" />
+
+    <ProgressBar
+        android:id="@+id/ladebalken"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="28dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="40dp"
+        android:max="1000"
+        android:maxHeight="3dp"
+        android:minHeight="3dp"
+        android:progress="0"
+        android:progressDrawable="@drawable/ladebalken" />
+
+</FrameLayout>

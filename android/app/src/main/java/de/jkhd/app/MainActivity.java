@@ -6,18 +6,70 @@ import android.view.View;
 import android.widget.TextView;
 
 /**
- * Der Startbildschirm: schwarz, darauf die Vierecke der Bereiche (siehe Bereich.java).
- * Vier Plätze stehen bereit; belegt sind so viele, wie es Bereiche gibt.
+ * Der Startbildschirm: erst der Ladebildschirm (großes Lockup, Ladebalken), dann das
+ * Kontrollzentrum — schwarz, oben links das Lockup, darunter die Vierecke der Bereiche
+ * (siehe Bereich.java). Vier Plätze stehen bereit; belegt sind so viele, wie es Bereiche gibt.
  */
 public class MainActivity extends Activity {
 
     private static final int[] PLAETZE = {R.id.kachel_1, R.id.kachel_2, R.id.kachel_3, R.id.kachel_4};
+    private static final String ZUSTAND_GELADEN = "geladen";
+
+    private Ladebildschirm ladebildschirm;
+    private boolean geladen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ladebildschirm = new Ladebildschirm(findViewById(R.id.ladebildschirm));
 
+        if (savedInstanceState != null && savedInstanceState.getBoolean(ZUSTAND_GELADEN)) {
+            // Schon einmal geladen (z. B. nach einer Drehung): nicht noch einmal warten lassen.
+            geladen = true;
+            ladebildschirm.sofortWeg();
+            einrichten();
+        } else {
+            laden();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ZUSTAND_GELADEN, geladen);
+    }
+
+    /** Lädt im Hintergrund, was die Seite braucht (bisher: die Schriften), und baut sie dann auf. */
+    private void laden() {
+        ladebildschirm.starten(new Runnable() {
+            @Override
+            public void run() {
+                geladen = true;
+            }
+        });
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Schriften.serif(MainActivity.this);
+                Schriften.sans(MainActivity.this);
+                Schriften.sansKraeftig(MainActivity.this);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isFinishing() || isDestroyed()) {
+                            return;
+                        }
+                        einrichten();
+                        ladebildschirm.arbeitFertig();
+                    }
+                });
+            }
+        }, "jkhd-laden").start();
+    }
+
+    /** Baut das Kontrollzentrum auf: Überschrift in der Serife, die Plätze mit den Bereichen. */
+    private void einrichten() {
         ((TextView) findViewById(R.id.ueberschrift)).setTypeface(Schriften.serif(this));
 
         Bereich[] bereiche = Bereich.values();

@@ -6,4 +6,6 @@
     <dimen name="kachel_radius">20dp</dimen>
     <!-- Hoehe des Marken-Lockups oben links; die PNGs in drawable-*dpi sind genau dafuer gerendert. -->
     <dimen name="lockup_hoehe">24dp</dimen>
+    <!-- Breite des grossen Lockups auf dem Ladebildschirm; lockup_gross.png ist dafuer gerendert. -->
+    <dimen name="lockup_gross_breite">320dp</dimen>
 </resources>

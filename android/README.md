@@ -1,7 +1,9 @@
 # JKHD-App (Android)
 
-Stand 21.10.2026 (Fassung 0.3): schwarzer Startbildschirm, oben links klein das Marken-Lockup der
-Website (Zeichen, JKHD, „Quant Systems / Just Know How to Dominate.“), darunter die Überschrift
+Stand 21.10.2026 (Fassung 0.4): Beim Öffnen zuerst der Ladebildschirm — schwarz, in der Mitte das
+Marken-Lockup groß, unten ein Ladebalken, der in gut einer Sekunde volläuft (länger, wenn das Laden
+länger dauert) und dann ausblendet. Dahinter das Kontrollzentrum: oben links klein dasselbe Lockup
+(Zeichen, JKHD, „Quant Systems / Just Know How to Dominate.“), darunter die Überschrift
 „Kontrollzentrum“ und die Vierecke, je eines pro Bereich — „Webseite“ (Dashboard, Partnerzugänge)
 und „Quant System“ (Steuerung); zwei Plätze sind frei für weitere Bereiche. Ein Tipp auf ein Viereck
 öffnet die Seite des Bereichs, bisher ein Platzhalter („In Vorbereitung“) — dort entstehen später
@@ -13,7 +15,10 @@ app/src/main/AndroidManifest.xml          zwei Activities (Start, Bereich), Star
 app/src/main/java/de/jkhd/app/
   Bereich.java                            die Bereiche: Titel, Untertitel, Beschreibung (Texte in strings.xml);
                                           neuer Bereich = ein Eintrag hier, Platz auf dem Start ist für vier
-  MainActivity.java                       Startbildschirm, belegt die vier Plätze mit den Bereichen
+  MainActivity.java                       Startbildschirm: zeigt den Ladebildschirm, lädt im Hintergrund die
+                                          Schriften, belegt dann die vier Plätze mit den Bereichen
+  Ladebildschirm.java                     steuert den Ladebalken: Grundlauf bis 85 %, voll + ausblenden, wenn die
+                                          Arbeit gemeldet ist; später für Anmeldung/Daten wiederverwendbar
   BereichActivity.java                    Seite eines Bereichs (Platzhalter), Zurück
   QuadratKachel.java                      FrameLayout, das immer quadratisch bleibt
   Schriften.java                          lädt die Schriften aus assets/fonts (Playfair Display 500, Manrope 500/700)
@@ -21,7 +26,10 @@ app/src/main/assets/fonts/                die Schriften als feste Schnitte, aus 
                                           (assets/fonts) erzeugt; OFL-Lizenztexte daneben
 app/src/main/res/drawable-*dpi/lockup.png das Marken-Lockup, mit Chromium aus dem Website-CSS (.brand, dunkel)
                                           gerendert, je Dichte für 24 dp Höhe (Schriften Manrope + Cascadia Code)
-app/src/main/res/layout/activity_main.xml Lockup, Überschrift, 2 × 2 Plätze (include kachel.xml), scrollbar
+app/src/main/res/drawable-*dpi/lockup_gross.png  dasselbe für den Ladebildschirm, 320 dp breit
+app/src/main/res/drawable/ladebalken.xml  der Ladebalken (dunkle Spur, heller Fortschritt)
+app/src/main/res/layout/ladebildschirm.xml  Ladebildschirm: Lockup groß in der Mitte, Balken unten
+app/src/main/res/layout/activity_main.xml Inhalt (Lockup, Überschrift, 2 × 2 Plätze, scrollbar) + Ladebildschirm darüber
 app/src/main/res/layout/kachel.xml        ein Viereck: Nummer, Titel, Untertitel
 app/src/main/res/layout/activity_bereich.xml  Platzhalterseite
 app/src/main/res/drawable/kachel_hintergrund.xml  Fläche, Rand, runde Ecken, Druck-Schimmer
@@ -80,5 +88,5 @@ Update mit fremder Signatur zu.
 ## Werkzeuge
 
 Android Gradle Plugin 8.13.2, Gradle 8.14.3 (über `gradlew`), JDK 17, compileSdk 35.
-Keine Abhängigkeiten, kein Kotlin, kein AndroidX — die APK ist rund 150 KB groß (davon rund
-125 KB die drei Schriftdateien).
+Keine Abhängigkeiten, kein Kotlin, kein AndroidX — die APK ist rund 230 KB groß (davon rund
+125 KB die drei Schriftdateien und 70 KB die Lockup-Bilder).

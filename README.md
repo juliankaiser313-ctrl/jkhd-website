@@ -381,13 +381,14 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
 
 ## Android-App (android/, seit 21.10.2026)
 
-Stand Fassung 0.3: schwarzer Startbildschirm (Fenster, Leisten, ab Android 12 auch der
-Begrüßungsschirm), oben links klein das Marken-Lockup der Website, darunter die Überschrift
+Stand Fassung 0.4: schwarzer Startbildschirm (Fenster, Leisten, ab Android 12 auch der
+Begrüßungsschirm). Beim Öffnen zuerst ein Ladebildschirm mit dem Marken-Lockup groß und einem
+Ladebalken unten, dann das Kontrollzentrum: oben links klein das Lockup, darunter die Überschrift
 „Kontrollzentrum“ und ein Viereck je Bereich — „Webseite“ (Dashboard, Partnerzugänge) und
 „Quant System“ (Steuerung), zwei Plätze frei für weitere. Ein Tipp öffnet die Seite des Bereichs,
 bisher ein Platzhalter; dort entstehen später die Dashboards. Schriften wie auf der Website. Auf dem
 Handy heißt die App „JKHD“, Symbol ist das Zeichen (drei Balken). Paket `de.jkhd.app`, Android 7
-oder neuer, keine Bibliotheken, APK rund 150 KB. Aufbau, Bauen, Installieren und Signatur:
+oder neuer, keine Bibliotheken, APK rund 230 KB. Aufbau, Bauen, Installieren und Signatur:
 `android/README.md`.
 
 - **APK holen:** Jeder Push auf `main`, der `android/` berührt, baut sie (`.github/workflows/android.yml`)
