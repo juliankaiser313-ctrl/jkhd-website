@@ -51,6 +51,10 @@ jobs:
           echo "$JKHD_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/jkhd.jks"
           echo "JKHD_KEYSTORE_FILE=$RUNNER_TEMP/jkhd.jks" >> "$GITHUB_ENV"
 
+      - name: Unit-Tests (Partnerverwaltung)
+        working-directory: android
+        run: ./gradlew --no-daemon :app:testReleaseUnitTest
+
       - name: APK bauen
         working-directory: android
         env:

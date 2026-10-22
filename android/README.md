@@ -1,14 +1,14 @@
 # JKHD-App (Android)
 
-Stand 21.10.2026 (Fassung 0.5): Beim Öffnen zuerst der Ladebildschirm — schwarz, in der Mitte das
+Stand 22.10.2026 (Fassung 0.6): Beim Öffnen zuerst der Ladebildschirm — schwarz, in der Mitte das
 Marken-Lockup groß, unten ein Ladebalken, der in gut einer Sekunde volläuft (länger, wenn das Laden
 länger dauert) und dann ausblendet. Dahinter das Kontrollzentrum: oben links klein dasselbe Lockup
 (Zeichen, JKHD, „Quant Systems / Just Know How to Dominate.“), darunter die Überschrift
 „Kontrollzentrum“ und die Vierecke, je eines pro Bereich — „Webseite“ (Dashboard, Partnerzugänge)
-und „Quant System“ (Steuerung); zwei Plätze sind frei für weitere Bereiche. Ein Tipp auf ein Viereck
-öffnet die Seite des Bereichs, bisher ein Platzhalter („In Vorbereitung“) — dort entstehen später
-die Dashboards. Schriften wie auf der Website (Playfair Display für Überschriften, Manrope sonst).
-Auf dem Handy heißt die App „JKHD“ und trägt das Zeichen (drei Balken) als Symbol.
+und „Quant System“ (Steuerung); zwei Plätze sind frei für weitere Bereiche. **„Webseite“ ist seit
+Fassung 0.6 die Partnerverwaltung** (siehe unten), „Quant System“ noch ein Platzhalter
+(„In Vorbereitung“). Schriften wie auf der Website (Playfair Display für Überschriften, Manrope
+sonst). Auf dem Handy heißt die App „JKHD“ und trägt das Zeichen (drei Balken) als Symbol.
 
 ```
 app/src/main/AndroidManifest.xml          zwei Activities (Start, Bereich), Startsymbol, Thema
@@ -23,6 +23,9 @@ app/src/main/java/de/jkhd/app/
   QuadratKachel.java                      FrameLayout, das quadratisch bleibt (nur bei sehr großer Systemschrift
                                           so viel höher wie nötig, statt Text abzuschneiden)
   Schriften.java                          lädt die Schriften aus assets/fonts (Playfair Display 500, Manrope 500/700)
+                                          und setzt sie auf ganze Ansichten (Tag „serif“ = Überschrift, „mono“ = bleibt)
+  webseite/                               der Bereich Webseite = Partnerverwaltung (Abschnitt unten)
+app/src/test/java/de/jkhd/app/webseite/  Unit-Tests des Kerns, inkl. Übungsserver für /verwaltung (VerwaltungAttrappe)
 app/src/main/assets/fonts/                die Schriften als feste Schnitte, aus den variablen Dateien der Website
                                           (assets/fonts) erzeugt; OFL-Lizenztexte daneben
 app/src/main/res/drawable-*dpi/lockup.png das Marken-Lockup, mit Chromium aus dem Website-CSS (.brand, dunkel)
@@ -46,6 +49,68 @@ app/src/main/res/mipmap-*dpi/             feste PNG-Symbole aus assets/logo.png 
 app/build.gradle.kts                      Paket de.jkhd.app, minSdk 24 (Android 7), targetSdk 35, keine Bibliotheken
 signing/jkhd-dev.jks                      Entwicklungsschlüssel (siehe unten)
 ```
+
+## Bereich Webseite — die Partnerverwaltung auf dem Handy
+
+Seit Fassung 0.6 kann die App unter „Webseite“ dasselbe wie die **Partner-App auf dem PC**
+(`JKHD-Partner-Server/verwaltung/`, Analyse in `analyse-partner-app.md`): Partner anlegen,
+E-Mail-Adresse, Name, Rolle, Module (Freigaben), Angaben, Dateien hochladen, Ansicht (Begrüßung,
+vier Schalter, „für alle übernehmen“), interne Notiz, Partner entfernen, Rollen pflegen, Passwort
+eines Partners entfernen, Vorschau der Partnerseite. Es gibt keine eigene Schnittstelle fürs Handy —
+die App spricht genau wie die PC-App mit `POST https://api.jkhd.de/verwaltung` (Aktionen `lesen`,
+`schreiben`, `datei_hochladen`, `passwort_entfernen`), jede Anfrage HMAC-SHA256-unterschrieben, mit
+Zeitstempel (Uhr über `GET /ping` abgeglichen), Einmal-Wert, ohne Origin-Kopf. Am Server war nichts
+zu ändern.
+
+**Der Schlüssel.** Die Unterschrift braucht denselben Schlüssel wie die PC-App (64 Hex-Zeichen).
+Beim ersten Öffnen fragt die App danach. Am PC ausgeben:
+
+```
+python verwaltung\partnerverwaltung.py --schluessel-ausgeben DATEI
+```
+
+Inhalt der Datei in die App eintippen oder einfügen, Datei danach löschen (nie per Mail oder
+Messenger schicken). Die App legt den Schlüssel mit einem Schlüssel aus dem **Android-Keystore**
+verschlüsselt ab, der nur kurz nach einer Bestätigung der **Bildschirmsperre** benutzbar ist — ohne
+Bildschirmsperre speichert die App ihn nicht. Beim Öffnen des Bereichs fragt Android deshalb nach
+PIN/Muster/Fingerabdruck. „Schlüssel vom Handy entfernen“ unten in der Liste löscht ihn wieder.
+Besser als derselbe Schlüssel auf PC und Handy wäre ein eigener je Gerät, einzeln widerrufbar —
+das ist eine kleine Server-Ergänzung (Bericht, Abschnitt 7.2, „Weg B“), bislang nicht umgesetzt.
+
+**So läuft es** (`webseite/`):
+
+```
+WebseiteActivity.java      die Partnerliste: Suche, „+ Partner“, Rollen, Neu laden, Speicherleiste
+                           (n Änderungen, Verwerfen, Speichern mit Änderungsliste), Marken ● geändert / ! Beanstandung;
+                           beim Öffnen Schlüssel holen → Sperre bestätigen → Liste laden (Ladebildschirm)
+PartnerActivity.java       ein Partner: Adresse, Name, Rolle, Passwortstatus (+ sofort entfernen), Module,
+                           Angaben, Dateien (sofort hochladen, zugeordnet erst mit Speichern), Ansicht, Vorschau,
+                           Notiz, bisherige Adresse, Partner entfernen, Fertig
+RollenActivity.java        Rollen: umbenennen (zieht die Angabe bei allen Partnern mit), „alle Module“, entfernen, neu
+VorschauActivity.java      die echte partner.html der Website in einer WebView (Dateien aus assets/website, beim Bau
+                           aus dem Website-Repo kopiert — Gradle-Task websiteVorschauKopieren), data-api="",
+                           window.JKHD_VORSCHAU = true, Daten als message-Ereignis wie von /daten
+SchluesselActivity.java    Schlüssel eingeben; Schluesselspeicher.java verschlüsselt ihn (Keystore, Bildschirmsperre)
+WebseiteSitzung.java       Zustand, solange die App läuft: Schlüssel im Speicher, Stand, Arbeitskopie (geschlossen = weg)
+Verwaltung.java            der Client für /verwaltung; Unterschrift.java die Unterschrift; Stand.java die Antwort von „lesen“
+Partnerliste/Partner/…     das Datenmodell wie partner.json (Rolle = erste Angabe „Rolle“, Rollen mit „alle Module“
+                           bekommen beim Bauen alle Katalog-IDs, fremde Freigaben bleiben)
+Pruefung.java              Prüfung vor dem Speichern mit den Grenzen des Servers; Aenderungen.java die Änderungsliste
+VorschauDaten.java         baut aus einem Eintrag die Form von /daten für die Vorschau
+```
+
+Gespeichert wird immer die **ganze Liste** mit der Fassung (`basis`) des letzten Lesens; sagt der
+Server 409 (die PC-App hat inzwischen gespeichert), bietet die App „Neu laden“ an. Verlorene
+Antworten (Zeitüberschreitung) behandelt sie wie die PC-App: nachlesen, und wenn die eigene Liste
+schon auf dem Server steht, gilt es als gespeichert. Nicht übernommen wurde der Spiegel-Commit von
+`partner.json` ins Server-Repo (das macht die PC-App beim nächsten Start). Was die PC-App nicht
+kann (VIP-Katalog pflegen, Anfragen lesen, Mails schreiben), kann die App auch nicht — dafür müsste
+der Server neue Aktionen bekommen (Bericht, Abschnitt 7.5).
+
+Tests: `cd android && ./gradlew :app:testReleaseUnitTest` — Unterschrift (bekannter HMAC-Vektor,
+Umlaute), Adressen, Lesen/Bauen der Liste, Prüfung, Änderungsliste, Vorschaudaten und der Client
+gegen einen Übungsserver (`VerwaltungAttrappe`), der Unterschrift, Zeitfenster, Einmal-Wert,
+Origin-Verbot, 409/400/503 nachbildet. GitHub Actions lässt sie vor jedem Bau laufen.
 
 ## Auf das Handy bekommen
 
@@ -91,5 +156,6 @@ Update mit fremder Signatur zu.
 ## Werkzeuge
 
 Android Gradle Plugin 8.13.2, Gradle 8.14.3 (über `gradlew`), JDK 17, compileSdk 35.
-Keine Abhängigkeiten, kein Kotlin, kein AndroidX — die APK ist rund 230 KB groß (davon rund
-125 KB die drei Schriftdateien und 70 KB die Lockup-Bilder).
+Keine Abhängigkeiten, kein Kotlin, kein AndroidX (nur JUnit 4 und org.json für die Tests auf dem
+Rechner) — die APK ist rund 480 KB groß (davon rund 125 KB die drei Schriftdateien, 70 KB die
+Lockup-Bilder und 230 KB die Website-Dateien für die Vorschau).

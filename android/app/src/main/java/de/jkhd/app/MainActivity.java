@@ -105,7 +105,11 @@ public class MainActivity extends Activity {
         kachel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BereichActivity.oeffnen(MainActivity.this, bereich);
+                if (bereich.seite != null) {
+                    startActivity(new android.content.Intent(MainActivity.this, bereich.seite));
+                } else {
+                    BereichActivity.oeffnen(MainActivity.this, bereich);
+                }
             }
         });
     }

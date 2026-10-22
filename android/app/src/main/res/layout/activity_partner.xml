@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ein Partner bearbeiten (das Gegenstück zur rechten Spalte der PC-App), fürs Handy untereinander. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:fitsSystemWindows="true">
+
+    <ScrollView
+        android:id="@+id/rollen_flaeche"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/seitenrand">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/zurueck"
+                    style="@style/Knopf.Text"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:textSize="16sp"
+                    android:text="@string/zurueck" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/vorschau_oben"
+                    style="@style/Knopf.Text"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:text="@string/ws_vorschau" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/arbeit"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginTop="8dp"
+                android:indeterminate="true"
+                android:progressDrawable="@drawable/ladebalken"
+                android:visibility="invisible" />
+
+            <TextView
+                style="@style/Kicker"
+                android:layout_marginTop="12dp"
+                android:text="@string/ws_kicker" />
+
+            <TextView
+                android:id="@+id/titel"
+                style="@style/Ueberschrift"
+                android:layout_marginTop="6dp" />
+
+            <TextView
+                android:id="@+id/probleme"
+                style="@style/Hinweis"
+                android:layout_marginTop="12dp"
+                android:visibility="gone" />
+
+            <!-- Person -->
+            <TextView
+                style="@style/Abschnitt"
+                android:text="@string/ws_abschnitt_person" />
+
+            <TextView
+                style="@style/Beschriftung"
+                android:text="@string/ws_email" />
+
+            <EditText
+                android:id="@+id/email"
+                style="@style/Eingabe"
+                android:importantForAutofill="no"
+                android:inputType="textEmailAddress|textNoSuggestions"
+                android:maxLines="1" />
+
+            <TextView
+                style="@style/Beschriftung"
+                android:text="@string/ws_name" />
+
+            <EditText
+                android:id="@+id/name"
+                style="@style/Eingabe"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName|textCapWords"
+                android:maxLines="1" />
+
+            <TextView
+                style="@style/Beschriftung"
+                android:text="@string/ws_rolle" />
+
+            <Spinner
+                android:id="@+id/rolle"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/eingabe_hintergrund"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp" />
+
+            <TextView
+                android:id="@+id/passwort_status"
+                style="@style/Text"
+                android:layout_marginTop="12dp"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/passwort_entfernen"
+                style="@style/Knopf.Gefahr"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="8dp"
+                android:minHeight="40dp"
+                android:textSize="13sp"
+                android:text="@string/ws_passwort_entfernen"
+                android:visibility="gone" />
+
+            <!-- Module -->
+            <TextView
+                style="@style/Abschnitt"
+                android:text="@string/ws_abschnitt_module" />
+
+            <LinearLayout
+                android:id="@+id/module"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <!-- Angaben -->
+            <TextView
+                style="@style/Abschnitt"
+                android:text="@string/ws_abschnitt_angaben" />
+
+            <LinearLayout
+                android:id="@+id/angaben"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <Button
+                android:id="@+id/angabe_neu"
+                style="@style/Knopf.Zweit"
+                android:layout_marginTop="8dp"
+                android:text="@string/ws_angabe_neu" />
+
+            <!-- Dateien -->
+            <TextView
+                style="@style/Abschnitt"
+                android:text="@string/ws_abschnitt_dateien" />
+
+            <LinearLayout
+                android:id="@+id/dateien"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <Button
+                android:id="@+id/datei_neu"
+                style="@style/Knopf.Zweit"
+                android:layout_marginTop="8dp"
+                android:text="@string/ws_datei_neu" />
+
+            <!-- Ansicht -->
+            <TextView
+                style="@style/Abschnitt"
+                android:text="@string/ws_abschnitt_ansicht" />
+
+            <TextView
+                style="@style/Beschriftung"
+                android:text="@string/ws_begruessung" />
+
+            <EditText
+                android:id="@+id/begruessung"
+                style="@style/Eingabe"
+                android:gravity="top|start"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine|textCapSentences"
+                android:minLines="2" />
+
+            <Switch
+                android:id="@+id/ansicht_daten"
+                style="@style/Text"
+                android:layout_marginTop="12dp"
+                android:minHeight="44dp"
+                android:textColor="@color/text_hell"
+                android:text="@string/ws_ansicht_daten" />
+
+            <Switch
+                android:id="@+id/ansicht_dateien"
+                style="@style/Text"
+                android:minHeight="44dp"
+                android:textColor="@color/text_hell"
+                android:text="@string/ws_ansicht_dateien" />
+
+            <Switch
+                android:id="@+id/ansicht_module"
+                style="@style/Text"
+                android:minHeight="44dp"
+                android:textColor="@color/text_hell"
+                android:text="@string/ws_ansicht_module" />
+
+            <Switch
+                android:id="@+id/ansicht_vip"
+                style="@style/Text"
+                android:minHeight="44dp"
+                android:textColor="@color/text_hell"
+                android:text="@string/ws_ansicht_vip" />
+
+            <Button
+                android:id="@+id/vorschau"
+                style="@style/Knopf.Zweit"
+                android:layout_marginTop="12dp"
+                android:text="@string/ws_vorschau" />
+
+            <Button
+                android:id="@+id/ansicht_alle"
+                style="@style/Knopf.Zweit"
+                android:layout_marginTop="8dp"
+                android:text="@string/ws_ansicht_alle" />
+
+            <!-- Notiz -->
+            <TextView
+                style="@style/Abschnitt"
+                android:text="@string/ws_abschnitt_notiz" />
+
+            <EditText
+                android:id="@+id/notiz"
+                style="@style/Eingabe"
+                android:gravity="top|start"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine|textCapSentences"
+                android:minLines="3" />
+
+            <TextView
+                android:id="@+id/bisherige_adresse"
+                style="@style/Text"
+                android:layout_marginTop="20dp"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/partner_entfernen"
+                style="@style/Knopf.Gefahr"
+                android:layout_marginTop="20dp"
+                android:text="@string/ws_partner_entfernen" />
+
+            <Button
+                android:id="@+id/fertig"
+                style="@style/Knopf.Primaer"
+                android:layout_marginTop="12dp"
+                android:text="@string/ws_fertig" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>

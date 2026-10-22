@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hauptknopf: helle Flaeche, dunkle Schrift; gesperrt = dunkle Flaeche. -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/druck_dunkel">
+    <item>
+        <selector>
+            <item android:state_enabled="false">
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/kachel_flaeche" />
+                    <stroke android:width="1dp" android:color="@color/kachel_rand" />
+                    <corners android:radius="12dp" />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="@color/text_hell" />
+                    <corners android:radius="12dp" />
+                </shape>
+            </item>
+        </selector>
+    </item>
+</ripple>

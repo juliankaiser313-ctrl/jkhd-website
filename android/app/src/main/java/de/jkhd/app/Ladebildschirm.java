@@ -4,18 +4,17 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ProgressBar;
 
 /**
  * Steuert den Ladebildschirm (ladebildschirm.xml): großes Lockup, unten ein Ladebalken.
  *
- * Ablauf: {@link #starten} lässt den Balken in gut einer Sekunde bis 85 % laufen, damit der
- * Bildschirm nicht nur aufblitzt. Ist bis dahin auch die eigentliche Arbeit gemeldet
- * ({@link #arbeitFertig}), läuft der Balken voll, der Bildschirm blendet aus und wird entfernt.
+ * Ablauf: {@link #starten} zeigt ihn und lässt den Balken in gut einer Sekunde bis 85 % laufen,
+ * damit der Bildschirm nicht nur aufblitzt. Ist bis dahin auch die eigentliche Arbeit gemeldet
+ * ({@link #arbeitFertig}), läuft der Balken voll, der Bildschirm blendet aus und wird versteckt.
  * Dauert die Arbeit länger, bleibt der Balken bei 85 % stehen, bis sie fertig ist.
- * Später (Anmeldung, Daten laden) lassen sich hier Zwischenstände über {@link #fortschritt} setzen.
+ * Wiederverwendbar: ein zweites {@link #starten} zeigt ihn erneut (Anmeldung, Neu laden).
  */
 public final class Ladebildschirm {
 
@@ -31,6 +30,7 @@ public final class Ladebildschirm {
     private boolean grundlaufFertig;
     private boolean arbeitFertig;
     private boolean abgeschlossen;
+    private int lauf;
 
     public Ladebildschirm(View ansicht) {
         this.ansicht = ansicht;
@@ -42,19 +42,29 @@ public final class Ladebildschirm {
     /** Zeigt den Bildschirm und startet den Grundlauf des Balkens; danach läuft, sobald alles fertig ist. */
     public void starten(Runnable danach) {
         this.danach = danach;
-        ansicht.setVisibility(View.VISIBLE);
+        lauf++;
+        final int dieserLauf = lauf;
+        grundlaufFertig = false;
+        arbeitFertig = false;
+        abgeschlossen = false;
+        ansicht.animate().cancel();
         ansicht.setAlpha(1f);
-        ObjectAnimator lauf = ObjectAnimator.ofInt(balken, "progress", 0, GRUNDLAUF_BIS);
-        lauf.setDuration(GRUNDLAUF_DAUER_MS);
-        lauf.setInterpolator(new DecelerateInterpolator());
-        lauf.addListener(new AnimatorListenerAdapter() {
+        ansicht.setVisibility(View.VISIBLE);
+        balken.setProgress(0);
+        ObjectAnimator anim = ObjectAnimator.ofInt(balken, "progress", 0, GRUNDLAUF_BIS);
+        anim.setDuration(GRUNDLAUF_DAUER_MS);
+        anim.setInterpolator(new DecelerateInterpolator());
+        anim.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                if (dieserLauf != lauf) {
+                    return;
+                }
                 grundlaufFertig = true;
                 pruefen();
             }
         });
-        lauf.start();
+        anim.start();
     }
 
     /** Zwischenstand der Arbeit in Prozent (0–100); nie unter den aktuellen Stand. */
@@ -69,10 +79,16 @@ public final class Ladebildschirm {
         pruefen();
     }
 
-    /** Ohne Animation weg — etwa, wenn die Seite nach einer Drehung neu aufgebaut wird. */
+    /** Ohne Animation weg — etwa, wenn die Seite nach einer Drehung neu aufgebaut wird oder etwas schiefging. */
     public void sofortWeg() {
+        lauf++;
         abgeschlossen = true;
-        entfernen();
+        ansicht.animate().cancel();
+        verstecken();
+    }
+
+    public boolean sichtbar() {
+        return ansicht.getVisibility() == View.VISIBLE;
     }
 
     private void pruefen() {
@@ -83,18 +99,25 @@ public final class Ladebildschirm {
     }
 
     private void abschliessen() {
+        final int dieserLauf = lauf;
         ObjectAnimator voll = ObjectAnimator.ofInt(balken, "progress", balken.getProgress(), VOLL);
         voll.setDuration(ABSCHLUSS_DAUER_MS);
         voll.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                if (dieserLauf != lauf) {
+                    return;
+                }
                 ansicht.animate()
                         .alpha(0f)
                         .setDuration(AUSBLENDEN_DAUER_MS)
                         .withEndAction(new Runnable() {
                             @Override
                             public void run() {
-                                entfernen();
+                                if (dieserLauf != lauf) {
+                                    return;
+                                }
+                                verstecken();
                                 if (danach != null) {
                                     danach.run();
                                 }
@@ -106,11 +129,8 @@ public final class Ladebildschirm {
         voll.start();
     }
 
-    private void entfernen() {
+    private void verstecken() {
         ansicht.setVisibility(View.GONE);
-        ViewGroup eltern = (ViewGroup) ansicht.getParent();
-        if (eltern != null) {
-            eltern.removeView(ansicht);
-        }
+        ansicht.setAlpha(1f);
     }
 }

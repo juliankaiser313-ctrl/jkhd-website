@@ -15,4 +15,70 @@
     <string name="bereich_quant_titel">Quant System</string>
     <string name="bereich_quant_untertitel">Steuerung</string>
     <string name="bereich_quant_beschreibung">Hier entsteht die Steuerung des Quant-Systems.</string>
+
+    <!-- Bereich Webseite: Partnerverwaltung -->
+    <string name="ws_kicker">Webseite · Partnerzugänge</string>
+    <string name="ws_titel">Partner</string>
+    <string name="ws_suche">Suchen: Name, Adresse, Rolle</string>
+    <string name="ws_partner_neu">+ Partner hinzufügen</string>
+    <string name="ws_rollen">Rollen</string>
+    <string name="ws_neu_laden">Neu laden</string>
+    <string name="ws_schluessel_entfernen">Schlüssel vom Handy entfernen</string>
+    <string name="ws_verwerfen">Verwerfen</string>
+    <string name="ws_speichern">Speichern …</string>
+    <string name="ws_nochmal">Nochmal versuchen</string>
+    <string name="ws_laedt">Die Partnerliste wird vom Server geholt …</string>
+    <string name="ws_keine_partner">Noch kein Partner. Mit „+ Partner hinzufügen“ den ersten anlegen.</string>
+    <string name="ws_nichts_gefunden">Kein Partner passt zur Suche.</string>
+    <string name="ws_schluessel_neu">Schlüssel neu eingeben</string>
+
+    <string name="ws_schluessel_titel">Schlüssel der Verwaltung</string>
+    <string name="ws_schluessel_text">Die Partnerverwaltung spricht mit dem Server über eine Unterschrift. Dafür braucht das Handy denselben Schlüssel wie die Partner-App auf dem PC: 64 Zeichen (0–9, a–f). Am PC ausgeben mit\n\npython verwaltung\\partnerverwaltung.py --schluessel-ausgeben DATEI\n\nund die Datei danach löschen. Auf dem Handy wird der Schlüssel verschlüsselt abgelegt und nur nach Bestätigung der Bildschirmsperre benutzt. Wer ihn hat, kann die Partnerliste ändern — nie weiterleiten.</string>
+    <string name="ws_schluessel_hinweis">Schlüssel (64 Hex-Zeichen)</string>
+    <string name="ws_schluessel_speichern">Schlüssel speichern</string>
+    <string name="ws_schluessel_ungueltig">Das ist kein Schlüssel: erwartet sind genau 64 Zeichen aus 0–9 und a–f.</string>
+    <string name="ws_sperre_fehlt">Das Handy hat keine Bildschirmsperre. Bitte zuerst eine PIN, ein Muster oder einen Fingerabdruck einrichten — sonst wäre der Schlüssel ungeschützt.</string>
+    <string name="ws_sperre_titel">JKHD-Verwaltung</string>
+    <string name="ws_sperre_text">Bildschirmsperre bestätigen, um den Schlüssel der Partnerverwaltung zu benutzen.</string>
+    <string name="ws_sperre_abgebrochen">Ohne Bestätigung der Bildschirmsperre bleibt der Schlüssel zu.</string>
+
+    <string name="ws_abschnitt_person">Person</string>
+    <string name="ws_abschnitt_module">Module</string>
+    <string name="ws_abschnitt_angaben">Angaben — sieht der Partner nach der Anmeldung</string>
+    <string name="ws_abschnitt_dateien">Dateien — sieht der Partner</string>
+    <string name="ws_abschnitt_ansicht">Ansicht — so sieht der Partner seine Seite</string>
+    <string name="ws_abschnitt_notiz">Interne Notiz — sieht nur JKHD</string>
+    <string name="ws_email">E-Mail-Adresse (Anmeldung)</string>
+    <string name="ws_name">Name</string>
+    <string name="ws_rolle">Rolle</string>
+    <string name="ws_passwort_entfernen">Passwort entfernen</string>
+    <string name="ws_passwort_keins">Kein Passwort — der Partner meldet sich per Code an.</string>
+    <string name="ws_passwort_unbekannt">Passwortstatus unbekannt.</string>
+    <string name="ws_keine_module">Der Katalog hat keine Module.</string>
+    <string name="ws_angabe_neu">+ Angabe</string>
+    <string name="ws_angabe_label">Bezeichnung</string>
+    <string name="ws_angabe_wert">Wert</string>
+    <string name="ws_datei_neu">+ Datei hochladen</string>
+    <string name="ws_datei_text">Beschreibung (optional)</string>
+    <string name="ws_keine_dateien">Keine Dateien hinterlegt.</string>
+    <string name="ws_begruessung">Begrüßungstext</string>
+    <string name="ws_ansicht_daten">Ihre Daten (Angaben)</string>
+    <string name="ws_ansicht_dateien">Dateien</string>
+    <string name="ws_ansicht_module">Zugänge (Module)</string>
+    <string name="ws_ansicht_vip">VIP-Adresse</string>
+    <string name="ws_vorschau">Vorschau</string>
+    <string name="ws_ansicht_alle">Diese Ansicht für alle Partner übernehmen</string>
+    <string name="ws_notiz">Notiz</string>
+    <string name="ws_partner_entfernen">Partner entfernen</string>
+    <string name="ws_fertig">Fertig</string>
+    <string name="ws_entfernen_zeile">✕</string>
+    <string name="ws_laedt_hoch">Datei wird hochgeladen …</string>
+
+    <string name="ws_rollen_titel">Rollen</string>
+    <string name="ws_rollen_text">Eine Rolle ist eine Angabe am Partner. Rollen mit „alle Module“ schalten beim Speichern jedes Modul des Katalogs frei.</string>
+    <string name="ws_rolle_neu">Neue Rolle</string>
+    <string name="ws_hinzufuegen">Hinzufügen</string>
+    <string name="ws_alle_module">alle Module</string>
+
+    <string name="ws_vorschau_titel">Vorschau — so sieht es der Partner</string>
 </resources>

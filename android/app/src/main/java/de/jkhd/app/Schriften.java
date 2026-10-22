@@ -2,6 +2,9 @@ package de.jkhd.app;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 /**
  * Die Schriften der Website, mitgeliefert unter assets/fonts (SIL Open Font License, Lizenztexte
@@ -9,6 +12,11 @@ import android.graphics.Typeface;
  * variablen Schriften der Website (Stärke 500 bzw. 700), damit sie auf jedem Android gleich aussehen.
  */
 public final class Schriften {
+
+    /** android:tag="serif" an einem TextView: Überschrift in Playfair Display. */
+    public static final String TAG_SERIF = "serif";
+    /** android:tag="mono" an einem TextView: bleibt in der Festbreitenschrift des Systems. */
+    public static final String TAG_MONO = "mono";
 
     private static Typeface serif;
     private static Typeface sans;
@@ -33,12 +41,41 @@ public final class Schriften {
         return sans;
     }
 
-    /** Manrope 700 — Titel in den Vierecken. */
+    /** Manrope 700 — Titel in den Vierecken, Knöpfe. */
     public static Typeface sansKraeftig(Context context) {
         if (sansKraeftig == null) {
             sansKraeftig = laden(context, "fonts/manrope_700.ttf");
         }
         return sansKraeftig;
+    }
+
+    /**
+     * Setzt die Schriften auf alle TextViews unter einer Wurzel: Tag „serif“ → Playfair, Tag „mono“
+     * → unverändert, fett gesetzte → Manrope 700, alle anderen → Manrope 500.
+     */
+    public static void anwenden(View wurzel) {
+        if (wurzel instanceof TextView) {
+            TextView t = (TextView) wurzel;
+            Object tag = t.getTag();
+            if (TAG_MONO.equals(tag)) {
+                return;
+            }
+            Context c = t.getContext();
+            if (TAG_SERIF.equals(tag)) {
+                t.setTypeface(serif(c));
+            } else if (t.getTypeface() != null && t.getTypeface().isBold()) {
+                t.setTypeface(sansKraeftig(c));
+            } else {
+                t.setTypeface(sans(c));
+            }
+            return;
+        }
+        if (wurzel instanceof ViewGroup) {
+            ViewGroup g = (ViewGroup) wurzel;
+            for (int i = 0; i < g.getChildCount(); i++) {
+                anwenden(g.getChildAt(i));
+            }
+        }
     }
 
     private static Typeface laden(Context context, String pfad) {

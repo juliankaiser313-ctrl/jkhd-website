@@ -70,8 +70,9 @@ js/universum.js    Startseite: der Hero liegt auf der Buehne und wird beim Scrol
 assets/erde/       Erdbilder der NASA fuer js/universum.js (Blue Marble Tag, Black Marble Nacht, Wolken; Welt, Europa, Oberrhein; *-k.jpg = kleine Fassung fuers Handy). Gemeinfrei, Bildnachweis im Impressum. Werden erst geladen, wenn jemand bis zur Animation scrollt (2,3 MB bzw. 0,7 MB)
 favicon.svg        Browser-Tab-Icon (drei Balken)
 
-android/           Die JKHD-App für Android (21.10.2026): schwarzes „Kontrollzentrum“ mit Lockup und Vierecken je Bereich
-                   („Webseite“, „Quant System“, zwei Plätze frei), Symbol = das Zeichen. Eigenes Gradle-Projekt,
+android/           Die JKHD-App für Android (21./22.10.2026): schwarzes „Kontrollzentrum“ mit Lockup und Vierecken je Bereich
+                   („Webseite“ = Partnerverwaltung wie die PC-App, „Quant System“ = Platzhalter, zwei Plätze frei),
+                   Symbol = das Zeichen. Eigenes Gradle-Projekt,
                    gebaut von .github/workflows/android.yml; wird nicht mit der Website ausgeliefert
                    (siehe Abschnitt „Android-App“ und android/README.md)
 ```
@@ -381,15 +382,18 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
 
 ## Android-App (android/, seit 21.10.2026)
 
-Stand Fassung 0.5: schwarzer Startbildschirm (Fenster, Leisten, ab Android 12 auch der
+Stand Fassung 0.6: schwarzer Startbildschirm (Fenster, Leisten, ab Android 12 auch der
 Begrüßungsschirm). Beim Öffnen zuerst ein Ladebildschirm mit dem Marken-Lockup groß und einem
 Ladebalken unten, dann das Kontrollzentrum: oben links klein das Lockup, darunter die Überschrift
-„Kontrollzentrum“ und ein Viereck je Bereich — „Webseite“ (Dashboard, Partnerzugänge) und
-„Quant System“ (Steuerung), zwei Plätze frei für weitere. Ein Tipp öffnet die Seite des Bereichs,
-bisher ein Platzhalter; dort entstehen später die Dashboards. Schriften wie auf der Website. Auf dem
-Handy heißt die App „JKHD“, Symbol ist das Zeichen (drei Balken). Paket `de.jkhd.app`, Android 7
-oder neuer, keine Bibliotheken, APK rund 230 KB. Aufbau, Bauen, Installieren und Signatur:
-`android/README.md`.
+„Kontrollzentrum“ und ein Viereck je Bereich — „Webseite“ und „Quant System“, zwei Plätze frei für
+weitere. **„Webseite“ ist die Partnerverwaltung**: dasselbe wie die Partner-App am PC
+(Partner, Adressen, Rollen, Module, Angaben, Dateien, Ansicht, Vorschau, Passwort entfernen), über
+dieselbe unterschriebene Schnittstelle `POST api.jkhd.de/verwaltung`; der Schlüssel kommt vom PC
+und liegt auf dem Handy verschlüsselt hinter der Bildschirmsperre. „Quant System“ ist noch ein
+Platzhalter. Schriften wie auf der Website. Auf dem Handy heißt die App „JKHD“, Symbol ist das
+Zeichen (drei Balken). Paket `de.jkhd.app`, Android 7 oder neuer, keine Bibliotheken, APK rund
+480 KB. Aufbau, Bauen, Installieren, Signatur und die Partnerverwaltung: `android/README.md`;
+Analyse der PC-App und des Servers: `android/analyse-partner-app.md`.
 
 - **APK holen:** Jeder Push auf `main`, der `android/` berührt, baut sie (`.github/workflows/android.yml`)
   und legt sie als Veröffentlichung „app-aktuell“ ab:

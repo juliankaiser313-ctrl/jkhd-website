@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Eine Angabe: Bezeichnung, Wert, Entfernen. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/angabe_label"
+            style="@style/Eingabe"
+            android:hint="@string/ws_angabe_label"
+            android:importantForAutofill="no"
+            android:inputType="text|textCapSentences"
+            android:maxLines="1"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/angabe_wert"
+            style="@style/Eingabe"
+            android:layout_marginTop="4dp"
+            android:hint="@string/ws_angabe_wert"
+            android:importantForAutofill="no"
+            android:inputType="text|textCapSentences"
+            android:maxLines="2" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/angabe_entfernen"
+        style="@style/Knopf.Text"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:padding="12dp"
+        android:textColor="@color/text_gedaempft"
+        android:textSize="18sp"
+        android:text="@string/ws_entfernen_zeile" />
+
+</LinearLayout>

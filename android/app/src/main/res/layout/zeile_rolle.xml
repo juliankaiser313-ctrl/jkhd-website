@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Eine Rolle: Name (tippen = umbenennen), Häkchen „alle Module“, Entfernen. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/karte_hintergrund"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="14dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="4dp"
+    android:paddingBottom="6dp">
+
+    <TextView
+        android:id="@+id/rolle_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:textColor="@color/text_hell"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <CheckBox
+        android:id="@+id/rolle_alle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_gedaempft"
+        android:textSize="12sp"
+        android:text="@string/ws_alle_module" />
+
+    <TextView
+        android:id="@+id/rolle_entfernen"
+        style="@style/Knopf.Text"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textColor="@color/text_gedaempft"
+        android:textSize="18sp"
+        android:text="@string/ws_entfernen_zeile" />
+
+</LinearLayout>
