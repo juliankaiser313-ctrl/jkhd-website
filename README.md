@@ -66,7 +66,7 @@ js/bildlauf.js     Der Motor fuer Seiten als Folge lebender Bilder beim Scrollen
 js/bilder-pruefung.js   die Bilder der Pruefungen-Seite: Ueberschrift, fuenf Stufen, Belastungsproben, Grenze
 js/bilder-sicherheit.js die Bilder der Sicherheitsseite: Ueberschrift, sieben Sperren, Spuren, Daten, "Ehrlich gesagt"
 js/bilder-system.js     die Bilder der System-Seite: Ueberschrift, die acht Grundarten mit ihrem Haken, "Und bei uns?"
-js/universum.js    Startseite: der Hero liegt auf der Buehne und wird beim Scrollen zu Punkten, die sich in die Milchstrasse drehen (Vorspann, 11.10.2026); dann der Flug in die Milchstrasse, mit waagerechter Kamera durch ein dichtes Sternfeld unter dem Band der Milchstrasse, weit auseinander an fest stehenden Planeten vorbei (Kugeln in WebGL, Karten aus Rauschen) zur Erde (WebGL, NASA-Bilder), der Zoom auf eine Stadt, in ein Rechenzentrum bis zum Computer, dessen Gehaeuse durchsichtig wird (Platine); der Monitor rechnet die Formeln durch, Zeile fuer Zeile beim Scrollen, dann erscheint dort das Zeichen, am Ende Schwarz und der Spruch der Fusszeile (nur index.html / en/index.html)
+js/universum.js    Startseite: der Hero liegt auf der Buehne und wird beim Scrollen zu Punkten, die sich in die Milchstrasse drehen (Vorspann, 11.10.2026; seit 23.10.2026 2,5 Buehnenhoehen lang und weicher nachgefuehrt); dann der Flug in die Milchstrasse, mit waagerechter Kamera durch ein dichtes Sternfeld unter dem Band der Milchstrasse, weit auseinander an fest stehenden Planeten vorbei (Kugeln in WebGL, Karten aus Rauschen) zur Erde (WebGL, NASA-Bilder), der Zoom auf eine Stadt, in ein Rechenzentrum bis zum Computer, dessen Gehaeuse durchsichtig wird (Platine); der Monitor rechnet die Formeln durch, Zeile fuer Zeile beim Scrollen, dann erscheint dort das Zeichen, am Ende Schwarz und der Spruch der Fusszeile (nur index.html / en/index.html)
 assets/erde/       Erdbilder der NASA fuer js/universum.js (Blue Marble Tag, Black Marble Nacht, Wolken; Welt, Europa, Oberrhein; *-k.jpg = kleine Fassung fuers Handy). Gemeinfrei, Bildnachweis im Impressum. Werden erst geladen, wenn jemand bis zur Animation scrollt (2,3 MB bzw. 0,7 MB)
 favicon.svg        Browser-Tab-Icon (drei Balken)
 ```
@@ -351,6 +351,10 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
 - **Startseite (Hero im Universum):** Julian, 11.10.2026: „nicht erst schwarz, sondern das
   Logo, der Text und die Vierecke im Hintergrund sollen sich in eine Galaxie verwandeln, und
   dann geht es weiter.“ Der Hero liegt seither auf der Bühne der Animation (js/universum.js).
+  Julian, 23.10.2026: „diesen Übergang etwas länger machen, weil das geht zu schnell, und
+  bitte bisschen smoother“ — seither zweieinhalb Bühnenhöhen Scrollweg statt einer
+  (`VORSPANN_BUEHNEN`), der Abschnitt ist um diesen Weg länger, und im Vorspann folgt das
+  Bild dem Scrollen weicher nach.
 - **Prüfungen:** Julian, 11.10.2026: „alles wegmachen und stattdessen eine Animation, die beim
   Runterscrollen erklärt, was genau geprüft wird und wie — wenig Text, mehr Animation; ganz am
   Ende soll alles in Form des Zeichens und des Spruchs fließen.“ Texte je Bild: Überschrift,

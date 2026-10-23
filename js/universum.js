@@ -48,7 +48,8 @@
 // Punkten (Landumrisse von Hand nachgezeichnet, weiter unten) und die Planeten sind
 // schattierte Scheiben. Der Scrollfortschritt p durch den Abschnitt
 // #universum (die Buehne bleibt dabei stehen, sticky) treibt alles -- davor der
-// Vorspann (eine Bildschirmhoehe Scrollweg, Anteil `vorspann`): der Hero der
+// Vorspann (zweieinhalb Buehnenhoehen Scrollweg, Anteil `vorspann`; bis 23.10.2026 eine --
+// Julian: "das geht zu schnell, und bitte bisschen smoother"): der Hero der
 // Startseite liegt auf der Buehne; seine Ueberschrift, das Zeichen, die Knoepfe
 // und das Raster werden zu Punkten, die sich um die Mitte in die Arme und den
 // Kern der Milchstrasse drehen, waehrend die Seite dahinter schwarz wird und die
@@ -1421,7 +1422,7 @@ void main() {
   // abgetastet: jeder Buchstabe aus seiner Schrift an seiner Stelle (die Masse
   // kommen aus dem Dokument, Zeichen fuer Zeichen), die Balken des Zeichens, der
   // Strich, die Raender der Knoepfe -- und die Kreuzungen und Linien des Rasters.
-  // Beim Scrollen (eine Bildschirmhoehe, Anteil `vorspann` des Abschnitts) blendet
+  // Beim Scrollen (VORSPANN_BUEHNEN Buehnenhoehen, Anteil `vorspann` des Abschnitts) blendet
   // der Hero aus, waehrend die Leinwand dieselben Punkte zeigt; dann loesen sie
   // sich -- erst das Raster, dann die Schrift -- und drehen sich um die Mitte in
   // die Arme und den Kern der Milchstrasse, genau dorthin, wo ihr Bild zu Beginn
@@ -1437,11 +1438,15 @@ void main() {
   let zugabe = 0;            // Anteil am Ende, in dem der Spruch nur noch steht
   let heroTeilchen = null;   // die abgetasteten Punkte, je Groesse neu
   const VORSPANN_DAUER = 0.5;   // so lange (im Vorspann) fliegt ein Punkt
+  // Scrollweg des Vorspanns in Buehnenhoehen. Mit 1 war der Hero nach anderthalb
+  // Mausrad-Schritten weg und die Punkte drehten sich je Schritt um eine halbe Runde
+  // (gemessen 23.10.2026); css/style.css gibt dem Abschnitt den Weg dazu (.universum)
+  const VORSPANN_BUEHNEN = 2.5;
   const TOENE = [[175, 195, 255], [255, 255, 255], [255, 170, 205], [255, 228, 190]];   // wie das Bild der Galaxie
   const PUNKT_GALAXIE = 512;    // Kantenlaenge des Bildes, in das die Punkte gemalt werden
   function vorspannMessen() {
     const weg = abschnitt.offsetHeight - buehne.offsetHeight;
-    vorspann = hero && weg > 0 && !reduziert.matches ? clamp(H / weg, 0, 0.2) : 0;
+    vorspann = hero && weg > 0 && !reduziert.matches ? clamp((VORSPANN_BUEHNEN * H) / weg, 0, 0.2) : 0;
     zugabe = weg > 0 && !reduziert.matches ? clamp((1.1 * H) / weg, 0, 0.2) : 0;
   }
   function bild(p, zeit, still) {
@@ -2325,8 +2330,11 @@ void main() {
     const dt = Math.min(0.05, (jetzt - letzte) / 1000 || 0.016);
     letzte = jetzt;
     const zielP = zielFortschritt();
-    p += (zielP - p) * (1 - Math.exp(-dt * 6));   // weich, unabhaengig von der Bildrate
-    if (Math.abs(zielP - p) < 0.0004) p = zielP;
+    // weich, unabhaengig von der Bildrate; im Vorspann noch weicher (Zeitkonstante 0,25 s
+    // statt 0,17 s), danach wie bisher -- uebergeblendet, damit nichts springt
+    const rate = vorspann > 0 ? misch(4, 6, stueck(p, vorspann, vorspann * 1.4)) : 6;
+    p += (zielP - p) * (1 - Math.exp(-dt * rate));
+    if (Math.abs(zielP - p) < 0.00005) p = zielP;   // der letzte Rest rastet ein (unter 2 px Weg)
     if (p > ERDE_LADEN_AB) erdeLaden();   // kehrt nach dem ersten Mal sofort zurueck
     const ruhig = Math.abs(zielP - p) < 0.00001;
     bildNr++;
