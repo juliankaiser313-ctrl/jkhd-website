@@ -24,10 +24,13 @@
         android:textSize="15sp"
         android:textStyle="bold" />
 
+    <!-- saveEnabled="false": alle Zeilen tragen dieselbe Id; nach dem Drehen zählt das Modell,
+         sonst bekäme jede Rolle den Haken der letzten (und der Haken-Hörer würde ihn übernehmen). -->
     <CheckBox
         android:id="@+id/rolle_alle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:saveEnabled="false"
         android:textColor="@color/text_gedaempft"
         android:textSize="12sp"
         android:text="@string/ws_alle_module" />

@@ -20,8 +20,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,11 +39,15 @@ import de.jkhd.app.Schriften;
  * Bereich „Webseite“: die Partnerverwaltung — Partnerliste, Suche, Speichern, Rollen, Neu laden.
  * Beim Öffnen: Schlüssel vorhanden? Sonst eingeben. Bildschirmsperre bestätigen, Schlüssel
  * entsperren, Liste laden (mit Ladebildschirm). Alles Weitere wie in der PC-App.
+ * Laden und Speichern laufen im Hintergrund und überleben das Drehen: der Zustand liegt in der
+ * WebseiteSitzung, das Ergebnis bekommt die Seite, die gerade vorn ist.
  */
 public class WebseiteActivity extends Activity {
 
     private static final int REQ_SCHLUESSEL = 21;
     private static final int REQ_SPERRE = 22;
+
+    private static WeakReference<WebseiteActivity> vorn = new WeakReference<>(null);
 
     private WebseiteSitzung sitzung;
     private Schluesselspeicher speicher;
@@ -55,8 +61,9 @@ public class WebseiteActivity extends Activity {
     private View speicherleiste;
     private Button nochmal;
     private Button speichern;
+    private Button verwerfen;
+    private Runnable nochmalAktion;
     private String suchtext = "";
-    private boolean laeuft;
     private boolean wartetAufNutzer;
 
     @Override
@@ -77,6 +84,7 @@ public class WebseiteActivity extends Activity {
         speicherleiste = findViewById(R.id.speicherleiste);
         nochmal = findViewById(R.id.nochmal);
         speichern = findViewById(R.id.speichern);
+        verwerfen = findViewById(R.id.verwerfen);
         EditText suche = findViewById(R.id.suche);
 
         adapter = new PartnerAdapter();
@@ -106,7 +114,7 @@ public class WebseiteActivity extends Activity {
         klick(R.id.zurueck, new Runnable() {
             @Override
             public void run() {
-                finish();
+                verlassen();
             }
         });
         klick(R.id.partner_neu, new Runnable() {
@@ -150,8 +158,9 @@ public class WebseiteActivity extends Activity {
         klick(R.id.nochmal, new Runnable() {
             @Override
             public void run() {
-                wartetAufNutzer = false;
-                vorbereiten();
+                if (nochmalAktion != null) {
+                    nochmalAktion.run();
+                }
             }
         });
     }
@@ -165,18 +174,88 @@ public class WebseiteActivity extends Activity {
         });
     }
 
+    /** Die Seite, die gerade vorn ist (oder null) — dorthin gehen Ergebnisse aus dem Hintergrund. */
+    private static WebseiteActivity vorn(WebseiteSitzung s) {
+        WebseiteActivity a = vorn.get();
+        return a != null && a.sitzung == s && !a.isFinishing() && !a.isDestroyed() ? a : null;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        sitzung = WebseiteSitzung.holen();
-        if (!laeuft && !wartetAufNutzer) {
+        WebseiteSitzung.fortgesetztAbgelaufen();
+        WebseiteSitzung neu = WebseiteSitzung.holen();
+        if (neu != sitzung) {
+            sitzung = neu;
+            wartetAufNutzer = false;
+        }
+        vorn = new WeakReference<>(this);
+        if (WebseiteSitzung.wegenRuheGesperrtAbholen()) {
+            Toast.makeText(this, "Nach 15 Minuten im Hintergrund gesperrt — ungespeicherte Änderungen sind verworfen.", Toast.LENGTH_LONG).show();
+        }
+        if (!wartetAufNutzer) {
             vorbereiten();
         }
     }
 
-    /** Je nach Zustand: zeigen, Schlüssel holen, Sperre bestätigen oder laden. */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (vorn.get() == this) {
+            vorn = new WeakReference<>(null);
+        }
+        WebseiteSitzung.pausiert();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Bereich verlassen = Schlüssel aus dem Speicher, alles vergessen (wie „geschlossen = weg“ am PC).
+        if (isFinishing() && WebseiteSitzung.holen() == sitzung && !sitzung.beschaeftigt()) {
+            WebseiteSitzung.sperren();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        verlassen();
+    }
+
+    private void verlassen() {
+        if (sitzung.beschaeftigt()) {
+            Toast.makeText(this, "Bitte kurz warten — es läuft noch etwas (Laden, Speichern oder Upload).", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (sitzung.geaendert()) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Bereich verlassen?")
+                    .setMessage("Es gibt ungespeicherte Änderungen. Beim Verlassen gehen sie verloren.")
+                    .setPositiveButton("Verlassen", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("Bleiben", null)
+                    .show();
+            return;
+        }
+        finish();
+    }
+
+    /** Je nach Zustand: warten, Offenes zeigen, Liste zeigen, Schlüssel holen, Sperre bestätigen oder laden. */
     private void vorbereiten() {
+        if (sitzung.arbeitLaeuft) {
+            if (!ladebildschirm.sichtbar()) {
+                ladebildschirm.starten(null);
+            }
+            return;
+        }
+        if (offenesZeigen()) {
+            return;
+        }
         if (sitzung.geladen()) {
+            ladebildschirm.sofortWeg();
             zeigen();
             return;
         }
@@ -222,19 +301,19 @@ public class WebseiteActivity extends Activity {
         }
     }
 
+    /** Der gespeicherte Schlüssel lässt sich nicht öffnen (z. B. Bildschirmsperre entfernt): neu eingeben. */
     private void schluesselKaputt(String grund) {
-        wartetAufNutzer = true;
-        fehlerAnzeigen("Der gespeicherte Schlüssel ließ sich nicht öffnen (" + grund + ").", false);
+        fehlerAnzeigen("Der gespeicherte Schlüssel ließ sich nicht öffnen (" + grund + "). "
+                + "Das passiert z. B., wenn die Bildschirmsperre geändert wurde. Bitte den Schlüssel neu eingeben.", false);
         nochmal.setText(R.string.ws_schluessel_neu);
         nochmal.setVisibility(View.VISIBLE);
-        nochmal.setOnClickListener(new View.OnClickListener() {
+        nochmalAktion = new Runnable() {
             @Override
-            public void onClick(View v) {
+            public void run() {
                 speicher.loeschen();
-                nochmal.setText(R.string.ws_nochmal);
                 startActivityForResult(new Intent(WebseiteActivity.this, SchluesselActivity.class), REQ_SCHLUESSEL);
             }
-        });
+        };
     }
 
     @Override
@@ -243,6 +322,8 @@ public class WebseiteActivity extends Activity {
         if (requestCode == REQ_SCHLUESSEL) {
             if (resultCode == RESULT_OK) {
                 wartetAufNutzer = false;   // onResume lädt
+                fehler.setVisibility(View.GONE);
+                nochmal.setVisibility(View.GONE);
             } else {
                 finish();
             }
@@ -255,51 +336,97 @@ public class WebseiteActivity extends Activity {
         }
     }
 
+    // ---------- Laden ----------
+
     private void laden() {
-        laeuft = true;
+        final WebseiteSitzung s = sitzung;
+        s.arbeitLaeuft = true;
         fehler.setVisibility(View.GONE);
         nochmal.setVisibility(View.GONE);
         ladebildschirm.starten(null);
         Hintergrund.starten(new Hintergrund.Aufgabe<Stand>() {
             @Override
             public Stand ausfuehren() throws Exception {
-                return sitzung.verwaltung().lesen();
+                return s.verwaltung().lesen();
             }
         }, new Hintergrund.Danach<Stand>() {
             @Override
-            public void fertig(Stand s) {
-                laeuft = false;
-                sitzung.standUebernehmen(s);
-                if (vorbei()) {
-                    return;
+            public void fertig(Stand st) {
+                s.arbeitLaeuft = false;
+                s.standUebernehmen(st);
+                WebseiteActivity a = vorn(s);
+                if (a != null) {
+                    a.ladebildschirm.arbeitFertig();
+                    a.zeigen();
                 }
-                ladebildschirm.arbeitFertig();
-                zeigen();
             }
 
             @Override
             public void fehler(Exception e) {
-                laeuft = false;
-                if (vorbei()) {
-                    return;
+                s.arbeitLaeuft = false;
+                s.offenerFehler = Hintergrund.text(e);
+                s.offenerFehlerMitNochmal = true;
+                WebseiteActivity a = vorn(s);
+                if (a != null) {
+                    a.offenesZeigen();
                 }
-                ladebildschirm.sofortWeg();
-                fehlerAnzeigen(Hintergrund.text(e), true);
             }
         });
     }
 
-    /** Die Seite ist schon zu — dann nichts mehr anzeigen (ein Dialog würde abstürzen). */
-    private boolean vorbei() {
-        return isFinishing() || isDestroyed();
+    /** Zeigt, was aus dem Hintergrund noch offen ist (Fehler, Konflikt, Meldung). true, wenn ein Fehler kam. */
+    private boolean offenesZeigen() {
+        boolean fehlerDa = false;
+        if (sitzung.offenerFehler != null) {
+            ladebildschirm.sofortWeg();
+            fehlerAnzeigen(sitzung.offenerFehler, sitzung.offenerFehlerMitNochmal);
+            if (!sitzung.offenerFehlerMitNochmal) {
+                wartetAufNutzer = false;   // Speicherfehler: die Liste bleibt bedienbar
+            }
+            fehlerDa = !sitzung.geladen();
+            sitzung.offenerFehler = null;
+        }
+        if (sitzung.offenerKonflikt) {
+            sitzung.offenerKonflikt = false;
+            ladebildschirm.sofortWeg();
+            new AlertDialog.Builder(this)
+                    .setTitle("Inzwischen geändert")
+                    .setMessage("Jemand anders hat die Partnerliste inzwischen gespeichert (z. B. die PC-App). "
+                            + "Neu laden? Deine ungespeicherten Änderungen gehen dabei verloren.")
+                    .setPositiveButton("Neu laden", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            laden();
+                        }
+                    })
+                    .setNegativeButton("Behalten", null)
+                    .show();
+        }
+        if (sitzung.offeneMeldung != null) {
+            Toast.makeText(this, sitzung.offeneMeldung, Toast.LENGTH_LONG).show();
+            sitzung.offeneMeldung = null;
+        }
+        return fehlerDa;
     }
 
     private void fehlerAnzeigen(String text, boolean mitNochmal) {
         wartetAufNutzer = true;
         fehler.setText(text);
         fehler.setVisibility(View.VISIBLE);
+        nochmal.setText(R.string.ws_nochmal);
         nochmal.setVisibility(mitNochmal ? View.VISIBLE : View.GONE);
+        nochmalAktion = new Runnable() {
+            @Override
+            public void run() {
+                wartetAufNutzer = false;
+                fehler.setVisibility(View.GONE);
+                nochmal.setVisibility(View.GONE);
+                vorbereiten();
+            }
+        };
     }
+
+    // ---------- Anzeigen ----------
 
     private void zeigen() {
         if (!sitzung.geladen()) {
@@ -307,7 +434,7 @@ public class WebseiteActivity extends Activity {
         }
         adapter.neu();
         int n = sitzung.arbeit.partner.size();
-        status.setText("Stand " + WebseiteSitzung.uhrzeit() + " · " + n + (n == 1 ? " Partner" : " Partner"));
+        status.setText("Stand " + sitzung.standUm + " · " + n + " Partner");
         if (n == 0) {
             leer.setText(R.string.ws_keine_partner);
             leer.setVisibility(View.VISIBLE);
@@ -318,17 +445,21 @@ public class WebseiteActivity extends Activity {
             leer.setVisibility(View.GONE);
         }
         Aenderungen a = sitzung.aenderungen();
-        if (a.leer()) {
+        if (a.leer() && sitzung.uploadsLaufen == 0) {
             speicherleiste.setVisibility(View.GONE);
             return;
         }
         Pruefung p = sitzung.pruefung();
         String text = a.anzahl() == 1 ? "1 ungespeicherte Änderung" : a.anzahl() + " ungespeicherte Änderungen";
+        if (sitzung.uploadsLaufen > 0) {
+            text += " · Upload läuft …";
+        }
         if (!p.inOrdnung()) {
             text += " · " + (p.anzahl() == 1 ? "1 Beanstandung" : p.anzahl() + " Beanstandungen") + " (rot markiert) — erst beheben";
         }
         speicherText.setText(text);
-        speichern.setEnabled(p.inOrdnung());
+        speichern.setEnabled(p.inOrdnung() && !a.leer() && !sitzung.beschaeftigt());
+        verwerfen.setEnabled(!a.leer() && !sitzung.beschaeftigt());
         speicherleiste.setVisibility(View.VISIBLE);
     }
 
@@ -351,17 +482,19 @@ public class WebseiteActivity extends Activity {
         startActivity(i);
     }
 
+    // ---------- Speichern, Verwerfen, Neu laden ----------
+
     private void speichern() {
-        final Aenderungen a = sitzung.aenderungen();
-        if (a.leer()) {
+        if (sitzung.beschaeftigt() || !sitzung.geladen()) {
             return;
         }
-        if (!sitzung.pruefung().inOrdnung()) {
+        final Aenderungen a = sitzung.aenderungen();
+        if (a.leer() || !sitzung.pruefung().inOrdnung()) {
             return;
         }
         new AlertDialog.Builder(this)
                 .setTitle("Änderungen speichern?")
-                .setMessage(String.join("\n\n", a.zeilen))
+                .setMessage(Text.verbinden("\n\n", a.zeilen))
                 .setPositiveButton("Speichern", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -373,73 +506,68 @@ public class WebseiteActivity extends Activity {
     }
 
     private void schreiben() {
-        laeuft = true;
+        if (sitzung.beschaeftigt()) {
+            return;
+        }
+        final WebseiteSitzung s = sitzung;
+        final Stand alt = s.stand;
+        // Die Liste auf dem Hauptfaden bauen — im Hintergrund wird nur noch gesendet.
+        final JSONObject gesendet;
+        try {
+            gesendet = s.arbeit.zuJson(s.katalog());
+        } catch (JSONException e) {
+            fehlerAnzeigen("Die Liste ließ sich nicht zusammenstellen: " + e.getMessage(), false);
+            wartetAufNutzer = false;
+            return;
+        }
+        s.arbeitLaeuft = true;
         fehler.setVisibility(View.GONE);
         ladebildschirm.starten(null);
-        final String basis = sitzung.stand.version;
-        final Partnerliste arbeit = sitzung.arbeit;
-        final List<Modul> katalog = sitzung.katalog();
-        Hintergrund.starten(new Hintergrund.Aufgabe<Stand>() {
+        Hintergrund.starten(new Hintergrund.Aufgabe<Speichervorgang.Ergebnis>() {
             @Override
-            public Stand ausfuehren() throws Exception {
-                Verwaltung v = sitzung.verwaltung();
-                JSONObject liste = arbeit.zuJson(katalog);
-                try {
-                    v.schreiben(basis, liste);
-                } catch (java.io.IOException verloren) {
-                    // Antwort verloren (Zeitüberschreitung): nachlesen — steht unsere Liste
-                    // schon auf dem Server, gilt es als gespeichert (wie die PC-App).
-                    Stand jetzt = v.lesen();
-                    if (!Aenderungen.ermitteln(jetzt.liste, arbeit, jetzt.katalog).leer()) {
-                        throw verloren;
-                    }
-                    return jetzt;
-                }
-                return v.lesen();
+            public Speichervorgang.Ergebnis ausfuehren() throws Exception {
+                return Speichervorgang.ausfuehren(s.verwaltung(), alt, gesendet);
             }
-        }, new Hintergrund.Danach<Stand>() {
+        }, new Hintergrund.Danach<Speichervorgang.Ergebnis>() {
             @Override
-            public void fertig(Stand s) {
-                laeuft = false;
-                sitzung.standUebernehmen(s);
-                if (vorbei()) {
-                    return;
+            public void fertig(Speichervorgang.Ergebnis e) {
+                s.arbeitLaeuft = false;
+                s.standUebernehmen(e.stand);
+                String meldung = e.nachgelesen ? "Gespeichert."
+                        : "Gespeichert. Der neue Stand ließ sich nicht nachlesen — bei Gelegenheit „Neu laden“.";
+                if (e.passwoerterEntfernt > 0) {
+                    meldung += " Der Server hat " + e.passwoerterEntfernt + (e.passwoerterEntfernt == 1 ? " Passwort" : " Passwörter")
+                            + " entfernt (Partner entfernt oder Adresse geändert).";
                 }
-                ladebildschirm.arbeitFertig();
-                zeigen();
-                Toast.makeText(WebseiteActivity.this, "Gespeichert.", Toast.LENGTH_SHORT).show();
+                s.offeneMeldung = meldung;
+                WebseiteActivity a = vorn(s);
+                if (a != null) {
+                    a.ladebildschirm.arbeitFertig();
+                    a.zeigen();
+                    a.offenesZeigen();
+                }
             }
 
             @Override
             public void fehler(Exception e) {
-                laeuft = false;
-                if (vorbei()) {
-                    return;
-                }
-                ladebildschirm.sofortWeg();
+                s.arbeitLaeuft = false;
                 if (e instanceof VerwaltungFehler && ((VerwaltungFehler) e).status == 409) {
-                    new AlertDialog.Builder(WebseiteActivity.this)
-                            .setTitle("Inzwischen geändert")
-                            .setMessage("Jemand anders hat die Partnerliste inzwischen gespeichert (z. B. die PC-App). "
-                                    + "Neu laden? Deine ungespeicherten Änderungen gehen dabei verloren.")
-                            .setPositiveButton("Neu laden", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    laden();
-                                }
-                            })
-                            .setNegativeButton("Behalten", null)
-                            .show();
-                    return;
+                    s.offenerKonflikt = true;
+                } else {
+                    s.offenerFehler = "Nicht gespeichert: " + Hintergrund.text(e);
+                    s.offenerFehlerMitNochmal = false;
                 }
-                fehlerAnzeigen(Hintergrund.text(e), false);
-                wartetAufNutzer = false;
+                WebseiteActivity a = vorn(s);
+                if (a != null) {
+                    a.offenesZeigen();
+                    a.zeigen();
+                }
             }
         });
     }
 
     private void verwerfen() {
-        if (!sitzung.geaendert()) {
+        if (!sitzung.geaendert() || sitzung.beschaeftigt()) {
             return;
         }
         new AlertDialog.Builder(this)
@@ -457,7 +585,11 @@ public class WebseiteActivity extends Activity {
     }
 
     private void neuLaden() {
-        if (!sitzung.entsperrt() || laeuft) {
+        if (!sitzung.entsperrt()) {
+            return;
+        }
+        if (sitzung.beschaeftigt()) {
+            Toast.makeText(this, "Bitte kurz warten — es läuft noch etwas.", Toast.LENGTH_SHORT).show();
             return;
         }
         if (sitzung.geaendert()) {
@@ -478,6 +610,10 @@ public class WebseiteActivity extends Activity {
     }
 
     private void schluesselEntfernen() {
+        if (sitzung.beschaeftigt()) {
+            Toast.makeText(this, "Bitte kurz warten — es läuft noch etwas.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         new AlertDialog.Builder(this)
                 .setTitle("Schlüssel entfernen?")
                 .setMessage("Der Schlüssel der Verwaltung wird vom Handy gelöscht; die Partnerverwaltung ist dann erst wieder nach neuer Eingabe möglich.")
@@ -499,11 +635,13 @@ public class WebseiteActivity extends Activity {
         private final List<String> schluessel = new ArrayList<>();
         private final List<Partner> partner = new ArrayList<>();
         private Pruefung pruefung = new Pruefung();
+        private List<Rolle> rollen = new ArrayList<>();
 
         void neu() {
             schluessel.clear();
             partner.clear();
             pruefung = sitzung.pruefung();
+            rollen = sitzung.arbeit.rollenZurAuswahl();
             for (Map.Entry<String, Partner> e : sitzung.arbeit.partner.entrySet()) {
                 Partner p = e.getValue();
                 if (!suchtext.isEmpty()) {
@@ -548,7 +686,7 @@ public class WebseiteActivity extends Activity {
             String k = schluessel.get(position);
             ((TextView) zeile.findViewById(R.id.zeile_name)).setText(p.anzeige());
             ((TextView) zeile.findViewById(R.id.zeile_email)).setText(p.email.isEmpty() ? "— Adresse fehlt —" : p.email);
-            int module = p.wirksameFreigaben(sitzung.arbeit.rollen, sitzung.katalog()).size();
+            int module = p.wirksameFreigaben(rollen, sitzung.katalog()).size();
             String info = (p.rolle.isEmpty() ? "ohne Rolle" : p.rolle) + " · " + module + (module == 1 ? " Modul" : " Module");
             if (!p.dateien.isEmpty()) {
                 info += " · " + p.dateien.size() + (p.dateien.size() == 1 ? " Datei" : " Dateien");

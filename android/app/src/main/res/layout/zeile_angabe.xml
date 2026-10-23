@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Eine Angabe: Bezeichnung, Wert, Entfernen. -->
+<!-- Eine Angabe: Bezeichnung (mit Vorschlägen), Wert, Entfernen.
+     saveEnabled="false": die Zeilen tragen dieselben Ids; nach dem Drehen füllt die Seite sie aus dem
+     Modell, sonst bekäme jede Zeile den Text der letzten. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -13,13 +15,16 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/angabe_label"
             style="@style/Eingabe"
+            android:completionThreshold="1"
             android:hint="@string/ws_angabe_label"
             android:importantForAutofill="no"
             android:inputType="text|textCapSentences"
             android:maxLines="1"
+            android:popupBackground="@color/kachel_flaeche"
+            android:saveEnabled="false"
             android:textSize="14sp" />
 
         <EditText
@@ -29,7 +34,8 @@
             android:hint="@string/ws_angabe_wert"
             android:importantForAutofill="no"
             android:inputType="text|textCapSentences"
-            android:maxLines="2" />
+            android:maxLines="2"
+            android:saveEnabled="false" />
     </LinearLayout>
 
     <TextView

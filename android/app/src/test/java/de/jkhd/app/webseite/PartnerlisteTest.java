@@ -104,6 +104,68 @@ public class PartnerlisteTest {
     }
 
     @Test
+    public void vorgeschlageneVollzugangsrolleOhneRollenInDerDateiSchaltetAllesFrei() throws Exception {
+        Partnerliste l = Partnerliste.ausText("{\"a@example.com\": {\"name\": \"A\", \"freigaben\": []}}");
+        Rolle voll = l.rollenZurAuswahl().get(0);
+        assertTrue(voll.alleModule);
+        l.partner.get("a@example.com").rolle = voll.name;
+        JSONObject o = l.zuJson(katalog());
+        assertEquals(3, o.getJSONObject("a@example.com").getJSONArray("freigaben").length());
+        assertFalse("_rollen erst schreiben, wenn sie geändert wurden", o.has("_rollen"));
+        assertTrue(Pruefung.pruefen(l, katalog()).inOrdnung());
+        Aenderungen a = Aenderungen.ermitteln(Partnerliste.ausText("{\"a@example.com\": {\"name\": \"A\", \"freigaben\": []}}"), l, katalog());
+        assertTrue(a.zeilen.toString(), a.zeilen.get(0).contains("Module +3"));
+    }
+
+    @Test
+    public void vollzugangDerPcAppMitAnderemStrichWirdErkannt() throws Exception {
+        Partnerliste l = Partnerliste.ausText("{\"a@example.com\": {\"name\": \"A\", \"felder\": [{\"label\": \"Rolle\", \"wert\": \"Partner — Vollzugang (alle Module)\"}]}}");
+        Rolle voll = l.rollenZurAuswahl().get(0);
+        assertEquals("Partner — Vollzugang (alle Module)", voll.name);
+        assertTrue(voll.alleModule);
+        assertEquals(3, l.zuJson(katalog()).getJSONObject("a@example.com").getJSONArray("freigaben").length());
+    }
+
+    @Test
+    public void leereRollenlisteInDerDateiBedeutetKeineVorschlaege() throws Exception {
+        Partnerliste l = Partnerliste.ausText("{\"_rollen\": [], \"a@example.com\": {\"name\": \"A\"}}");
+        assertTrue(l.rollenZurAuswahl().isEmpty());
+        assertTrue(l.zuJson(katalog()).has("_rollen"));
+    }
+
+    @Test
+    public void eintraegeDieKeinObjektSindGehenNichtVerloren() throws Exception {
+        Partnerliste l = Partnerliste.ausText("{\"kaputt@example.com\": \"nur Text\", \"_neu\": 1, \"a@example.com\": {\"name\": \"A\"}}");
+        assertEquals(1, l.partner.size());
+        JSONObject o = l.zuJson(katalog());
+        assertEquals("nur Text", o.getString("kaputt@example.com"));
+        assertEquals(1, o.getInt("_neu"));
+    }
+
+    @Test
+    public void jsonGleichIgnoriertReihenfolgeUndLeereObjekte() throws Exception {
+        assertTrue(JsonGleich.gleich(new JSONObject("{\"a\":1,\"b\":[1,2],\"c\":{}}"), new JSONObject("{\"b\":[1,2],\"c\":[],\"a\":1.0}")));
+        assertFalse(JsonGleich.gleich(new JSONObject("{\"b\":[1,2]}"), new JSONObject("{\"b\":[2,1]}")));
+        assertFalse(JsonGleich.gleich(new JSONObject("{\"a\":\"x\"}"), new JSONObject("{\"a\":\"x\",\"b\":null}")));
+    }
+
+    @Test
+    public void wiederfindenNachNeuEinordnen() throws Exception {
+        Partnerliste l = Partnerliste.ausText(BEISPIEL);
+        Partner anna = l.partner.get("anna.muster@example.com");
+        Partnerliste k = l.kopie();
+        assertEquals("anna.muster@example.com", k.wiederfinden(anna).email);
+        assertTrue(k.wiederfinden(anna) != anna);
+        assertTrue(l.wiederfinden(anna) == anna);
+    }
+
+    @Test
+    public void textVerbinden() {
+        assertEquals("a, b, c", Text.verbinden(", ", Arrays.asList("a", "b", "c")));
+        assertEquals("", Text.verbinden(", ", java.util.Collections.<String>emptyList()));
+    }
+
+    @Test
     public void kopieIstUnabhaengig() throws Exception {
         Partnerliste l = Partnerliste.ausText(BEISPIEL);
         Partnerliste k = l.kopie();

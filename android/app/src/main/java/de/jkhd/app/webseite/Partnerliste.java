@@ -17,12 +17,19 @@ import java.util.Map;
 public final class Partnerliste {
 
     public static final int PARTNER_MAX = 500;
+    /** Die Vorschläge der PC-App, solange partner.json keine _rollen kennt. */
+    public static final String VORSCHLAG_VOLLZUGANG = "Partner – Vollzugang (alle Module)";
+    public static final String VORSCHLAG_PARTNER = "Partner";
 
     public String hinweis;
     public final List<Rolle> rollen = new ArrayList<>();
     /** Stand die Rollenliste in der Datei? Sonst wird sie erst geschrieben, wenn sie geändert wurde. */
     public boolean rollenVorhanden;
-    /** Weitere _-Einträge, unverändert durchgereicht (der Server kennt heute keine; sicher ist sicher). */
+    /**
+     * Alles, was die App nicht selbst versteht, unverändert durchgereicht: weitere _-Einträge und
+     * Einträge, die kein Objekt sind. So verschwindet beim Speichern nichts still — passt etwas nicht,
+     * sagt es der Server mit einer Absage.
+     */
     public final Map<String, Object> extras = new LinkedHashMap<>();
     /** Reihenfolge wie in der Datei; Schlüssel ist die Adresse genau so, wie sie dort steht. */
     public final LinkedHashMap<String, Partner> partner = new LinkedHashMap<>();
@@ -40,15 +47,13 @@ public final class Partnerliste {
             String k = schluessel.next();
             if (k.equals("_hinweis")) {
                 liste.hinweis = o.optString(k, null);
-            } else if (k.equals("_rollen")) {
+            } else if (k.equals("_rollen") && o.optJSONArray(k) != null) {
                 liste.rollenVorhanden = true;
                 JSONArray a = o.optJSONArray(k);
-                if (a != null) {
-                    for (int i = 0; i < a.length(); i++) {
-                        JSONObject r = a.optJSONObject(i);
-                        if (r != null) {
-                            liste.rollen.add(Rolle.ausJson(r));
-                        }
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject r = a.optJSONObject(i);
+                    if (r != null) {
+                        liste.rollen.add(Rolle.ausJson(r));
                     }
                 }
             } else if (k.startsWith("_")) {
@@ -57,6 +62,8 @@ public final class Partnerliste {
                 JSONObject e = o.optJSONObject(k);
                 if (e != null) {
                     liste.partner.put(k, Partner.ausJson(k, e));
+                } else {
+                    liste.extras.put(k, o.opt(k));
                 }
             }
         }
@@ -79,8 +86,9 @@ public final class Partnerliste {
         for (Map.Entry<String, Object> e : extras.entrySet()) {
             o.put(e.getKey(), e.getValue());
         }
+        List<Rolle> wirksam = rollenZurAuswahl();
         for (Partner p : partner.values()) {
-            o.put(p.email, p.zuJson(rollen, katalog));
+            o.put(p.email, p.zuJson(wirksam, katalog));
         }
         return o;
     }
@@ -99,15 +107,19 @@ public final class Partnerliste {
         return l;
     }
 
-    /** Die Rollen, die zur Auswahl stehen: aus der Datei, sonst die Vorschläge der PC-App plus die vergebenen. */
+    /**
+     * Die Rollen, die gelten — zur Auswahl im Editor UND beim Erweitern von „alle Module“ (Speichern,
+     * Prüfung, Änderungsliste, Vorschau): aus der Datei; kennt die Datei keine _rollen, die
+     * Vorschläge der PC-App. Dazu die vergebenen, die keiner kennt (ohne „alle Module“).
+     */
     public List<Rolle> rollenZurAuswahl() {
         List<Rolle> aus = new ArrayList<>();
         for (Rolle r : rollen) {
             aus.add(r);
         }
-        if (aus.isEmpty()) {
-            aus.add(new Rolle("Partner – Vollzugang (alle Module)", true));
-            aus.add(new Rolle("Partner", false));
+        if (aus.isEmpty() && !rollenVorhanden) {
+            aus.add(new Rolle(vergebeneSchreibweise(VORSCHLAG_VOLLZUGANG), true));
+            aus.add(new Rolle(VORSCHLAG_PARTNER, false));
         }
         for (Partner p : partner.values()) {
             if (!p.rolle.isEmpty() && findeRolle(aus, p.rolle) == null) {
@@ -115,6 +127,17 @@ public final class Partnerliste {
             }
         }
         return aus;
+    }
+
+    /** Hat die PC-App den Vorschlag mit einem anderen Strich vergeben, gilt deren Schreibweise. */
+    private String vergebeneSchreibweise(String vorschlag) {
+        String norm = Text.ohneStrichvarianten(vorschlag);
+        for (Partner p : partner.values()) {
+            if (!p.rolle.isEmpty() && Text.ohneStrichvarianten(p.rolle).equals(norm)) {
+                return p.rolle;
+            }
+        }
+        return vorschlag;
     }
 
     public static Rolle findeRolle(List<Rolle> rollen, String name) {
@@ -130,7 +153,7 @@ public final class Partnerliste {
     public Partner neuerPartner(String heute) {
         Partner p = new Partner("");
         List<Rolle> auswahl = rollenZurAuswahl();
-        Rolle standard = findeRolle(auswahl, "Partner");
+        Rolle standard = findeRolle(auswahl, VORSCHLAG_PARTNER);
         p.rolle = standard != null ? standard.name : (auswahl.isEmpty() ? "" : auswahl.get(0).name);
         p.felder.add(new Angabe("Angelegt", heute));
         return p;
@@ -154,6 +177,30 @@ public final class Partnerliste {
         }
         partner.remove(k);
         return true;
+    }
+
+    /**
+     * Findet den Partner, der einem (vielleicht veralteten) Objekt entspricht: dasselbe Objekt, sonst
+     * gleiche bisherige Adresse, sonst gleiche Adresse. null, wenn keiner passt.
+     */
+    public Partner wiederfinden(Partner alt) {
+        if (alt == null) {
+            return null;
+        }
+        if (schluesselVon(alt) != null) {
+            return alt;
+        }
+        for (Partner p : partner.values()) {
+            if (alt.bisherigeAdresse != null && alt.bisherigeAdresse.equals(p.bisherigeAdresse)) {
+                return p;
+            }
+        }
+        for (Partner p : partner.values()) {
+            if (!alt.email.isEmpty() && Adresse.schluessel(alt.email).equals(Adresse.schluessel(p.email))) {
+                return p;
+            }
+        }
+        return null;
     }
 
     /** Schlüssel in der Liste: die Partner-Objekte stehen unter ihrer aktuellen Adresse. */

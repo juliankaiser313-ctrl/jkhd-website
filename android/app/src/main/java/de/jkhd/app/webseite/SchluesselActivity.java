@@ -29,6 +29,9 @@ public class SchluesselActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Der Schlüssel steht hier im Klartext: keine Bildschirmfotos, kein Vorschaubild in „Zuletzt verwendet“.
+        getWindow().setFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE,
+                android.view.WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_schluessel);
         Schriften.anwenden(findViewById(android.R.id.content));
         speicher = new Schluesselspeicher(this);
@@ -39,6 +42,7 @@ public class SchluesselActivity extends Activity {
         findViewById(R.id.zurueck).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                vergessen();
                 setResult(RESULT_CANCELED);
                 finish();
             }
@@ -110,5 +114,24 @@ public class SchluesselActivity extends Activity {
     private void melden(String text) {
         meldung.setText(text);
         meldung.setVisibility(View.VISIBLE);
+    }
+
+    /** Den eingegebenen Schlüssel aus Feld und Speicher nehmen. */
+    private void vergessen() {
+        if (wartend != null) {
+            Arrays.fill(wartend, (byte) 0);
+            wartend = null;
+        }
+        if (feld != null) {
+            feld.setText("");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (isFinishing()) {
+            vergessen();
+        }
+        super.onDestroy();
     }
 }

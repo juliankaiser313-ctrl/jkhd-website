@@ -50,7 +50,8 @@
             android:gravity="top|start"
             android:importantForAutofill="no"
             android:inputType="textNoSuggestions|textMultiLine|textVisiblePassword"
-            android:minLines="3" />
+            android:minLines="3"
+            android:saveEnabled="false" />
 
         <TextView
             android:id="@+id/meldung"

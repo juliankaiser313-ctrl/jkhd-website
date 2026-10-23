@@ -103,13 +103,29 @@
                 style="@style/Beschriftung"
                 android:text="@string/ws_rolle" />
 
-            <Spinner
-                android:id="@+id/rolle"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/eingabe_hintergrund"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp" />
+                android:layout_height="48dp">
+
+                <Spinner
+                    android:id="@+id/rolle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/eingabe_hintergrund"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="36dp" />
+
+                <!-- Der eigene Hintergrund nimmt dem Spinner den Pfeil; so sieht man, dass es eine Auswahl ist. -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="14dp"
+                    android:importantForAccessibility="no"
+                    android:text="▾"
+                    android:textColor="@color/text_gedaempft"
+                    android:textSize="16sp" />
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/passwort_status"

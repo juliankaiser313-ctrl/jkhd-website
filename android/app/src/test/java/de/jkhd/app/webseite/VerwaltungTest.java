@@ -136,6 +136,87 @@ public class VerwaltungTest {
     }
 
     @Test
+    public void grosseDateiMitUmlautImNamenKommtUnverfaelschtAn() throws Exception {
+        Verwaltung v = new Verwaltung(api, schluessel);
+        byte[] inhalt = new byte[1024 * 1024 + 2];   // kein Vielfaches von 3, über mehrere Stücke
+        new java.util.Random(7).nextBytes(inhalt);
+        Datei d = v.dateiHochladen("Grüße – Übersicht.pdf", inhalt, "23.10.2026");
+        assertEquals(inhalt.length, d.groesse);
+        assertTrue(java.util.Arrays.equals(inhalt, attrappe.letzteDatei));
+        assertEquals("Grüße – Übersicht.pdf", attrappe.letzteNutzlast.getString("name"));
+        assertEquals("datei_hochladen", attrappe.letzteNutzlast.getString("aktion"));
+    }
+
+    @Test
+    public void nach408WirdDieUhrNeuAbgeglichenUndEinmalWiederholt() throws Exception {
+        Verwaltung v = new Verwaltung(api, schluessel);
+        v.lesen();
+        int pingsVorher = attrappe.pings;
+        int anfragenVorher = attrappe.anfragen;
+        attrappe.naechsteZuAlt = true;
+        Stand s = v.lesen();
+        assertEquals(2, s.liste.partner.size());
+        assertEquals(anfragenVorher + 2, attrappe.anfragen);
+        assertEquals(pingsVorher + 1, attrappe.pings);
+        // Auch beim Hochladen
+        attrappe.naechsteZuAlt = true;
+        assertEquals(3, v.dateiHochladen("a.txt", new byte[]{1, 2, 3}, "23.10.2026").groesse);
+    }
+
+    @Test
+    public void verloreneAntwortBeimSpeichernGiltAlsGespeichert() throws Exception {
+        Verwaltung v = new Verwaltung(api, schluessel);
+        Stand s = v.lesen();
+        Partnerliste arbeit = s.liste.kopie();
+        Partner neu = arbeit.neuerPartner("23.10.2026");
+        neu.email = "neu@example.com";
+        neu.name = "Neu";
+        arbeit.partner.put(neu.email, neu);
+        org.json.JSONObject gesendet = arbeit.zuJson(s.katalog);
+        attrappe.schreibenOhneAntwort = true;
+        Speichervorgang.Ergebnis e = Speichervorgang.ausfuehren(v, s, gesendet);
+        assertTrue(e.nachgelesen);
+        assertTrue(e.stand.liste.partner.containsKey("neu@example.com"));
+        assertEquals(Stand.sha256Hex(attrappe.partnerText), e.stand.version);
+    }
+
+    @Test
+    public void eigener409GiltAlsGespeichertFremderNicht() throws Exception {
+        Verwaltung v = new Verwaltung(api, schluessel);
+        Stand s = v.lesen();
+        Partnerliste arbeit = s.liste.kopie();
+        arbeit.partner.get("anna.muster@example.com").notiz = "geändert";
+        org.json.JSONObject gesendet = arbeit.zuJson(s.katalog);
+        Speichervorgang.Ergebnis erst = Speichervorgang.ausfuehren(v, s, gesendet);
+        assertTrue(erst.nachgelesen);
+        // Dieselbe Liste noch einmal mit der alten Fassung: 409, aber es ist unsere eigene → gelungen
+        Speichervorgang.Ergebnis nochmal = Speichervorgang.ausfuehren(v, s, gesendet);
+        assertEquals(erst.stand.version, nochmal.stand.version);
+        // Jetzt ändert „die PC-App“ etwas: echter Konflikt
+        attrappe.partnerText = attrappe.partnerText.replace("geändert", "vom PC");
+        try {
+            Speichervorgang.ausfuehren(v, erst.stand, gesendet);
+            fail("409 erwartet");
+        } catch (VerwaltungFehler f) {
+            assertEquals(409, f.status);
+        }
+    }
+
+    @Test
+    public void scheitertNurDasNachlesenGiltDieGesendeteListe() throws Exception {
+        Verwaltung v = new Verwaltung(api, schluessel);
+        Stand s = v.lesen();
+        Partnerliste arbeit = s.liste.kopie();
+        arbeit.partner.get("anna.muster@example.com").name = "Anna Neu";
+        attrappe.lesenScheitertNachSchreiben = true;
+        Speichervorgang.Ergebnis e = Speichervorgang.ausfuehren(v, s, arbeit.zuJson(s.katalog));
+        assertFalse(e.nachgelesen);
+        assertEquals(Stand.sha256Hex(attrappe.partnerText), e.stand.version);
+        assertEquals("Anna Neu", e.stand.liste.partner.get("anna.muster@example.com").name);
+        assertEquals("anna.muster@example.com", e.stand.liste.partner.get("anna.muster@example.com").bisherigeAdresse);
+    }
+
+    @Test
     public void base64IstStriktUndRichtig() {
         assertEquals("", Base64Kodierer.kodieren(new byte[0]));
         assertEquals("Zg==", Base64Kodierer.kodieren("f".getBytes(StandardCharsets.UTF_8)));
@@ -146,5 +227,9 @@ public class VerwaltungTest {
             alle[i] = (byte) i;
         }
         assertEquals(java.util.Base64.getEncoder().encodeToString(alle), Base64Kodierer.kodieren(alle));
+        // stückweise (Stücke als Vielfache von 3) == am Stück
+        String stueckweise = Base64Kodierer.kodieren(alle, 0, 99) + Base64Kodierer.kodieren(alle, 99, 198) + Base64Kodierer.kodieren(alle, 198, 256);
+        assertEquals(Base64Kodierer.kodieren(alle), stueckweise);
+        assertEquals(Base64Kodierer.kodieren(alle).length(), Base64Kodierer.laenge(alle.length));
     }
 }

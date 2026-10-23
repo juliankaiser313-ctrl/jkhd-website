@@ -48,6 +48,7 @@ public final class Pruefung {
         }
 
         Map<String, String> gesehen = new HashMap<>();   // schluessel -> Listen-Schlüssel
+        List<Rolle> wirksameRollen = liste.rollenZurAuswahl();
         for (Map.Entry<String, Partner> e : liste.partner.entrySet()) {
             String k = e.getKey();
             Partner x = e.getValue();
@@ -90,7 +91,7 @@ public final class Pruefung {
                     m.add("Der Wert von „" + a.label + "“ ist länger als " + Angabe.WERT_MAX + " Zeichen.");
                 }
             }
-            List<String> wirksam = x.wirksameFreigaben(liste.rollen, katalog);
+            List<String> wirksam = x.wirksameFreigaben(wirksameRollen, katalog);
             if (wirksam.size() > Partner.FREIGABEN_MAX) {
                 m.add("Höchstens " + Partner.FREIGABEN_MAX + " Freigaben.");
             }

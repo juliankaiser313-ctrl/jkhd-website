@@ -15,6 +15,13 @@ on:
     paths:
       - 'android/**'
       - '.github/workflows/android.yml'
+      # Die Vorschau im Bereich Webseite bringt diese Dateien der Website mit
+      - 'partner.html'
+      - 'css/*.css'
+      - 'js/main.js'
+      - 'assets/fonts/**'
+      - 'assets/logo.png'
+      - 'favicon.svg'
   workflow_dispatch:
 
 permissions:

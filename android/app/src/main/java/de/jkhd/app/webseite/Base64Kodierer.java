@@ -3,7 +3,7 @@ package de.jkhd.app.webseite;
 /**
  * Base64 mit dem strikten Alphabet (A–Z a–z 0–9 + /, mit =-Auffüllung), ohne Zeilenumbrüche — so,
  * wie der Server es für Dateien erwartet. Eigene Fassung, damit sie auf Android und in den Tests
- * auf dem Rechner gleich läuft.
+ * auf dem Rechner gleich läuft, und stückweise, damit große Dateien nicht mehrfach im Speicher liegen.
  */
 public final class Base64Kodierer {
 
@@ -14,15 +14,20 @@ public final class Base64Kodierer {
     }
 
     public static String kodieren(byte[] daten) {
-        StringBuilder aus = new StringBuilder((daten.length + 2) / 3 * 4);
-        int i = 0;
-        while (i + 2 < daten.length) {
+        return kodieren(daten, 0, daten.length);
+    }
+
+    /** Kodiert daten[von, bis); von sollte ein Vielfaches von 3 sein, damit Stücke aneinanderpassen. */
+    public static String kodieren(byte[] daten, int von, int bis) {
+        StringBuilder aus = new StringBuilder(laenge(bis - von));
+        int i = von;
+        while (i + 2 < bis) {
             int n = ((daten[i] & 0xff) << 16) | ((daten[i + 1] & 0xff) << 8) | (daten[i + 2] & 0xff);
             aus.append(ALPHABET[(n >> 18) & 63]).append(ALPHABET[(n >> 12) & 63])
                     .append(ALPHABET[(n >> 6) & 63]).append(ALPHABET[n & 63]);
             i += 3;
         }
-        int rest = daten.length - i;
+        int rest = bis - i;
         if (rest == 1) {
             int n = (daten[i] & 0xff) << 16;
             aus.append(ALPHABET[(n >> 18) & 63]).append(ALPHABET[(n >> 12) & 63]).append("==");
@@ -32,5 +37,10 @@ public final class Base64Kodierer {
                     .append(ALPHABET[(n >> 6) & 63]).append('=');
         }
         return aus.toString();
+    }
+
+    /** Länge der Kodierung von n Bytes. */
+    public static int laenge(int n) {
+        return (n + 2) / 3 * 4;
     }
 }

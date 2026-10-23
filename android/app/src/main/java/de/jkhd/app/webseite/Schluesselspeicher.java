@@ -88,8 +88,14 @@ public final class Schluesselspeicher {
         }
     }
 
+    /** Muss erst die Bildschirmsperre bestätigt werden? (Auch, wenn die Ausnahme eingewickelt ankommt.) */
     public static boolean brauchtBestaetigung(Throwable t) {
-        return t instanceof UserNotAuthenticatedException;
+        for (int tiefe = 0; t != null && tiefe < 8; tiefe++, t = t.getCause()) {
+            if (t instanceof UserNotAuthenticatedException) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private SharedPreferences ablage() {

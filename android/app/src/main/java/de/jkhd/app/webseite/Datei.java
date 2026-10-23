@@ -82,7 +82,7 @@ public final class Datei {
             return "Der Dateiname darf keinen Schrägstrich enthalten und nicht mit einem Punkt beginnen.";
         }
         if (!ENDUNGEN.contains(endung(name))) {
-            return "Diese Art Datei ist nicht erlaubt (erlaubt: " + String.join(", ", ENDUNGEN) + ").";
+            return "Diese Art Datei ist nicht erlaubt (erlaubt: " + Text.verbinden(", ", ENDUNGEN) + ").";
         }
         return null;
     }

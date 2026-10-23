@@ -30,6 +30,8 @@ public final class Aenderungen {
     public static Aenderungen ermitteln(Partnerliste original, Partnerliste arbeit, List<Modul> katalog) {
         Aenderungen a = new Aenderungen();
         Set<String> gesehen = new HashSet<>();
+        List<Rolle> rollenAlt = original.rollenZurAuswahl();
+        List<Rolle> rollenNeu = arbeit.rollenZurAuswahl();
         for (Partner p : arbeit.partner.values()) {
             Partner alt = p.bisherigeAdresse == null ? null : original.partner.get(p.bisherigeAdresse);
             if (alt == null) {
@@ -38,10 +40,10 @@ public final class Aenderungen {
                 continue;
             }
             gesehen.add(p.bisherigeAdresse);
-            List<String> was = unterschiede(alt, p, original.rollen, arbeit.rollen, katalog);
+            List<String> was = unterschiede(alt, p, rollenAlt, rollenNeu, katalog);
             if (!was.isEmpty()) {
                 a.geaendert++;
-                a.zeilen.add("Geändert: " + p.anzeige() + " — " + String.join(", ", was));
+                a.zeilen.add("Geändert: " + p.anzeige() + " — " + Text.verbinden(", ", was));
             }
             if (!Adresse.schluessel(alt.email).equals(Adresse.schluessel(p.email))) {
                 a.zeilen.add("   Achtung: neue Adresse = neuer Zugang. Passwort und Anmeldungen von "

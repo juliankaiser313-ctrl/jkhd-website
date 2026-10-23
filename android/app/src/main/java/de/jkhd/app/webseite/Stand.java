@@ -56,6 +56,21 @@ public final class Stand {
         }
     }
 
+    /**
+     * Nach gelungenem Schreiben, wenn das Nachlesen scheitert: die gesendete Liste mit der neuen
+     * Fassung des Servers; Katalog, VIP-Adresse und Passwortstatus vom alten Stand.
+     */
+    public Stand(Stand alt, String gesendeterText, String neueVersion) throws JSONException {
+        partnerText = gesendeterText;
+        version = neueVersion;
+        liste = Partnerliste.ausText(gesendeterText);
+        katalog = alt.katalog;
+        vip = alt.vip;
+        zeit = alt.zeit;
+        passwoerterBekannt = alt.passwoerterBekannt;
+        passwoerter.putAll(alt.passwoerter);
+    }
+
     public Passwortstatus passwortVon(String email) {
         return passwoerter.get(Adresse.schluessel(email));
     }

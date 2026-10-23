@@ -40,14 +40,19 @@ public final class Unterschrift {
         return n.toString();
     }
 
-    public static String unterschreiben(byte[] schluessel, String nutzlast) {
+    /** Ein HMAC-SHA256 mit dem Schlüssel, zum stückweisen Füttern (große Dateien). */
+    public static Mac mac(byte[] schluessel) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(new SecretKeySpec(schluessel, "HmacSHA256"));
-            return Hex.von(mac.doFinal(nutzlast.getBytes(StandardCharsets.UTF_8)));
+            return mac;
         } catch (GeneralSecurityException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public static String unterschreiben(byte[] schluessel, String nutzlast) {
+        return Hex.von(mac(schluessel).doFinal(nutzlast.getBytes(StandardCharsets.UTF_8)));
     }
 
     /** Der fertige Rumpf der Anfrage. */
@@ -56,6 +61,22 @@ public final class Unterschrift {
         r.put("nutzlast", nutzlast);
         r.put("unterschrift", unterschreiben(schluessel, nutzlast));
         return r.toString();
+    }
+
+    /** Text so maskieren, dass er in einen JSON-String passt (\ " und Steuerzeichen). */
+    public static String jsonText(String s) {
+        StringBuilder aus = new StringBuilder(s.length() + 16);
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '"' || c == '\\') {
+                aus.append('\\').append(c);
+            } else if (c < 0x20) {
+                aus.append(String.format(java.util.Locale.ROOT, "\\u%04x", (int) c));
+            } else {
+                aus.append(c);
+            }
+        }
+        return aus.toString();
     }
 
     /** Ein Einmal-Wert: 16 Zufallsbytes als 32 Hex. */

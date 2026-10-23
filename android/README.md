@@ -1,6 +1,6 @@
 # JKHD-App (Android)
 
-Stand 22.10.2026 (Fassung 0.6): Beim Öffnen zuerst der Ladebildschirm — schwarz, in der Mitte das
+Stand 23.10.2026 (Fassung 0.7): Beim Öffnen zuerst der Ladebildschirm — schwarz, in der Mitte das
 Marken-Lockup groß, unten ein Ladebalken, der in gut einer Sekunde volläuft (länger, wenn das Laden
 länger dauert) und dann ausblendet. Dahinter das Kontrollzentrum: oben links klein dasselbe Lockup
 (Zeichen, JKHD, „Quant Systems / Just Know How to Dominate.“), darunter die Überschrift
@@ -99,10 +99,20 @@ Pruefung.java              Prüfung vor dem Speichern mit den Grenzen des Server
 VorschauDaten.java         baut aus einem Eintrag die Form von /daten für die Vorschau
 ```
 
-Gespeichert wird immer die **ganze Liste** mit der Fassung (`basis`) des letzten Lesens; sagt der
-Server 409 (die PC-App hat inzwischen gespeichert), bietet die App „Neu laden“ an. Verlorene
-Antworten (Zeitüberschreitung) behandelt sie wie die PC-App: nachlesen, und wenn die eigene Liste
-schon auf dem Server steht, gilt es als gespeichert. Nicht übernommen wurde der Spiegel-Commit von
+Gespeichert wird immer die **ganze Liste** mit der Fassung (`basis`) des letzten Lesens
+(`Speichervorgang.java`). Geht die Antwort verloren (Netz) oder sagt der Server 409, liest die App
+nach: steht inhaltlich genau das Gesendete schon auf dem Server, war es das eigene Speichern und gilt
+als gelungen; sonst hat die PC-App inzwischen gespeichert, und die App bietet „Neu laden“ an. Nach
+einer 408 („zu alt“) gleicht der Client die Uhr neu ab und wiederholt einmal. Dateien gehen
+stückweise hinaus (die Datei liegt nur einmal im Speicher).
+
+Sicherheit und Ablauf (seit 0.7): Beim **Verlassen des Bereichs** und nach **15 Minuten im
+Hintergrund** wird der Schlüssel aus dem Speicher genommen und alles Ungespeicherte vergessen (wie
+die PC-App, die sich nach 15 Minuten ohne Lebenszeichen beendet); mit ungespeicherten Änderungen
+fragt die App vorher. Solange ein Upload, Laden, Speichern oder „Passwort entfernen“ läuft, sind
+Speichern, Verwerfen, Neu laden und Verlassen gesperrt. Laden, Speichern und Uploads überleben das
+Drehen des Handys; ein fertiger Upload landet beim richtigen Partner. Die Schlüsseleingabe erlaubt
+keine Bildschirmfotos. Links in der Vorschau öffnen die Website im Browser. Nicht übernommen wurde der Spiegel-Commit von
 `partner.json` ins Server-Repo (das macht die PC-App beim nächsten Start). Was die PC-App nicht
 kann (VIP-Katalog pflegen, Anfragen lesen, Mails schreiben), kann die App auch nicht — dafür müsste
 der Server neue Aktionen bekommen (Bericht, Abschnitt 7.5).
@@ -134,10 +144,12 @@ Android installiert nur signierte APKs. Ohne weitere Angaben signiert der Bau mi
 mitgelieferten Entwicklungsschlüssel `signing/jkhd-dev.jks` (Alias `jkhd`, Passwort `jkhd-dev`,
 gültig bis 2054). **Der Schlüssel liegt samt Passwort im öffentlichen Repository.** Das heißt:
 Jeder kann damit eine APK mit dem Paketnamen `de.jkhd.app` bauen, die Android als Update über die
-installierte App annimmt und deren Daten und Rechte übernimmt. Für die jetzige App ohne Daten ist
-das tragbar — deshalb nur APKs von der eigenen Release-Seite oder aus diesem Gespräch installieren.
-**Bevor die App Zugänge speichert oder der Download-Link weitergegeben wird**, einen eigenen,
-privaten Schlüssel anlegen (`keytool -genkeypair …`, Datei **nicht** ins Repository — die
+installierte App annimmt und deren Daten und Rechte übernimmt. **Seit Fassung 0.6 bewahrt die App
+den Schlüssel der Partnerverwaltung auf** (verschlüsselt, hinter der Bildschirmsperre). Ein
+untergeschobenes „Update“ mit dem öffentlichen Signaturschlüssel erbte diesen Speicher und könnte
+selbst nach der Bildschirmsperre fragen. Deshalb: nur APKs von der eigenen Release-Seite oder aus
+dem Gespräch mit Claude installieren, und **bald** einen eigenen, privaten Signaturschlüssel
+anlegen (`keytool -genkeypair …`, Datei **nicht** ins Repository — die
 `.gitignore` hier blockt `*.jks`) und dem Bau über Umgebungsvariablen geben — lokal direkt, auf
 GitHub als Secrets, die der Workflow `.github/workflows/android.yml` nur den zwei Schritten gibt,
 die sie brauchen:

@@ -21,6 +21,13 @@ public final class Hintergrund {
         void fehler(Exception fehler);
     }
 
+    /** Zu wenig Speicher (sehr große Datei) — als Fehler mit Text statt Absturz. */
+    public static final class ZuWenigSpeicher extends Exception {
+        ZuWenigSpeicher() {
+            super("Für diese Datei reicht der Speicher des Handys nicht.");
+        }
+    }
+
     private static final ExecutorService FADEN = Executors.newSingleThreadExecutor();
     private static final Handler HAUPT = new Handler(Looper.getMainLooper());
 
@@ -46,6 +53,14 @@ public final class Hintergrund {
                             danach.fehler(e);
                         }
                     });
+                } catch (OutOfMemoryError zuGross) {
+                    final Exception e = new ZuWenigSpeicher();
+                    HAUPT.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            danach.fehler(e);
+                        }
+                    });
                 }
             }
         });
@@ -53,7 +68,7 @@ public final class Hintergrund {
 
     /** Ein lesbarer Text zu einem Fehler aus dem Hintergrund. */
     public static String text(Exception e) {
-        if (e instanceof VerwaltungFehler) {
+        if (e instanceof VerwaltungFehler || e instanceof ZuWenigSpeicher) {
             return e.getMessage();
         }
         if (e instanceof java.net.UnknownHostException) {

@@ -10,9 +10,9 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -26,7 +26,9 @@ import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,13 +38,19 @@ import de.jkhd.app.Schriften;
 /**
  * Ein Partner bearbeiten: Adresse, Name, Rolle, Passwort, Module, Angaben, Dateien, Ansicht, Notiz —
  * wie der Editor der PC-App, nur untereinander. Änderungen landen in der Arbeitskopie der Sitzung;
- * gespeichert wird in der Liste. Dateien gehen sofort zum Server (gehören erst nach dem Speichern zum Partner),
- * „Passwort entfernen“ wirkt sofort.
+ * gespeichert wird in der Liste. Dateien gehen sofort zum Server (gehören erst nach dem Speichern zum
+ * Partner), „Passwort entfernen“ wirkt sofort. Beides läuft im Hintergrund weiter, auch wenn die
+ * Seite gedreht oder verlassen wird; das Ergebnis landet beim richtigen Partner.
  */
 public class PartnerActivity extends Activity {
 
     public static final String EXTRA_SCHLUESSEL = "schluessel";
     private static final int REQ_DATEI = 31;
+    /** Vorschläge für Bezeichnungen, wie die datalist der PC-App. */
+    private static final List<String> ANGABE_VORSCHLAEGE = Arrays.asList(
+            "Geboren", "Firma", "Ansprechpartner", "Zweck", "Angelegt", "Partner seit", "Status", "Telefon");
+
+    private static WeakReference<PartnerActivity> vorn = new WeakReference<>(null);
 
     private WebseiteSitzung sitzung;
     private Partner partner;
@@ -74,7 +82,9 @@ public class PartnerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sitzung = WebseiteSitzung.holen();
-        schluessel = getIntent().getStringExtra(EXTRA_SCHLUESSEL);
+        schluessel = savedInstanceState != null && savedInstanceState.getString(EXTRA_SCHLUESSEL) != null
+                ? savedInstanceState.getString(EXTRA_SCHLUESSEL)
+                : getIntent().getStringExtra(EXTRA_SCHLUESSEL);
         partner = sitzung.geladen() && schluessel != null ? sitzung.arbeit.partner.get(schluessel) : null;
         if (partner == null) {
             finish();
@@ -103,6 +113,18 @@ public class PartnerActivity extends Activity {
 
         fuellen();
         Schriften.anwenden(findViewById(android.R.id.content));
+
+        // Beanstandungen und „Bisherige Adresse“ sofort zeigen, sobald ein Feld verlassen wird.
+        View.OnFocusChangeListener beimVerlassen = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hatFokus) {
+                if (!hatFokus) {
+                    uebernehmen();
+                }
+            }
+        };
+        email.setOnFocusChangeListener(beimVerlassen);
+        name.setOnFocusChangeListener(beimVerlassen);
 
         klick(R.id.zurueck, new Runnable() {
             @Override
@@ -175,18 +197,51 @@ public class PartnerActivity extends Activity {
         });
     }
 
+    /** Der Editor, der gerade vorn ist (oder null). */
+    private static PartnerActivity vorn() {
+        PartnerActivity a = vorn.get();
+        return a != null && !a.isFinishing() && !a.isDestroyed() ? a : null;
+    }
+
     @Override
-    public void onBackPressed() {
-        uebernehmen();
-        super.onBackPressed();
+    protected void onResume() {
+        super.onResume();
+        if (WebseiteSitzung.fortgesetztAbgelaufen() || WebseiteSitzung.holen() != sitzung
+                || !sitzung.geladen() || sitzung.arbeit.schluesselVon(partner) == null) {
+            // Gesperrt (Ruhezeit) oder die Liste wurde ersetzt: zurück zur Liste.
+            entfernt = true;
+            finish();
+            return;
+        }
+        vorn = new WeakReference<>(this);
+        arbeitZeigen(sitzung.uploadsLaufen > 0 || sitzung.passwortLaeuft);
+        dateienLesen();
+        dateienZeichnen();
+        passwortStatusZeichnen();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if (vorn.get() == this) {
+            vorn = new WeakReference<>(null);
+        }
         if (partner != null && !entfernt && sitzung.geladen()) {
             uebernehmen();
         }
+        WebseiteSitzung.pausiert();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(EXTRA_SCHLUESSEL, schluessel);
+    }
+
+    @Override
+    public void onBackPressed() {
+        uebernehmen();
+        super.onBackPressed();
     }
 
     // ---------- Anzeigen ----------
@@ -198,9 +253,6 @@ public class PartnerActivity extends Activity {
         name.setText(partner.name);
 
         rollenAuswahl = sitzung.arbeit.rollenZurAuswahl();
-        if (!partner.rolle.isEmpty() && Partnerliste.findeRolle(rollenAuswahl, partner.rolle) == null) {
-            rollenAuswahl.add(new Rolle(partner.rolle, false));
-        }
         List<String> namen = new ArrayList<>();
         namen.add("— keine Rolle —");
         int gewaehlt = 0;
@@ -217,10 +269,11 @@ public class PartnerActivity extends Activity {
         rolle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String neu = position == 0 ? "" : rollenAuswahl.get(position - 1).name;
+                String neu = position == 0 || position - 1 >= rollenAuswahl.size() ? "" : rollenAuswahl.get(position - 1).name;
                 if (!neu.equals(partner.rolle)) {
                     partner.rolle = neu;
                     moduleZeichnen();
+                    problemeZeichnen();
                 }
             }
 
@@ -241,14 +294,19 @@ public class PartnerActivity extends Activity {
         ansichtVip.setChecked(partner.ansicht.vip);
         notiz.setText(partner.notiz);
 
+        bisherigeAdresseZeichnen();
+        problemeZeichnen();
+        fuelltGerade = false;
+    }
+
+    private void bisherigeAdresseZeichnen() {
         if (partner.bisherigeAdresse != null && !partner.bisherigeAdresse.equals(partner.email)) {
-            bisherigeAdresse.setText("Bisherige Adresse: " + partner.bisherigeAdresse);
+            bisherigeAdresse.setText("Bisherige Adresse: " + partner.bisherigeAdresse
+                    + " — mit dem Speichern ist das ein neuer Zugang (Passwort und Anmeldungen der alten Adresse werden gelöscht).");
             bisherigeAdresse.setVisibility(View.VISIBLE);
         } else {
             bisherigeAdresse.setVisibility(View.GONE);
         }
-        problemeZeichnen();
-        fuelltGerade = false;
     }
 
     private void passwortStatusZeichnen() {
@@ -273,11 +331,18 @@ public class PartnerActivity extends Activity {
     private void moduleZeichnen() {
         module.removeAllViews();
         List<Modul> katalog = sitzung.katalog();
-        final boolean alle = partner.rolleMitAllenModulen(sitzung.arbeit.rollen.isEmpty() ? rollenAuswahl : sitzung.arbeit.rollen);
+        final boolean alle = partner.rolleMitAllenModulen(rollenAuswahl);
         if (katalog.isEmpty()) {
             TextView t = new TextView(this);
             t.setText(R.string.ws_keine_module);
             t.setTextColor(getColor(R.color.text_gedaempft));
+            module.addView(t);
+        }
+        if (alle) {
+            TextView t = new TextView(this);
+            t.setText("Die Rolle „" + partner.rolle + "“ schaltet alle Module frei.");
+            t.setTextColor(getColor(R.color.text_gedaempft));
+            t.setPadding(0, 0, 0, dp(6));
             module.addView(t);
         }
         for (final Modul m : katalog) {
@@ -330,6 +395,7 @@ public class PartnerActivity extends Activity {
         cb.setText(text);
         cb.setChecked(an);
         cb.setEnabled(aktiv);
+        cb.setSaveEnabled(false);
         cb.setTextColor(getColor(aktiv ? R.color.text_hell : R.color.text_gedaempft));
         cb.setTextSize(15);
         cb.setMinHeight(dp(44));
@@ -340,11 +406,15 @@ public class PartnerActivity extends Activity {
     private void angabenZeichnen() {
         angaben.removeAllViews();
         LayoutInflater li = LayoutInflater.from(this);
+        ArrayAdapter<String> vorschlaege = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, ANGABE_VORSCHLAEGE);
         for (int i = 0; i < partner.felder.size(); i++) {
             final int index = i;
             Angabe a = partner.felder.get(i);
             View zeile = li.inflate(R.layout.zeile_angabe, angaben, false);
-            ((EditText) zeile.findViewById(R.id.angabe_label)).setText(a.label);
+            AutoCompleteTextView label = zeile.findViewById(R.id.angabe_label);
+            label.setAdapter(vorschlaege);
+            label.setThreshold(1);
+            label.setText(a.label);
             ((EditText) zeile.findViewById(R.id.angabe_wert)).setText(a.wert);
             zeile.findViewById(R.id.angabe_entfernen).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -383,6 +453,7 @@ public class PartnerActivity extends Activity {
             final int index = i;
             Datei d = partner.dateien.get(i);
             View zeile = li.inflate(R.layout.zeile_datei, dateien, false);
+            zeile.setTag(d.id);
             ((TextView) zeile.findViewById(R.id.datei_typ)).setText(Datei.typ(d.name));
             ((TextView) zeile.findViewById(R.id.datei_name)).setText(d.name);
             String info = groesseText(d.groesse) + (d.datum.isEmpty() ? "" : " · " + d.datum) + (d.neu ? " · noch nicht gespeichert" : "");
@@ -403,16 +474,19 @@ public class PartnerActivity extends Activity {
         Schriften.anwenden(dateien);
     }
 
+    /** Liest die Beschreibungen zurück — je Zeile über die Kennung der Datei, nicht über die Position. */
     private void dateienLesen() {
-        int versatz = partner.dateien.isEmpty() ? 1 : 0;
-        for (int i = 0; i < partner.dateien.size(); i++) {
-            View zeile = dateien.getChildAt(i + versatz);
-            if (zeile == null) {
-                break;
-            }
+        for (int i = 0; i < dateien.getChildCount(); i++) {
+            View zeile = dateien.getChildAt(i);
             EditText text = zeile.findViewById(R.id.datei_text);
-            if (text != null) {
-                partner.dateien.get(i).text = text.getText().toString().trim();
+            if (text == null || !(zeile.getTag() instanceof String)) {
+                continue;
+            }
+            for (Datei d : partner.dateien) {
+                if (d.id.equals(zeile.getTag())) {
+                    d.text = text.getText().toString().trim();
+                    break;
+                }
             }
         }
     }
@@ -423,7 +497,7 @@ public class PartnerActivity extends Activity {
         if (m == null || m.isEmpty()) {
             probleme.setVisibility(View.GONE);
         } else {
-            probleme.setText("• " + String.join("\n• ", m));
+            probleme.setText("• " + Text.verbinden("\n• ", m));
             probleme.setVisibility(View.VISIBLE);
         }
     }
@@ -432,7 +506,7 @@ public class PartnerActivity extends Activity {
 
     /** Liest alle Felder in den Partner und ordnet die Liste neu ein (die Adresse ist der Schlüssel). */
     private void uebernehmen() {
-        if (entfernt || fuelltGerade || partner == null) {
+        if (entfernt || fuelltGerade || partner == null || titel == null) {
             return;
         }
         partner.email = email.getText().toString().trim();
@@ -449,7 +523,10 @@ public class PartnerActivity extends Activity {
         partner.notiz = notiz.getText().toString().trim();
         sitzung.arbeit.neuEinordnen();
         schluessel = sitzung.arbeit.schluesselVon(partner);
+        // Auch der Intent trägt den neuen Schlüssel — falls Android die Seite aus ihm neu baut.
+        getIntent().putExtra(EXTRA_SCHLUESSEL, schluessel);
         titel.setText(partner.anzeige());
+        bisherigeAdresseZeichnen();
         problemeZeichnen();
     }
 
@@ -474,7 +551,7 @@ public class PartnerActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode != REQ_DATEI || resultCode != RESULT_OK || data == null || data.getData() == null) {
+        if (requestCode != REQ_DATEI || resultCode != RESULT_OK || data == null || data.getData() == null || partner == null) {
             return;
         }
         final Uri uri = data.getData();
@@ -507,12 +584,16 @@ public class PartnerActivity extends Activity {
             melden("Die Datei ist größer als 15 MB.");
             return;
         }
+        final WebseiteSitzung s = sitzung;
+        final Partner ziel = partner;
+        final android.content.ContentResolver resolver = getContentResolver();
+        s.uploadsLaufen++;
         arbeitZeigen(true);
         Hintergrund.starten(new Hintergrund.Aufgabe<Datei>() {
             @Override
             public Datei ausfuehren() throws Exception {
                 byte[] inhalt;
-                try (InputStream ein = getContentResolver().openInputStream(uri)) {
+                try (InputStream ein = resolver.openInputStream(uri)) {
                     if (ein == null) {
                         throw new java.io.IOException("Die Datei ließ sich nicht öffnen.");
                     }
@@ -527,29 +608,48 @@ public class PartnerActivity extends Activity {
                     }
                     inhalt = puffer.toByteArray();
                 }
-                return sitzung.verwaltung().dateiHochladen(name, inhalt, WebseiteSitzung.heute());
+                if (inhalt.length == 0) {
+                    throw new java.io.IOException("Die Datei ist leer.");
+                }
+                return s.verwaltung().dateiHochladen(name, inhalt, WebseiteSitzung.heute());
             }
         }, new Hintergrund.Danach<Datei>() {
             @Override
             public void fertig(Datei d) {
-                // Auch wenn die Seite schon zu ist: die Datei gehört in die Liste, sonst wäre der Upload verloren.
-                partner.dateien.add(d);
-                if (vorbei()) {
+                s.uploadsLaufen--;
+                PartnerActivity a = vorn();
+                // Den Partner in der aktuellen Liste suchen — das Objekt von vorhin kann ersetzt sein.
+                Partner p = s.arbeit == null ? null : s.arbeit.wiederfinden(ziel);
+                if (p == null) {
+                    if (a != null) {
+                        a.arbeitZeigen(s.passwortLaeuft);
+                        a.melden("Die Datei wurde hochgeladen, aber der Partner steht nicht mehr in der Liste. "
+                                + "Sie wird nicht zugeordnet; der Server löscht sie nach einem Tag.");
+                    }
                     return;
                 }
-                arbeitZeigen(false);
-                dateienLesen();
-                dateienZeichnen();
-                Toast.makeText(PartnerActivity.this, "Hochgeladen — gehört dem Partner, sobald du speicherst.", Toast.LENGTH_LONG).show();
+                boolean sichtbar = a != null && a.partner == p;
+                if (sichtbar) {
+                    a.dateienLesen();
+                }
+                p.dateien.add(d);
+                if (a != null) {
+                    a.arbeitZeigen(s.uploadsLaufen > 0 || s.passwortLaeuft);
+                    if (sichtbar) {
+                        a.dateienZeichnen();
+                    }
+                    Toast.makeText(a, "Hochgeladen — gehört „" + p.anzeige() + "“, sobald du speicherst.", Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
             public void fehler(Exception e) {
-                if (vorbei()) {
-                    return;
+                s.uploadsLaufen--;
+                PartnerActivity a = vorn();
+                if (a != null) {
+                    a.arbeitZeigen(s.uploadsLaufen > 0 || s.passwortLaeuft);
+                    a.melden("Hochladen fehlgeschlagen: " + Hintergrund.text(e));
                 }
-                arbeitZeigen(false);
-                melden(Hintergrund.text(e));
             }
         });
     }
@@ -593,38 +693,39 @@ public class PartnerActivity extends Activity {
     }
 
     private void passwortEntfernen(final String adresse) {
+        final WebseiteSitzung s = sitzung;
+        s.passwortLaeuft = true;
         arbeitZeigen(true);
         Hintergrund.starten(new Hintergrund.Aufgabe<Boolean>() {
             @Override
             public Boolean ausfuehren() throws Exception {
-                return sitzung.verwaltung().passwortEntfernen(adresse);
+                return s.verwaltung().passwortEntfernen(adresse);
             }
         }, new Hintergrund.Danach<Boolean>() {
             @Override
-            public void fertig(Boolean entfernt) {
-                sitzung.stand.passwoerter.remove(Adresse.schluessel(adresse));
-                if (vorbei()) {
-                    return;
+            public void fertig(Boolean wirklich) {
+                s.passwortLaeuft = false;
+                if (s.stand != null) {
+                    s.stand.passwoerter.remove(Adresse.schluessel(adresse));
                 }
-                arbeitZeigen(false);
-                passwortStatusZeichnen();
-                Toast.makeText(PartnerActivity.this, entfernt ? "Passwort entfernt." : "Es war kein Passwort gesetzt.", Toast.LENGTH_LONG).show();
+                PartnerActivity a = vorn();
+                if (a != null) {
+                    a.arbeitZeigen(s.uploadsLaufen > 0);
+                    a.passwortStatusZeichnen();
+                    Toast.makeText(a, wirklich ? "Passwort von " + adresse + " entfernt." : "Es war kein Passwort gesetzt.", Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
             public void fehler(Exception e) {
-                if (vorbei()) {
-                    return;
+                s.passwortLaeuft = false;
+                PartnerActivity a = vorn();
+                if (a != null) {
+                    a.arbeitZeigen(s.uploadsLaufen > 0);
+                    a.melden("Passwort nicht entfernt: " + Hintergrund.text(e));
                 }
-                arbeitZeigen(false);
-                melden(Hintergrund.text(e));
             }
         });
-    }
-
-    /** Die Seite ist schon zu — dann nichts mehr anzeigen (ein Dialog würde abstürzen). */
-    private boolean vorbei() {
-        return isFinishing() || isDestroyed();
     }
 
     private void partnerEntfernenFragen() {
@@ -647,9 +748,8 @@ public class PartnerActivity extends Activity {
 
     private void arbeitZeigen(boolean an) {
         arbeit.setVisibility(an ? View.VISIBLE : View.INVISIBLE);
-        findViewById(R.id.datei_neu).setEnabled(!an);
-        passwortEntfernen.setEnabled(!an);
-        findViewById(R.id.fertig).setEnabled(!an);
+        findViewById(R.id.datei_neu).setEnabled(sitzung.uploadsLaufen == 0);
+        passwortEntfernen.setEnabled(!sitzung.passwortLaeuft);
     }
 
     private void melden(String text) {

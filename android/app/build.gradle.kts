@@ -14,7 +14,8 @@ val websiteVorschauOrdner = layout.buildDirectory.dir("generated/website-vorscha
 val websiteVorschauKopieren = tasks.register<Copy>("websiteVorschauKopieren") {
     description = "Kopiert partner.html, CSS, main.js, Schriften und Logo der Website fuer die Vorschau in die Assets."
     from(websiteWurzel) {
-        include("partner.html", "favicon.svg", "css/**", "js/main.js", "assets/fonts/**", "assets/logo.png")
+        // css/*.css, nicht css/** — die KaTeX-Schriften (gut 300 KB) braucht partner.html nicht.
+        include("partner.html", "favicon.svg", "css/*.css", "js/main.js", "assets/fonts/**", "assets/logo.png")
     }
     into(websiteVorschauOrdner.map { it.dir("website") })
 }
@@ -30,7 +31,7 @@ android {
         // Die Laufnummer kann der Bau von aussen hochzaehlen (GitHub Actions: Nummer des Laufs),
         // damit sich eine neue APK ueber die alte installieren laesst.
         versionCode = umgebung("JKHD_VERSION_CODE")?.toIntOrNull() ?: 1
-        versionName = "0.6"
+        versionName = "0.7"
     }
 
     sourceSets.getByName("main").assets.srcDir(websiteVorschauOrdner)

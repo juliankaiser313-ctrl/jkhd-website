@@ -27,6 +27,8 @@ public class RollenActivity extends Activity {
 
     private WebseiteSitzung sitzung;
     private LinearLayout rollen;
+    /** Während des Zeichnens lösen gesetzte Haken nichts aus. */
+    private boolean zeichnetGerade;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,23 @@ public class RollenActivity extends Activity {
         Schriften.anwenden(findViewById(android.R.id.content));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (WebseiteSitzung.fortgesetztAbgelaufen() || WebseiteSitzung.holen() != sitzung || !sitzung.geladen()) {
+            finish();
+            return;
+        }
+        // Nach dem Drehen hat Android die Haken womöglich aus dem gespeicherten Zustand gesetzt — das Modell zählt.
+        zeichnen();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        WebseiteSitzung.pausiert();
+    }
+
     /** Die Rollen, die gezeigt werden: aus der Datei oder die Vorschläge. */
     private List<Rolle> anzeige() {
         if (sitzung.arbeit.rollenVorhanden || !sitzung.arbeit.rollen.isEmpty()) {
@@ -91,6 +110,7 @@ public class RollenActivity extends Activity {
     }
 
     private void zeichnen() {
+        zeichnetGerade = true;
         rollen.removeAllViews();
         LayoutInflater li = LayoutInflater.from(this);
         for (final Rolle r : anzeige()) {
@@ -108,6 +128,9 @@ public class RollenActivity extends Activity {
             alle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (zeichnetGerade) {
+                        return;
+                    }
                     Rolle echt = eigene(r);
                     echt.alleModule = isChecked;
                 }
@@ -121,6 +144,7 @@ public class RollenActivity extends Activity {
             rollen.addView(zeile);
         }
         Schriften.anwenden(rollen);
+        zeichnetGerade = false;
     }
 
     /** Die Rolle in der festen Liste (nach dem Festmachen dasselbe oder das gleichnamige Objekt). */
