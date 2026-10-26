@@ -2,6 +2,7 @@ package de.jkhd.app;
 
 import android.app.Activity;
 
+import de.jkhd.app.multibroker.MultiBrokerActivity;
 import de.jkhd.app.webseite.WebseiteActivity;
 
 /**
@@ -22,7 +23,14 @@ public enum Bereich {
             R.string.bereich_quant_titel,
             R.string.bereich_quant_untertitel,
             R.string.bereich_quant_beschreibung,
-            null);
+            null),
+
+    /** Die Trading-Oberfläche vom PC (über Tailscale). Langes Drücken aufs Viereck: Adresse ändern. */
+    MULTI_BROKER(
+            R.string.bereich_multibroker_titel,
+            R.string.bereich_multibroker_untertitel,
+            R.string.bereich_multibroker_beschreibung,
+            MultiBrokerActivity.class);
 
     /** Name im Viereck und als Überschrift der Seite. */
     public final int titel;

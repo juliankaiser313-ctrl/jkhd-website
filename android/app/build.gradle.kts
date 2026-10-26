@@ -31,7 +31,7 @@ android {
         // Die Laufnummer kann der Bau von aussen hochzaehlen (GitHub Actions: Nummer des Laufs),
         // damit sich eine neue APK ueber die alte installieren laesst.
         versionCode = umgebung("JKHD_VERSION_CODE")?.toIntOrNull() ?: 1
-        versionName = "0.7"
+        versionName = "0.8"
     }
 
     sourceSets.getByName("main").assets.srcDir(websiteVorschauOrdner)

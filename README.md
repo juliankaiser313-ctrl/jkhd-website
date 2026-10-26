@@ -71,7 +71,8 @@ assets/erde/       Erdbilder der NASA fuer js/universum.js (Blue Marble Tag, Bla
 favicon.svg        Browser-Tab-Icon (drei Balken)
 
 android/           Die JKHD-App für Android (21./22.10.2026): schwarzes „Kontrollzentrum“ mit Lockup und Vierecken je Bereich
-                   („Webseite“ = Partnerverwaltung wie die PC-App, „Quant System“ = Platzhalter, zwei Plätze frei),
+                   („Webseite“ = Partnerverwaltung wie die PC-App, „Quant System“ = Platzhalter,
+                   „Multi-Broker“ = Trading-Oberfläche vom PC über Tailscale, ein Platz frei),
                    Symbol = das Zeichen. Eigenes Gradle-Projekt,
                    gebaut von .github/workflows/android.yml; wird nicht mit der Website ausgeliefert
                    (siehe Abschnitt „Android-App“ und android/README.md)
@@ -386,17 +387,18 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
 
 ## Android-App (android/, seit 21.10.2026)
 
-Stand Fassung 0.7: schwarzer Startbildschirm (Fenster, Leisten, ab Android 12 auch der
+Stand Fassung 0.8: schwarzer Startbildschirm (Fenster, Leisten, ab Android 12 auch der
 Begrüßungsschirm). Beim Öffnen zuerst ein Ladebildschirm mit dem Marken-Lockup groß und einem
 Ladebalken unten, dann das Kontrollzentrum: oben links klein das Lockup, darunter die Überschrift
-„Kontrollzentrum“ und ein Viereck je Bereich — „Webseite“ und „Quant System“, zwei Plätze frei für
-weitere. **„Webseite“ ist die Partnerverwaltung**: dasselbe wie die Partner-App am PC
+„Kontrollzentrum“ und ein Viereck je Bereich — „Webseite“, „Quant System“ und „Multi-Broker“, ein
+Platz frei. **„Webseite“ ist die Partnerverwaltung**: dasselbe wie die Partner-App am PC
 (Partner, Adressen, Rollen, Module, Angaben, Dateien, Ansicht, Vorschau, Passwort entfernen), über
 dieselbe unterschriebene Schnittstelle `POST api.jkhd.de/verwaltung`; der Schlüssel kommt vom PC
-und liegt auf dem Handy verschlüsselt hinter der Bildschirmsperre. „Quant System“ ist noch ein
-Platzhalter. Schriften wie auf der Website. Auf dem Handy heißt die App „JKHD“, Symbol ist das
-Zeichen (drei Balken). Paket `de.jkhd.app`, Android 7 oder neuer, keine Bibliotheken, APK rund
-480 KB. Aufbau, Bauen, Installieren, Signatur und die Partnerverwaltung: `android/README.md`;
+und liegt auf dem Handy verschlüsselt hinter der Bildschirmsperre. **„Multi-Broker“** zeigt die
+Trading-Oberfläche vom PC (über Tailscale, nur https, eigener Login mit Cookie, kein Passwort in der
+App); die Adresse steht nur auf dem Handy. „Quant System“ ist noch ein Platzhalter. Schriften wie auf
+der Website. Auf dem Handy heißt die App „JKHD“, Symbol ist das Zeichen (drei Balken). Paket
+`de.jkhd.app`, Android 7 oder neuer, keine Bibliotheken, APK rund 490 KB. Aufbau, Bauen, Installieren, Signatur und die Partnerverwaltung: `android/README.md`;
 Analyse der PC-App und des Servers: `android/analyse-partner-app.md`.
 
 - **APK holen:** Jeder Push auf `main`, der `android/` berührt, baut sie (`.github/workflows/android.yml`)

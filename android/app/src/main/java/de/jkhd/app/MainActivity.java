@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import de.jkhd.app.multibroker.MultiBrokerActivity;
+
 /**
  * Der Startbildschirm: erst der Ladebildschirm (großes Lockup, Ladebalken), dann das
  * Kontrollzentrum — schwarz, oben links das Lockup, darunter die Vierecke der Bereiche
@@ -112,5 +114,23 @@ public class MainActivity extends Activity {
                 }
             }
         });
+        if (bereich == Bereich.MULTI_BROKER) {
+            // Langes Drücken: Adresse des Multi-Brokers ändern.
+            kachel.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    MultiBrokerActivity.adresseFragen(MainActivity.this, new Runnable() {
+                        @Override
+                        public void run() {
+                            android.widget.Toast.makeText(MainActivity.this, R.string.mb_adresse_gespeichert,
+                                    android.widget.Toast.LENGTH_SHORT).show();
+                        }
+                    }, null);
+                    return true;
+                }
+            });
+        } else {
+            kachel.setOnLongClickListener(null);
+        }
     }
 }

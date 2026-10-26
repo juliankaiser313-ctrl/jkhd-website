@@ -16,6 +16,22 @@
     <string name="bereich_quant_untertitel">Steuerung</string>
     <string name="bereich_quant_beschreibung">Hier entsteht die Steuerung des Quant-Systems.</string>
 
+    <string name="bereich_multibroker_titel">Multi-Broker</string>
+    <string name="bereich_multibroker_untertitel">Trading auf allen Konten</string>
+    <string name="bereich_multibroker_beschreibung">Kauft und verkauft mit einem Klick auf allen verbundenen Konten.</string>
+
+    <!-- Bereich Multi-Broker -->
+    <string name="mb_kicker">Multi-Broker</string>
+    <string name="mb_fehler_titel">PC nicht erreichbar</string>
+    <string name="mb_fehler_text">Läuft der Multi-Broker? Ist Tailscale auf dem Handy eingeschaltet?</string>
+    <string name="mb_erneut">Erneut versuchen</string>
+    <string name="mb_adresse_aendern">Adresse ändern</string>
+    <string name="mb_adresse_titel">Adresse des Multi-Brokers</string>
+    <string name="mb_adresse_text">Die Tailscale-Adresse deines PCs, z. B. %1$s. Nur https.</string>
+    <string name="mb_adresse_speichern">Speichern</string>
+    <string name="mb_adresse_abbrechen">Abbrechen</string>
+    <string name="mb_adresse_gespeichert">Adresse des Multi-Brokers gespeichert.</string>
+
     <!-- Bereich Webseite: Partnerverwaltung -->
     <string name="ws_kicker">Webseite · Partnerzugänge</string>
     <string name="ws_titel">Partner</string>

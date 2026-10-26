@@ -51,6 +51,15 @@
             android:name=".webseite.VorschauActivity"
             android:exported="false" />
 
+        <!-- Bereich Multi-Broker: Trading-Oberfläche vom PC über Tailscale (nur https, kein Klartext-
+             Verkehr). Beim Drehen wird die Seite nicht neu aufgebaut — Formular und Stand bleiben. -->
+        <activity
+            android:name=".multibroker.MultiBrokerActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode|density"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="adjustResize" />
+
     </application>
 
 </manifest>

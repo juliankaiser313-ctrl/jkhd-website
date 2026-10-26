@@ -1,17 +1,18 @@
 # JKHD-App (Android)
 
-Stand 23.10.2026 (Fassung 0.7): Beim Öffnen zuerst der Ladebildschirm — schwarz, in der Mitte das
+Stand 26.10.2026 (Fassung 0.8): Beim Öffnen zuerst der Ladebildschirm — schwarz, in der Mitte das
 Marken-Lockup groß, unten ein Ladebalken, der in gut einer Sekunde volläuft (länger, wenn das Laden
 länger dauert) und dann ausblendet. Dahinter das Kontrollzentrum: oben links klein dasselbe Lockup
 (Zeichen, JKHD, „Quant Systems / Just Know How to Dominate.“), darunter die Überschrift
-„Kontrollzentrum“ und die Vierecke, je eines pro Bereich — „Webseite“ (Dashboard, Partnerzugänge)
-und „Quant System“ (Steuerung); zwei Plätze sind frei für weitere Bereiche. **„Webseite“ ist seit
-Fassung 0.6 die Partnerverwaltung** (siehe unten), „Quant System“ noch ein Platzhalter
+„Kontrollzentrum“ und die Vierecke, je eines pro Bereich — 01 „Webseite“ (Dashboard,
+Partnerzugänge), 02 „Quant System“ (Steuerung), 03 „Multi-Broker“ (Trading auf allen Konten); ein
+Platz ist frei. **„Webseite“ ist seit Fassung 0.6 die Partnerverwaltung**, **„Multi-Broker“ seit 0.8
+die Trading-Oberfläche vom PC** (beides siehe unten), „Quant System“ noch ein Platzhalter
 („In Vorbereitung“). Schriften wie auf der Website (Playfair Display für Überschriften, Manrope
 sonst). Auf dem Handy heißt die App „JKHD“ und trägt das Zeichen (drei Balken) als Symbol.
 
 ```
-app/src/main/AndroidManifest.xml          zwei Activities (Start, Bereich), Startsymbol, Thema
+app/src/main/AndroidManifest.xml          Activities (Start, Bereich, Webseite, Multi-Broker), INTERNET, Startsymbol, Thema
 app/src/main/java/de/jkhd/app/
   Bereich.java                            die Bereiche: Titel, Untertitel, Beschreibung (Texte in strings.xml);
                                           neuer Bereich = ein Eintrag hier, Platz auf dem Start ist für vier
@@ -25,6 +26,7 @@ app/src/main/java/de/jkhd/app/
   Schriften.java                          lädt die Schriften aus assets/fonts (Playfair Display 500, Manrope 500/700)
                                           und setzt sie auf ganze Ansichten (Tag „serif“ = Überschrift, „mono“ = bleibt)
   webseite/                               der Bereich Webseite = Partnerverwaltung (Abschnitt unten)
+  multibroker/                            der Bereich Multi-Broker = Trading-Oberfläche vom PC (Abschnitt unten)
 app/src/test/java/de/jkhd/app/webseite/  Unit-Tests des Kerns, inkl. Übungsserver für /verwaltung (VerwaltungAttrappe)
 app/src/main/assets/fonts/                die Schriften als feste Schnitte, aus den variablen Dateien der Website
                                           (assets/fonts) erzeugt; OFL-Lizenztexte daneben
@@ -121,6 +123,37 @@ Tests: `cd android && ./gradlew :app:testReleaseUnitTest` — Unterschrift (beka
 Umlaute), Adressen, Lesen/Bauen der Liste, Prüfung, Änderungsliste, Vorschaudaten und der Client
 gegen einen Übungsserver (`VerwaltungAttrappe`), der Unterschrift, Zeitfenster, Einmal-Wert,
 Origin-Verbot, 409/400/503 nachbildet. GitHub Actions lässt sie vor jedem Bau laufen.
+
+## Bereich Multi-Broker — die Trading-Oberfläche vom PC (seit 0.8)
+
+Der Multi-Broker ist eine Webseite, die auf dem PC läuft (Port 8800, nur `127.0.0.1`) und über
+Tailscale ans Handy kommt: auf dem PC einmal `tailscale serve --bg 8800`, dann ist sie unter
+`https://<pc-name>.<tailnet>.ts.net` erreichbar — mit gültigem HTTPS und nur für die eigenen Geräte.
+Die App zeigt sie in einer WebView im Vollbild (`multibroker/MultiBrokerActivity.java`). Am
+Multi-Broker und an api.jkhd.de ist dafür nichts geändert.
+
+- **Adresse:** Beim ersten Tipp aufs Viereck fragt die App nach der Adresse (Beispiel
+  `https://mein-pc.tail1234.ts.net`; die echte steht nur auf dem Handy, in SharedPreferences
+  „multibroker“ unter `multibroker_url`). Angenommen wird nur https; fehlt „https://“, wird es
+  ergänzt, „http://“ wird abgelehnt. **Langes Drücken aufs Viereck** öffnet den Dialog erneut.
+  Prüfung und Link-Regel: `multibroker/MultiBrokerAdresse.java`, Tests `MultiBrokerAdresseTest`.
+- **Anmeldung:** Der Multi-Broker hat seinen eigenen Login (`/login`, Sitzungs-Cookie 30 Tage,
+  HttpOnly). Die App speichert **kein Passwort**; sie nimmt Cookies an (keine von Dritten) und
+  schreibt sie nach jedem Laden und beim Verlassen auf die Platte (`CookieManager.flush()`), damit
+  die Anmeldung einen Neustart der App übersteht.
+- **Links:** Nur Seiten auf genau diesem Rechner (https, gleicher Host und Port) laden in der App;
+  fremde Links, E-Mail- und Telefonlinks öffnen sich im Browser bzw. der passenden App;
+  `javascript:`, `file:`, `intent:` und Ähnliches werden nicht geöffnet. Eingebettete Inhalte (z. B.
+  Charts in einem iframe) dürfen von anderswo kommen.
+- **Fehler:** Lädt die Hauptseite nicht (kein Netz, PC aus, Tailscale aus, HTTP ab 500 — z. B. 502,
+  wenn `tailscale serve` läuft, der Multi-Broker aber nicht, ungültiges Zertifikat), zeigt die App
+  statt eines schwarzen Bildes „PC nicht erreichbar — Läuft der Multi-Broker? Ist Tailscale auf dem
+  Handy eingeschaltet?“ mit „Erneut versuchen“ und „Adresse ändern“. Beim Laden läuft oben ein
+  dünner Ladebalken im App-Design.
+- **Bedienung:** Zurück geht erst in der Seite zurück, dann zum Kontrollzentrum. Beim Drehen wird
+  die Seite nicht neu aufgebaut (`configChanges`), Eingaben bleiben stehen. JavaScript-Rückfragen
+  der Seite (`confirm`, `alert`) erscheinen als Android-Dialog. Kein Klartext-Verkehr
+  (`usesCleartextTraffic` ist nicht gesetzt, Standard: aus), kein Dateizugriff aus der Seite.
 
 ## Auf das Handy bekommen
 
