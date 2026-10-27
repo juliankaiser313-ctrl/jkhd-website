@@ -11,6 +11,9 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,13 +45,19 @@ import de.jkhd.app.Schriften;
  * Der Multi-Broker hat seinen eigenen Login mit Sitzungs-Cookie; die App speichert kein Passwort,
  * nur die Adresse. Cookies werden nach jedem Laden auf die Platte geschrieben, damit die Anmeldung
  * einen Neustart der App übersteht. Nur Seiten auf genau diesem Rechner laden in der App, alles
- * andere öffnet sich im Browser. Lädt die Hauptseite nicht, zeigt die App eine Fehleransicht statt
- * eines schwarzen Bildes. Beim Drehen wird die Seite nicht neu aufgebaut (configChanges im Manifest).
+ * andere öffnet sich im Browser. Lädt die Hauptseite nicht (oder antwortet der PC gar nicht), zeigt
+ * die App eine Fehleransicht statt eines schwarzen Bildes. Beim Drehen wird die Seite nicht neu
+ * aufgebaut (configChanges im Manifest). Den Verlauf sichert die App bewusst NICHT mit saveState:
+ * WebView schreibt dabei abgeschickte Formulare samt Inhalt mit — also womöglich das Passwort.
+ * Nach einem Neustart öffnet sich deshalb die Startseite; angemeldet bleibt man über das Cookie.
+ * Ein abgeschicktes Formular (Login, Order) wird nie erneut gesendet.
  */
 public class MultiBrokerActivity extends Activity {
 
     private static final String ABLAGE = "multibroker";
     private static final String FELD = "multibroker_url";
+    /** So lange darf das Laden höchstens auf eine Antwort vom PC warten (Sekunden). */
+    private static final int WARTEZEIT_S = 20;
 
     private WebView web;
     private ProgressBar balken;
@@ -59,8 +68,29 @@ public class MultiBrokerActivity extends Activity {
     private boolean fehler;
     /** Die Hauptseite, die zuletzt nicht geladen werden konnte (für „Erneut versuchen“). */
     private String fehlerUrl;
+    /** War die fehlgeschlagene Hauptseite ein abgeschicktes Formular (POST)? Dann nicht erneut senden. */
+    private boolean fehlerPost;
+    /** Eine Fehlerseite, die nicht gezeigt wird (Zurück auf ein abgeschicktes Formular), sonst null. */
+    private String ueberspringen;
     /** Nach einem Adresswechsel den Verlauf der alten Adresse löschen, sobald die neue geladen ist. */
     private boolean verlaufLoeschen;
+
+    // Wache: Ist der PC aus (Tailscale aber an), kommt keine Fehlermeldung, sondern lange gar nichts —
+    // bis die Verbindung nach rund zwei Minuten aufgibt. So lange soll niemand auf Schwarz starren.
+    private final Handler uhr = new Handler(Looper.getMainLooper());
+    /** Die Seite, auf deren erste Antwort die Wache gerade wartet, sonst null. */
+    private String wartetAuf;
+    private final Runnable zeitAus = new Runnable() {
+        @Override
+        public void run() {
+            String url = wartetAuf;
+            if (web == null || url == null) {
+                return;
+            }
+            fehlerZeigen(getString(R.string.mb_keine_antwort, WARTEZEIT_S), url, false);
+            web.stopLoading();   // das folgende onPageFinished(url) erkennt fehlerseite() und lässt die Ansicht stehen
+        }
+    };
 
     // ---------- Adresse ----------
 
@@ -198,7 +228,7 @@ public class MultiBrokerActivity extends Activity {
                 @Override
                 public void run() {
                     basis = gespeicherteAdresse(MultiBrokerActivity.this);
-                    laden(null);
+                    laden();
                 }
             }, new Runnable() {
                 @Override
@@ -207,7 +237,7 @@ public class MultiBrokerActivity extends Activity {
                 }
             });
         } else {
-            laden(savedInstanceState);
+            laden();
         }
     }
 
@@ -243,6 +273,9 @@ public class MultiBrokerActivity extends Activity {
                 if (ziel == MultiBrokerAdresse.Ziel.INTERN) {
                     if (request.isForMainFrame()) {
                         fehler = false;   // neue Seite auf dem eigenen Rechner: alter Fehler gilt nicht mehr
+                        if (wartetAuf != null) {
+                            wache(url);   // Weiterleitung beim Laden (z. B. auf /login): ab jetzt auf diese warten
+                        }
                     }
                     return false;
                 }
@@ -256,11 +289,16 @@ public class MultiBrokerActivity extends Activity {
                 return true;
             }
 
-            // Achtung Reihenfolge: neuere WebView-Versionen melden onReceivedError/onReceivedHttpError
-            // VOR onPageStarted. Deshalb setzt onPageStarted den Fehler nicht zurück; entschieden wird
-            // in onPageFinished: ist die fertige Seite genau die fehlerhafte, bleibt die Fehleransicht.
+            // Achtung Reihenfolge: neuere WebView-Versionen melden onPageStarted erst, wenn die Antwort
+            // da ist, und bei Fehlern direkt VOR onReceivedError/onReceivedHttpError. Deshalb setzt
+            // onPageStarted den Fehler nicht zurück; entschieden wird in onPageFinished: ist die fertige
+            // Seite genau die fehlerhafte, bleibt die Fehleransicht.
             @Override
             public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
+                ueberspringen = null;   // eine übersprungene Fehlerseite ist erledigt (ihr onPageFinished folgt direkt auf onReceivedError)
+                if (wartetAuf != null && MultiBrokerAdresse.intern(basis, url)) {
+                    wacheAus();   // der PC hat geantwortet
+                }
                 if (!fehlerseite(url)) {
                     balken.setVisibility(View.VISIBLE);
                 }
@@ -270,33 +308,61 @@ public class MultiBrokerActivity extends Activity {
             public void onPageFinished(WebView view, String url) {
                 // Sitzungs-Cookie sofort auf die Platte — sonst ist die Anmeldung nach einem Neustart weg.
                 CookieManager.getInstance().flush();
-                balken.setVisibility(View.GONE);
-                if (fehlerseite(url)) {
+                if (url != null && url.equals(ueberspringen)) {
+                    ueberspringen = null;   // die nicht gezeigte Fehlerseite eines alten Formulars
                     return;
                 }
+                if (verlaufLoeschen && web != null && MultiBrokerAdresse.intern(basis, url)) {
+                    // Nach einem Adresswechsel (auch wenn die neue Adresse scheitert): alte Seiten weg.
+                    verlaufLoeschen = false;
+                    web.clearHistory();
+                }
+                if (fehlerseite(url)) {
+                    balken.setVisibility(View.GONE);
+                    return;
+                }
+                if (wartetAuf != null) {
+                    if (!MultiBrokerAdresse.intern(basis, url)) {
+                        return;   // veralteter Rückruf (z. B. der alten Adresse) — die eigene Seite kommt noch
+                    }
+                    wacheAus();
+                }
+                balken.setVisibility(View.GONE);
                 fehler = false;
                 fehlerAnsicht.setVisibility(View.GONE);
                 if (web != null) {
                     web.setVisibility(View.VISIBLE);
-                    if (verlaufLoeschen) {
-                        verlaufLoeschen = false;
-                        web.clearHistory();
-                    }
                 }
             }
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                if (request.isForMainFrame()) {
-                    fehlerZeigen(String.valueOf(error.getDescription()), request.getUrl().toString());
+                if (!request.isForMainFrame()) {
+                    return;
                 }
+                String url = request.getUrl().toString();
+                String text = String.valueOf(error.getDescription());
+                boolean post = "POST".equalsIgnoreCase(request.getMethod());
+                if (post && text.contains("ERR_CACHE_MISS")) {
+                    // Zurück auf ein abgeschicktes Formular (z. B. Login mit falschem Passwort): Die Seite
+                    // liegt nicht mehr vor und wird nicht erneut gesendet — einfach eine weitere Seite
+                    // zurück bzw. zur Startseite, statt fälschlich „PC nicht erreichbar“ zu zeigen.
+                    ueberspringen = url;
+                    view.setVisibility(View.INVISIBLE);
+                    if (!zurueck()) {
+                        laden();
+                    }
+                    return;
+                }
+                fehlerZeigen(text, url, post);
             }
 
             @Override
             public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse response) {
                 if (request.isForMainFrame() && response.getStatusCode() >= 500) {
                     fehlerZeigen("HTTP " + response.getStatusCode()
-                            + (response.getReasonPhrase() != null ? " " + response.getReasonPhrase() : ""), request.getUrl().toString());
+                            + (response.getReasonPhrase() != null ? " " + response.getReasonPhrase() : ""),
+                            request.getUrl().toString(), "POST".equalsIgnoreCase(request.getMethod()));
                 }
             }
 
@@ -304,8 +370,16 @@ public class MultiBrokerActivity extends Activity {
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
                 handler.cancel();   // nie ein ungültiges Zertifikat durchwinken
                 if (MultiBrokerAdresse.intern(basis, error.getUrl())) {
-                    fehlerZeigen("Zertifikat ungültig (" + error.getPrimaryError() + ")", error.getUrl());
+                    fehlerZeigen("Zertifikat ungültig (" + error.getPrimaryError() + ")", error.getUrl(), false);
                 }
+            }
+
+            @Override
+            public void onFormResubmission(WebView view, Message nichtSenden, Message senden) {
+                // Neu laden einer abgeschickten Formularseite (z. B. per location.reload()): nie still ein
+                // zweites Mal senden (Order!) — stattdessen frisch die Startseite.
+                nichtSenden.sendToTarget();
+                laden();
             }
 
             @Override
@@ -325,31 +399,27 @@ public class MultiBrokerActivity extends Activity {
         });
     }
 
-    /** Lädt die Adresse — oder stellt nach einem Neustart des Prozesses den letzten Stand wieder her. */
-    private void laden(Bundle gesichert) {
+    /** Lädt die Startseite (die gespeicherte Adresse). */
+    private void laden() {
         if (web == null || basis == null) {
             return;
         }
-        if (gesichert != null) {
-            WebBackForwardList liste = web.restoreState(gesichert);
-            if (liste != null && liste.getCurrentItem() != null
-                    && MultiBrokerAdresse.intern(basis, liste.getCurrentItem().getUrl())) {
-                return;
-            }
-        }
         fehler = false;
+        wache(basis);
         web.loadUrl(basis);
     }
 
     private void neueAdresseLaden() {
         basis = gespeicherteAdresse(this);
         fehlerUrl = null;
+        fehlerPost = false;
+        ueberspringen = null;
         verlaufLoeschen = true;
         fehlerAnsicht.setVisibility(View.GONE);
         if (web != null) {
             web.stopLoading();
             web.setVisibility(View.INVISIBLE);
-            laden(null);
+            laden();
         }
     }
 
@@ -366,18 +436,47 @@ public class MultiBrokerActivity extends Activity {
         fehler = false;
         balken.setProgress(0);
         balken.setVisibility(View.VISIBLE);
-        String ziel = fehlerUrl != null && MultiBrokerAdresse.intern(basis, fehlerUrl) ? fehlerUrl : basis;
-        if (ziel.equals(web.getUrl())) {
-            web.reload();   // kein zweiter Eintrag im Verlauf für dieselbe Seite
-        } else {
-            web.loadUrl(ziel);
+        // Ein gescheitertes Formular (Login, Order) wird nicht erneut gesendet: dann die Startseite.
+        String ziel = !fehlerPost && fehlerUrl != null && MultiBrokerAdresse.intern(basis, fehlerUrl) ? fehlerUrl : basis;
+        // Immer loadUrl, nie reload(): reload() einer Formularseite fragt WebView per
+        // onFormResubmission nach — und täte sonst gar nichts (schwarzes Bild). loadUrl derselben
+        // Adresse ersetzt den Eintrag, statt einen zweiten anzulegen.
+        wache(ziel);
+        web.loadUrl(ziel);
+    }
+
+    /** Wache stellen: Kommt für url nicht binnen WARTEZEIT_S eine Antwort, zeigt die App den Fehler. */
+    private void wache(String url) {
+        uhr.removeCallbacks(zeitAus);
+        wartetAuf = url;
+        uhr.postDelayed(zeitAus, WARTEZEIT_S * 1000L);
+    }
+
+    private void wacheAus() {
+        uhr.removeCallbacks(zeitAus);
+        wartetAuf = null;
+    }
+
+    /** Eine Seite zurück — aber nur, wenn die vorige auf dem eigenen Rechner liegt (nicht die alte Adresse). */
+    private boolean zurueck() {
+        if (web == null || !web.canGoBack()) {
+            return false;
         }
+        WebBackForwardList verlauf = web.copyBackForwardList();
+        int i = verlauf.getCurrentIndex();
+        if (i < 1 || !MultiBrokerAdresse.intern(basis, verlauf.getItemAtIndex(i - 1).getUrl())) {
+            return false;
+        }
+        web.goBack();
+        return true;
     }
 
     /** Statt eines schwarzen Bildes: „PC nicht erreichbar“ mit „Erneut versuchen“. */
-    private void fehlerZeigen(String detail, String url) {
+    private void fehlerZeigen(String detail, String url, boolean post) {
+        wacheAus();
         fehler = true;
         fehlerUrl = url;
+        fehlerPost = post;
         fehlerDetail.setText(detail == null ? "" : detail);
         balken.setVisibility(View.GONE);
         if (web != null) {
@@ -397,8 +496,7 @@ public class MultiBrokerActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (web != null && web.canGoBack()) {
-            web.goBack();
+        if (zurueck()) {
             return;
         }
         super.onBackPressed();
@@ -421,16 +519,12 @@ public class MultiBrokerActivity extends Activity {
         CookieManager.getInstance().flush();
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (web != null) {
-            web.saveState(outState);
-        }
-    }
+    // Kein onSaveInstanceState mit web.saveState(): das schriebe abgeschickte Formulare (Login samt
+    // Passwort) in den Android-Zustand. Drehen übersteht die Seite ohnehin (configChanges).
 
     @Override
     protected void onDestroy() {
+        wacheAus();
         if (web != null) {
             ViewGroup eltern = (ViewGroup) web.getParent();
             if (eltern != null) {

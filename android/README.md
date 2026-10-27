@@ -143,17 +143,27 @@ Multi-Broker und an api.jkhd.de ist dafür nichts geändert.
   die Anmeldung einen Neustart der App übersteht.
 - **Links:** Nur Seiten auf genau diesem Rechner (https, gleicher Host und Port) laden in der App;
   fremde Links, E-Mail- und Telefonlinks öffnen sich im Browser bzw. der passenden App;
-  `javascript:`, `file:`, `intent:` und Ähnliches werden nicht geöffnet. Eingebettete Inhalte (z. B.
-  Charts in einem iframe) dürfen von anderswo kommen.
+  `javascript:`, `file:`, `intent:` und Ähnliches werden nicht geöffnet. Für die Regel zählen nur
+  Schema, Rechner und Port (Pfad und Abfrage dürfen Zeichen wie `|` oder `{}` enthalten).
+  Eingebettete Inhalte (z. B. Charts in einem iframe) dürfen von anderswo kommen.
 - **Fehler:** Lädt die Hauptseite nicht (kein Netz, PC aus, Tailscale aus, HTTP ab 500 — z. B. 502,
   wenn `tailscale serve` läuft, der Multi-Broker aber nicht, ungültiges Zertifikat), zeigt die App
   statt eines schwarzen Bildes „PC nicht erreichbar — Läuft der Multi-Broker? Ist Tailscale auf dem
-  Handy eingeschaltet?“ mit „Erneut versuchen“ und „Adresse ändern“. Beim Laden läuft oben ein
-  dünner Ladebalken im App-Design.
-- **Bedienung:** Zurück geht erst in der Seite zurück, dann zum Kontrollzentrum. Beim Drehen wird
-  die Seite nicht neu aufgebaut (`configChanges`), Eingaben bleiben stehen. JavaScript-Rückfragen
-  der Seite (`confirm`, `alert`) erscheinen als Android-Dialog. Kein Klartext-Verkehr
-  (`usesCleartextTraffic` ist nicht gesetzt, Standard: aus), kein Dateizugriff aus der Seite.
+  Handy eingeschaltet?“ mit „Erneut versuchen“ und „Adresse ändern“. Antwortet der PC gar nicht
+  (ausgeschaltet, Tailscale auf dem Handy aber an), kommt die Fehleransicht nach spätestens
+  20 Sekunden statt erst nach rund zwei Minuten. Beim Laden läuft oben ein dünner Ladebalken im
+  App-Design.
+- **Formulare:** Ein abgeschicktes Formular (Login, Order) sendet die App nie ein zweites Mal —
+  weder bei „Erneut versuchen“ (dann öffnet sich die Startseite) noch beim Neuladen oder beim
+  Zurückgehen auf die Formularseite (die wird übersprungen).
+- **Bedienung:** Zurück geht erst in der Seite zurück (nur auf dem eigenen Rechner — nach einem
+  Adresswechsel nicht auf die alte Adresse), dann zum Kontrollzentrum. Beim Drehen wird die Seite
+  nicht neu aufgebaut (`configChanges`), Eingaben bleiben stehen. Den Seitenverlauf sichert die App
+  bewusst nicht im Android-Zustand (`saveState` schriebe abgeschickte Formulare samt Passwort mit);
+  wird die App vom System beendet, öffnet sich danach die Startseite — angemeldet bleibt man über
+  das Cookie. JavaScript-Rückfragen der Seite (`confirm`, `alert`) erscheinen als Android-Dialog.
+  Kein Klartext-Verkehr (`usesCleartextTraffic` ist nicht gesetzt, Standard: aus), kein
+  Dateizugriff aus der Seite.
 
 ## Auf das Handy bekommen
 

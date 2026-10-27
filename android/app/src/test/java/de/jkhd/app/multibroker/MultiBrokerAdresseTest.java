@@ -88,6 +88,26 @@ public class MultiBrokerAdresseTest {
     }
 
     @Test
+    public void chromiumAdressenMitSonderzeichenBleibenInDerApp() {
+        // Chromium lässt | { } ^ und ein einzelnes % in Pfad/Abfrage roh stehen; java.net.URI lehnt sie ab.
+        assertEquals(MultiBrokerAdresse.Ziel.INTERN, MultiBrokerAdresse.ziel(BASIS, "https://mein-pc.tail1234.ts.net/konten?ids=1|2"));
+        assertEquals(MultiBrokerAdresse.Ziel.INTERN, MultiBrokerAdresse.ziel(BASIS, "https://mein-pc.tail1234.ts.net/k?f={}"));
+        assertEquals(MultiBrokerAdresse.Ziel.INTERN, MultiBrokerAdresse.ziel(BASIS, "https://mein-pc.tail1234.ts.net/k?x=100%"));
+        assertEquals(MultiBrokerAdresse.Ziel.INTERN, MultiBrokerAdresse.ziel(BASIS, "https://mein-pc.tail1234.ts.net/k?a=b^c#x|y"));
+        assertEquals(MultiBrokerAdresse.Ziel.INTERN, MultiBrokerAdresse.ziel(BASIS, "https://mein-pc.tail1234.ts.net"));
+        // Der Rechner endet am ersten / ? # — was danach kommt, macht keinen fremden Host zum eigenen.
+        assertEquals(MultiBrokerAdresse.Ziel.EXTERN, MultiBrokerAdresse.ziel(BASIS, "https://boese.example/?u=https://mein-pc.tail1234.ts.net/"));
+        assertEquals(MultiBrokerAdresse.Ziel.EXTERN, MultiBrokerAdresse.ziel(BASIS, "https://boese.example?@mein-pc.tail1234.ts.net/"));
+        assertEquals(MultiBrokerAdresse.Ziel.EXTERN, MultiBrokerAdresse.ziel(BASIS, "https://boese.example#@mein-pc.tail1234.ts.net/"));
+        assertEquals(MultiBrokerAdresse.Ziel.EXTERN, MultiBrokerAdresse.ziel(BASIS, "https://boese.example/|mein-pc.tail1234.ts.net"));
+        assertFalse(MultiBrokerAdresse.intern(BASIS, "https://julian:x|y@mein-pc.tail1234.ts.net/"));
+        assertEquals(MultiBrokerAdresse.Ziel.IGNORIEREN, MultiBrokerAdresse.ziel(BASIS, "https://mein-pc.tail1234.ts.net\\@boese.example/"));
+        assertEquals(MultiBrokerAdresse.Ziel.IGNORIEREN, MultiBrokerAdresse.ziel(BASIS, "javascript://mein-pc.tail1234.ts.net/%0Aalert(1)"));
+        assertEquals(MultiBrokerAdresse.Ziel.EXTERN, MultiBrokerAdresse.ziel(BASIS, "mailto:x@example.com?body=https://mein-pc.tail1234.ts.net/"));
+        assertEquals(MultiBrokerAdresse.Ziel.IGNORIEREN, MultiBrokerAdresse.ziel(BASIS, "data:text/html,<a href=https://mein-pc.tail1234.ts.net/>"));
+    }
+
+    @Test
     public void gefaehrlicheSchemataWerdenIgnoriert() {
         assertEquals(MultiBrokerAdresse.Ziel.IGNORIEREN, MultiBrokerAdresse.ziel(BASIS, "javascript:alert(1)"));
         assertEquals(MultiBrokerAdresse.Ziel.IGNORIEREN, MultiBrokerAdresse.ziel(BASIS, "file:///data/data/x"));

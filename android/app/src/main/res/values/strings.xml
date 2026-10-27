@@ -24,6 +24,7 @@
     <string name="mb_kicker">Multi-Broker</string>
     <string name="mb_fehler_titel">PC nicht erreichbar</string>
     <string name="mb_fehler_text">Läuft der Multi-Broker? Ist Tailscale auf dem Handy eingeschaltet?</string>
+    <string name="mb_keine_antwort">Keine Antwort vom PC nach %1$d Sekunden.</string>
     <string name="mb_erneut">Erneut versuchen</string>
     <string name="mb_adresse_aendern">Adresse ändern</string>
     <string name="mb_adresse_titel">Adresse des Multi-Brokers</string>

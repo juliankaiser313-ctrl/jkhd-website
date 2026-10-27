@@ -99,7 +99,7 @@ public final class MultiBrokerAdresse {
         URI u;
         try {
             b = new URI(basis);
-            u = new URI(url.trim());
+            u = new URI(nurSchemaUndRechner(url.trim()));
         } catch (URISyntaxException | NullPointerException e) {
             return Ziel.IGNORIEREN;
         }
@@ -111,6 +111,24 @@ public final class MultiBrokerAdresse {
             return Ziel.EXTERN;
         }
         return Ziel.IGNORIEREN;
+    }
+
+    /**
+     * Für die Link-Regel zählen nur Schema, Rechner und Port. Pfad, Abfrage und Anker werden
+     * abgeschnitten: Chromium lässt dort Zeichen wie | { } ^ oder ein einzelnes % roh stehen, die
+     * java.net.URI ablehnt — sonst würden solche Links auf dem eigenen Rechner still verschluckt.
+     * Die Grenze (erstes / ? # nach „://“) ist dieselbe, an der Chromium den Rechner enden lässt.
+     */
+    static String nurSchemaUndRechner(String url) {
+        int i = url.indexOf("://");
+        if (i <= 0 || !url.substring(0, i).matches("[A-Za-z][A-Za-z0-9+.-]*")) {
+            return url;   // kein „schema://“ am Anfang (mailto:, tel:, javascript: …): unverändert
+        }
+        int j = i + 3;
+        while (j < url.length() && "/?#".indexOf(url.charAt(j)) < 0) {
+            j++;
+        }
+        return url.substring(0, j);
     }
 
     /** Liegt url auf genau dem Rechner der Adresse basis (https, gleicher Host, gleicher Port)? */
