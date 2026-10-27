@@ -76,12 +76,13 @@ public class MultiBrokerActivity extends Activity {
     /** Eine Fehlerseite, die nicht gezeigt wird (Zurück auf ein abgeschicktes Formular), sonst null. */
     private String ueberspringen;
     /**
-     * Ist seit dem Start des letzten Ladens wirklich eine Seite angekommen (onPageStarted kommt erst,
-     * wenn die Antwort da ist)? Ein abgebrochenes Laden (Zurück, Zeitüberschreitung, Adresswechsel)
-     * meldet nur onPageFinished — das darf die Fehleransicht nicht wegnehmen.
+     * Ist seit dem letzten Laden, das die App selbst gestartet hat (Öffnen, „Erneut versuchen“,
+     * Zurück, Adresswechsel), und seit dem letzten Fehler eine Seite ohne Fehler angekommen
+     * (onPageStarted kommt erst, wenn die Antwort da ist)? Ein abgebrochenes Laden meldet nur
+     * onPageFinished — das darf die Fehleransicht nicht wegnehmen.
      */
     private boolean seiteDa;
-    /** Nach einem Adresswechsel den Verlauf der alten Adresse löschen, sobald die neue geladen ist. */
+    /** Nach einem Adresswechsel den Verlauf der alten Adresse löschen, sobald eine Seite der neuen im Verlauf steht (auch eine Fehlerseite). */
     private boolean verlaufLoeschen;
 
     // Wache: Ist der PC aus (Tailscale aber an), kommt keine Fehlermeldung, sondern lange gar nichts —
@@ -281,8 +282,10 @@ public class MultiBrokerActivity extends Activity {
                 MultiBrokerAdresse.Ziel ziel = MultiBrokerAdresse.ziel(basis, url);
                 if (ziel == MultiBrokerAdresse.Ziel.INTERN) {
                     if (request.isForMainFrame()) {
-                        fehler = false;   // neue Seite auf dem eigenen Rechner: alter Fehler gilt nicht mehr
-                        seiteDa = false;
+                        // Neue Seite auf dem eigenen Rechner: alter Fehler gilt nicht mehr. seiteDa bleibt:
+                        // die jetzige Seite steht, bis die neue ankommt — kommt sie nie an (204, Download,
+                        // Weiterleitung nach außen), muss die jetzige trotzdem angezeigt werden.
+                        fehler = false;
                         if (wartetAuf != null) {
                             wache(url);   // Weiterleitung beim Laden (z. B. auf /login): ab jetzt auf diese warten
                         }
@@ -299,14 +302,17 @@ public class MultiBrokerActivity extends Activity {
                 return true;
             }
 
-            // Achtung Reihenfolge: neuere WebView-Versionen melden onPageStarted erst, wenn die Antwort
-            // da ist, und bei Fehlern direkt VOR onReceivedError/onReceivedHttpError. Deshalb setzt
-            // onPageStarted den Fehler nicht zurück; entschieden wird in onPageFinished: ist die fertige
-            // Seite genau die fehlerhafte, bleibt die Fehleransicht.
+            // Achtung Reihenfolge: onPageStarted kommt erst, wenn die Seite feststeht (beim Commit; bei
+            // einem Netzfehler direkt vor onReceivedError). onReceivedHttpError kommt dagegen schon mit
+            // den Kopfzeilen, also VOR onPageStarted — deshalb darf onPageStarted den Fehler nicht
+            // zurücksetzen. Entschieden wird in onPageFinished: gezeigt wird nur, wenn seiteDa gilt und
+            // es nicht die fehlerhafte Seite ist.
             @Override
             public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
                 ueberspringen = null;   // eine übersprungene Fehlerseite ist erledigt (ihr onPageFinished folgt direkt auf onReceivedError)
-                seiteDa = true;
+                if (!fehlerseite(url)) {
+                    seiteDa = true;   // eine Seite ohne Fehler ist angekommen
+                }
                 if (wartetAuf != null && MultiBrokerAdresse.intern(basis, url)) {
                     wacheAus();   // der PC hat geantwortet
                 }
@@ -328,8 +334,9 @@ public class MultiBrokerActivity extends Activity {
                     return;
                 }
                 if (!seiteDa) {
-                    // Abgebrochenes Laden (stopLoading, durch Zurück ersetzt, 204) oder Sprung im Dokument:
-                    // nichts Neues ist da — Fehleransicht bzw. bewachtes Laden bleiben, wie sie sind.
+                    // Seit dem letzten von der App gestarteten Laden bzw. seit dem letzten Fehler ist keine
+                    // Seite angekommen — dies ist ein abgebrochenes Laden (Zeitüberschreitung, durch Zurück
+                    // ersetzt, Adresswechsel): Fehleransicht bzw. bewachtes Laden bleiben, wie sie sind.
                     return;
                 }
                 wacheAus();
@@ -519,6 +526,7 @@ public class MultiBrokerActivity extends Activity {
     private void fehlerZeigen(String detail, String url, boolean post) {
         wacheAus();
         fehler = true;
+        seiteDa = false;   // weg geht die Fehleransicht erst, wenn danach eine Seite ohne Fehler ankommt
         fehlerUrl = url;
         fehlerPost = post;
         fehlerDetail.setText(detail == null ? "" : detail);
