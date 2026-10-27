@@ -150,12 +150,17 @@ Multi-Broker und an api.jkhd.de ist dafür nichts geändert.
   wenn `tailscale serve` läuft, der Multi-Broker aber nicht, ungültiges Zertifikat), zeigt die App
   statt eines schwarzen Bildes „PC nicht erreichbar — Läuft der Multi-Broker? Ist Tailscale auf dem
   Handy eingeschaltet?“ mit „Erneut versuchen“ und „Adresse ändern“. Antwortet der PC gar nicht
-  (ausgeschaltet, Tailscale auf dem Handy aber an), kommt die Fehleransicht nach spätestens
-  20 Sekunden statt erst nach rund zwei Minuten. Beim Laden läuft oben ein dünner Ladebalken im
-  App-Design.
-- **Formulare:** Ein abgeschicktes Formular (Login, Order) sendet die App nie ein zweites Mal —
-  weder bei „Erneut versuchen“ (dann öffnet sich die Startseite) noch beim Neuladen oder beim
-  Zurückgehen auf die Formularseite (die wird übersprungen).
+  (ausgeschaltet, Tailscale auf dem Handy aber an), kommt die Fehleransicht beim Öffnen, bei
+  „Erneut versuchen“ und beim Zurückgehen aus der Fehleransicht nach spätestens 20 Sekunden statt
+  erst nach rund zwei Minuten. Geht der PC aus, während eine Seite offen ist, bleibt diese nach
+  einem Klick oder abgeschickten Formular stehen, bis die Verbindung aufgibt (rund zwei Minuten);
+  dann kommt dieselbe Fehleransicht. Beim Laden läuft oben ein dünner Ladebalken im App-Design.
+- **Formulare:** Ein abgeschicktes Formular (Login, Order) sendet die App selbst nie ein zweites
+  Mal — weder bei „Erneut versuchen“ (dann öffnet sich die Startseite) noch beim Zurückgehen auf
+  die Formularseite (die wird übersprungen). Grenze: Lädt sich eine Seite, die direkt die Antwort
+  auf ein Formular war, per Skript selbst neu (`location.reload()`), schickt WebView das Formular
+  ohne Nachfrage erneut — wie ein Browser auch; dafür gibt es für Apps keinen Haken. Davor schützt
+  nur der Multi-Broker selbst, indem er nach einem Formular weiterleitet (Post/Redirect/Get).
 - **Bedienung:** Zurück geht erst in der Seite zurück (nur auf dem eigenen Rechner — nach einem
   Adresswechsel nicht auf die alte Adresse), dann zum Kontrollzentrum. Beim Drehen wird die Seite
   nicht neu aufgebaut (`configChanges`), Eingaben bleiben stehen. Den Seitenverlauf sichert die App

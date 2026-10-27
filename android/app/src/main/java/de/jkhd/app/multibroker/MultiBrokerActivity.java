@@ -50,7 +50,10 @@ import de.jkhd.app.Schriften;
  * aufgebaut (configChanges im Manifest). Den Verlauf sichert die App bewusst NICHT mit saveState:
  * WebView schreibt dabei abgeschickte Formulare samt Inhalt mit — also womöglich das Passwort.
  * Nach einem Neustart öffnet sich deshalb die Startseite; angemeldet bleibt man über das Cookie.
- * Ein abgeschicktes Formular (Login, Order) wird nie erneut gesendet.
+ * Die App selbst sendet ein abgeschicktes Formular (Login, Order) nie erneut („Erneut versuchen“
+ * öffnet dann die Startseite, Zurück überspringt Formularseiten). Lädt sich eine Seite, die direkt
+ * die Antwort auf ein Formular war, per Skript selbst neu (location.reload()), sendet WebView das
+ * Formular allerdings ohne Nachfrage erneut — dafür gibt es keinen Haken für Apps.
  */
 public class MultiBrokerActivity extends Activity {
 
@@ -72,6 +75,12 @@ public class MultiBrokerActivity extends Activity {
     private boolean fehlerPost;
     /** Eine Fehlerseite, die nicht gezeigt wird (Zurück auf ein abgeschicktes Formular), sonst null. */
     private String ueberspringen;
+    /**
+     * Ist seit dem Start des letzten Ladens wirklich eine Seite angekommen (onPageStarted kommt erst,
+     * wenn die Antwort da ist)? Ein abgebrochenes Laden (Zurück, Zeitüberschreitung, Adresswechsel)
+     * meldet nur onPageFinished — das darf die Fehleransicht nicht wegnehmen.
+     */
+    private boolean seiteDa;
     /** Nach einem Adresswechsel den Verlauf der alten Adresse löschen, sobald die neue geladen ist. */
     private boolean verlaufLoeschen;
 
@@ -273,6 +282,7 @@ public class MultiBrokerActivity extends Activity {
                 if (ziel == MultiBrokerAdresse.Ziel.INTERN) {
                     if (request.isForMainFrame()) {
                         fehler = false;   // neue Seite auf dem eigenen Rechner: alter Fehler gilt nicht mehr
+                        seiteDa = false;
                         if (wartetAuf != null) {
                             wache(url);   // Weiterleitung beim Laden (z. B. auf /login): ab jetzt auf diese warten
                         }
@@ -296,6 +306,7 @@ public class MultiBrokerActivity extends Activity {
             @Override
             public void onPageStarted(WebView view, String url, android.graphics.Bitmap favicon) {
                 ueberspringen = null;   // eine übersprungene Fehlerseite ist erledigt (ihr onPageFinished folgt direkt auf onReceivedError)
+                seiteDa = true;
                 if (wartetAuf != null && MultiBrokerAdresse.intern(basis, url)) {
                     wacheAus();   // der PC hat geantwortet
                 }
@@ -312,26 +323,31 @@ public class MultiBrokerActivity extends Activity {
                     ueberspringen = null;   // die nicht gezeigte Fehlerseite eines alten Formulars
                     return;
                 }
-                if (verlaufLoeschen && web != null && MultiBrokerAdresse.intern(basis, url)) {
-                    // Nach einem Adresswechsel (auch wenn die neue Adresse scheitert): alte Seiten weg.
-                    verlaufLoeschen = false;
-                    web.clearHistory();
-                }
                 if (fehlerseite(url)) {
                     balken.setVisibility(View.GONE);
                     return;
                 }
-                if (wartetAuf != null) {
-                    if (!MultiBrokerAdresse.intern(basis, url)) {
-                        return;   // veralteter Rückruf (z. B. der alten Adresse) — die eigene Seite kommt noch
-                    }
-                    wacheAus();
+                if (!seiteDa) {
+                    // Abgebrochenes Laden (stopLoading, durch Zurück ersetzt, 204) oder Sprung im Dokument:
+                    // nichts Neues ist da — Fehleransicht bzw. bewachtes Laden bleiben, wie sie sind.
+                    return;
                 }
+                wacheAus();
                 balken.setVisibility(View.GONE);
                 fehler = false;
                 fehlerAnsicht.setVisibility(View.GONE);
                 if (web != null) {
                     web.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void doUpdateVisitedHistory(WebView view, String url, boolean neuGeladen) {
+                // Kommt, sobald eine Seite fest im Verlauf steht (auch eine Fehlerseite). Erst jetzt
+                // löscht clearHistory nach einem Adresswechsel wirklich alle Seiten der alten Adresse.
+                if (verlaufLoeschen && MultiBrokerAdresse.intern(basis, url)) {
+                    verlaufLoeschen = false;
+                    view.clearHistory();
                 }
             }
 
@@ -347,6 +363,7 @@ public class MultiBrokerActivity extends Activity {
                     // Zurück auf ein abgeschicktes Formular (z. B. Login mit falschem Passwort): Die Seite
                     // liegt nicht mehr vor und wird nicht erneut gesendet — einfach eine weitere Seite
                     // zurück bzw. zur Startseite, statt fälschlich „PC nicht erreichbar“ zu zeigen.
+                    // (Die WebView ist dabei unsichtbar, also bewacht zurueck() das Laden.)
                     ueberspringen = url;
                     view.setVisibility(View.INVISIBLE);
                     if (!zurueck()) {
@@ -376,8 +393,10 @@ public class MultiBrokerActivity extends Activity {
 
             @Override
             public void onFormResubmission(WebView view, Message nichtSenden, Message senden) {
-                // Neu laden einer abgeschickten Formularseite (z. B. per location.reload()): nie still ein
-                // zweites Mal senden (Order!) — stattdessen frisch die Startseite.
+                // Nur zur Absicherung: WebView fragt hier nur bei web.reload() einer abgeschickten
+                // Formularseite nach, und das ruft die App dort nie auf. Dann nicht erneut senden
+                // (Order!), sondern frisch die Startseite. Lädt sich die Seite selbst neu
+                // (location.reload()), sendet WebView ohne Nachfrage erneut — das kann keine App abfangen.
                 nichtSenden.sendToTarget();
                 laden();
             }
@@ -405,6 +424,7 @@ public class MultiBrokerActivity extends Activity {
             return;
         }
         fehler = false;
+        seiteDa = false;
         wache(basis);
         web.loadUrl(basis);
     }
@@ -416,6 +436,8 @@ public class MultiBrokerActivity extends Activity {
         ueberspringen = null;
         verlaufLoeschen = true;
         fehlerAnsicht.setVisibility(View.GONE);
+        balken.setProgress(0);
+        balken.setVisibility(View.VISIBLE);
         if (web != null) {
             web.stopLoading();
             web.setVisibility(View.INVISIBLE);
@@ -436,13 +458,20 @@ public class MultiBrokerActivity extends Activity {
         fehler = false;
         balken.setProgress(0);
         balken.setVisibility(View.VISIBLE);
+        seiteDa = false;
         // Ein gescheitertes Formular (Login, Order) wird nicht erneut gesendet: dann die Startseite.
         String ziel = !fehlerPost && fehlerUrl != null && MultiBrokerAdresse.intern(basis, fehlerUrl) ? fehlerUrl : basis;
-        // Immer loadUrl, nie reload(): reload() einer Formularseite fragt WebView per
-        // onFormResubmission nach — und täte sonst gar nichts (schwarzes Bild). loadUrl derselben
-        // Adresse ersetzt den Eintrag, statt einen zweiten anzulegen.
         wache(ziel);
-        web.loadUrl(ziel);
+        if (!fehlerPost && ziel.indexOf('#') >= 0 && ziel.equals(web.getUrl())) {
+            // loadUrl derselben Adresse mit #Anker wäre nur ein Sprung in der Seite (keine Anfrage).
+            // Der Eintrag ist eine GET-Seite, also wirklich neu laden.
+            web.reload();
+        } else {
+            // Sonst loadUrl, nicht reload(): reload() einer Formularseite fragt WebView per
+            // onFormResubmission nach und täte nichts (schwarzes Bild). loadUrl derselben Adresse
+            // ersetzt den Eintrag, statt einen zweiten anzulegen.
+            web.loadUrl(ziel);
+        }
     }
 
     /** Wache stellen: Kommt für url nicht binnen WARTEZEIT_S eine Antwort, zeigt die App den Fehler. */
@@ -457,15 +486,30 @@ public class MultiBrokerActivity extends Activity {
         wartetAuf = null;
     }
 
-    /** Eine Seite zurück — aber nur, wenn die vorige auf dem eigenen Rechner liegt (nicht die alte Adresse). */
+    /**
+     * Eine Seite zurück — nur, wenn alle früheren Seiten auf dem eigenen Rechner liegen (WebView
+     * überspringt beim Zurückgehen manchmal Einträge; nach einem Adresswechsel nie auf die alte Adresse).
+     */
     private boolean zurueck() {
         if (web == null || !web.canGoBack()) {
             return false;
         }
         WebBackForwardList verlauf = web.copyBackForwardList();
         int i = verlauf.getCurrentIndex();
-        if (i < 1 || !MultiBrokerAdresse.intern(basis, verlauf.getItemAtIndex(i - 1).getUrl())) {
+        if (i < 1) {
             return false;
+        }
+        for (int k = 0; k < i; k++) {
+            if (!MultiBrokerAdresse.intern(basis, verlauf.getItemAtIndex(k).getUrl())) {
+                return false;
+            }
+        }
+        fehler = false;   // der gezeigte Fehler gehört zur Seite, die wir verlassen
+        seiteDa = false;
+        if (wartetAuf != null || web.getVisibility() != View.VISIBLE) {
+            // Hinter der Fehleransicht (oder statt eines bewachten Ladens) auch das Zurück bewachen.
+            // Bei sichtbarer Seite nicht: Zurück innerhalb einer Seite (pushState) meldet nichts.
+            wache(verlauf.getItemAtIndex(i - 1).getUrl());
         }
         web.goBack();
         return true;
