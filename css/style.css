@@ -2686,8 +2686,9 @@ html:not(.js) .sp { display: none; }
 .sp-order[data-sp-order="verkauf"]:hover { background: var(--verkauf); }
 .sp-order[data-sp-order="kauf"][aria-disabled="true"]:hover,
 .sp-order[data-sp-order="verkauf"][aria-disabled="true"]:hover { filter: none; }
+/* reines Weiss: mit 0,85 Deckkraft lag die kleine Unterzeile bei 4,0-4,4:1 auf Blau/Rot (Loop 29.10.2026, 4.2) */
 .sp-order[data-sp-order="kauf"] .sp-order-wo,
-.sp-order[data-sp-order="verkauf"] .sp-order-wo { color: rgba(255, 255, 255, 0.85); }
+.sp-order[data-sp-order="verkauf"] .sp-order-wo { color: #fff; }
 .sp-order[data-sp-order="kauf"] kbd,
 .sp-order[data-sp-order="verkauf"] kbd { color: #fff; border-color: rgba(255, 255, 255, 0.55); }
 .sp-order[data-sp-order="kauf"]:focus-visible,

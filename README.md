@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Kontrast der Kaufen/Verkaufen-Unterzeile** (Loop 29.10.2026, Punkt 4.2): reines Weiß statt 85 % —
+  vorher 4,0–4,4:1 auf Blau/Rot, jetzt ≥ 5:1 (`tastatur_messung.js`, 87 Ladungen: einziger echter
+  Kontrastbefund; Tab-Weg, Fokusrahmen und Vorlesetexte überall in Ordnung).
 - **Partnerkasten: Kopf je Zustand** (Loop 29.10.2026, Punkt 2.1): `kopfZustand()` in js/main.js — im
   Ruhezustand der Einleitungsabsatz, in den Schritten eine Zeile mit zwei Balken („Schritt 1 von 2 ·
   Ihre Adresse“ / „Schritt 2 von 2 · Code aus der E-Mail“), beim Fragebogen der Titel „Anfrage“
