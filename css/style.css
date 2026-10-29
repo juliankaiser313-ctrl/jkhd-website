@@ -887,7 +887,9 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 .creed-cell:hover .creed-mark { color: var(--watermark-hi); }
 
-.creed-inner h3 { position: relative; margin-bottom: 12px; }
+/* rechts bleibt der Platz der Geisterziffer frei (zwei Mono-Zeichen), sonst laeuft eine lange
+   Ueberschrift unter die Ziffer -- auf dem Handy sichtbar (Loop 29.10.2026, Punkt 1.7) */
+.creed-inner h3 { position: relative; margin-bottom: 12px; padding-right: 5.2rem; }
 
 .creed-say { color: var(--text); font-size: 1rem; max-width: 44ch; }
 
@@ -1162,6 +1164,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .creed-cell:first-child { padding-top: 0; border-top: none; }
   .creed-cell:last-child { padding-bottom: 0; }
   .creed-mark { font-size: 3.2rem; top: -12px; }
+  .creed-inner h3 { padding-right: 4rem; }
 
   .footer-top { grid-template-columns: 1fr; gap: 36px; }
 }
@@ -2816,16 +2819,31 @@ html:not(.js) .sp { display: none; }
 
 /* Spielregeln unter dem Spiel */
 .sp-regel-abschnitt { padding-top: 48px; }
+/* Spielregeln: elf Karten im Raster, jede mit Mono-Nummer ueber dem Titel (CSS-Zaehler, wie die
+   Kicker "01 . ARBITRAGE" der Bildlauf-Seiten) und Luft -- vorher dichter Text ohne Gliederung
+   (Loop 29.10.2026, Punkt 1.5) */
 .sp-regeln {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
-  gap: 0 40px;
+  gap: 0 48px;
   border-top: 1px solid var(--border);
+  counter-reset: regel;
 }
-.sp-regel { padding: 24px 0; border-bottom: 1px solid var(--border); }
+.sp-regel { padding: 30px 0 32px; border-bottom: 1px solid var(--border); }
 .sp-regel h3,
-.sp-regel-algo h3 { margin-bottom: 8px; font-size: var(--h3-sm); }
-.sp-regel p { font-size: 0.95rem; color: var(--muted); }
+.sp-regel-algo h3 { margin-bottom: 10px; font-size: var(--h3-sm); }
+.sp-regel h3::before {
+  counter-increment: regel;
+  content: counter(regel, decimal-leading-zero);
+  display: block;
+  margin-bottom: 12px;
+  font-family: var(--mono);
+  font-size: var(--label);
+  font-weight: 600;
+  letter-spacing: var(--label-ls);
+  color: var(--accent);
+}
+.sp-regel p { font-size: 0.95rem; line-height: 1.65; color: var(--muted); }
 .sp-regel-algo { max-width: 900px; margin-top: 48px; }
 .sp-regel-algo > p { color: var(--muted); }
 .sp-regel-algo ul { margin: 14px 0 0 20px; color: var(--muted); }

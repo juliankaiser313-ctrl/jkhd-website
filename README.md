@@ -210,6 +210,12 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Spielregeln gegliedert** (Loop 29.10.2026, Punkt 1.5): jede Regel trägt eine Mono-Nummer über dem
+  Titel (CSS-Zähler `regel`, kein HTML), mehr Luft je Karte, Absatz mit Zeilenhöhe 1,65 — Texte
+  unverändert.
+- **Geisterziffern der Creed-Raster** (Loop 29.10.2026, Punkt 1.7): die Überschrift hält rechts den
+  Platz der Ziffer frei (`padding-right` 5,2 rem, schmal 4 rem) — vorher lief sie auf dem Handy unter
+  die Ziffer.
 - **Formelkästen** (Loop 29.10.2026, Punkt 1.4): `.fs-box` mit Haarlinie und Mono-Titelzeile statt
   Tintenrahmen und gefülltem Kopfbalken — nur CSS, die vier Formelseiten bleiben unangetastet;
   Mathe in einem Titel bleibt ungesperrt (`.fs-box-titel .katex`).
