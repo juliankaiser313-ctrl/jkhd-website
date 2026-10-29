@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Übergänge vereinheitlicht** (Loop 29.10.2026, Punkt 1.8): drei Dauern als Token (`--t-kurz` 0,2 s,
+  `--t-mittel` 0,3 s, `--t-lang` 0,8 s) und überall die Hauskurve `--ease`; `.btn` nennt seine
+  Eigenschaften statt `all`. Vorher 26 verschiedene Angaben.
 - **Spielregeln gegliedert** (Loop 29.10.2026, Punkt 1.5): jede Regel trägt eine Mono-Nummer über dem
   Titel (CSS-Zähler `regel`, kein HTML), mehr Luft je Karte, Absatz mit Zeilenhöhe 1,65 — Texte
   unverändert.

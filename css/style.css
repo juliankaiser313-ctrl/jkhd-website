@@ -35,6 +35,11 @@
   --r-lg: 2px;
   --header-h: 74px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* drei Dauern fuer alle Uebergaenge (Loop 29.10.2026, 1.8): kurz = Farbe/Rand/Hintergrund kleiner
+     Bedienelemente, mittel = Lage/Schatten von Karten und Knoepfen, lang = Einblenden beim Scrollen */
+  --t-kurz: 0.2s;
+  --t-mittel: 0.3s;
+  --t-lang: 0.8s;
 
   /* Auflagen und Schatten — hier haengt der Hell/Dunkel-Wechsel dran.
      Nichts im Rest der Datei setzt noch eine Farbe fest. */
@@ -122,7 +127,7 @@ body {
 
 img { max-width: 100%; display: block; }
 
-a { color: var(--text); text-decoration: none; transition: color 0.2s, opacity 0.2s, border-color 0.2s; }
+a { color: var(--text); text-decoration: none; transition: color var(--t-kurz) var(--ease), opacity var(--t-kurz) var(--ease), border-color var(--t-kurz) var(--ease); }
 a:hover { color: var(--accent); }
 
 ::selection { background: var(--accent); color: var(--bg); }
@@ -149,7 +154,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   padding: 12px 20px;
   border-radius: var(--r-sm);
   font-size: 0.85rem;
-  transition: top 0.2s;
+  transition: top var(--t-kurz) var(--ease);
 }
 .skip-link:focus { top: 12px; }
 
@@ -179,7 +184,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   backdrop-filter: blur(16px) saturate(1.4);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   border-bottom: 1px solid var(--border);
-  transition: background 0.3s;
+  transition: background var(--t-mittel) var(--ease);
 }
 
 .site-header.scrolled { background: var(--header-bg-scrolled); }
@@ -345,7 +350,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   padding: 0 7px;
   color: var(--muted);
   font-weight: 600;
-  transition: color 0.2s, background 0.2s;
+  transition: color var(--t-kurz) var(--ease), background var(--t-kurz) var(--ease);
 }
 
 /* Die Segmente der Darstellung sind Knoepfe — Schrift und Flaeche erben sie
@@ -397,7 +402,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   text-transform: uppercase;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background var(--t-kurz) var(--ease), color var(--t-kurz) var(--ease),
+    border-color var(--t-kurz) var(--ease), transform var(--t-kurz) var(--ease), box-shadow var(--t-kurz) var(--ease);
 }
 
 .btn-primary { background: var(--text); color: var(--bg); }
@@ -765,7 +771,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   border-radius: 50%;
   background: var(--bg);
   border: 1px solid var(--accent);
-  transition: box-shadow 0.3s, background 0.3s;
+  transition: box-shadow var(--t-mittel) var(--ease), background var(--t-mittel) var(--ease);
 }
 
 .rail-stage:hover::before {
@@ -809,7 +815,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   padding: var(--pad-card);
-  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  transition: border-color var(--t-mittel) var(--ease), transform var(--t-mittel) var(--ease), box-shadow var(--t-mittel) var(--ease);
 }
 
 .guard:hover {
@@ -883,7 +889,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   color: var(--watermark);
   pointer-events: none;
   user-select: none;
-  transition: color 0.35s var(--ease);
+  transition: color var(--t-mittel) var(--ease);
 }
 .creed-cell:hover .creed-mark { color: var(--watermark-hi); }
 
@@ -897,7 +903,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   margin-top: 22px;
   padding-left: 18px;
   border-left: 2px solid var(--accent-dim);
-  transition: border-color 0.35s var(--ease);
+  transition: border-color var(--t-mittel) var(--ease);
 }
 .creed-cell:hover .creed-cost { border-left-color: var(--accent); }
 
@@ -1089,7 +1095,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .reveal {
     opacity: 0;
     transform: translateY(24px);
-    transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+    transition: opacity var(--t-lang) var(--ease), transform var(--t-lang) var(--ease);
   }
   .reveal.in { opacity: 1; transform: none; }
 
@@ -1335,7 +1341,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   text-transform: uppercase;
   cursor: pointer;
   box-shadow: 0 10px 30px var(--shadow-strong);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform var(--t-kurz) var(--ease), box-shadow var(--t-kurz) var(--ease);
 }
 .helper-btn:hover { transform: translateY(-2px); }
 
@@ -1412,7 +1418,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   font-family: var(--sans);
   font-size: 0.88rem;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background var(--t-kurz) var(--ease);
 }
 .helper-list button:hover { background: var(--wash-2); }
 
@@ -1545,7 +1551,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 .helper-hinweis > summary::after {
   content: "\25BE";                /* ▾ -- zeigt, dass sich hier etwas aufklappen laesst */
   margin-left: auto;
-  transition: transform 0.2s;
+  transition: transform var(--t-kurz) var(--ease);
 }
 .helper-hinweis[open] > summary::after { transform: rotate(180deg); }
 .helper-hinweis > summary:focus-visible { outline: 1px solid var(--text); outline-offset: 2px; }
@@ -1566,7 +1572,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   line-height: 1.5;
   resize: none;
   overflow-y: auto;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color var(--t-kurz) var(--ease), box-shadow var(--t-kurz) var(--ease);
 }
 .helper-eingabe:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 1px var(--text); }
 /* Voll deckend: der Platzhalter ist die einzige sichtbare Beschriftung des
@@ -1591,7 +1597,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   letter-spacing: 0.16em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity var(--t-kurz) var(--ease);
 }
 .helper-senden:hover { opacity: 0.86; }
 .helper-senden:disabled { opacity: 0.45; cursor: default; }
@@ -1658,7 +1664,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   color: var(--text);
   font-family: var(--sans);
   font-size: 0.95rem;
-  transition: border-color 0.2s;
+  transition: border-color var(--t-kurz) var(--ease);
 }
 .field textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
 .field input:focus,
@@ -1897,7 +1903,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   .fs-karten .formula + .formula { border-left: none; }
 }
 .fs-nachspann { padding-top: 0; }
-a.fs-karte { color: inherit; transition: background 0.2s; }
+a.fs-karte { color: inherit; transition: background var(--t-kurz) var(--ease); }
 a.fs-karte:hover { background: var(--wash-1); }
 a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px; }
 .fs-karte-los {
@@ -2072,13 +2078,13 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   border-radius: var(--r-lg);
   background: linear-gradient(180deg, var(--panel), var(--panel-2));
   color: var(--text);
-  transition: border-color 0.3s var(--ease), transform 0.3s var(--ease), background 0.3s var(--ease);
+  transition: border-color var(--t-mittel) var(--ease), transform var(--t-mittel) var(--ease), background var(--t-mittel) var(--ease);
 }
 .kachel:hover { color: var(--text); border-color: var(--text); transform: translateY(-3px); background: var(--wash-2); }
 /* Die Kachel-eigene transition wuerde die des Scroll-Reveals ersetzen — dann
    blendet nichts ein. Beides zusammen: */
-.kachel.reveal, .kachel.reveal.in { transition: opacity 0.8s var(--ease), transform 0.8s var(--ease), border-color 0.3s var(--ease), background 0.3s var(--ease); }
-.kachel.settled { transition: transform 0.3s var(--ease), border-color 0.3s var(--ease), background 0.3s var(--ease); }   /* nach dem Einblenden: Hover-Tempo */
+.kachel.reveal, .kachel.reveal.in { transition: opacity var(--t-lang) var(--ease), transform var(--t-lang) var(--ease), border-color var(--t-mittel) var(--ease), background var(--t-mittel) var(--ease); }
+.kachel.settled { transition: transform var(--t-mittel) var(--ease), border-color var(--t-mittel) var(--ease), background var(--t-mittel) var(--ease); }   /* nach dem Einblenden: Hover-Tempo */
 
 .kachel-label {
   display: block;
@@ -2182,7 +2188,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   font-size: 0.88rem;
   line-height: 1.5;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
+  transition: color var(--t-kurz) var(--ease), border-color var(--t-kurz) var(--ease);
 }
 .partner-textknopf:hover:not(:disabled),
 .partner-textknopf[aria-pressed="true"] { color: var(--text); border-color: var(--text); }
@@ -2429,7 +2435,7 @@ html:not(.js) .sp { display: none; }
   border: 1px solid var(--border-2);
   border-radius: var(--r-sm);
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: background var(--t-kurz) var(--ease), color var(--t-kurz) var(--ease);
 }
 .sp-knopf:hover,
 .sp-segmente button:hover { background: var(--wash-2); }
@@ -2618,7 +2624,7 @@ html:not(.js) .sp { display: none; }
   border: 1px solid var(--border-2);
   border-radius: var(--r-sm);
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background var(--t-kurz) var(--ease), border-color var(--t-kurz) var(--ease);
 }
 .sp-order:hover { background: var(--wash-2); border-color: var(--text); }
 .sp-order-was {
@@ -2646,7 +2652,7 @@ html:not(.js) .sp { display: none; }
    Form und Lage unterscheiden die beiden weiterhin. Weiss auf beiden Toenen liegt
    ueber 5:1 (WCAG AA), hell wie dunkel. Gesperrt bleiben sie farbig, nur blass. */
 .sp-order[data-sp-order="kauf"],
-.sp-order[data-sp-order="verkauf"] { color: #fff; border-color: transparent; transition: filter 0.2s; }
+.sp-order[data-sp-order="verkauf"] { color: #fff; border-color: transparent; transition: filter var(--t-kurz) var(--ease); }
 .sp-order[data-sp-order="kauf"] { background: var(--kauf); }
 .sp-order[data-sp-order="verkauf"] { background: var(--verkauf); }
 .sp-order[data-sp-order="kauf"]:hover,
@@ -2707,7 +2713,7 @@ html:not(.js) .sp { display: none; }
   background: var(--bg);
   border: 1px solid var(--muted);   /* mindestens 3:1 zum Grund, hell wie dunkel (WCAG 1.4.11) */
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background var(--t-kurz) var(--ease);
 }
 .sp-schutz-feld button:first-child { border-radius: var(--r-sm) 0 0 var(--r-sm); }
 .sp-schutz-feld button:last-child { border-radius: 0 var(--r-sm) var(--r-sm) 0; }

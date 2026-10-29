@@ -515,7 +515,9 @@ window.JKHDBilder.sicherheit = function (k) {
       ctx.globalAlpha *= a;
       // am Laptop drei Spalten, am Handy drei Bloecke untereinander (Zeichen links)
       const cx = klein ? A.x + 40 : A.x + i * w + w / 2;
-      const yG = klein ? A.y + 30 + i * ((A.h - 40) / n) : A.y + 44;
+      // Handy: die drei Bloecke gleichmaessig ueber die (dort nur ~270 px hohe) Flaeche verteilt,
+      // sonst beruehrt die letzte Zeile den naechsten Titel (Loop 29.10.2026, 1.17)
+      const yG = klein ? A.y + 26 + i * ((A.h - 32) / n) : A.y + 44;
       const sp = spalten[i];
       // das Zeichen oben: Website = durchgestrichener Keks; Partner = Pruefsumme, die sich dreht, und eine Uhr; Zahlung = leerer Rahmen
       if (sp.art === 0) {
@@ -545,7 +547,7 @@ window.JKHDBilder.sicherheit = function (k) {
         const e = stueck(t, i * 0.2 + 0.1 + j * 0.05, i * 0.2 + 0.18 + j * 0.05);
         if (e <= 0) continue;
         ctx.globalAlpha *= e;
-        if (klein) text(sp.zeilen[j], cx + 46, yG + 14 + j * 15, mono(10), F.matt);
+        if (klein) text(sp.zeilen[j], cx + 46, yG + 13 + j * 14, mono(10), F.matt);
         else text(sp.zeilen[j], cx, yG + 56 + j * 18, mono(11), F.matt, "center");
         ctx.globalAlpha /= e;
       }
