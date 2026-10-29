@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Formelkästen** (Loop 29.10.2026, Punkt 1.4): `.fs-box` mit Haarlinie und Mono-Titelzeile statt
+  Tintenrahmen und gefülltem Kopfbalken — nur CSS, die vier Formelseiten bleiben unangetastet;
+  Mathe in einem Titel bleibt ungesperrt (`.fs-box-titel .katex`).
 - **Schluss des Universums** (Loop 29.10.2026, Punkt 1.3): Halle, Tisch, Monitor und Rechner mit
   Licht und Material; am Ende gehen erst die Formeln aus, dann das Zeichen; das Schwarz kommt
   von den Rändern her und der Schirm geht als Letztes aus, der Spruch erst auf Schwarz

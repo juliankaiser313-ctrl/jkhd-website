@@ -1799,24 +1799,29 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 .fs-nr { margin-right: 0.55em; font-family: var(--mono); color: var(--muted); }
 .fs-kapitel { padding: 64px 0; border-top: 1px solid var(--border); }
 .section.fs-kapitel h2 { margin-bottom: 8px; font-size: clamp(1.5rem, 3vw, 2.1rem); }
+/* Formelkasten: eine ruhige Tafel -- Haarlinie statt Tintenrahmen, der Titel als Mono-Auszeichnung
+   auf eigener Zeile mit Haarlinie darunter (wie die Kicker der Seite) statt des gefuellten
+   Kopfbalkens in Tinte (Loop 29.10.2026, Punkt 1.4) */
 .fs-box {
-  margin: 30px 0 16px;
-  border: 1px solid var(--text);
+  margin: 32px 0 16px;
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
   background: var(--panel);
 }
 .fs-box-titel {
   margin: 0;
-  padding: 9px 16px;
-  background: var(--text);
-  color: var(--bg);
-  font-family: var(--sans);
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 1.4;
+  padding: 11px 18px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.5;
 }
-.fs-formel { padding: 6px 16px; overflow-x: auto; overflow-y: hidden; color: var(--text); }
+.fs-box-titel .katex { text-transform: none; letter-spacing: 0; }   /* Mathe im Titel bleibt Mathe */
+.fs-formel { padding: 8px 18px; overflow-x: auto; overflow-y: hidden; color: var(--text); }
 .fs-formel .katex-display { margin: 0.75em 0; }
 /* Mehrere Formeln einer Zeile: nebeneinander, auf schmalen Schirmen untereinander (bauen.js, teile) */
 .fs-zeile { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; column-gap: 2.4em; }
