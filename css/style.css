@@ -2331,6 +2331,10 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 }
 .sp[hidden],
 .sp [hidden] { display: none; }
+/* Ohne JavaScript bleibt das Brett weg (die Knoepfe taeten nichts). Bis zum 29.10.2026 stand
+   es im HTML auf hidden, bis js/spiel.js es freigab -- das erste Bild hatte kein Brett, und
+   die Regeln darunter sprangen beim Einblenden aus dem Bild (Loop, Punkt 1.15). */
+html:not(.js) .sp { display: none; }
 
 /* Das Brett nimmt den Fokus fuer die Tasten (tabindex="-1"). Sichtbar wird das
    an der Kante und am Hinweis "Tasten aktiv", nicht an einem Rahmen ums Ganze. */

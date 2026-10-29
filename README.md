@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Brett von Anfang an sichtbar** (Loop 29.10.2026, Punkt 1.15): das Brett steht nicht mehr auf
+  `hidden`, bis js/spiel.js läuft — sonst sprangen die Regeln beim ersten Bild um 16 % der
+  Bildschirmhöhe (`ruhe_messung.js`). Ohne JavaScript versteckt es `html:not(.js) .sp`.
 - **Statistik über der Bestenliste** (14.10.2026, Julian: „wie viele es
   schaffen, und wie viele Versuche man braucht“): zu Ende gespielte Partien,
   Siege mit Anteil und die mittlere Zahl der Anläufe bis zum ersten Sieg —
@@ -342,6 +345,13 @@ Schnittstelle (so gebaut, Stand 25.09.2026 — Einzelheiten im README des Server
 Partner pflegen = `api-daten/partner.json` auf dem Webspace (siehe README des
 Server-Repos). Die Datenschutzerklärung beschreibt die Verarbeitung im
 Abschnitt „Partnerzugang".
+
+## Schriften vorgeladen (29.10.2026)
+
+Jede Seite lädt `Manrope-variabel.woff2` und `PlayfairDisplay-variabel.woff2` per
+`<link rel="preload" as="font">` vor dem Schrift-Stylesheet — mit `font-display: swap` allein
+kamen die Schriften nach dem ersten Bild und Texte rutschten um 2–31 px (Loop, Punkt 1.16,
+gemessen mit `ruhe_messung.js`). Die kursive Playfair wird nicht vorgeladen (selten).
 
 ## Herkunft der Seiteninhalte (aus den Quelltext-Kommentaren hierher verschoben, 11.10.2026)
 
