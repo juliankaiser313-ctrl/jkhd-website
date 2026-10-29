@@ -210,6 +210,10 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Zeilenlängen** (Loop 29.10.2026, Punkt 4.1): Fließtext höchstens ~75 Zeichen je Zeile — `.step-row p`,
+  `.founder-card p`, `.about-text p`, `.about-lead`, `.statement-more`, `.prose`, `.fs-absatz`/`.fs-liste`,
+  `.sp-regel-algo` mit Maximalbreiten in ch (vorher 76–111 Zeichen, `typografie_messung.js`); Witwe
+  „Hier liegen keine Kundenakten.“ mit geschütztem Leerzeichen.
 - **Kontrast der Kaufen/Verkaufen-Unterzeile** (Loop 29.10.2026, Punkt 4.2): reines Weiß statt 85 % —
   vorher 4,0–4,4:1 auf Blau/Rot, jetzt ≥ 5:1 (`tastatur_messung.js`, 87 Ladungen: einziger echter
   Kontrastbefund; Tab-Weg, Fokusrahmen und Vorlesetexte überall in Ordnung).
