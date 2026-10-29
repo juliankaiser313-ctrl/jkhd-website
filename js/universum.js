@@ -1043,6 +1043,7 @@ void main() {
   let B = 0, H = 0, dpr = 1;
   let qualitaet = 1;   // Anteil der Aufloesung; die Schleife senkt ihn, wenn es ruckelt
   let kleben = 0;      // Abstand der klebenden Buehne vom oberen Rand (css: top)
+  let schirm = null;   // Mitte und Halbdiagonale des Monitorschirms im letzten Bild (Licht-aus am Ende)
   function groesseAnpassen() {
     kleben = parseFloat(getComputedStyle(buehne).top) || 0;
     const r = leinwand.getBoundingClientRect();
@@ -1395,21 +1396,29 @@ void main() {
     const halle = stueck(L, 5.0, 5.6);
     if (halle > 0) halleZeichnen(L, halle, p, zeit, still);
 
-    // ---- Das Ende: alles wird schwarz, dann der Spruch ----
-    const dunkel = stueck(p, 0.96, 0.98);
+    // ---- Das Ende: Licht aus, dann der Spruch ----
+    // Loop 29.10.2026 (1.3d): das Schwarz kommt von den Raendern her, der Schirm geht als
+    // Letztes aus; der Spruch erscheint erst, wenn alles schwarz ist (vorher stand er ab 0,972
+    // ueber dem noch halb sichtbaren Monitor), und zieht sich beim Erscheinen leicht zusammen
+    const dunkel = stueck(p, 0.955, 0.978);
     if (dunkel > 0) {
       ctx.globalCompositeOperation = "source-over";
-      ctx.globalAlpha = dunkel;
-      ctx.fillStyle = "#000";
+      ctx.globalAlpha = 1;
+      const mx = schirm ? schirm.x : B / 2, my = schirm ? schirm.y : H / 2;
+      const mr = schirm ? schirm.r : Math.min(B, H) * 0.25;
+      const g = ctx.createRadialGradient(mx, my, mr * 0.6, mx, my, Math.hypot(B, H) * 0.55);
+      g.addColorStop(0, `rgba(0,0,0,${stueck(dunkel, 0.45, 1).toFixed(3)})`);   // ueber dem Schirm zuletzt
+      g.addColorStop(1, `rgba(0,0,0,${stueck(dunkel, 0, 0.75).toFixed(3)})`);    // an den Raendern zuerst
+      ctx.fillStyle = g;
       ctx.fillRect(0, 0, B, H);
     }
-    const spruch = stueck(p, 0.972, 0.992);
+    const spruch = stueck(p, 0.981, 0.995);
     if (spruch > 0) {
       ctx.globalAlpha = spruch;
       ctx.fillStyle = "#f4f2ee";
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
-      gesperrt(SPRUCH, B / 2, H / 2, `500 ${Math.round(Math.min(44, B * 0.05))}px "Playfair Display", Georgia, serif`, 0.04);
+      gesperrt(SPRUCH, B / 2, H / 2, `500 ${Math.round(Math.min(44, B * 0.05))}px "Playfair Display", Georgia, serif`, 0.04 + 0.03 * (1 - spruch));
     }
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
@@ -2098,6 +2107,7 @@ void main() {
     const sx = ax, hb = 0.5 * m, hh = 0.28 * m;
     const unten = ay - 0.1 * m;                 // Unterkante des Gehaeuses
     const sy = unten - 0.04 * m - 0.025 * m - hh;   // Mitte des Schirms
+    schirm = { x: sx, y: sy, r: Math.hypot(hb, hh) };
     ctx.globalAlpha = sicht;
     // Standfuss: Scheibe mit Verlauf zum Rand und Lichtkante vorn (Loop 29.10.2026, 1.3b)
     g = ctx.createRadialGradient(sx, ay - 0.006 * m, 0, sx, ay, 0.17 * m);

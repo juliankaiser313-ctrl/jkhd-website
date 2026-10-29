@@ -210,6 +210,10 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Schluss des Universums** (Loop 29.10.2026, Punkt 1.3): Halle, Tisch, Monitor und Rechner mit
+  Licht und Material; am Ende gehen erst die Formeln aus, dann das Zeichen; das Schwarz kommt
+  von den Rändern her und der Schirm geht als Letztes aus, der Spruch erst auf Schwarz
+  (`startseite_fotos.js`, Stellen q und e).
 - **Brett von Anfang an sichtbar** (Loop 29.10.2026, Punkt 1.15): das Brett steht nicht mehr auf
   `hidden`, bis js/spiel.js läuft — sonst sprangen die Regeln beim ersten Bild um 16 % der
   Bildschirmhöhe (`ruhe_messung.js`). Ohne JavaScript versteckt es `html:not(.js) .sp`.
