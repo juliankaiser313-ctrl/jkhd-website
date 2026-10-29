@@ -210,6 +210,11 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Partnerkasten: Kopf je Zustand** (Loop 29.10.2026, Punkt 2.1): `kopfZustand()` in js/main.js — im
+  Ruhezustand der Einleitungsabsatz, in den Schritten eine Zeile mit zwei Balken („Schritt 1 von 2 ·
+  Ihre Adresse“ / „Schritt 2 von 2 · Code aus der E-Mail“), beim Fragebogen der Titel „Anfrage“
+  (`.partner.is-schritt`, `.partner-schritt`). Zustände fotografiert mit `zustaende.js` +
+  `partner_schritte.json` (nachgebauter Server als fetch-Stub) in JKHD-Pruefwerkzeuge.
 - **Übergänge vereinheitlicht** (Loop 29.10.2026, Punkt 1.8): drei Dauern als Token (`--t-kurz` 0,2 s,
   `--t-mittel` 0,3 s, `--t-lang` 0,8 s) und überall die Hauskurve `--ease`; `.btn` nennt seine
   Eigenschaften statt `all`. Vorher 26 verschiedene Angaben.

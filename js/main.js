@@ -843,6 +843,25 @@ const NETZ_VOLL = () => T(
   if (api && PartnerSitzung.lies()) startKnopf.textContent = T("Zur Partnerseite", "To the partner page");
   const startHtml = koerper.innerHTML;
 
+  // Kopf des Kastens je Zustand (Loop 29.10.2026, 2.1): im Ruhezustand der lange Absatz, in den
+  // Schritten statt des Absatzes eine Zeile mit zwei Balken ("Schritt 1 von 2 . Ihre Adresse"),
+  // beim Fragebogen der Titel "Anfrage" -- so steht am Handy das Formular direkt unter dem Titel
+  const kopf = box.querySelector(".partner-kopf");
+  const titel = kopf ? kopf.querySelector("h2") : null;
+  const titelText = titel ? titel.textContent : "";
+  function kopfZustand(schritt, titelNeu) {
+    if (!kopf || !titel) return;
+    box.classList.toggle("is-schritt", !!schritt);
+    titel.textContent = titelNeu || titelText;
+    let z = kopf.querySelector(".partner-schritt");
+    if (!schritt || (!schritt.nr && !schritt.text)) { if (z) z.remove(); return; }
+    if (!z) { z = document.createElement("p"); z.className = "partner-schritt"; kopf.appendChild(z); }
+    const balken = schritt.nr
+      ? `<span class="partner-schritt-balken" aria-hidden="true"><i${schritt.nr >= 1 ? ' class="ist-da"' : ""}></i><i${schritt.nr >= 2 ? ' class="ist-da"' : ""}></i></span>`
+      : "";
+    z.innerHTML = balken + `<span>${schritt.text}</span>`;
+  }
+
   // Merker „neues Passwort festlegen“ (von „Passwort vergessen?“ oder
   // partnerzugang.html#partner-passwort): nach der Anmeldung geht es dann auf
   // partner.html#neues-passwort. Bewusst nur eine Variable, kein
@@ -910,6 +929,7 @@ const NETZ_VOLL = () => T(
     neuerLauf();
     neuesPasswort = false;
     box.classList.remove("is-anfrage");
+    kopfZustand(null);
     koerper.innerHTML = startHtml;
     koerper.querySelector('[data-partner="start"]').addEventListener("click", start);
     const a = koerper.querySelector('[data-partner="anfrage"]');
@@ -957,6 +977,7 @@ const NETZ_VOLL = () => T(
   // `status` steht als Hinweis ueber den Feldern (partnerzugang.html#partner-passwort).
   function mailSchritt(status) {
     const meins = neuerLauf();
+    kopfZustand({ nr: 1, text: T("Schritt 1 von 2 \u00b7 Ihre Adresse", "Step 1 of 2 \u00b7 your address") });
     koerper.innerHTML =
       `<form class="partner-form" method="post" novalidate>
          ${status ? hinweis(status) : ""}
@@ -1108,6 +1129,7 @@ const NETZ_VOLL = () => T(
   // Postfach sonst nach „Passwort“.
   function codeSchritt(email) {
     const meins = neuerLauf();
+    kopfZustand({ nr: 2, text: T("Schritt 2 von 2 \u00b7 Code aus der E-Mail", "Step 2 of 2 \u00b7 code from the e-mail") });
     koerper.innerHTML =
       `<form class="partner-form" novalidate>
          ${hinweis(T(
@@ -1228,6 +1250,7 @@ const NETZ_VOLL = () => T(
     const meins = neuerLauf();
     const fragen = FRAGEN();
     box.classList.add("is-anfrage");
+    kopfZustand({ nr: 0, text: "" }, T("Anfrage", "Enquiry"));
     koerper.innerHTML =
       `<form class="partner-form partner-anfrage" novalidate>
          ${hinweis(T(

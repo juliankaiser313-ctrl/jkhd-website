@@ -2172,6 +2172,31 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
    ein Kasten um die Ueberschrift (Loop 29.10.2026, Punkt 1.1) */
 .partner-karte h2:focus { outline: none; }
 .partner-kopf .partner-hinweis { margin-top: 14px; }
+/* Kopf je Zustand (Loop 29.10.2026, 2.1): in den Schritten weicht der Einleitungsabsatz einer Zeile
+   mit zwei Balken und dem Schritt; beim Fragebogen bleibt nur der Titel */
+.partner.is-schritt .partner-kopf > p:not(.partner-schritt) { display: none; }
+.partner-schritt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--label);
+  font-weight: 600;
+  letter-spacing: var(--label-ls);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.partner-schritt-balken { display: inline-flex; gap: 4px; }
+.partner-schritt-balken i {
+  display: block;
+  width: 26px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--border-2);
+  transition: background var(--t-kurz) var(--ease);
+}
+.partner-schritt-balken i.ist-da { background: var(--text); }
 
 /* Passwort (25.09.2026): Textknoepfe („Passwort vergessen?", „Passwörter
    anzeigen") sehen aus wie Links; Hinweis und Fehler stehen direkt am Feld,
