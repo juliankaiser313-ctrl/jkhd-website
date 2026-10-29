@@ -191,7 +191,7 @@ window.JKHDBilder.system = function (k) {
       ctx.fillStyle = tz > 1.55 ? F.rot : F.tinte;
       ctx.beginPath(); ctx.arc(xU, yL, 4, 0, Math.PI * 2); ctx.fill();
       text(T("Lücke: Millisekunden", "the gap: milliseconds"), xL + bL * (1.27 / P), yL - 10, mono(10), F.gruen, "center");
-      text(klein ? T("unsere Leitung: zu spät", "our line: too late") : T("unsere Leitung kommt an: die Lücke ist weg — zu spät", "our line arrives: the gap is gone — too late"), xL + bL * (2.2 / P) + 8, yL + 4, mono(10), F.rot);
+      text(klein ? T("unsere Leitung: zu spät", "our line: too late") : T("unsere Leitung kommt an: die Lücke ist weg — zu spät", "our line arrives: the gap is gone — too late"), xL + bL * (2.2 / P) + 8, yL + 18, mono(10), F.rot);
       ctx.globalAlpha /= aL;
     }
   }

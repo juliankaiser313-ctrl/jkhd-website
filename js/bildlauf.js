@@ -80,6 +80,12 @@
   }
   const mono = (px, gewicht) => `${gewicht || 500} ${px}px ${F.mono}`;
   const sans = (px, gewicht) => `${gewicht || 600} ${px}px ${F.sans}`;
+  // Die Beschriftungen der Bilder (k.mono) wachsen mit der Breite der Buehne: Die Bilder
+  // sind mit 10-12 px gezeichnet, auf einem Laptop mit 1366 px war das winzig (Loop
+  // 29.10.2026, Punkt 1.2). Ab 1100 px x1,2, ab 700 px x1,1, am Handy wie gezeichnet; das
+  // Zeichen am Ende (lockupZeichnen) nimmt die rohe mono().
+  const schriftSkala = () => (klein ? 1 : B >= 1100 ? 1.2 : 1.1);
+  const monoBild = (px, gewicht) => mono(Math.round(px * schriftSkala()), gewicht);
 
   // ---- Groesse ----
   let B = 0, H = 0, dpr = 1, klein = false;
@@ -260,7 +266,7 @@
   }
 
   // Der Werkzeugkasten fuer die Bilder (B, H, klein werden bei jeder Groesse neu gesetzt)
-  const k = { ctx, F, T, text, textHalten, textFrei, haken, kreuz, linie, linieRund, reiheRund, zerstoertRund, reiheDrift, wert, puls, schloss, mono, sans, stueck, clamp, glatt, misch, dreieck, zufall, B: 0, H: 0, klein: false };
+  const k = { ctx, F, T, text, textHalten, textFrei, haken, kreuz, linie, linieRund, reiheRund, zerstoertRund, reiheDrift, wert, puls, schloss, mono: monoBild, sans, stueck, clamp, glatt, misch, dreieck, zufall, B: 0, H: 0, klein: false };
 
   // ---- Das Ende: Punkte steigen von unten auf und werden zum Zeichen der Startseite ----
   // Das Zeichen, wie es ganz oben auf der Startseite steht: die Balken, JKHD, ein

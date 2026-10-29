@@ -2153,6 +2153,10 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .partner-hinweis a { border-bottom: 1px solid var(--border-2); }
 .partner-meldung:empty { display: none; }
 .partner-hinweis:focus { outline: none; }
+/* Die Ueberschrift der Karte "Nicht angemeldet" bekommt den Fokus nur per Skript (damit
+   Vorleser den Zustand sagen); Chrome zeichnet dafuer den Tastatur-Rahmen -- der sah aus wie
+   ein Kasten um die Ueberschrift (Loop 29.10.2026, Punkt 1.1) */
+.partner-karte h2:focus { outline: none; }
 .partner-kopf .partner-hinweis { margin-top: 14px; }
 
 /* Passwort (25.09.2026): Textknoepfe („Passwort vergessen?", „Passwörter

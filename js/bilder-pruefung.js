@@ -156,7 +156,7 @@ window.JKHDBilder.pruefung = function (k) {
     const breite = n * schritt - l;
     const x0 = A.x + (A.b - breite) / 2;
     const hB = klein ? 16 : 18;
-    const paarH = hB * 2 + 26 + 34;
+    const paarH = hB * 2 + 26 + 50;   // 50 statt 34: sonst lag das Urteil auf dem naechsten "Lauf A" (Loop 29.10.2026, 1.2)
     const y0 = A.y + 12 + Math.max(0, (A.h - 12 - 3 * paarH) / 2);
     const zA = zufall(31), musterA = [];
     for (let i = 0; i < n; i++) musterA.push(zA() < 0.5);
@@ -179,8 +179,6 @@ window.JKHDBilder.pruefung = function (k) {
       if (t < P.von) break;
       const tp = clamp((t - P.von) / (P.bis - P.von), 0, 1);
       const yA = y0 + kk * paarH, yB = yA + hB + 26;
-      text(T("Lauf A", "run A"), x0, yA - 5, mono(10), F.matt);
-      text(T("Lauf B", "run B"), x0, yB - 5, mono(10), F.matt);
       if (P.fehlt) {
         const a = stueck(tp, 0, 0.4);
         ctx.save();
@@ -218,7 +216,10 @@ window.JKHDBilder.pruefung = function (k) {
           ctx.beginPath(); ctx.moveTo(x, yA - 3); ctx.lineTo(x, yB + hB + 3); ctx.stroke();
         }
       }
-      const yU = yB + hB + 20;
+      // die Namen der Laeufe zuletzt und mit freiem Grund: die Vergleichsstriche laufen sonst durch "Lauf B"
+      k.textFrei(T("Lauf A", "run A"), x0, yA - 5, mono(10), F.matt);
+      k.textFrei(T("Lauf B", "run B"), x0, yB - 5, mono(10), F.matt);
+      const yU = yB + hB + 22;
       text(P.urteil, x0, yU, mono(11), F.matt);
       const fertig = P.fehlt ? stueck(tp, 0.5, 0.8) : stueck(tp, 0.96, 1);
       if (fertig > 0) {
