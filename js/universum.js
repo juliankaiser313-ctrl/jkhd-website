@@ -1976,9 +1976,13 @@ void main() {
   function computerZeichnen(ax, ay, m, sicht, p, zeit, still) {
     const glas = stueck(p, 0.865, 0.885);      // das Gehaeuse wird durchsichtig
     const fluss = stueck(p, 0.87, 0.89) * (1 - stueck(p, 0.93, 0.94));   // die Platine arbeitet, bis das Zeichen da ist
-    const blitz = Math.sin(Math.PI * stueck(p, 0.932, 0.94));   // kurzes Aufleuchten
-    const logo = stueck(p, 0.934, 0.946);      // das Zeichen erscheint
-    const schrift = stueck(p, 0.942, 0.955);
+    // Reihenfolge (Loop 29.10.2026, 1.3c): erst gehen die Formeln aus (0,928-0,935), im Aufleuchten
+    // (Spitze bei 0,937) wechselt das Bild, dann erscheint das Zeichen (0,937-0,948) -- vorher lagen
+    // Formeln und Zeichen bei 0,94 halb durchsichtig uebereinander
+    const formelnWeg = stueck(p, 0.928, 0.935);
+    const blitz = Math.sin(Math.PI * stueck(p, 0.932, 0.942));   // kurzes Aufleuchten
+    const logo = stueck(p, 0.937, 0.948);      // das Zeichen erscheint
+    const schrift = stueck(p, 0.944, 0.957);
     const einzeln = m > 40;
     const hue = still ? 200 : (zeit * 35) % 360;   // das wandernde Farblicht im Gehaeuse
     const farblicht = (versatz, a) => `hsla(${(hue + versatz) % 360},85%,62%,${a.toFixed(3)})`;
@@ -2095,15 +2099,31 @@ void main() {
     const unten = ay - 0.1 * m;                 // Unterkante des Gehaeuses
     const sy = unten - 0.04 * m - 0.025 * m - hh;   // Mitte des Schirms
     ctx.globalAlpha = sicht;
-    ctx.fillStyle = "#14161b";
+    // Standfuss: Scheibe mit Verlauf zum Rand und Lichtkante vorn (Loop 29.10.2026, 1.3b)
+    g = ctx.createRadialGradient(sx, ay - 0.006 * m, 0, sx, ay, 0.17 * m);
+    g.addColorStop(0, "#232730"); g.addColorStop(1, "#0f1115");
+    ctx.fillStyle = g;
     ctx.beginPath(); ctx.ellipse(sx, ay, 0.17 * m, 0.032 * m, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = "rgba(200,210,230,0.35)"; ctx.stroke();
-    ctx.fillStyle = "#15171c";
+    ctx.strokeStyle = "rgba(200,210,230,0.3)"; ctx.lineWidth = 1; ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,0.18)";
+    ctx.beginPath(); ctx.ellipse(sx, ay, 0.17 * m, 0.032 * m, 0, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+    // Hals mit Lichtkante links
+    g = ctx.createLinearGradient(sx - 0.035 * m, 0, sx + 0.035 * m, 0);
+    g.addColorStop(0, "#2a2e37"); g.addColorStop(0.35, "#171a20"); g.addColorStop(1, "#0f1115");
+    ctx.fillStyle = g;
     ctx.beginPath(); ctx.moveTo(sx - 0.03 * m, unten); ctx.lineTo(sx + 0.03 * m, unten); ctx.lineTo(sx + 0.035 * m, ay); ctx.lineTo(sx - 0.035 * m, ay); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = "#121419";
-    rundRechteck(sx - hb - 0.025 * m, sy - hh - 0.025 * m, 2 * hb + 0.05 * m, 2 * hh + 0.065 * m, 0.012 * m);
+    // Rahmen: Verlauf von oben nach unten, Lichtkante oben, Schattenkante um den Schirm
+    const rx = sx - hb - 0.025 * m, ry = sy - hh - 0.025 * m, rb = 2 * hb + 0.05 * m, rh = 2 * hh + 0.065 * m;
+    g = ctx.createLinearGradient(0, ry, 0, ry + rh);
+    g.addColorStop(0, "#1b1e26"); g.addColorStop(1, "#0e1014");
+    ctx.fillStyle = g;
+    rundRechteck(rx, ry, rb, rh, 0.012 * m);
     ctx.fill();
-    ctx.strokeStyle = "rgba(200,210,230,0.45)"; ctx.stroke();
+    ctx.strokeStyle = "rgba(200,210,230,0.4)"; ctx.lineWidth = 1; ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,0.14)";
+    ctx.beginPath(); ctx.moveTo(rx + 0.012 * m, ry + 0.5); ctx.lineTo(rx + rb - 0.012 * m, ry + 0.5); ctx.stroke();
+    ctx.strokeStyle = "rgba(0,0,0,0.55)";
+    ctx.strokeRect(sx - hb - 0.5, sy - hh - 0.5, 2 * hb + 1, 2 * hh + 1);
     // der Schirm ist an: er rechnet die Formeln durch, die im Prozessor ankommen --
     // bis das Zeichen kommt
     const an = 1;
@@ -2111,7 +2131,7 @@ void main() {
     g.addColorStop(0, "#101a30"); g.addColorStop(1, "#06080f");
     ctx.fillStyle = g;
     ctx.fillRect(sx - hb, sy - hh, 2 * hb, 2 * hh);
-    if (logo < 1 && einzeln) konsoleZeichnen(sx, sy, hb, hh, m, p, zeit, still, sicht * (1 - logo));
+    if (formelnWeg < 1 && einzeln) konsoleZeichnen(sx, sy, hb, hh, m, p, zeit, still, sicht * (1 - formelnWeg));
     if (blitz > 0) {
       ctx.globalAlpha = sicht * blitz * 0.9;
       ctx.fillStyle = "#dfe6f5";
