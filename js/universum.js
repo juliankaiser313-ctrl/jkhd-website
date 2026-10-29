@@ -1876,26 +1876,31 @@ void main() {
   function halleZeichnen(L, sicht, p, zeit, still) {
     const hm = halleMasse();
     const zc = misch(0, hm.zEnde, stueck(L, HALLE_VON, ZOOM_ENDE));
+    // Am Tisch angekommen (letztes Stueck des Zooms) treten Leuchten und Schraenke zurueck:
+    // vorher ragten ihre Kanten abgeschnitten in den Rand des Schlussbilds (Loop 29.10.2026, 1.3a)
+    const nah = stueck(L, ZOOM_ENDE - 0.7, ZOOM_ENDE);
+    const hallenLicht = 1 - 0.95 * nah;
+    const dunkel = (r, g, b) => `${Math.round(r * (1 - 0.8 * nah))},${Math.round(g * (1 - 0.8 * nah))},${Math.round(b * (1 - 0.8 * nah))}`;
     const P = (x, y, z) => { const dz = z - zc; if (dz < 0.05) return null; const s = hm.f2 / dz; return [B / 2 + x * s, H / 2 - (y - hm.yKamera) * s, s]; };
     const viereck = (a, b, c, d) => { ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.lineTo(d[0], d[1]); ctx.closePath(); };
     ctx.globalCompositeOperation = "source-over";
     // Boden und Decke
     const horizont = H / 2;
     let g = ctx.createLinearGradient(0, horizont, 0, H);
-    g.addColorStop(0, `rgba(10,13,20,${sicht.toFixed(3)})`);
-    g.addColorStop(1, `rgba(22,27,38,${sicht.toFixed(3)})`);
+    g.addColorStop(0, `rgba(${dunkel(10, 13, 20)},${sicht.toFixed(3)})`);
+    g.addColorStop(1, `rgba(${dunkel(22, 27, 38)},${sicht.toFixed(3)})`);
     ctx.fillStyle = g;
     ctx.fillRect(0, horizont, B, H - horizont);
     g = ctx.createLinearGradient(0, 0, 0, horizont);
-    g.addColorStop(0, `rgba(8,10,16,${sicht.toFixed(3)})`);
-    g.addColorStop(1, `rgba(3,4,8,${sicht.toFixed(3)})`);
+    g.addColorStop(0, `rgba(${dunkel(8, 10, 16)},${sicht.toFixed(3)})`);
+    g.addColorStop(1, `rgba(${dunkel(3, 4, 8)},${sicht.toFixed(3)})`);
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, B, horizont);
     // Lichtstreifen an der Decke, mit Spiegelung am Boden
     for (let k = 0; k < 16; k++) {
       const z0 = 0.6 + k, a = P(-0.14, 0.88, z0), b = P(0.14, 0.88, z0), c = P(0.14, 0.88, z0 + 0.45), d = P(-0.14, 0.88, z0 + 0.45);
       if (!a || !b || !c || !d) continue;
-      const nebel = clamp(1 - (z0 - zc) / 11, 0.1, 1) * sicht;
+      const nebel = clamp(1 - (z0 - zc) / 11, 0.1, 1) * sicht * (1 - nah);
       ctx.fillStyle = `rgba(200,218,255,${(0.75 * nebel).toFixed(3)})`;
       viereck(a, b, c, d); ctx.fill();
       const a2 = P(-0.14, -0.9, z0), b2 = P(0.14, -0.9, z0), c2 = P(0.14, -0.9, z0 + 0.45), d2 = P(-0.14, -0.9, z0 + 0.45);
@@ -1905,7 +1910,7 @@ void main() {
     for (let k = 14; k >= 0; k--) {
       const z0 = 1.2 + k;
       if (z0 + 0.85 < zc + 0.1) continue;
-      const nebel = clamp(1 - (z0 - zc) / 10, 0.12, 1) * sicht;
+      const nebel = clamp(1 - (z0 - zc) / 10, 0.12, 1) * sicht * hallenLicht;
       for (const s of [-1, 1]) {
         const x1 = s * 0.9, x2 = s * 1.6;
         const sa = P(x1, -0.9, z0 + 0.85), sb = P(x1, 0.78, z0 + 0.85), sc = P(x1, 0.78, z0), sd = P(x1, -0.9, z0);
@@ -1949,11 +1954,20 @@ void main() {
     }
     // Die Wand am Ende und der Tisch
     const wa = P(-2, -0.9, TISCH_Z + 0.9), wb = P(2, -0.9, TISCH_Z + 0.9), wc = P(2, 0.9, TISCH_Z + 0.9), wd = P(-2, 0.9, TISCH_Z + 0.9);
-    if (wa && wb && wc && wd) { ctx.fillStyle = `rgba(6,8,12,${sicht.toFixed(3)})`; viereck(wa, wb, wc, wd); ctx.fill(); }
+    if (wa && wb && wc && wd) { ctx.fillStyle = `rgba(${dunkel(6, 8, 12)},${sicht.toFixed(3)})`; viereck(wa, wb, wc, wd); ctx.fill(); }
     const anker = P(0, TISCH_Y, TISCH_Z);
     if (!anker) return;
     const m = (hm.f2 * MONITOR_BREITE) / (TISCH_Z - zc);
     computerZeichnen(anker[0], anker[1], m, sicht, p, zeit, still);
+    // Vignette: die Raender des Schlussbilds gehen ins Dunkel, der Blick bleibt am Tisch
+    if (nah > 0) {
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = sicht * nah;
+      const v = ctx.createRadialGradient(B / 2, H * 0.55, Math.min(B, H) * 0.35, B / 2, H * 0.55, Math.max(B, H) * 0.78);
+      v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(0,0,0,0.62)");
+      ctx.fillStyle = v; ctx.fillRect(0, 0, B, H);
+      ctx.globalAlpha = 1;
+    }
   }
 
   // Der Computer auf dem Tisch: Monitor, daneben der Tower mit Glasseite und farbigem
@@ -1976,28 +1990,59 @@ void main() {
     let g = ctx.createRadialGradient(ax, ay - 0.5 * m, 0, ax, ay - 0.5 * m, 1.6 * m);
     g.addColorStop(0, "rgba(190,170,140,0.22)"); g.addColorStop(1, "rgba(190,170,140,0)");
     ctx.fillStyle = g; ctx.fillRect(ax - 1.6 * m, ay - 2.1 * m, 3.2 * m, 3.2 * m);
-    // Der Tisch: Holz, mit Maserung
-    const tisch = ctx.createLinearGradient(0, ay - 0.12 * m, 0, ay + 0.1 * m);
-    tisch.addColorStop(0, "#6a4a30");
-    tisch.addColorStop(1, "#3e2a1a");
-    ctx.fillStyle = tisch;
-    ctx.beginPath();
-    ctx.moveTo(ax - 1.45 * m, ay + 0.1 * m); ctx.lineTo(ax + 1.45 * m, ay + 0.1 * m);
-    ctx.lineTo(ax + 1.15 * m, ay - 0.12 * m); ctx.lineTo(ax - 1.15 * m, ay - 0.12 * m);
-    ctx.closePath(); ctx.fill();
-    if (einzeln) {
-      ctx.strokeStyle = "rgba(30,18,8,0.35)"; ctx.lineWidth = 1;
+    // Der Tisch: dunkles Nussholz (vorher ein heller, flacher Orangeton -- Loop 29.10.2026, 1.3a):
+    // Platte mit Verlauf zur Kante, feine Maserung, Kantenlicht, und darauf der Widerschein des
+    // Monitors und der warme Lichtfleck von der Decke
+    const tischPfad = () => {
       ctx.beginPath();
-      for (let i = 0; i < 9; i++) { const t = (i + 0.5) / 9; ctx.moveTo(ax - 1.15 * m + (ax + 1.15 * m - (ax - 1.15 * m)) * t, ay - 0.12 * m); ctx.lineTo(ax - 1.45 * m + 2.9 * m * t, ay + 0.1 * m); }
+      ctx.moveTo(ax - 1.45 * m, ay + 0.1 * m); ctx.lineTo(ax + 1.45 * m, ay + 0.1 * m);
+      ctx.lineTo(ax + 1.15 * m, ay - 0.12 * m); ctx.lineTo(ax - 1.15 * m, ay - 0.12 * m);
+      ctx.closePath();
+    };
+    const tisch = ctx.createLinearGradient(0, ay - 0.12 * m, 0, ay + 0.1 * m);
+    tisch.addColorStop(0, "#2b1c11");
+    tisch.addColorStop(0.55, "#3a2617");
+    tisch.addColorStop(1, "#2a1a0f");
+    ctx.fillStyle = tisch;
+    tischPfad(); ctx.fill();
+    ctx.save();
+    tischPfad(); ctx.clip();
+    if (einzeln) {
+      // Maserung: leise, dichter als vorher, in der Flucht der Platte
+      ctx.strokeStyle = "rgba(0,0,0,0.16)"; ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let i = 0; i < 22; i++) { const t = (i + 0.5) / 22; ctx.moveTo(ax - 1.15 * m + 2.3 * m * t, ay - 0.12 * m); ctx.lineTo(ax - 1.45 * m + 2.9 * m * t, ay + 0.1 * m); }
       ctx.stroke();
     }
-    ctx.strokeStyle = "rgba(255,230,200,0.25)"; ctx.lineWidth = 1;
+    // der warme Lichtfleck von oben auf der Platte
+    let gt = ctx.createRadialGradient(ax, ay - 0.02 * m, 0, ax, ay - 0.02 * m, 1.3 * m);
+    gt.addColorStop(0, "rgba(255,214,160,0.14)"); gt.addColorStop(1, "rgba(255,214,160,0)");
+    ctx.fillStyle = gt; ctx.fillRect(ax - 1.5 * m, ay - 0.2 * m, 3 * m, 0.4 * m);
+    // der Widerschein des Schirms: kuehl, direkt vor dem Monitor, nach vorn verlaufend
+    ctx.save();
+    ctx.translate(ax, ay - 0.1 * m); ctx.scale(0.75 * m, 0.2 * m);
+    gt = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+    gt.addColorStop(0, "rgba(120,150,210,0.24)"); gt.addColorStop(0.5, "rgba(120,150,210,0.1)"); gt.addColorStop(1, "rgba(120,150,210,0)");
+    ctx.fillStyle = gt; ctx.beginPath(); ctx.arc(0, 0, 1, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.restore();
+    // Kantenlicht vorn und hinten
+    ctx.strokeStyle = "rgba(255,226,190,0.22)"; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(ax - 1.45 * m, ay + 0.1 * m + 0.5); ctx.lineTo(ax + 1.45 * m, ay + 0.1 * m + 0.5); ctx.stroke();
-    // Schatten unter Monitor und Tower
+    ctx.strokeStyle = "rgba(255,226,190,0.08)";
+    ctx.beginPath(); ctx.moveTo(ax - 1.15 * m, ay - 0.12 * m + 0.5); ctx.lineTo(ax + 1.15 * m, ay - 0.12 * m + 0.5); ctx.stroke();
+    // die Stirnseite der Platte, ein Hauch dunkler
+    ctx.fillStyle = "rgba(0,0,0,0.35)";
+    ctx.fillRect(ax - 1.45 * m, ay + 0.1 * m + 1, 2.9 * m, Math.max(2, 0.022 * m));
+    // Weiche Schatten unter Monitor und Tower: Kern und Halbschatten statt harter Ellipsen
     const tOff = schmal ? 0.6 : 0.72;
-    ctx.fillStyle = "rgba(0,0,0,0.5)";
-    ctx.beginPath(); ctx.ellipse(ax, ay + 0.01 * m, 0.3 * m, 0.035 * m, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(ax + (tOff - 0.1) * m, ay + 0.03 * m, 0.32 * m, 0.04 * m, 0, 0, Math.PI * 2); ctx.fill();
+    const schatten = (cx, cy, rx, ry, a) => {
+      const g2 = ctx.createRadialGradient(cx, cy, 0, cx, cy, 1);
+      g2.addColorStop(0, `rgba(0,0,0,${a.toFixed(3)})`); g2.addColorStop(0.55, `rgba(0,0,0,${(a * 0.55).toFixed(3)})`); g2.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.save(); ctx.translate(cx, cy); ctx.scale(rx, ry); ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(0, 0, 1, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    };
+    schatten(ax, ay + 0.012 * m, 0.42 * m, 0.05 * m, 0.55);
+    schatten(ax + (tOff - 0.1) * m, ay + 0.03 * m, 0.42 * m, 0.055 * m, 0.6);
 
     // ---- Der Tower rechts, mit Glasseite nach links: Deckel, Vorderseite, Glas ----
     const tx = ax + tOff * m, tb = ay + 0.02 * m, th = 0.72 * m, tw = (schmal ? 0.18 : 0.24) * m;
@@ -2117,13 +2162,15 @@ void main() {
       ctx.globalCompositeOperation = "source-over";
     }
 
-    // ---- Tastatur mit Lichtsaum und Maus ----
+    // ---- Tastatur mit leisem, neutralem Licht und Maus ----
+    // (bis 29.10.2026 ein Regenbogen-Lichtsaum; der Rechner hat sein Farblicht, der Tisch nicht)
     if (einzeln) {
       ctx.globalAlpha = sicht;
       const kb = 0.5 * m, kh = 0.05 * m, kx = ax - 0.3 * m, ky = ay + 0.025 * m;
+      schatten(kx + kb / 2, ky + kh * 0.9, kb * 0.62, kh * 1.1, 0.5);
       ctx.globalCompositeOperation = "lighter";
-      g = ctx.createLinearGradient(kx, 0, kx + kb, 0);
-      g.addColorStop(0, farblicht(0, 0.18)); g.addColorStop(0.5, farblicht(120, 0.18)); g.addColorStop(1, farblicht(240, 0.18));
+      g = ctx.createLinearGradient(0, ky - 0.012 * m, 0, ky + kh + 0.018 * m);
+      g.addColorStop(0, "rgba(200,214,240,0.10)"); g.addColorStop(1, "rgba(200,214,240,0)");
       ctx.fillStyle = g;
       ctx.fillRect(kx - 0.03 * m, ky - 0.012 * m, kb + 0.07 * m, kh + 0.03 * m);
       ctx.globalCompositeOperation = "source-over";
@@ -2135,11 +2182,18 @@ void main() {
       for (let i = 1; i < 4; i++) { const y = ky + (kh * i) / 4; ctx.moveTo(kx + 0.01 * m, y); ctx.lineTo(kx + kb - 0.01 * m, y); }
       for (let i = 1; i < 15; i++) { const x = kx + (kb * i) / 15; ctx.moveTo(x, ky + 0.005 * m); ctx.lineTo(x + 0.01 * m, ky + kh - 0.005 * m); }
       ctx.stroke();
-      ctx.fillStyle = "#15171c";
-      rundRechteck(ax + 0.32 * m, ay + 0.02 * m, 0.07 * m, 0.05 * m, 0.025 * m); ctx.fill();
-      ctx.strokeStyle = "rgba(200,210,230,0.35)"; ctx.stroke();
-      ctx.fillStyle = "rgba(255,80,80,0.85)";
-      ctx.fillRect(ax + 0.352 * m, ay + 0.028 * m, Math.max(1, 0.006 * m), Math.max(1, 0.006 * m));
+      // die Maus: gewoelbter Ruecken mit Lichtkante, Trennlinie der Tasten, kleines Rad
+      const mx = ax + 0.355 * m, my = ay + 0.045 * m, mb = 0.034 * m, mh = 0.026 * m;
+      schatten(mx, my + mh * 0.6, mb * 1.4, mh * 0.8, 0.45);
+      g = ctx.createLinearGradient(mx - mb, my - mh, mx + mb, my + mh);
+      g.addColorStop(0, "#20232a"); g.addColorStop(1, "#0f1115");
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.ellipse(mx, my, mb, mh, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "rgba(200,210,230,0.35)"; ctx.lineWidth = 1; ctx.stroke();
+      ctx.strokeStyle = "rgba(200,210,230,0.2)";
+      ctx.beginPath(); ctx.moveTo(mx, my - mh); ctx.lineTo(mx, my - mh * 0.15); ctx.stroke();
+      ctx.fillStyle = "rgba(200,210,230,0.5)";
+      ctx.fillRect(mx - Math.max(1, 0.004 * m) / 2, my - mh * 0.75, Math.max(1, 0.004 * m), Math.max(2, 0.009 * m));
     }
 
   }
