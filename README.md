@@ -210,6 +210,10 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Menü gleitet** (Loop 2, A4/2.7, 30.10.2026): Menüfeld (schmal) und Klappfeld (breit) öffnen mit Deckkraft + 8 px
+  in 400 ms (Auslauf-Kurve) und schließen mit Einlauf-Kurve, Schatten-3; unsichtbar = `visibility: hidden`
+  (nicht fokussierbar), ohne JavaScript offen wie bisher. Kopfzeile bleibt 74 px — eine Verdichtung beim
+  Scrollen würde die klebende Universum-Bühne und die Ankerziele verschieben.
 - **Textlinks und Karten** (Loop 2, A5/2.2–2.3, 30.10.2026): ein Textlink-Muster (Unterstrich 1 px, 4 px Versatz,
   ruhige Linienfarbe, Hover Tinte; `.textlink` für neue Stellen) statt neun border-bottom-Regeln; Karten-
   Innenabstände `--pad-card` 24 px, `--pad-card-sm` 16 px, `--pad-panel` 32 px.

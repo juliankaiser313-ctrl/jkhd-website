@@ -307,7 +307,7 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
    nur noch Sprache und Darstellung. */
 
 .site-nav {
-  display: none;
+  display: flex;
   position: absolute;
   top: var(--header-h);
   left: 0;
@@ -317,10 +317,23 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
   gap: 0;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-3);
   padding: 12px 28px 16px;
+  /* gleitet auf und zu (Loop 2, A4): unsichtbar = nicht fokussierbar, nicht klickbar */
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity var(--t-feld) var(--ease-in), transform var(--t-feld) var(--ease-in), visibility 0s linear var(--t-feld);
 }
 
-.site-nav.open { display: flex; }
+.site-nav.open {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition: opacity var(--t-feld) var(--ease-out), transform var(--t-feld) var(--ease-out), visibility 0s;
+}
 
 .site-nav a {
   color: var(--muted);
@@ -1295,6 +1308,11 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
     background: none;
     border: none;
     box-shadow: none;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    transition: none;
 
     /* Der freie Platz sammelt sich links: Marke bleibt am linken Rand,
        die Leiste steht als Block unmittelbar vor dem Menueknopf. */
@@ -1305,7 +1323,7 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
   .site-nav .btn { margin: 0 0 0 6px; border-color: transparent; }
 
   .nav-prefs {
-    display: none;
+    display: flex;
     position: absolute;
     top: 100%;
     right: 48px;
@@ -1314,10 +1332,21 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
     background: var(--bg);
     border: 1px solid var(--border);
     border-top: none;
-    box-shadow: 0 22px 48px var(--shadow-soft);
+    box-shadow: var(--shadow-3);
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: opacity var(--t-feld) var(--ease-in), transform var(--t-feld) var(--ease-in), visibility 0s linear var(--t-feld);
   }
 
-  .site-nav.open .nav-prefs { display: flex; }
+  .site-nav.open .nav-prefs {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    transition: opacity var(--t-feld) var(--ease-out), transform var(--t-feld) var(--ease-out), visibility 0s;
+  }
 
   /* Seiten, die im Klappfeld liegen, sind dort Zeilen wie im Handy-Menue —
      nicht Glieder der waagerechten Leiste. Nur direkte Kinder: das EN/DE im
@@ -1348,11 +1377,11 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
    Darstellungsschalter (beide nur per Skript) sind weg (Vollpruefung 11.10.2026). */
 html:not(.js) .site-header { position: static; height: auto; }   /* die Kopfzeile waechst mit, statt ueber den Inhalt zu ragen */
 html:not(.js) .nav-wrap { height: auto; flex-wrap: wrap; padding: 12px 0; }
-html:not(.js) .site-nav { display: flex; position: static; width: 100%; order: 3; padding: 8px 0 12px; border-bottom: none; }
+html:not(.js) .site-nav { display: flex; position: static; width: 100%; order: 3; padding: 8px 0 12px; border-bottom: none; visibility: visible; opacity: 1; transform: none; pointer-events: auto; box-shadow: none; }
 html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 @media (min-width: 1141px) {
   html:not(.js) .site-nav { flex-wrap: wrap; justify-content: flex-end; width: auto; padding: 0; }
-  html:not(.js) .nav-prefs { display: flex; position: static; flex-direction: row; flex-wrap: wrap; gap: 28px; width: auto; padding: 0; border: none; box-shadow: none; }
+  html:not(.js) .nav-prefs { display: flex; position: static; flex-direction: row; flex-wrap: wrap; gap: 28px; width: auto; padding: 0; border: none; box-shadow: none; visibility: visible; opacity: 1; transform: none; pointer-events: auto; }
   html:not(.js) .nav-prefs > a { padding: 0; border-bottom: none; }
 }
 
