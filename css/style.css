@@ -55,9 +55,14 @@
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   /* drei Dauern fuer alle Uebergaenge (Loop 29.10.2026, 1.8): kurz = Farbe/Rand/Hintergrund kleiner
      Bedienelemente, mittel = Lage/Schatten von Karten und Knoepfen, lang = Einblenden beim Scrollen */
-  --t-kurz: 0.2s;
-  --t-mittel: 0.3s;
-  --t-lang: 0.8s;
+  --t-kurz: 0.16s;    /* Farbe, Rand, Druck */
+  --t-mittel: 0.24s;  /* Lage, Schatten */
+  --t-feld: 0.4s;     /* Felder und Menues, die auf- und zugehen */
+  --t-lang: 0.7s;     /* Einblenden beim Scrollen */
+  /* drei Kurven (Loop 2, A4): Standard fuer Zustandswechsel, Auslaufen fuer alles, was erscheint,
+     Einlaufen fuer alles, was verschwindet */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
 
   /* Auflagen und Schatten — hier haengt der Hell/Dunkel-Wechsel dran.
      Nichts im Rest der Datei setzt noch eine Farbe fest. */
@@ -450,6 +455,8 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
 .btn-ghost { background: transparent; color: var(--text); border-color: var(--line-strong); }
 .btn-ghost:hover { color: var(--text); border-color: var(--text); background: transparent; transform: translateY(-2px); }
 
+/* Druck (Loop 2, A4): kurz zusammenziehen, Schatten weg -- die Hand spuert die Antwort */
+.btn:not(:disabled):active { transform: translateY(0) scale(0.98); box-shadow: none; transition-duration: 0.08s; }
 .btn-sm { padding: 8px 20px; font-size: var(--fs-caption); }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .btn:disabled:hover { transform: none; box-shadow: none; }
@@ -1132,15 +1139,15 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
 @media (prefers-reduced-motion: no-preference) {
   .reveal {
     opacity: 0;
-    transform: translateY(24px);
-    transition: opacity var(--t-lang) var(--ease), transform var(--t-lang) var(--ease);
+    transform: translateY(16px);
+    transition: opacity var(--t-lang) var(--ease-out), transform var(--t-lang) var(--ease-out);
   }
   .reveal.in { opacity: 1; transform: none; }
 
   .hero-inner > * {
     opacity: 0;
-    transform: translateY(20px);
-    animation: fadeUp 0.85s var(--ease) forwards;
+    transform: translateY(16px);
+    animation: fadeUp var(--t-lang) var(--ease-out) forwards;
   }
   .hero-inner > *:nth-child(2) { animation-delay: 0.08s; }
   .hero-inner > *:nth-child(3) { animation-delay: 0.16s; }
@@ -1382,6 +1389,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   transition: transform var(--t-kurz) var(--ease), box-shadow var(--t-kurz) var(--ease);
 }
 .helper-btn:hover { transform: translateY(-2px); }
+.helper-btn:active { transform: translateY(0) scale(0.98); box-shadow: var(--shadow-1); transition-duration: 0.08s; }
 
 .helper-btn-icon { display: flex; }
 .helper-btn-icon svg { width: 17px; height: 17px; display: block; }
@@ -2123,9 +2131,10 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   transition: border-color var(--t-mittel) var(--ease), transform var(--t-mittel) var(--ease), box-shadow var(--t-mittel) var(--ease);
 }
 .kachel:hover { color: var(--text); border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--shadow-2), var(--edge); }
+.kachel:active { transform: translateY(-1px) scale(0.99); box-shadow: var(--shadow-1), var(--edge); transition-duration: 0.08s; }
 /* Die Kachel-eigene transition wuerde die des Scroll-Reveals ersetzen — dann
    blendet nichts ein. Beides zusammen: */
-.kachel.reveal, .kachel.reveal.in { transition: opacity var(--t-lang) var(--ease), transform var(--t-lang) var(--ease), border-color var(--t-mittel) var(--ease), box-shadow var(--t-mittel) var(--ease); }
+.kachel.reveal, .kachel.reveal.in { transition: opacity var(--t-lang) var(--ease-out), transform var(--t-lang) var(--ease-out), border-color var(--t-mittel) var(--ease), box-shadow var(--t-mittel) var(--ease); }
 .kachel.settled { transition: transform var(--t-mittel) var(--ease), border-color var(--t-mittel) var(--ease), box-shadow var(--t-mittel) var(--ease); }   /* nach dem Einblenden: Hover-Tempo */
 
 .kachel-label {
@@ -3292,3 +3301,8 @@ html:not(.js) .sp { display: none; }
 @media (max-width: 560px) {
   .universum.ist-aktiv { height: 2750vh; }
 }
+
+/* Druckzustand der Spiel- und Textknoepfe (Loop 2, A4) */
+.sp-knopf:not(:disabled):active, .sp-order:not([aria-disabled="true"]):active, .sp-segmente button:active,
+.sp-schutz-feld button:active, .helper-list button:active { transform: scale(0.97); transition-duration: 0.08s; }
+.partner-textknopf:active, .footer-nav a:active, .site-nav a:active { opacity: 0.7; transition-duration: 0.08s; }

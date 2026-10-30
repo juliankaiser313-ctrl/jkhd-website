@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Bewegung** (Loop 2, A4, 30.10.2026): Dauern 160/240/400/700 ms (`--t-kurz/-mittel/-feld/-lang`), drei
+  Kurven (`--ease`, `--ease-out` für Erscheinendes, `--ease-in` für Verschwindendes), Einblenden 16 px mit
+  Auslauf-Kurve, Staffelung 70 ms, Druckzustand 0,98 auf Knöpfen/Kacheln/Spiel-Knöpfen (`:active`).
 - **Flächen, Haarlinien, Schatten** (Loop 2, A3, 30.10.2026): `--line`/`--line-strong`, `--shadow-1…3` (zwei
   Lagen, je Modus), `--edge` (Lichtkante): Karten ruhen mit Haarlinie + Schatten-1, heben sich im Hover
   2 px mit Schatten-2 (vorher Tintenrahmen + 3 px); Knöpfe und Fragen-Blase ebenso. Radius bleibt 2 px.

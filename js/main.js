@@ -190,7 +190,7 @@ if (siteHeader) {
   // Raster-Elemente leicht versetzt einblenden
   document.querySelectorAll(".kacheln, .creed").forEach((grid) => {
     Array.from(grid.children).forEach((card, i) => {
-      card.style.transitionDelay = i * 90 + "ms";
+      card.style.transitionDelay = i * 70 + "ms";   // Staffelung 70 ms (Loop 2, A4)
     });
   });
 
