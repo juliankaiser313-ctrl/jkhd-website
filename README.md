@@ -210,6 +210,10 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Einblendungen** (Loop 2, A4/4.1, 30.10.2026): der Beobachter staffelt, was zusammen ins Bild kommt (70 ms je
+  Stufe, höchstens fünf), ein Element allein erscheint sofort (vorher fester Versatz aus der Rasterreihenfolge);
+  Seitenköpfe zeigen Kicker, Titel, Lead und Aktion nacheinander wie der Hero (80-ms-Stufen); Hero-Stufen
+  0,08/0,16/0,24/0,32 s.
 - **Englische Seiten gespiegelt geprüft** (Loop 2, 3.9, 30.10.2026): 14 Seiten × 4 Kombinationen, Typografie,
   Ruhe, Bildlauf (3 × 2) und Startseite ohne Befund; gefunden und behoben (DE wie EN): Formelkasten-Titel schmal
   15 statt 13 px, Witwe in zweizeiligen Kastentiteln (`text-wrap: balance`).

@@ -187,13 +187,6 @@ if (siteHeader) {
 
   targets.forEach((el) => el.classList.add("reveal"));
 
-  // Raster-Elemente leicht versetzt einblenden
-  document.querySelectorAll(".kacheln, .creed").forEach((grid) => {
-    Array.from(grid.children).forEach((card, i) => {
-      card.style.transitionDelay = i * 70 + "ms";   // Staffelung 70 ms (Loop 2, A4)
-    });
-  });
-
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduced || !("IntersectionObserver" in window)) {
     targets.forEach((el) => el.classList.add("in"));
@@ -202,12 +195,17 @@ if (siteHeader) {
 
   const io = new IntersectionObserver(
     (entries) => {
+      // Staffelung je Schub (Loop 2, A4/4.1): was zusammen ins Bild kommt, folgt sich um 70 ms (hoechstens
+      // fuenf Stufen); ein Element allein erscheint sofort. Vorher trug jede Kachel und Creed-Zelle ihren
+      // festen Versatz aus der Reihenfolge im Raster -- auch wenn sie allein hereinkam.
+      let stufe = 0;
       for (const e of entries) {
         // "Sichtbar genug" heisst: 12 % des Elements ODER 120 px davon. Lange Texte
         // (Datenschutz, Impressum: ein einziger .prose-Block von 6.000 px und mehr)
         // erreichen 12 % ihrer eigenen Hoehe in keinem Fenster -- sie blieben sonst
         // fuer immer unsichtbar (so gesehen am 11.10.2026 auf jkhd.de/datenschutz.html).
         if (e.isIntersecting && (e.intersectionRatio >= 0.12 || e.intersectionRect.height >= 120)) {
+          e.target.style.transitionDelay = Math.min(stufe++, 5) * 70 + "ms";
           e.target.classList.add("in");
           io.unobserve(e.target);
           // Die Stagger-Verzoegerung gilt nur fuers Einblenden, nicht fuer Hover

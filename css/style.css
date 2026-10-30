@@ -1256,7 +1256,21 @@ html.ist-im-all .site-header, html.ist-im-all .helper {
   .hero-inner > *:nth-child(2) { animation-delay: 0.08s; }
   .hero-inner > *:nth-child(3) { animation-delay: 0.16s; }
   .hero-inner > *:nth-child(4) { animation-delay: 0.24s; }
-  .hero-inner > *:nth-child(5) { animation-delay: 0.34s; }
+  .hero-inner > *:nth-child(5) { animation-delay: 0.32s; }
+
+  /* Seitenkoepfe wie der Hero (Loop 2, A4/4.1): der Block steht, Kicker, Titel, Lead und Aktion gleiten
+     nacheinander herein (80-ms-Stufen) -- vorher kam der Kopf als ein Block */
+  .page-head.reveal, .statement.reveal { opacity: 1; transform: none; }
+  .page-head.reveal > .container > *, .statement.reveal > * {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity var(--t-lang) var(--ease-out), transform var(--t-lang) var(--ease-out);
+  }
+  .page-head.reveal.in > .container > *, .statement.reveal.in > * { opacity: 1; transform: none; }
+  .page-head.reveal > .container > :nth-child(2), .statement.reveal > :nth-child(2) { transition-delay: 0.08s; }
+  .page-head.reveal > .container > :nth-child(3), .statement.reveal > :nth-child(3) { transition-delay: 0.16s; }
+  .page-head.reveal > .container > :nth-child(4), .statement.reveal > :nth-child(4) { transition-delay: 0.24s; }
+  .page-head.reveal > .container > :nth-child(n + 5), .statement.reveal > :nth-child(n + 5) { transition-delay: 0.32s; }
 }
 
 @keyframes fadeUp { to { opacity: 1; transform: none; } }
