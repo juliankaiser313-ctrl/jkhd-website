@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Kontakt, Partnerzugang, Partnerseite im Raster** (Loop 2, A2/A5/3.7, 30.10.2026): Formular (Feld-Gap 8,
+  Feldzeile 24, Textfeld 128, Auge-Icon 16), Kacheln 192 / 152, Schritt-Balken 24, Module und Dateien (Gaps 8,
+  Abzeichen 1/8), Krone 32 × 24 wie ihr viewBox — vorher 15 Werte neben dem Raster.
 - **Unternehmen** (Loop 2, A2/A5/A6/3.6, 30.10.2026): alle Mono-Auszeichnungen der Seite (Auf einen Blick,
   Rolle, Zwischentitel) im Label-Muster 11 / 600; Eckdaten-Kasten `--pad-panel`; Rollenzeile 8, Zwischentitel 24,
   Creed-Kostenlabel 8, Geisterziffer −16 (Raster); Profil-Lead schmal in h4-Größe statt h3.

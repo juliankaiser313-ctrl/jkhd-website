@@ -1838,8 +1838,8 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 
 /* ---------- Anfrage-Formular ---------- */
 
-.field { display: grid; gap: 7px; }
-.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.field { display: grid; gap: 8px; }   /* Raster (Loop 2, 3.7) */
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 
 .field label {
   font-family: var(--mono); font-weight: 600;
@@ -1863,7 +1863,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   font-size: var(--fs-body);
   transition: border-color var(--t-kurz) var(--ease);
 }
-.field textarea { padding: 12px 16px; resize: vertical; min-height: 130px; line-height: var(--lh-body); }
+.field textarea { padding: 12px 16px; resize: vertical; min-height: 128px; line-height: var(--lh-body); }
 .field input:focus,
 .field select:focus,
 .field textarea:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 3px var(--accent-dim); }
@@ -1893,7 +1893,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 }
 .pw-zeigen:hover { color: var(--text); }
 .pw-zeigen:focus-visible { outline: 1px solid var(--text); outline-offset: -4px; }
-.pw-zeigen svg { width: 18px; height: 18px; }
+.pw-zeigen svg { width: 16px; height: 16px; }   /* Icon-Satz 16 px (Loop 2, A8) */
 
 /* Pfeil des Auswahlfeldes in beiden Themen sichtbar halten */
 .field select {
@@ -2280,7 +2280,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 190px;                 /* war ein Quadrat — auf breiten Schirmen zu viel Leere */
+  min-height: 192px;                 /* war ein Quadrat — auf breiten Schirmen zu viel Leere */
   padding: var(--pad-card);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
@@ -2400,7 +2400,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .partner-schritt-balken { display: inline-flex; gap: 4px; }
 .partner-schritt-balken i {
   display: block;
-  width: 26px;
+  width: 24px;
   height: 2px;
   border-radius: 1px;
   background: var(--border-2);
@@ -2453,7 +2453,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .partner-daten dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 24px; margin-top: 8px; }
 
 /* VIP-Bereich: der Katalog der Zugaenge, je Modul eine kleine Karte */
-.module { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 6px; }
+.module { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
 .modul {
   display: grid;
   gap: 8px;
@@ -2469,10 +2469,10 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .modul.is-bald { border-style: dashed; }
 .modul.is-bald .modul-name { color: var(--muted); }
 .modul-hinweis { font-size: var(--fs-small); color: var(--muted); }
-.modul-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; width: 100%; }
+.modul-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; width: 100%; }
 .modul-name { font-family: var(--serif); font-size: var(--fs-h4); letter-spacing: var(--ls-h4); }
 .modul-neu {
-  padding: 1px 7px;
+  padding: 1px 8px;
   border: 1px solid var(--vip);
   border-radius: var(--r-sm);
   font-family: var(--mono);
@@ -2501,7 +2501,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 /* Begruessung und Dateien (seit 25.09.2026, gepflegt in der Partner-App).
    Der Begruessungstext behaelt seine Zeilenumbrueche. */
 .partner-gruss p { max-width: 60ch; color: var(--text); white-space: pre-line; overflow-wrap: anywhere; }
-.dateien { display: grid; gap: 12px; margin: 6px 0 0; padding: 0; list-style: none; }
+.dateien { display: grid; gap: 12px; margin: 8px 0 0; padding: 0; list-style: none; }
 .datei {
   display: grid;
   gap: 8px;
@@ -2511,9 +2511,9 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   box-shadow: var(--shadow-1), var(--edge);
   background: var(--panel);
 }
-.datei-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.datei-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .datei-typ {
-  padding: 1px 7px;
+  padding: 1px 8px;
   border: 1px solid var(--border-2);
   border-radius: var(--r-sm);
   font-family: var(--mono);
@@ -2535,7 +2535,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   border-radius: var(--r-lg);
   background: var(--vip-wash);
 }
-.vip-krone { display: block; width: 34px; height: 26px; margin-bottom: 4px; fill: var(--gold); }
+.vip-krone { display: block; width: 32px; height: 24px; margin-bottom: 4px; fill: var(--gold); }   /* = viewBox, nicht mehr gestreckt */
 .vip-krone + .kachel-label, .vip-krone + .vip-label { margin-top: 2px; }
 
 .vip-label {
@@ -2557,7 +2557,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 @media (max-width: 940px) {
   .field input, .field select, .field textarea { font-size: var(--fs-body); }   /* unter 16 px zoomt iOS beim Antippen */
   .kacheln { grid-template-columns: 1fr; gap: 16px; }
-  .kachel { min-height: 150px; }
+  .kachel { min-height: 152px; }
   .partner { grid-template-columns: 1fr; gap: 24px; }
   .partner-koerper { justify-content: flex-start; }
   .partner-daten dl { grid-template-columns: 1fr; gap: 2px 0; }
