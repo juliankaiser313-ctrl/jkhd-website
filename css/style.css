@@ -20,12 +20,26 @@
   --sans: "Manrope", "Segoe UI", system-ui, sans-serif;
   --mono: "Cascadia Code", Consolas, monospace;
 
-  /* Feste Skala — jedes Bauteil bedient sich hier, nichts wird frei gesetzt */
-  --label: 0.64rem;      /* Mono-Auszeichnung über einem Block */
-  --label-ls: 0.2em;
-  --caption: 0.68rem;    /* Bildunterschrift, Fußnote, Link in Mono */
-  --h3-sm: 1.08rem;      /* Überschrift in Karte oder Zeile */
-  --h3-lg: 1.35rem;      /* Überschrift, die einen Block trägt */
+  /* Typografie-Skala (Loop 2, A1, 30.10.2026): zehn Groessen, fliessend zwischen 375 und 1920 px.
+     Jede Schrift der Seite nimmt eine davon, nichts wird frei gesetzt (Messgeraet: design_inventar.js).
+     Ausgenommen: das Marken-Lockup, die Geisterziffern, KaTeX. */
+  --fs-display: clamp(2.75rem, 1.6rem + 4.6vw, 5rem);        /* 44-80 px: der Titel der Startseite */
+  --fs-h1: clamp(2.25rem, 1.4rem + 2.8vw, 3.75rem);           /* 36-60 px: Seitenkopf */
+  --fs-h2: clamp(1.75rem, 1.2rem + 1.8vw, 2.75rem);           /* 28-44 px: Abschnitt */
+  --fs-h3: clamp(1.5rem, 1.3rem + 0.6vw, 1.75rem);            /* 24-28 px: Titel einer Karte, eines Kastens */
+  --fs-h4: clamp(1.1875rem, 1.1rem + 0.35vw, 1.3125rem);      /* 19-21 px: Titel einer Zeile, eines Schritts */
+  --fs-lead: clamp(1.125rem, 1.05rem + 0.3vw, 1.3125rem);     /* 18-21 px: Einleitung unter einem Titel */
+  --fs-body: clamp(1rem, 0.95rem + 0.2vw, 1.0625rem);          /* 16-17 px: Fliesstext */
+  --fs-small: 0.9375rem;    /* 15 px: Text in Karten, Hinweise, Fusszeile */
+  --fs-caption: 0.8125rem;  /* 13 px: Knopf, Beschriftung, Meta, Mono-Link */
+  --fs-label: 0.6875rem;    /* 11 px: Mono-Auszeichnung ueber einem Block (gesperrt, Grossbuchstaben) */
+  --lh-display: 1.02; --lh-h1: 1.08; --lh-h2: 1.15; --lh-h3: 1.2; --lh-h4: 1.3; --lh-lead: 1.5; --lh-body: 1.6; --lh-small: 1.55;
+  --ls-display: -0.03em; --ls-h1: -0.025em; --ls-h2: -0.015em; --ls-h3: -0.01em; --ls-h4: -0.005em;
+  --label: var(--fs-label);      /* Mono-Auszeichnung über einem Block */
+  --label-ls: 0.18em;
+  --caption: var(--fs-caption);  /* Bildunterschrift, Fußnote, Link in Mono */
+  --h3-sm: var(--fs-h4);         /* Überschrift in Karte oder Zeile */
+  --h3-lg: var(--fs-h3);         /* Überschrift, die einen Block trägt */
   --pad-panel: 32px;     /* großes Panel */
   --pad-card: 26px;      /* Karte */
 
@@ -120,9 +134,11 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.7;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 img { max-width: 100%; display: block; }
@@ -141,8 +157,10 @@ a:hover { color: var(--accent); }
 .site-footer .container { max-width: 1860px; }
 
 /* Grosse Ueberschriften in der Serife, alles darunter in der Grotesk */
-h1, h2 { font-family: var(--serif); font-weight: 500; letter-spacing: 0.002em; text-wrap: balance; }
-h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
+h1, h2 { font-family: var(--serif); font-weight: 500; text-wrap: balance; }
+h1 { font-size: var(--fs-h1); line-height: var(--lh-h1); letter-spacing: var(--ls-h1); }
+h2 { font-size: var(--fs-h2); line-height: var(--lh-h2); letter-spacing: var(--ls-h2); }
+h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; letter-spacing: var(--ls-h4); text-wrap: balance; }
 
 .skip-link {
   position: absolute;
@@ -153,7 +171,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   color: var(--bg);
   padding: 12px 20px;
   border-radius: var(--r-sm);
-  font-size: 0.85rem;
+  font-size: var(--fs-caption);
   transition: top var(--t-kurz) var(--ease);
 }
 .skip-link:focus { top: 12px; }
@@ -255,7 +273,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 .site-nav a {
   color: var(--muted);
-  font-size: 0.86rem;
+  font-size: var(--fs-caption);
   font-weight: 600;
   padding: 12px 0;
   border-bottom: 1px solid var(--border);
@@ -267,7 +285,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
    Ueberfahren, mit Innenabstand und Knopfschrift. ".site-nav a" (Klasse + Element)
    schlug sonst ".btn-primary", und ".site-nav a:hover" faerbte die Schrift in die
    Knopffarbe -- der Knopf war grau und beim Ueberfahren leer (Vollpruefung 11.10.2026). */
-.site-nav a.btn { padding: 10px 20px; font-size: 0.7rem; font-weight: 800; }
+.site-nav a.btn { padding: 10px 20px; font-size: var(--fs-caption); font-weight: 800; }
 .site-nav a.btn-primary, .site-nav a.btn-primary:hover { color: var(--bg); }
 /* Der Punkt der aktuellen Seite ist hervorgehoben (js/main.js setzt aria-current) */
 .site-nav a[aria-current="page"] { color: var(--text); }
@@ -281,7 +299,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
    Schirmen im Klappfeld. Auf der Startseite liegt die Fusszeile hinter der ganzen
    Animation (am Handy rund 27 Bildschirme) -- das Impressum muss von jeder Seite
    mit einem Tipp erreichbar sein (Vollpruefung 11.10.2026). */
-.nav-legal { font-size: 0.78rem; font-weight: 500; }
+.nav-legal { font-size: var(--fs-caption); font-weight: 500; }
 .nav-nur-breit { display: none; }   /* nur im Klappfeld breiter Schirme */
 
 /* Beide als eigene Punkte: links die Beschriftung wie bei den uebrigen
@@ -295,7 +313,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .nav-lang-label,
 .nav-theme-label {
   color: var(--muted);
-  font-size: 0.86rem;
+  font-size: var(--fs-caption);
   font-weight: 600;
 }
 
@@ -307,7 +325,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text);
-  font-size: 1.15rem;
+  font-size: var(--fs-h4);
   width: 42px;
   height: 42px;
   cursor: pointer;
@@ -337,7 +355,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   border-radius: var(--r-sm);
   overflow: hidden;
   font-family: var(--mono);
-  font-size: 0.64rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.14em;
 }
 
@@ -396,7 +414,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   padding: 15px 32px;
   border-radius: var(--r-sm);
   font-family: var(--sans);
-  font-size: 0.76rem;
+  font-size: var(--fs-caption);
   font-weight: 800;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -416,7 +434,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .btn-ghost { background: transparent; color: var(--text); border-color: var(--border-2); }
 .btn-ghost:hover { color: var(--text); border-color: var(--text); background: transparent; transform: translateY(-2px); }
 
-.btn-sm { padding: 10px 20px; font-size: 0.7rem; }
+.btn-sm { padding: 10px 20px; font-size: var(--fs-caption); }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .btn:disabled:hover { transform: none; box-shadow: none; }
 
@@ -428,7 +446,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   border: 1px solid var(--border-2);
   border-radius: var(--r-sm);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -497,8 +515,9 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 .hero h1 {
   margin-top: 26px;
-  font-size: clamp(2.5rem, 6vw, 4.4rem);
-  line-height: 1.08;
+  font-size: var(--fs-display);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
   color: var(--text);
 }
 
@@ -551,9 +570,9 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   margin-bottom: 18px;
 }
 
-.section h2 { font-size: clamp(1.8rem, 3.6vw, 2.6rem); line-height: 1.15; }
+.section h2 { font-size: var(--fs-h2); line-height: var(--lh-h2); }
 /* Der Kicker ist selbst ein <p> und darf hiervon nicht erfasst werden */
-.section-head p:not(.kicker) { margin-top: 14px; color: var(--muted); font-size: 1.04rem; max-width: 58ch; }   /* 720 px = 77 Zeichen je Zeile (Loop 4.1) */
+.section-head p:not(.kicker) { margin-top: 14px; color: var(--muted); font-size: var(--fs-lead); max-width: 58ch; }   /* 720 px = 77 Zeichen je Zeile (Loop 4.1) */
 .section-head.center p:not(.kicker) { margin-left: auto; margin-right: auto; }
 
 /* ---------- Ein Label-Stil für alle Mono-Auszeichnungen ---------- */
@@ -608,8 +627,8 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .offer-num { display: block; margin-bottom: 14px; color: var(--accent); }
 
 .offer h3 { margin-bottom: 10px; }
-.offer p { color: var(--muted); font-size: 0.93rem; }
-.offer-lead { color: var(--text); font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+.offer p { color: var(--muted); font-size: var(--fs-small); }
+.offer-lead { color: var(--text); font-size: var(--fs-body); font-weight: 700; margin-bottom: 10px; }
 
 .offer-tags {
   list-style: none;
@@ -626,7 +645,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   border-radius: var(--r-sm);
   background: var(--wash-1);
   font-family: var(--mono);
-  font-size: 0.64rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.08em;
   color: var(--muted);
 }
@@ -646,7 +665,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 }
 
 .kind h3 { margin-bottom: 6px; }
-.kind p { max-width: 64ch; color: var(--muted); font-size: 0.93rem; }
+.kind p { max-width: 64ch; color: var(--muted); font-size: var(--fs-small); }
 
 .kind-spec { justify-self: end; text-align: right; padding-top: 3px; }
 .kind-spec span { display: block; color: var(--muted); }
@@ -655,7 +674,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   margin-top: 4px;
   font-family: var(--mono);
   font-style: normal;
-  font-size: 0.78rem;
+  font-size: var(--fs-caption);
   color: var(--accent);
 }
 
@@ -677,7 +696,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 .layer-num { display: block; margin-bottom: 10px; color: var(--accent); }
 .layer-head h3 { margin-bottom: 10px; }
-.layer-head p { color: var(--muted); font-size: 0.93rem; }
+.layer-head p { color: var(--muted); font-size: var(--fs-small); }
 
 .layer-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
 
@@ -697,7 +716,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   max-width: 56ch;
   padding-left: 17px;
   color: var(--muted);
-  font-size: 0.88rem;
+  font-size: var(--fs-small);
   line-height: 1.55;
 }
 .layer-col li::before {
@@ -784,20 +803,20 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   display: block;
   margin: 26px 0 7px;
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.2em;
   color: var(--accent);
 }
 
 .rail-stage h3 { margin-bottom: 7px; }
-.rail-stage p { color: var(--muted); font-size: 0.86rem; line-height: 1.6; }
+.rail-stage p { color: var(--muted); font-size: var(--fs-caption); line-height: 1.6; }
 
 .rail-foot {
   margin-top: 32px;
   padding-top: 22px;
   border-top: 1px solid var(--border);
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: var(--fs-small);
 }
 
 /* ---------- System: Sicherungen ---------- */
@@ -828,7 +847,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .guard-label { display: block; margin-bottom: 14px; color: var(--accent); }
 
 .guard h3 { margin-bottom: 10px; }
-.guard p { color: var(--muted); font-size: 0.93rem; }
+.guard p { color: var(--muted); font-size: var(--fs-small); }
 
 .guard-list {
   list-style: none;
@@ -836,7 +855,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   padding-top: 20px;
   border-top: 1px dashed var(--border);
   font-family: var(--mono);
-  font-size: 0.73rem;
+  font-size: var(--fs-caption);
   line-height: 1.9;
   color: var(--muted);
 }
@@ -858,13 +877,13 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 
 .step-num {
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-caption);
   color: var(--accent);
   padding-top: 5px;
 }
 
 .step-row h3 { margin-bottom: 8px; }
-.step-row p { color: var(--muted); font-size: 0.95rem; max-width: 58ch; }   /* 760 px = 85-104 Zeichen je Zeile (Loop 29.10.2026, 4.1) */
+.step-row p { color: var(--muted); font-size: var(--fs-small); max-width: 58ch; }   /* 760 px = 85-104 Zeichen je Zeile (Loop 29.10.2026, 4.1) */
 
 /* ---------- Prinzipien: vier Felder, keine Kacheln ---------- */
 
@@ -898,7 +917,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
    Ueberschrift unter die Ziffer -- auf dem Handy sichtbar (Loop 29.10.2026, Punkt 1.7) */
 .creed-inner h3 { position: relative; margin-bottom: 12px; padding-right: 5.2rem; }
 
-.creed-say { color: var(--text); font-size: 1rem; max-width: 44ch; }
+.creed-say { color: var(--text); font-size: var(--fs-body); max-width: 44ch; }
 
 .creed-cost {
   margin-top: 22px;
@@ -909,14 +928,14 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .creed-cell:hover .creed-cost { border-left-color: var(--accent); }
 
 .creed-cost-label { display: block; margin-bottom: 6px; color: var(--accent); }
-.creed-cost p { color: var(--muted); font-size: 0.92rem; max-width: 44ch; }
+.creed-cost p { color: var(--muted); font-size: var(--fs-small); max-width: 44ch; }
 
 .creed-close {
   margin-top: 56px;
   padding-top: 34px;
   border-top: 1px solid var(--border);
   max-width: 900px;
-  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+  font-size: var(--fs-h3);
   font-weight: 800;
   letter-spacing: -0.02em;
   text-wrap: balance;
@@ -936,7 +955,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .founder-name { font-weight: 800; }
 .founder-role { display: block; color: var(--accent); margin: 6px 0 18px; }
 
-.founder-card p { max-width: 62ch; color: var(--muted); font-size: 0.96rem; }   /* 78ch = 92 Zeichen je Zeile (Loop 4.1) */
+.founder-card p { max-width: 62ch; color: var(--muted); font-size: var(--fs-small); }   /* 78ch = 92 Zeichen je Zeile (Loop 4.1) */
 .founder-card p + p { margin-top: 12px; }
 
 .founder-subhead { display: block; color: var(--accent); margin: 20px 0 8px; }
@@ -955,7 +974,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
     linear-gradient(180deg, var(--panel), var(--panel-2));
 }
 
-.cta-panel h2 { font-size: clamp(1.7rem, 3.4vw, 2.4rem); margin-bottom: 14px; }
+.cta-panel h2 { font-size: var(--fs-h2); margin-bottom: 14px; }
 .cta-panel p { color: var(--muted); margin-bottom: 34px; }
 .cta-panel .btn { margin: 0 6px 10px; }
 
@@ -969,19 +988,19 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   padding: 16px 20px;
   border-radius: 0 var(--r-sm) var(--r-sm) 0;
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: var(--fs-small);
   margin-top: 24px;
 }
 
 .prose { max-width: 660px; }   /* 740 px = 80-81 Zeichen je Zeile (Loop 4.1) */
-.prose h2 { font-size: 1.35rem; margin: 36px 0 12px; }
+.prose h2 { font-size: var(--fs-h3); margin: 36px 0 12px; }
 .prose p { color: var(--muted); margin-bottom: 14px; }
 
 .page-head { padding: 88px 0 56px; border-bottom: 1px solid var(--border); }
-.page-head h1 { font-size: clamp(2rem, 4.4vw, 3rem); }
+.page-head h1 { font-size: var(--fs-h1); }
 /* Der Kicker ist selbst ein <p> und darf hiervon nicht erfasst werden —
    sonst steht er im Seitenkopf groesser als in den Abschnitten. */
-.page-head p:not(.kicker) { margin-top: 14px; color: var(--muted); max-width: 640px; font-size: 1.06rem; }
+.page-head p:not(.kicker) { margin-top: 14px; color: var(--muted); max-width: 640px; font-size: var(--fs-lead); }
 
 /* ---------- Bildlauf: eine Seite als Folge lebender Bilder (js/bildlauf.js) ----------
    Pruefungen (js/bilder-pruefung.js), Sicherheit (js/bilder-sicherheit.js) und
@@ -1020,10 +1039,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   opacity: 0;
 }
 .bildlauf-text.ist-weg { visibility: hidden; }
-.bildlauf-text h1 { margin: 8px 0 12px; font-size: clamp(2rem, 4.4vw, 3rem); }
-.bildlauf-text h2 { margin: 8px 0 10px; font-size: clamp(1.4rem, 2.6vw, 2rem); }
-.bildlauf-titel p:not(.kicker) { font-size: 1.06rem; }
-.bildlauf-text p:not(.kicker) { color: var(--muted); font-size: 1rem; max-width: 560px; }
+.bildlauf-text h1 { margin: 8px 0 12px; font-size: var(--fs-h1); }
+.bildlauf-text h2 { margin: 8px 0 10px; font-size: var(--fs-h2); }
+.bildlauf-titel p:not(.kicker) { font-size: var(--fs-lead); }
+.bildlauf-text p:not(.kicker) { color: var(--muted); font-size: var(--fs-body); max-width: 560px; }
 .bildlauf:not(.ist-aktiv) .bildlauf-leinwand { display: none; }
 .bildlauf:not(.ist-aktiv) .bildlauf-buehne,
 .bildlauf.ist-still .bildlauf-buehne { position: static; height: auto; }
@@ -1037,9 +1056,9 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   .bildlauf[data-bilder="sicherheit"].ist-aktiv { height: 3000vh; }
   .bildlauf[data-bilder="system"].ist-aktiv { height: 2700vh; }
   .bildlauf-text { left: 20px; right: 20px; }
-  .bildlauf-text h1 { font-size: 1.7rem; }
-  .bildlauf-text h2 { font-size: 1.3rem; }
-  .bildlauf-text p:not(.kicker) { font-size: 0.94rem; }
+  .bildlauf-text h1 { font-size: var(--fs-h1); }
+  .bildlauf-text h2 { font-size: var(--fs-h2); }
+  .bildlauf-text p:not(.kicker) { font-size: var(--fs-body); }
   .bildlauf:not(.ist-aktiv) .bildlauf-texte,
   .bildlauf.ist-still .bildlauf-texte { padding: 32px 20px 56px; }
 }
@@ -1058,12 +1077,12 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
 .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; }
 
 .footer-brand .brand { margin-bottom: 16px; }
-.footer-brand p { color: var(--muted); font-size: 0.9rem; max-width: 320px; }
+.footer-brand p { color: var(--muted); font-size: var(--fs-small); max-width: 320px; }
 
 .footer-col-title { font-weight: 600; color: var(--text); margin-bottom: 14px; }
 
 .footer-nav, .footer-contact, .footer-legal-nav { display: flex; flex-direction: column; }
-.footer-nav a, .footer-contact a, .footer-legal-nav a { color: var(--muted); font-size: 0.9rem; padding: 4px 0; }
+.footer-nav a, .footer-contact a, .footer-legal-nav a { color: var(--muted); font-size: var(--fs-small); padding: 4px 0; }
 .footer-nav a:hover, .footer-contact a:hover, .footer-legal-nav a:hover { color: var(--text); }
 
 .footer-legal {
@@ -1071,7 +1090,7 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   padding: 20px 0 0;
   max-width: 780px;
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: var(--fs-caption);
   line-height: 1.6;
 }
 
@@ -1084,10 +1103,10 @@ h3 { font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; }
   flex-wrap: wrap;
 }
 
-.footer-copy { color: var(--muted); font-size: 0.78rem; }
+.footer-copy { color: var(--muted); font-size: var(--fs-caption); }
 
 .footer-links { display: flex; gap: 24px; }
-.footer-links a { color: var(--muted); font-size: 0.78rem; }
+.footer-links a { color: var(--muted); font-size: var(--fs-caption); }
 .footer-links a:hover { color: var(--text); }
 
 /* ---------- Scroll-Reveal ---------- */
@@ -1336,7 +1355,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   border: 1px solid var(--text);
   border-radius: var(--r-sm);
   font-family: var(--sans);
-  font-size: 0.72rem;
+  font-size: var(--fs-caption);
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1394,7 +1413,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   background: none;
   border: none;
   color: var(--muted);
-  font-size: 1.4rem;
+  font-size: var(--fs-h3);
   line-height: 1;
   cursor: pointer;
   padding: 0 4px;
@@ -1417,7 +1436,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   border: none;
   color: var(--text);
   font-family: var(--sans);
-  font-size: 0.88rem;
+  font-size: var(--fs-small);
   cursor: pointer;
   transition: background var(--t-kurz) var(--ease);
 }
@@ -1434,8 +1453,8 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 }
 .helper-back:hover { color: var(--text); }
 
-.helper-q { font-weight: 700; font-size: 0.95rem; margin-bottom: 8px; }
-.helper-a { color: var(--muted); font-size: 0.88rem; }
+.helper-q { font-weight: 700; font-size: var(--fs-small); margin-bottom: 8px; }
+.helper-a { color: var(--muted); font-size: var(--fs-small); }
 
 .helper-link {
   display: inline-block;
@@ -1470,7 +1489,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  font-size: 0.88rem;
+  font-size: var(--fs-small);
   line-height: 1.6;
   /* Modelltext kann lange Adressen oder Woerter enthalten: umbrechen, statt
      das Feld auf dem Handy seitlich zu sprengen */
@@ -1504,7 +1523,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   padding: 10px 12px;
   border-left: 2px solid var(--text);
   background: var(--wash-1);
-  font-size: 0.86rem;
+  font-size: var(--fs-caption);
   color: var(--text);
   overflow-wrap: anywhere;
 }
@@ -1531,7 +1550,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   padding: 8px 10px;
   border-left: 2px solid var(--border-2);
   background: var(--wash-1);
-  font-size: 0.8rem;
+  font-size: var(--fs-caption);
   line-height: 1.5;
   color: var(--muted);
 }
@@ -1546,7 +1565,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   gap: 6px;
   cursor: pointer;
   list-style: none;
-  font-size: 0.76rem;
+  font-size: var(--fs-caption);
 }
 .helper-hinweis > summary::-webkit-details-marker { display: none; }
 .helper-hinweis > summary::after {
@@ -1593,7 +1612,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   border: 1px solid var(--text);
   border-radius: var(--r-sm);
   font-family: var(--sans);
-  font-size: 0.7rem;
+  font-size: var(--fs-caption);
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1664,7 +1683,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   border-radius: var(--r-sm);
   color: var(--text);
   font-family: var(--sans);
-  font-size: 0.95rem;
+  font-size: var(--fs-body);
   transition: border-color var(--t-kurz) var(--ease);
 }
 .field textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
@@ -1737,7 +1756,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   display: block;
   margin-bottom: 18px;
   font-family: var(--mono);
-  font-size: 0.98rem;
+  font-size: var(--fs-small);
   font-weight: 700;
   letter-spacing: 0.1em;
   line-height: 1.4;
@@ -1753,14 +1772,14 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   border-left: 2px solid var(--border-2);
   background: var(--wash-1);
   font-family: var(--mono);
-  font-size: 0.94rem;
+  font-size: var(--fs-small);
   line-height: 1.7;
   color: var(--text);
   overflow-x: auto;
 }
 .formula-eq sub { font-size: 0.75em; }
 
-.formula p { max-width: 62ch; color: var(--muted); font-size: 0.9rem; }
+.formula p { max-width: 62ch; color: var(--muted); font-size: var(--fs-small); }
 .formula-use { margin-top: 12px; }
 .formula-use b { color: var(--text); font-weight: 700; }
 
@@ -1771,9 +1790,9 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 
 @media (max-width: 560px) {
   .formula { padding: 24px 22px; }
-  .formula-eq { font-size: 0.86rem; padding: 14px 16px; }
+  .formula-eq { font-size: var(--fs-caption); padding: 14px 16px; }
   /* Auf dem Handy noch eine Spur groesser, dort wird am meisten geblinzelt */
-  .formula-label { font-size: 1.02rem; letter-spacing: 0.08em; }
+  .formula-label { font-size: var(--fs-body); letter-spacing: 0.08em; }
 }
 
 /* ---------- Formelsammlungen (quant-/monster-formelsammlung.html) ----------
@@ -1783,7 +1802,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 .page-head .kicker a { color: inherit; border-bottom: 1px solid var(--border-2); }
 .fs-stand {
   font-family: var(--mono);
-  font-size: 0.8rem !important;
+  font-size: var(--fs-caption) !important;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1798,7 +1817,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 .fs-inhalt-titel {
   margin-bottom: 12px;
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-caption);
   letter-spacing: var(--label-ls);
   text-transform: uppercase;
   color: var(--muted);
@@ -1808,7 +1827,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 .fs-inhalt a:hover { border-bottom-color: var(--text); }
 .fs-nr { margin-right: 0.55em; font-family: var(--mono); color: var(--muted); }
 .fs-kapitel { padding: 64px 0; border-top: 1px solid var(--border); }
-.section.fs-kapitel h2 { margin-bottom: 8px; font-size: clamp(1.5rem, 3vw, 2.1rem); }
+.section.fs-kapitel h2 { margin-bottom: 8px; font-size: var(--fs-h2); }
 /* Formelkasten: eine ruhige Tafel -- Haarlinie statt Tintenrahmen, der Titel als Mono-Auszeichnung
    auf eigener Zeile mit Haarlinie darunter (wie die Kicker der Seite) statt des gefuellten
    Kopfbalkens in Tinte (Loop 29.10.2026, Punkt 1.4) */
@@ -1824,7 +1843,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   border-bottom: 1px solid var(--border);
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-caption);
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1847,11 +1866,11 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 .fs-kapitel h2 .katex { font-size: 1.05em; }
 .fs-liste { margin: 12px 0 0 1.25em; list-style: disc; line-height: 1.7; max-width: 56ch; }
 .fs-liste li { margin-top: 6px; }
-.fs-unterkapitel { margin-top: 34px; font-size: 1.15rem; font-weight: 700; }
+.fs-unterkapitel { margin-top: 34px; font-size: var(--fs-h4); font-weight: 700; }
 .fs-oben {
   margin-top: 30px;
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-caption);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -1911,7 +1930,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   margin-top: auto;
   padding-top: 18px;
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-caption);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text);
@@ -1920,7 +1939,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 @media (max-width: 560px) {
   .fs-kapitel { padding: 44px 0; }
   .fs-inhalt { padding: 18px 18px; }
-  .fs-box-titel { padding: 8px 12px; font-size: 0.9rem; }
+  .fs-box-titel { padding: 8px 12px; font-size: var(--fs-small); }
   .fs-formel { padding: 4px 12px; }
   .fs-formel .katex { font-size: 0.92em; }
 }
@@ -1929,7 +1948,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 
 .about { display: grid; grid-template-columns: 1fr 380px; gap: 64px; align-items: start; }
 
-.about-text p { color: var(--muted); font-size: 0.98rem; max-width: 60ch; }   /* 72ch = 77-95 Zeichen je Zeile (Loop 4.1) */
+.about-text p { color: var(--muted); font-size: var(--fs-small); max-width: 60ch; }   /* 72ch = 77-95 Zeichen je Zeile (Loop 4.1) */
 .about-text p + p { margin-top: 16px; }
 .about-text .founder-subhead { margin-top: 32px; }
 
@@ -1937,10 +1956,11 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .about-text a, .note a { color: var(--text); border-bottom: 1px solid var(--border-2); }
 .about-text a:hover, .note a:hover { border-bottom-color: var(--text); }
 
-.about-lead {
+.about-text .about-lead,
+.about-lead {   /* vor .about-text p (Loop 2, 1.1) */
   max-width: 30em;   /* 694 px = 84 Zeichen je Zeile (Loop 4.1) */
   font-family: var(--serif);
-  font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+  font-size: var(--fs-h3);
   font-weight: 500;
   line-height: 1.45;
   color: var(--text) !important;
@@ -1970,13 +1990,13 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 
 .about-facts dt {
   font-family: var(--mono);
-  font-size: 0.62rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
   margin-bottom: 4px;
 }
-.about-facts dd { font-size: 0.92rem; color: var(--text); }
+.about-facts dd { font-size: var(--fs-small); color: var(--text); }
 
 /* ---------- Einblicke (Bilder folgen) ---------- */
 
@@ -2036,7 +2056,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .statement-lead {
   font-family: var(--serif);
   font-weight: 500;
-  font-size: clamp(1.55rem, 2.9vw, 2.35rem);
+  font-size: var(--fs-h2);
   line-height: 1.32;
   letter-spacing: -0.015em;
   text-wrap: balance;
@@ -2047,7 +2067,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   margin-top: 30px;
   max-width: 58ch;   /* 64ch = 76-83 Zeichen je Zeile (Loop 4.1) */
   color: var(--muted);
-  font-size: 1.04rem;
+  font-size: var(--fs-body);
   line-height: 1.75;
 }
 
@@ -2057,7 +2077,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .statement-aktion { margin-top: 34px; }
 
 @media (max-width: 560px) {
-  .statement-more { font-size: 1rem; }
+  .statement-more { font-size: var(--fs-body); }
 }
 
 /* ---------- Kontakt: drei Kacheln und der Partnerzugang (20.09.2026) ----------
@@ -2102,7 +2122,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
    (Partnerkasten, Partnerseite) die kleine Marke — deshalb nur mit .kachel. */
 .kachel .kachel-label {
   font-family: var(--serif);
-  font-size: clamp(1.3rem, 2vw, 1.7rem);
+  font-size: var(--fs-h3);
   line-height: 1.2;
   letter-spacing: -0.01em;
   text-transform: none;
@@ -2110,7 +2130,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 }
 
 .kachel-mail {
-  font-size: 1rem;
+  font-size: var(--fs-body);
   color: var(--muted);
   overflow-wrap: anywhere;
 }
@@ -2152,19 +2172,19 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 }
 .partner > * { position: relative; z-index: 1; }
 
-.partner h2 { margin: 10px 0 12px; font-size: clamp(1.5rem, 2.4vw, 1.9rem); letter-spacing: -0.02em; }
-.partner-kopf p { max-width: 52ch; color: var(--muted); font-size: 0.96rem; }
+.partner h2 { margin: 10px 0 12px; font-size: var(--fs-h3); letter-spacing: -0.02em; }
+.partner-kopf p { max-width: 52ch; color: var(--muted); font-size: var(--fs-small); }
 
 .partner-koerper { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 14px; }
 .partner.is-anfrage { grid-template-columns: 1fr; }          /* der Fragebogen bekommt die ganze Breite */
 .partner.is-anfrage .partner-koerper { justify-content: flex-start; }
 .partner-anfrage .partner-hinweis { max-width: none; }
 .partner-meldung { display: grid; gap: 12px; justify-items: start; }
-.partner-rohtext { width: 100%; padding: 12px 14px; border: 1px solid var(--border-2); border-radius: var(--r-sm); background: var(--panel); color: var(--text); font-family: var(--mono); font-size: 0.85rem; line-height: 1.5; }
+.partner-rohtext { width: 100%; padding: 12px 14px; border: 1px solid var(--border-2); border-radius: var(--r-sm); background: var(--panel); color: var(--text); font-family: var(--mono); font-size: var(--fs-caption); line-height: 1.5; }
 .partner-form { display: grid; gap: 16px; width: 100%; max-width: 440px; }
 .partner-form.partner-anfrage { max-width: 680px; }          /* nach .partner-form, sonst verliert es die Kaskade */
 .partner-aktionen { display: flex; flex-wrap: wrap; gap: 12px; }
-.partner-hinweis { color: var(--muted); font-size: 0.95rem; max-width: 52ch; }
+.partner-hinweis { color: var(--muted); font-size: var(--fs-small); max-width: 52ch; }
 .partner-hinweis.is-error { color: var(--text); }
 .partner-hinweis a { border-bottom: 1px solid var(--border-2); }
 .partner-meldung:empty { display: none; }
@@ -2212,7 +2232,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   background: none;
   color: var(--muted);
   font-family: var(--sans);
-  font-size: 0.88rem;
+  font-size: var(--fs-small);
   line-height: 1.5;
   cursor: pointer;
   transition: color var(--t-kurz) var(--ease), border-color var(--t-kurz) var(--ease);
@@ -2220,7 +2240,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .partner-textknopf:hover:not(:disabled),
 .partner-textknopf[aria-pressed="true"] { color: var(--text); border-color: var(--text); }
 .partner-textknopf:disabled { opacity: 0.45; cursor: not-allowed; }
-.field .partner-hinweis { font-size: 0.86rem; }
+.field .partner-hinweis { font-size: var(--fs-caption); }
 .feld-fehler:empty { display: none; }
 .field input[aria-invalid="true"] { border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
 .field input[readonly] { color: var(--muted); }
@@ -2237,7 +2257,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   border-radius: var(--r-lg);
   background: linear-gradient(180deg, var(--panel), var(--panel-2));
 }
-.partner-karte h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); letter-spacing: -0.02em; }
+.partner-karte h2 { font-size: var(--fs-h3); letter-spacing: -0.02em; }
 .partner-karte p { max-width: 52ch; color: var(--muted); overflow-wrap: anywhere; }   /* lange Adressen sprengen sonst das Handy */
 .partner-karte .btn { justify-self: start; }
 
@@ -2258,9 +2278,9 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .modul.is-frei { border-color: var(--text); }
 .modul.is-bald { border-style: dashed; }
 .modul.is-bald .modul-name { color: var(--muted); }
-.modul-hinweis { font-size: 0.88rem; color: var(--muted); }
+.modul-hinweis { font-size: var(--fs-small); color: var(--muted); }
 .modul-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; width: 100%; }
-.modul-name { font-family: var(--serif); font-size: 1.15rem; letter-spacing: -0.01em; }
+.modul-name { font-family: var(--serif); font-size: var(--fs-h4); letter-spacing: -0.01em; }
 .modul-neu {
   padding: 1px 7px;
   border: 1px solid var(--vip);
@@ -2273,8 +2293,8 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 }
 .modul-status { margin-left: auto; font-family: var(--mono); font-size: var(--caption); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
 .modul.is-frei .modul-status { color: var(--text); }
-.partner-karte .modul p { max-width: none; font-size: 0.95rem; }
-.modul-wahl { display: inline-flex; align-items: center; gap: 8px; font-size: 0.92rem; cursor: pointer; }
+.partner-karte .modul p { max-width: none; font-size: var(--fs-small); }
+.modul-wahl { display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-small); cursor: pointer; }
 .modul-wahl input { width: 16px; height: 16px; accent-color: var(--text); cursor: pointer; }
 .module .partner-aktionen { grid-column: 1 / -1; align-items: center; }
 .modul-zaehler { margin: 0; }
@@ -2311,8 +2331,8 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   text-transform: uppercase;
   color: var(--muted);
 }
-.datei-name { font-family: var(--serif); font-size: 1.1rem; letter-spacing: -0.01em; overflow-wrap: anywhere; }
-.partner-karte .datei p { max-width: none; font-size: 0.95rem; overflow-wrap: anywhere; }
+.datei-name { font-family: var(--serif); font-size: var(--fs-h4); letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.partner-karte .datei p { max-width: none; font-size: var(--fs-small); overflow-wrap: anywhere; }
 .datei-fuss { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
 .datei-info { font-family: var(--mono); font-size: var(--caption); letter-spacing: 0.06em; color: var(--muted); }
 
@@ -2335,16 +2355,16 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   text-transform: uppercase;
   color: var(--vip);
 }
-.vip p { max-width: 52ch; color: var(--muted); font-size: 0.95rem; }
+.vip p { max-width: 52ch; color: var(--muted); font-size: var(--fs-small); }
 .vip-adresse { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; margin-top: 4px; }
-.vip-wert { font-family: var(--serif); font-size: clamp(1.2rem, 2vw, 1.6rem); letter-spacing: 0.01em; overflow-wrap: anywhere; }
+.vip-wert { font-family: var(--serif); font-size: var(--fs-h3); letter-spacing: 0.01em; overflow-wrap: anywhere; }
 .vip-wert.is-verdeckt { letter-spacing: 0.14em; color: var(--muted); -webkit-user-select: none; user-select: none; }
 .vip-wert a { border-bottom: 1px solid var(--border-2); }
 .vip .btn-ghost { border-color: var(--vip); color: var(--vip); }
 .vip .btn-ghost:hover { background: var(--vip); border-color: var(--vip); color: var(--bg); }   /* im Dunkelmodus ist --vip hell, Weiss darauf unlesbar */
 
 @media (max-width: 940px) {
-  .field input, .field select, .field textarea { font-size: 1rem; }   /* unter 16 px zoomt iOS beim Antippen */
+  .field input, .field select, .field textarea { font-size: var(--fs-body); }   /* unter 16 px zoomt iOS beim Antippen */
   .kacheln { grid-template-columns: 1fr; gap: 16px; }
   .kachel { min-height: 150px; }
   .partner { grid-template-columns: 1fr; gap: 24px; }
@@ -2433,7 +2453,7 @@ html:not(.js) .sp { display: none; }
   border-bottom: 1px solid var(--border);
 }
 .sp-leiste-info { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; }
-.sp-uhr { font-family: var(--mono); font-size: 1.1rem; color: var(--text); }
+.sp-uhr { font-family: var(--mono); font-size: var(--fs-h4); color: var(--text); }
 .sp-uhr .sp-label { margin-right: 6px; }
 .sp-steuerung { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
 
@@ -2515,7 +2535,7 @@ html:not(.js) .sp { display: none; }
 .sp .sp-fuehrt[hidden] { display: block; visibility: hidden; }
 .sp-kapital {
   font-family: var(--mono);
-  font-size: clamp(1.25rem, 2.2vw, 1.7rem);
+  font-size: var(--fs-h3);
   line-height: 1.25;
   white-space: nowrap;
   color: var(--text);
@@ -2549,7 +2569,7 @@ html:not(.js) .sp { display: none; }
   color: var(--muted);
 }
 .sp-werte dd,
-.sp-ende-werte dd { font-family: var(--mono); font-size: 0.86rem; color: var(--text); overflow-wrap: anywhere; }
+.sp-ende-werte dd { font-family: var(--mono); font-size: var(--fs-caption); color: var(--text); overflow-wrap: anywhere; }
 /* Ein Wert bricht nie mitten im Wert um: Sonst wuerde die Tafel hoeher, sobald aus
    "keine" ein "Short 1.234" wird, und alles darunter rutschte (Julian, 14.10.2026) */
 .sp-werte dd { white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -2562,7 +2582,7 @@ html:not(.js) .sp { display: none; }
   align-items: center;
   min-height: 46px;
   padding: 10px 16px;
-  font-size: 0.9rem;
+  font-size: var(--fs-small);
   color: var(--muted);
   background: var(--bg);
   border: 1px dashed var(--border-2);
@@ -2578,10 +2598,10 @@ html:not(.js) .sp { display: none; }
   justify-content: space-between;
   gap: 4px 16px;
   margin-bottom: 8px;
-  font-size: 0.8rem;
+  font-size: var(--fs-caption);
   color: var(--muted);
 }
-.sp-kurse { font-family: var(--mono); font-size: 0.76rem; }
+.sp-kurse { font-family: var(--mono); font-size: var(--fs-caption); }
 .sp-kurse b { font-weight: 600; color: var(--text); }
 .sp-chart { position: relative; height: 380px; background: var(--bg); border: 1px solid var(--border); }
 /* Linien im Chart lassen sich ziehen (js/spiel.js). Scrollen bleibt auf der
@@ -2659,13 +2679,13 @@ html:not(.js) .sp { display: none; }
   flex-wrap: wrap;
   align-items: center;
   gap: 4px 8px;
-  font-size: 0.78rem;
+  font-size: var(--fs-caption);
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 .sp-order-was svg { width: 12px; height: 12px; flex-shrink: 0; }
-.sp-order-wo { font-family: var(--mono); font-size: 0.74rem; color: var(--muted); }
+.sp-order-wo { font-family: var(--mono); font-size: var(--fs-caption); color: var(--muted); }
 /* Menge, Kurs und Hoechstmenge in Kaufen/Verkaufen: Jede Zahl bekommt die Breite ihres
    laengsten Werts (Menge "1.234", Kurs "zu 2.150,99 $", "max. 2.000"), die Ziffern sind
    gleich breit und nichts bricht mitten im Wert um. So bleibt der Knopf gleich gross,
@@ -2698,7 +2718,7 @@ html:not(.js) .sp { display: none; }
 /* Die Meldung haelt so viele Zeilen frei, wie die laengste Ausfuehrungsmeldung braucht
    (gemessen 14.10.2026: zwei bei 561-1140 px, drei ab 1141 px, vier bis 560 px). Sonst
    wuechse die rechte Spalte mit jedem Satz, und der Chart daneben wuerde neu hoch. */
-.sp-meldung { min-height: calc(2 * 1.7em); min-height: 2lh; font-size: 0.88rem; color: var(--text); }
+.sp-meldung { min-height: calc(2 * 1.7em); min-height: 2lh; font-size: var(--fs-small); color: var(--text); }
 
 /* SL und TP ohne Ziehen: je Zeile Name, Preisfeld mit - / +, Setzen,
    Entfernen und darunter, was die Marke dort ergaebe */
@@ -2724,7 +2744,7 @@ html:not(.js) .sp { display: none; }
 .sp-schutz-name {
   width: 2rem;
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-caption);
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--text);
@@ -2735,7 +2755,7 @@ html:not(.js) .sp { display: none; }
   min-width: 40px;
   min-height: 40px;
   font-family: var(--mono);
-  font-size: 1rem;
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--text);
   background: var(--bg);
@@ -2755,7 +2775,7 @@ html:not(.js) .sp { display: none; }
   margin: 0 -1px;
   padding: 0 8px;
   font-family: var(--mono);
-  font-size: 1rem;
+  font-size: var(--fs-body);
   text-align: right;
   color: var(--text);
   background: var(--panel);
@@ -2768,7 +2788,7 @@ html:not(.js) .sp { display: none; }
   min-height: 1.5em;
   padding-left: calc(2rem + 8px);   /* unter dem Preisfeld, nicht unter dem Namen */
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-caption);
   color: var(--muted);
   overflow-wrap: anywhere;
 }
@@ -2789,17 +2809,17 @@ html:not(.js) .sp { display: none; }
 .sp-algo-jetzt {
   margin-bottom: 8px;
   padding: 10px 12px;
-  font-size: 0.86rem;
+  font-size: var(--fs-caption);
   color: var(--text);
   background: var(--bg);
   border: 1px solid var(--border);
 }
 .sp-algo-jetzt .sp-label { margin-right: 6px; }
-.sp-protokoll-leer { font-size: 0.84rem; color: var(--muted); }
+.sp-protokoll-leer { font-size: var(--fs-caption); color: var(--muted); }
 .sp-protokoll ol { list-style: none; }
 .sp-protokoll li {
   padding: 8px 0;
-  font-size: 0.82rem;
+  font-size: var(--fs-caption);
   line-height: 1.5;
   color: var(--text);
   border-bottom: 1px solid var(--border);
@@ -2831,10 +2851,10 @@ html:not(.js) .sp { display: none; }
 .sp-schicht .kicker { margin-bottom: 12px; }
 .sp-schicht h3 {
   font-family: var(--serif);
-  font-size: clamp(1.45rem, 3vw, 2rem);
+  font-size: var(--fs-h3);
   font-weight: 500;
   line-height: 1.2;
-  letter-spacing: 0.002em;
+  letter-spacing: var(--ls-h2);
 }
 .sp-schicht h3:focus { outline: none; }   /* bekommt den Fokus nur per Skript, beim Spielende */
 .sp-schicht ul { margin: 16px 0 0 20px; color: var(--muted); }
@@ -2877,7 +2897,7 @@ html:not(.js) .sp { display: none; }
   letter-spacing: var(--label-ls);
   color: var(--accent);
 }
-.sp-regel p { font-size: 0.95rem; line-height: 1.65; color: var(--muted); }
+.sp-regel p { font-size: var(--fs-small); line-height: 1.65; color: var(--muted); }
 .sp-regel-algo { max-width: 900px; margin-top: 48px; }
 .sp-regel-algo > p { color: var(--muted); max-width: 56ch; }   /* in 900 px liefen 106-111 Zeichen je Zeile (Loop 4.1) */
 .sp-regel-algo ul { margin: 14px 0 0 20px; color: var(--muted); max-width: 56ch; }
@@ -2914,7 +2934,7 @@ html:not(.js) .sp { display: none; }
   .sp-tafel { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 14px; padding: 8px 14px; }
   .sp-tafel-kopf { flex: 0 0 auto; margin: 0; }
   .sp-tafel > .sp-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }   /* "Kapital" nur zum Vorlesen */
-  .sp-kapital { min-width: 11ch; font-size: 1.15rem; font-variant-numeric: tabular-nums; }   /* "1.000.000 $": der Balken beginnt immer an derselben Stelle */
+  .sp-kapital { min-width: 11ch; font-size: var(--fs-h3); font-variant-numeric: tabular-nums; }   /* "1.000.000 $": der Balken beginnt immer an derselben Stelle */
   .sp-weg { flex: 1 1 120px; margin: 0; }
   .sp-weg-skala { display: none; }
   /* Immer zwei Reihen zu drei Werten -- als Fliesszeile brach die Tafel je nach Laenge
@@ -2922,8 +2942,8 @@ html:not(.js) .sp { display: none; }
   .sp-werte { flex-basis: 100%; display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 2px 20px; margin-top: 6px; padding-top: 6px; }
   .sp-werte dt { white-space: nowrap; }
   .sp-werte > div { display: flex; align-items: baseline; gap: 6px; }
-  .sp-werte dd { font-size: 0.78rem; }
-  .sp-nachricht { min-height: 38px; padding: 6px 12px; font-size: 0.84rem; }
+  .sp-werte dd { font-size: var(--fs-caption); }
+  .sp-nachricht { min-height: 38px; padding: 6px 12px; font-size: var(--fs-caption); }
   /* Chart so hoch wie die rechte Spalte; die Legende liegt unten im Chartbereich */
   .sp-chartbereich { display: flex; flex-direction: column; min-height: 0; padding-bottom: 40px; }
   .sp-chart { flex: 1 1 auto; height: auto; min-height: 300px; }
@@ -2931,7 +2951,7 @@ html:not(.js) .sp { display: none; }
      feste Hoehe zaehlte ihre eigene Hoehe (das Attribut, das js/spiel.js setzt)
      als Inhalt -- das Raster wuchs mit jedem Nachmessen weiter */
   .sp-chart canvas { position: absolute; inset: 0; }
-  .sp-legende { grid-area: chart; align-self: end; gap: 3px 12px; font-size: 0.7rem; }
+  .sp-legende { grid-area: chart; align-self: end; gap: 3px 12px; font-size: var(--fs-caption); }
   /* Handel und SL/TP kompakt in der Spalte; die Hinweise (Kontraktgroesse,
      Ziehen im Chart, Tasten im Feld) stehen in den Regeln unter dem Brett */
   .sp-handel { align-content: start; gap: 8px; }
@@ -2942,16 +2962,16 @@ html:not(.js) .sp { display: none; }
   /* Order-Knoepfe einzeilig je Zeile: Mit 10 px Rand und 6 px Abstand passt auch
      "Verkaufen 1.234 S" (157 px) in die 164 px des 186-px-Knopfs, gemessen 11.10.2026 */
   .sp-order { min-height: 50px; padding: 6px 10px; gap: 2px; }
-  .sp-order-was { gap: 4px 6px; font-size: 0.72rem; letter-spacing: 0.06em; }
-  .sp-order-wo { font-size: 0.68rem; }
-  .sp-meldung { min-height: calc(3 * 1.7em); min-height: 3lh; font-size: 0.8rem; }
+  .sp-order-was { gap: 4px 6px; font-size: var(--fs-caption); letter-spacing: 0.06em; }
+  .sp-order-wo { font-size: var(--fs-label); }
+  .sp-meldung { min-height: calc(3 * 1.7em); min-height: 3lh; font-size: var(--fs-caption); }
   .sp-schutz { gap: 4px; padding-top: 8px; }
   .sp-schutz-kopf p,
   .sp-schutz-tasten { display: none; }
   .sp-schutz-feld input { width: 5.5em; min-height: 36px; }
   .sp-schutz-feld button { min-width: 36px; min-height: 36px; }
   .sp-schutz-aktionen .sp-knopf { min-height: 36px; padding: 0 10px; }
-  .sp-schutz-info { min-height: 1.3em; font-size: 0.72rem; }
+  .sp-schutz-info { min-height: 1.3em; font-size: var(--fs-caption); }
   .sp-schutz-fuss { gap: 6px 12px; }
   .sp-schutz-fuss .sp-knopf { min-height: 36px; padding: 0 10px; }
 }
@@ -3020,12 +3040,12 @@ html:not(.js) .sp { display: none; }
   .sp-tafeln { gap: 8px; }
   .sp-tafel { padding: 10px 10px 8px; }
   .sp-tafel-kopf { margin-bottom: 6px; }
-  .sp-kapital { font-size: 1.02rem; }
+  .sp-kapital { font-size: var(--fs-h3); }
   .sp-weg { margin-top: 10px; }
   .sp-werte { grid-template-columns: minmax(0, 1fr); gap: 3px; margin-top: 8px; padding-top: 8px; }
   .sp-werte > div { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 6px; }
   .sp-werte dt { letter-spacing: 0.04em; }
-  .sp-werte dd { margin-left: auto; font-size: 0.74rem; }
+  .sp-werte dd { margin-left: auto; font-size: var(--fs-caption); }
   /* Die Hoehe ueber dem Chart bleibt gleich, sonst verschoebe sich alles
      darunter -- auch eine Linie, die gerade gezogen wird (Safari haelt die
      Seite nicht fest). Deshalb bricht kein Wert um, wenn er erscheint
@@ -3043,14 +3063,14 @@ html:not(.js) .sp { display: none; }
   .sp-fuehrt { position: absolute; top: -9px; right: 8px; padding: 1px 6px; }
   /* Das Nachrichtenband ist immer zwei Zeilen hoch: "Eingetreten: ..., Kurs
      -1,25 %" braucht schmal zwei, "Keine Nachricht angekuendigt" eine. */
-  .sp-nachricht { min-height: calc(2 * 1.7em + 18px); padding: 8px 12px; font-size: 0.84rem; }
+  .sp-nachricht { min-height: calc(2 * 1.7em + 18px); padding: 8px 12px; font-size: var(--fs-caption); }
   .sp-meldung { min-height: calc(4 * 1.7em); min-height: 4lh; }
   .sp-schutz-info { min-height: calc(2 * 1.7em); min-height: 2lh; }
   .sp-chart { height: 240px; }
   .sp-orders { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .sp-order-glatt { grid-column: 1 / -1; }
   .sp-order { min-height: 56px; padding: 8px 12px; }
-  .sp-order-was { font-size: 0.74rem; letter-spacing: 0.08em; }
+  .sp-order-was { font-size: var(--fs-caption); letter-spacing: 0.08em; }
   .sp-schicht { padding: 16px 8px; }
   .sp-schicht-inhalt { padding: 24px 18px; }
   .sp-schicht-knoepfe .btn { flex: 1 1 100%; }
@@ -3104,14 +3124,14 @@ html:not(.js) .sp { display: none; }
   min-height: 44px;
   padding: 0 12px;
   font: inherit;
-  font-size: 1rem;
+  font-size: var(--fs-body);
   color: var(--text);
   background: var(--panel);
   border: 1px solid var(--muted);
   border-radius: var(--r-sm);
 }
 .sp-besten-zeile input:focus { outline: none; border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
-.sp-besten-meldung { min-height: 1.5em; margin-top: 8px; font-size: 0.88rem; color: var(--muted); }
+.sp-besten-meldung { min-height: 1.5em; margin-top: 8px; font-size: var(--fs-small); color: var(--muted); }
 .sp-besten-form.ist-fertig .sp-besten-label,
 .sp-besten-form.ist-fertig .sp-besten-zeile { display: none; }
 .sp-besten-form.ist-fertig .sp-besten-meldung { color: var(--text); font-weight: 600; }
@@ -3155,10 +3175,10 @@ html:not(.js) .sp { display: none; }
 .sp-podest-ehrung .sp-pokal { position: absolute; top: 50%; left: 50%; width: 30px; height: 30px; transform: translate(-50%, -46%); }
 .sp-podest-platz.ist-gold .sp-podest-ehrung { width: 92px; height: 92px; }
 .sp-podest-platz.ist-gold .sp-podest-ehrung .sp-pokal { width: 36px; height: 36px; }
-.sp-podest-name { max-width: 100%; font-weight: 700; font-size: 0.92rem; line-height: 1.3; overflow-wrap: anywhere; }
+.sp-podest-name { max-width: 100%; font-weight: 700; font-size: var(--fs-small); line-height: 1.3; overflow-wrap: anywhere; }
 .sp-podest-platz.ist-leer .sp-podest-name { font-weight: 500; color: var(--muted); }
 .sp-podest-zeit { min-height: 1.3em; font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
-.sp-podest-stufe { display: flex; justify-content: center; width: 100%; padding-top: 10px; font-family: var(--mono); font-size: 1.6rem; font-weight: 700; line-height: 1; color: var(--medaille); background: var(--wash-3); border-top: 3px solid var(--medaille); }
+.sp-podest-stufe { display: flex; justify-content: center; width: 100%; padding-top: 10px; font-family: var(--mono); font-size: var(--fs-h3); font-weight: 700; line-height: 1; color: var(--medaille); background: var(--wash-3); border-top: 3px solid var(--medaille); }
 .sp-podest-platz.ist-gold .sp-podest-stufe { height: 104px; }
 .sp-podest-platz.ist-silber .sp-podest-stufe { height: 78px; }
 .sp-podest-platz.ist-bronze .sp-podest-stufe { height: 60px; }
@@ -3176,7 +3196,7 @@ html:not(.js) .sp { display: none; }
   border: 1px solid var(--border-2);
 }
 .sp-besten-statistik dt { font-family: var(--mono); font-size: var(--label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-.sp-besten-statistik dd { margin: 6px 0 0; font-family: var(--mono); font-size: 1.15rem; font-weight: 700; color: var(--text); }
+.sp-besten-statistik dd { margin: 6px 0 0; font-family: var(--mono); font-size: var(--fs-h4); font-weight: 700; color: var(--text); }
 @media (max-width: 560px) {
   .sp-besten li { grid-template-columns: 2.6em minmax(0, 1fr) auto; gap: 8px 10px; }
   .sp-podest { order: -1; }   /* am Handy ueber der Liste */
@@ -3232,8 +3252,8 @@ html:not(.js) .sp { display: none; }
   padding: 96px 24px;
 }
 .universum-ohne-js svg { width: 88px; height: 88px; fill: #f4f2ee; }
-.universum-ohne-js .universum-wort { color: #f4f2ee; font-weight: 800; font-size: 1.4rem; letter-spacing: 0.34em; transform: translateX(0.17em); }
-.universum-ohne-js .universum-spruch { color: #9d9d99; font-family: var(--mono); font-size: 0.8rem; }
+.universum-ohne-js .universum-wort { color: #f4f2ee; font-weight: 800; font-size: var(--fs-h3); letter-spacing: 0.34em; transform: translateX(0.17em); }
+.universum-ohne-js .universum-spruch { color: #9d9d99; font-family: var(--mono); font-size: var(--fs-caption); }
 .universum.ist-still { height: auto; }
 .universum.ist-still .universum-buehne { position: static; height: auto; display: flex; flex-direction: column; }
 .universum.ist-still .universum-hero {

@@ -210,6 +210,10 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Typografie-Skala** (Loop 2, A1, 30.10.2026): zehn Größen als Token im `:root` (`--fs-display` … `--fs-label`,
+  fließend 375–1920 px) mit Zeilenhöhen/Laufweiten je Rolle; alle `font-size`-Deklarationen nehmen ein Token
+  (`design_inventar.js`: vorher 67 Schrift-Kombinationen auf dem Laptop). Ausgenommen Marken-Lockup, Geisterziffern,
+  KaTeX, 16-px-Eingabefeld der Fragen-Blase.
 - **Zeilenlängen** (Loop 29.10.2026, Punkt 4.1): Fließtext höchstens ~75 Zeichen je Zeile — `.step-row p`,
   `.founder-card p`, `.about-text p`, `.about-lead`, `.statement-more`, `.prose`, `.fs-absatz`/`.fs-liste`,
   `.sp-regel-algo` mit Maximalbreiten in ch (vorher 76–111 Zeichen, `typografie_messung.js`); Witwe
