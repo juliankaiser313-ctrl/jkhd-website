@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Unternehmen** (Loop 2, A2/A5/A6/3.6, 30.10.2026): alle Mono-Auszeichnungen der Seite (Auf einen Blick,
+  Rolle, Zwischentitel) im Label-Muster 11 / 600; Eckdaten-Kasten `--pad-panel`; Rollenzeile 8, Zwischentitel 24,
+  Creed-Kostenlabel 8, Geisterziffer −16 (Raster); Profil-Lead schmal in h4-Größe statt h3.
 - **Mathematik-Seiten** (Loop 2, A2/A5/A6/3.5, 30.10.2026): schmal maskiert eine senkrechte Maske die
   Hintergrundformeln des Kopfs hinter Kicker, Titel und Lead (oben bleiben sie klar; vorher liefen sie unter dem
   Titel hindurch); Inhaltskarte 32 px, Listenpunkte 8 px, Einstiegskarten `--pad-card`, Inhalts-Titel im
