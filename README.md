@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Labels, Felder, Hinweiskästen** (Loop 2, A5/2.4–2.6, 30.10.2026): ein Label-Muster (Mono 11 px, 600, gesperrt,
+  Großbuchstaben — auch die Fußzeilen-Titel und alle dt), Felder 48 px fest mit weichem Fokusring (3 px, Tinte 6 %),
+  Hinweiskasten 16/24 aus dem Raster.
 - **Menü gleitet** (Loop 2, A4/2.7, 30.10.2026): Menüfeld (schmal) und Klappfeld (breit) öffnen mit Deckkraft + 8 px
   in 400 ms (Auslauf-Kurve) und schließen mit Einlauf-Kurve, Schatten-3; unsichtbar = `visibility: hidden`
   (nicht fokussierbar), ohne JavaScript offen wie bisher. Kopfzeile bleibt 74 px — eine Verdichtung beim

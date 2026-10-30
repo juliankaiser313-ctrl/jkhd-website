@@ -1078,7 +1078,7 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
   border: 1px solid var(--border);
   border-left: 2px solid var(--accent);
   background: var(--panel);
-  padding: 16px 20px;
+  padding: var(--pad-card-sm) var(--pad-card);
   border-radius: 0 var(--r-sm) var(--r-sm) 0;
   color: var(--muted);
   font-size: var(--fs-small);
@@ -1172,7 +1172,7 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
 .footer-brand .brand { margin-bottom: 16px; }
 .footer-brand p { color: var(--muted); font-size: var(--fs-small); max-width: 320px; }
 
-.footer-col-title { font-weight: 600; color: var(--text); margin-bottom: 16px; }
+.footer-col-title { font-family: var(--mono); font-size: var(--fs-label); font-weight: 600; letter-spacing: var(--label-ls); text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }   /* Label-Muster (Loop 2, A5/2.4) */
 
 .footer-nav, .footer-contact, .footer-legal-nav { display: flex; flex-direction: column; }
 .footer-nav a, .footer-contact a, .footer-legal-nav a { color: var(--muted); font-size: var(--fs-small); padding: 4px 0; }
@@ -1704,7 +1704,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   overflow-y: auto;
   transition: border-color var(--t-kurz) var(--ease), box-shadow var(--t-kurz) var(--ease);
 }
-.helper-eingabe:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 1px var(--text); }
+.helper-eingabe:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 3px var(--accent-dim); }
 /* Voll deckend: der Platzhalter ist die einzige sichtbare Beschriftung des
    Feldes, und --muted erreicht nur ungedaempft 4,5:1 (hell ~6,2, dunkel ~6,9).
    opacity ausdruecklich 1, weil Firefox Platzhalter sonst selbst abschwaecht. */
@@ -1777,7 +1777,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
 .field label {
-  font-family: var(--mono);
+  font-family: var(--mono); font-weight: 600;
   font-size: var(--label);
   letter-spacing: var(--label-ls);
   text-transform: uppercase;
@@ -1788,7 +1788,8 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 .field select,
 .field textarea {
   width: 100%;
-  padding: 12px 16px;
+  min-height: 48px;
+  padding: 0 16px;
   background: var(--panel);
   border: 1px solid var(--border-2);
   border-radius: var(--r-sm);
@@ -1797,10 +1798,10 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   font-size: var(--fs-body);
   transition: border-color var(--t-kurz) var(--ease);
 }
-.field textarea { resize: vertical; min-height: 130px; line-height: var(--lh-body); }
+.field textarea { padding: 12px 16px; resize: vertical; min-height: 130px; line-height: var(--lh-body); }
 .field input:focus,
 .field select:focus,
-.field textarea:focus { outline: none; border-color: var(--text); }
+.field textarea:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 3px var(--accent-dim); }
 .field input::placeholder,
 .field textarea::placeholder { color: var(--muted); opacity: 0.7; }
 
@@ -2102,6 +2103,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 
 .about-facts dt {
   font-family: var(--mono);
+  font-weight: 600;
   font-size: var(--fs-label);
   letter-spacing: var(--label-ls);
   text-transform: uppercase;
@@ -2355,6 +2357,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .partner-textknopf:disabled { opacity: 0.45; cursor: not-allowed; }
 .field .partner-hinweis { font-size: var(--fs-caption); }
 .feld-fehler:empty { display: none; }
+.feld-fehler { font-size: var(--fs-caption); color: var(--text); }
 .field input[aria-invalid="true"] { border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
 .field input[readonly] { color: var(--muted); }
 
@@ -2375,7 +2378,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .partner-karte p { max-width: 52ch; color: var(--muted); overflow-wrap: anywhere; }   /* lange Adressen sprengen sonst das Handy */
 .partner-karte .btn { justify-self: start; }
 
-.partner-daten dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 24px; margin-top: 6px; }
+.partner-daten dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 24px; margin-top: 8px; }
 
 /* VIP-Bereich: der Katalog der Zugaenge, je Modul eine kleine Karte */
 .module { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 6px; }
@@ -2415,7 +2418,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .modul-zaehler { margin: 0; }
 .partner-daten dt {
   padding-top: 3px;
-  font-family: var(--mono);
+  font-family: var(--mono); font-weight: 600;
   font-size: var(--label);
   letter-spacing: var(--label-ls);
   text-transform: uppercase;
@@ -2679,6 +2682,7 @@ html:not(.js) .sp { display: none; }
 .sp-werte dt,
 .sp-ende-werte dt {
   font-family: var(--mono);
+  font-weight: 600;
   font-size: var(--label);
   letter-spacing: var(--label-ls);
   text-transform: uppercase;
@@ -3246,7 +3250,7 @@ html:not(.js) .sp { display: none; }
   border: 1px solid var(--muted);
   border-radius: var(--r-sm);
 }
-.sp-besten-zeile input:focus { outline: none; border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
+.sp-besten-zeile input:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 3px var(--accent-dim); }
 .sp-besten-meldung { min-height: 1.5em; margin-top: 8px; font-size: var(--fs-small); color: var(--muted); }
 .sp-besten-form.ist-fertig .sp-besten-label,
 .sp-besten-form.ist-fertig .sp-besten-zeile { display: none; }
