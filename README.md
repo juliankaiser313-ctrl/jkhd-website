@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Knöpfe** (Loop 2, A5, 30.10.2026): drei Stufen (`.btn-primary`, `.btn-ghost`, `.btn-text`/`.partner-textknopf`)
+  in zwei Größen (48 / 40 px feste Höhe), Icon 16 px, Hover 2 px + Schatten, Druck 0,98; Fragen-Knopf, Senden,
+  Kopfzeile und Spiel-Knöpfe nehmen dieselben Höhen (vorher 15 Varianten, Höhen 36–54 px).
 - **Feinheiten** (Loop 2, A7, 30.10.2026): Tap-Highlight aus, `scroll-margin-top` für Ankerziele, deutsche
   Silbentrennung im Fließtext (`:lang(de)`, nicht in Titeln/Knöpfen/Code), typografische Anführungszeichen für
   `<q>`, Tabellenziffern in Zahlenspalten, Safe-Area-Ränder (Container, Fragen-Blase), Touch-Ziele ≥ 44 px bei

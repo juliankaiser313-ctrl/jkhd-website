@@ -316,7 +316,7 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
    Ueberfahren, mit Innenabstand und Knopfschrift. ".site-nav a" (Klasse + Element)
    schlug sonst ".btn-primary", und ".site-nav a:hover" faerbte die Schrift in die
    Knopffarbe -- der Knopf war grau und beim Ueberfahren leer (Vollpruefung 11.10.2026). */
-.site-nav a.btn { padding: 8px 20px; font-size: var(--fs-caption); font-weight: 800; }
+.site-nav a.btn { min-height: 40px; padding: 0 20px; font-size: var(--fs-caption); font-weight: 800; }
 .site-nav a.btn-primary, .site-nav a.btn-primary:hover { color: var(--bg); }
 /* Der Punkt der aktuellen Seite ist hervorgehoben (js/main.js setzt aria-current) */
 .site-nav a[aria-current="page"] { color: var(--text); }
@@ -437,12 +437,15 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
 
 /* ---------- Buttons / Pills ---------- */
 
+/* Knoepfe (Loop 2, A5, 30.10.2026): drei Stufen x zwei Groessen, feste Hoehen 48 / 40 px */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 16px 32px;
+  min-height: 48px;
+  padding: 0 32px;
+  line-height: 1.2;
   border-radius: var(--r-sm);
   font-family: var(--sans);
   font-size: var(--fs-caption);
@@ -467,8 +470,30 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
 
 /* Druck (Loop 2, A4): kurz zusammenziehen, Schatten weg -- die Hand spuert die Antwort */
 .btn:not(:disabled):active { transform: translateY(0) scale(0.98); box-shadow: none; transition-duration: 0.08s; }
-.btn-sm { padding: 8px 20px; font-size: var(--fs-caption); }
+.btn-sm { min-height: 40px; padding: 0 20px; }
+.btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+/* tertiaer: ein Textknopf mit Unterstrich, gleiche Schrift wie die Knoepfe, ohne Flaeche */
+.btn-text, .partner-textknopf {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--line-strong);
+  cursor: pointer;
+  transition: color var(--t-kurz) var(--ease), text-decoration-color var(--t-kurz) var(--ease);
+}
+.btn-text:hover, .partner-textknopf:hover:not(:disabled) { color: var(--text); text-decoration-color: var(--text); }
 .btn:disabled:hover { transform: none; box-shadow: none; }
 
 .pill {
@@ -1384,7 +1409,8 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 20px;
+  min-height: 48px;
+  padding: 0 20px;
   background: var(--text);
   color: var(--bg);
   border: 1px solid var(--text);
@@ -1642,7 +1668,8 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 .helper-zaehler.is-knapp { color: var(--text); font-weight: 700; }
 
 .helper-senden {
-  padding: 9px 16px;
+  min-height: 40px;
+  padding: 0 20px;
   background: var(--text);
   color: var(--bg);
   border: 1px solid var(--text);
@@ -1684,7 +1711,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   .helper-nachricht.is-antwort { margin-right: 16px; }
 
   /* Nur das Symbol: die breite Blase hat sonst Knoepfe darunter verdeckt */
-  .helper-btn { align-self: flex-end; width: 50px; height: 50px; padding: 0; gap: 0; }
+  .helper-btn { align-self: flex-end; width: 48px; height: 48px; min-height: 48px; padding: 0; gap: 0; }
   .helper-btn-text { display: none; }
   .helper-btn-icon svg { width: 21px; height: 21px; }
 }
@@ -2267,7 +2294,6 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   justify-self: start;
   padding: 0;
   border: none;
-  border-bottom: 1px solid var(--border-2);
   background: none;
   color: var(--muted);
   font-family: var(--sans);
@@ -2277,7 +2303,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   transition: color var(--t-kurz) var(--ease), border-color var(--t-kurz) var(--ease);
 }
 .partner-textknopf:hover:not(:disabled),
-.partner-textknopf[aria-pressed="true"] { color: var(--text); border-color: var(--text); }
+.partner-textknopf[aria-pressed="true"] { color: var(--text); text-decoration-color: var(--text); }
 .partner-textknopf:disabled { opacity: 0.45; cursor: not-allowed; }
 .field .partner-hinweis { font-size: var(--fs-caption); }
 .feld-fehler:empty { display: none; }
@@ -2970,7 +2996,7 @@ html:not(.js) .sp { display: none; }
   }
   .sp-leiste { padding-bottom: 8px; }
   .sp-leiste .sp-knopf,
-  .sp-leiste .sp-segmente button { min-height: 36px; }
+  .sp-leiste .sp-segmente button { min-height: 40px; }
   /* Tafeln als Streifen: Name, Kapital und Balken in einer Zeile, die Werte darunter */
   .sp-tafeln { gap: 12px; }
   .sp-tafel { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 16px; padding: 8px 16px; }
@@ -2997,7 +3023,7 @@ html:not(.js) .sp { display: none; }
   /* Handel und SL/TP kompakt in der Spalte; die Hinweise (Kontraktgroesse,
      Ziehen im Chart, Tasten im Feld) stehen in den Regeln unter dem Brett */
   .sp-handel { align-content: start; gap: 8px; }
-  .sp-menge .sp-segmente button { min-height: 36px; }
+  .sp-menge .sp-segmente button { min-height: 40px; }
   .sp-menge-einheit { display: none; }
   .sp-orders { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .sp-order-glatt { grid-column: 1 / -1; }
@@ -3010,12 +3036,12 @@ html:not(.js) .sp { display: none; }
   .sp-schutz { gap: 4px; padding-top: 8px; }
   .sp-schutz-kopf p,
   .sp-schutz-tasten { display: none; }
-  .sp-schutz-feld input { width: 5.5em; min-height: 36px; }
-  .sp-schutz-feld button { min-width: 36px; min-height: 36px; }
-  .sp-schutz-aktionen .sp-knopf { min-height: 36px; padding: 0 8px; }
+  .sp-schutz-feld input { width: 5.5em; min-height: 40px; }
+  .sp-schutz-feld button { min-width: 40px; min-height: 40px; }
+  .sp-schutz-aktionen .sp-knopf { min-height: 40px; padding: 0 8px; }
   .sp-schutz-info { min-height: 1.3em; font-size: var(--fs-caption); }
   .sp-schutz-fuss { gap: 6px 12px; }
-  .sp-schutz-fuss .sp-knopf { min-height: 36px; padding: 0 8px; }
+  .sp-schutz-fuss .sp-knopf { min-height: 40px; padding: 0 8px; }
 }
 
 /* Breit, aber niedrig (kleiner Laptop, 1366 x 768 oder 1280 x 720): die Legende und
@@ -3326,3 +3352,6 @@ html:not(.js) .sp { display: none; }
   .nav-toggle { min-width: 44px; }
   .brand { min-height: 44px; display: inline-flex; align-items: center; }
 }
+
+/* Menueknopf: die kleine Knopfgroesse (Loop 2, A5) */
+.nav-toggle { width: 40px; height: 40px; }
