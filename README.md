@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Textlinks und Karten** (Loop 2, A5/2.2–2.3, 30.10.2026): ein Textlink-Muster (Unterstrich 1 px, 4 px Versatz,
+  ruhige Linienfarbe, Hover Tinte; `.textlink` für neue Stellen) statt neun border-bottom-Regeln; Karten-
+  Innenabstände `--pad-card` 24 px, `--pad-card-sm` 16 px, `--pad-panel` 32 px.
 - **Knöpfe** (Loop 2, A5, 30.10.2026): drei Stufen (`.btn-primary`, `.btn-ghost`, `.btn-text`/`.partner-textknopf`)
   in zwei Größen (48 / 40 px feste Höhe), Icon 16 px, Hover 2 px + Schatten, Druck 0,98; Fragen-Knopf, Senden,
   Kopfzeile und Spiel-Knöpfe nehmen dieselben Höhen (vorher 15 Varianten, Höhen 36–54 px).

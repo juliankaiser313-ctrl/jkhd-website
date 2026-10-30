@@ -46,6 +46,7 @@
   --h3-lg: var(--fs-h3);         /* Überschrift, die einen Block trägt */
   --pad-panel: 32px;     /* großes Panel */
   --pad-card: 24px;      /* Karte */
+  --pad-card-sm: 16px;   /* kleine Karte (Modul, Datei) */
 
   /* Papier ist kantig, nicht abgerundet */
   --r-sm: 2px;
@@ -176,6 +177,25 @@ img { max-width: 100%; display: block; }
 
 a { color: var(--text); text-decoration: none; transition: color var(--t-kurz) var(--ease), opacity var(--t-kurz) var(--ease), border-color var(--t-kurz) var(--ease); }
 a:hover { color: var(--accent); }
+/* Textlinks (Loop 2, A5/2.2, 30.10.2026): EIN Muster -- Unterstrich 1 px mit 4 px Versatz in ruhiger
+   Linienfarbe, im Hover Tinte; vorher neun Regeln mit border-bottom unter der ganzen Zeile */
+.prose a, .about-text a, .note a, .partner-hinweis a, .helper-foot a, .helper-fehler a, .vip-wert a,
+.page-head .kicker a, .fs-absatz a, .sp-regel p a, .footer-legal a, .textlink {
+  color: var(--text);
+  border-bottom: none;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--line-strong);
+  transition: color var(--t-kurz) var(--ease), text-decoration-color var(--t-kurz) var(--ease);
+}
+.prose a:hover, .about-text a:hover, .note a:hover, .partner-hinweis a:hover, .helper-foot a:hover, .helper-fehler a:hover,
+.vip-wert a:hover, .page-head .kicker a:hover, .fs-absatz a:hover, .sp-regel p a:hover, .footer-legal a:hover, .textlink:hover {
+  color: var(--text);
+  text-decoration-color: var(--text);
+}
+.fs-inhalt a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; text-decoration-color: transparent; transition: text-decoration-color var(--t-kurz) var(--ease); }
+.fs-inhalt a:hover { text-decoration-color: var(--text); }
 
 ::selection { background: var(--accent); color: var(--bg); }
 
@@ -1593,9 +1613,8 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   font-family: var(--mono);
   font-size: var(--caption);
   white-space: nowrap;
-  border-bottom: 1px solid var(--border-2);
+  
 }
-.helper-fehler a:hover { border-bottom-color: var(--text); }
 
 /* Eingabe: bleibt unten stehen, auch wenn der Verlauf darueber rollt */
 .helper-form {
@@ -1697,8 +1716,8 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   font-size: var(--caption);
   color: var(--muted);
 }
-.helper-foot a { color: var(--text); border-bottom: 1px solid var(--border-2); }
-.helper-foot a:hover { border-bottom-color: var(--text); }
+.helper-foot a { color: var(--text); }
+
 
 @media (max-width: 560px) {
   .helper { right: 16px; bottom: 16px; left: 16px; align-items: stretch; }
@@ -1862,7 +1881,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
    Gebaut mit JKHD-Formeln/bauen.js; Formeln mit KaTeX vorgerendert (css/katex/, selbst gehostet,
    kein JavaScript). Schwarz-weiss wie die ganze Seite: Kastenkopf in Tinte, im Dunkeln umgekehrt. */
 .fs-spalte { max-width: 880px; }
-.page-head .kicker a { color: inherit; border-bottom: 1px solid var(--border-2); }
+.page-head .kicker a { color: inherit; }
 .fs-stand {
   font-family: var(--mono);
   font-size: var(--fs-caption) !important;
@@ -1872,7 +1891,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 .fs-vorspann { padding: 56px 0 8px; }
 .fs-inhalt {
   margin-top: 28px;
-  padding: 24px 24px;
+  padding: var(--pad-card);
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   box-shadow: var(--shadow-1), var(--edge);
@@ -1887,8 +1906,8 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   color: var(--muted);
 }
 .fs-inhalt ol { list-style: none; display: grid; gap: 8px; }
-.fs-inhalt a { color: var(--text); border-bottom: 1px solid transparent; }
-.fs-inhalt a:hover { border-bottom-color: var(--text); }
+.fs-inhalt a { color: var(--text); }
+
 .fs-nr { margin-right: 0.55em; font-family: var(--mono); color: var(--muted); }
 .fs-kapitel { padding: 64px 0; border-top: 1px solid var(--border); }
 .section.fs-kapitel h2 { margin-bottom: 8px; font-size: var(--fs-h2); }
@@ -2017,8 +2036,8 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .about-text .founder-subhead { margin-top: 32px; }
 
 /* Verweise im Fliesstext (Unternehmen, 26.09.2026): wie im Band oben mit feiner Linie */
-.about-text a, .note a { color: var(--text); border-bottom: 1px solid var(--border-2); }
-.about-text a:hover, .note a:hover { border-bottom-color: var(--text); }
+.about-text a, .note a { color: var(--text); }
+
 
 .about-text .about-lead,
 .about-lead {   /* vor .about-text p (Loop 2, 1.1) */
@@ -2159,7 +2178,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   flex-direction: column;
   justify-content: space-between;
   min-height: 190px;                 /* war ein Quadrat — auf breiten Schirmen zu viel Leere */
-  padding: 24px 28px;
+  padding: var(--pad-card);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-1), var(--edge);
@@ -2252,7 +2271,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .partner-aktionen { display: flex; flex-wrap: wrap; gap: 12px; }
 .partner-hinweis { color: var(--muted); font-size: var(--fs-small); max-width: 52ch; }
 .partner-hinweis.is-error { color: var(--text); }
-.partner-hinweis a { border-bottom: 1px solid var(--border-2); }
+
 .partner-meldung:empty { display: none; }
 .partner-hinweis:focus { outline: none; }
 /* Die Ueberschrift der Karte "Nicht angemeldet" bekommt den Fokus nur per Skript (damit
@@ -2336,7 +2355,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   gap: 8px;
   align-content: start;
   justify-items: start;
-  padding: 16px 20px;
+  padding: var(--pad-card-sm) var(--pad-card);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-1), var(--edge);
@@ -2382,7 +2401,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .datei {
   display: grid;
   gap: 8px;
-  padding: 16px 20px;
+  padding: var(--pad-card-sm) var(--pad-card);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-1), var(--edge);
@@ -2407,7 +2426,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .vip {
   display: grid;
   gap: 8px;
-  padding: 24px 28px;
+  padding: var(--pad-card);
   border: 2px solid var(--vip);
   border-radius: var(--r-lg);
   background: var(--vip-wash);
@@ -2427,7 +2446,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .vip-adresse { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 20px; margin-top: 4px; }
 .vip-wert { font-family: var(--serif); font-size: var(--fs-h3); letter-spacing: 0; overflow-wrap: anywhere; }
 .vip-wert.is-verdeckt { letter-spacing: var(--label-ls); color: var(--muted); -webkit-user-select: none; user-select: none; }
-.vip-wert a { border-bottom: 1px solid var(--border-2); }
+
 .vip .btn-ghost { border-color: var(--vip); color: var(--vip); }
 .vip .btn-ghost:hover { background: var(--vip); border-color: var(--vip); color: var(--bg); }   /* im Dunkelmodus ist --vip hell, Weiss darauf unlesbar */
 
