@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Flächen, Haarlinien, Schatten** (Loop 2, A3, 30.10.2026): `--line`/`--line-strong`, `--shadow-1…3` (zwei
+  Lagen, je Modus), `--edge` (Lichtkante): Karten ruhen mit Haarlinie + Schatten-1, heben sich im Hover
+  2 px mit Schatten-2 (vorher Tintenrahmen + 3 px); Knöpfe und Fragen-Blase ebenso. Radius bleibt 2 px.
 - **Raster und Zeilenhöhen** (Loop 2, A1/A2, 30.10.2026): Abstands-Token `--s-1` … `--s-11` (4–160 px), alle
   padding/margin/gap-Werte auf das 8-px-Raster (21 Fremdwerte wie 10, 14, 18, 22, 26, 30, 44, 54, 90, 110 px
   gerundet), Zeilenhöhen und Laufweiten aus den Token der Skala (`--lh-*`, `--ls-*`, `--ls-wide`).

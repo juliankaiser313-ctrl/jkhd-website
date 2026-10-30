@@ -73,6 +73,14 @@
   --shadow-faint: rgba(16, 16, 18, 0.05);
   --shadow-soft: rgba(16, 16, 18, 0.1);
   --shadow-strong: rgba(16, 16, 18, 0.18);
+  /* Flaechen, Linien, Schatten (Loop 2, A3, 30.10.2026): eine ruhige Haarlinie fuer jede Karte, eine
+     starke nur fuer Felder und Hover; Schatten in zwei Lagen (nah + weit); eine Lichtkante oben. */
+  --line: var(--border);
+  --line-strong: var(--border-2);
+  --shadow-1: 0 1px 2px rgba(16, 16, 18, 0.04), 0 6px 20px rgba(16, 16, 18, 0.06);
+  --shadow-2: 0 2px 4px rgba(16, 16, 18, 0.06), 0 16px 40px rgba(16, 16, 18, 0.12);
+  --shadow-3: 0 4px 10px rgba(16, 16, 18, 0.08), 0 28px 70px rgba(16, 16, 18, 0.2);
+  --edge: inset 0 1px 0 rgba(255, 255, 255, 0.7);
   --rule-1: rgba(16, 16, 18, 0.55);    /* Linienverlauf, Anfang */
   --rule-2: rgba(16, 16, 18, 0.28);
   --rule-3: rgba(16, 16, 18, 0.1);
@@ -111,6 +119,10 @@
 
   --header-bg: rgba(11, 11, 12, 0.72);
   --header-bg-scrolled: rgba(11, 11, 12, 0.9);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.5), 0 20px 48px rgba(0, 0, 0, 0.5);
+  --shadow-3: 0 4px 12px rgba(0, 0, 0, 0.55), 0 32px 80px rgba(0, 0, 0, 0.6);
+  --edge: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --wash-1: rgba(244, 242, 238, 0.03);
   --wash-2: rgba(244, 242, 238, 0.055);
   --wash-3: rgba(244, 242, 238, 0.08);
@@ -432,10 +444,10 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
 .btn-primary:hover {
   color: var(--bg);
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px var(--shadow-strong);
+  box-shadow: var(--shadow-2);
 }
 
-.btn-ghost { background: transparent; color: var(--text); border-color: var(--border-2); }
+.btn-ghost { background: transparent; color: var(--text); border-color: var(--line-strong); }
 .btn-ghost:hover { color: var(--text); border-color: var(--text); background: transparent; transform: translateY(-2px); }
 
 .btn-sm { padding: 8px 20px; font-size: var(--fs-caption); }
@@ -953,6 +965,7 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
   background: linear-gradient(180deg, var(--panel), var(--panel-2));
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1), var(--edge);
   padding: var(--pad-panel);
 }
 
@@ -970,8 +983,9 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
   position: relative;
   overflow: hidden;
   text-align: center;
-  border: 1px solid var(--border-2);
+  border: 1px solid var(--line);
   border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1), var(--edge);
   padding: 96px 32px;
   background:
     radial-gradient(ellipse 55% 70% at 50% 0%, var(--page-glow), transparent 70%),
@@ -1364,7 +1378,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   letter-spacing: var(--label-ls);
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 10px 30px var(--shadow-strong);
+  box-shadow: var(--shadow-2);
   transition: transform var(--t-kurz) var(--ease), box-shadow var(--t-kurz) var(--ease);
 }
 .helper-btn:hover { transform: translateY(-2px); }
@@ -1389,7 +1403,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   background: var(--panel);
   border: 1px solid var(--border-2);
   border-radius: var(--r-sm);
-  box-shadow: 0 24px 70px var(--shadow-soft);
+  box-shadow: var(--shadow-3), var(--edge);
   overflow: hidden;
 }
 .helper-panel[hidden] { display: none; }
@@ -1814,8 +1828,9 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 .fs-inhalt {
   margin-top: 28px;
   padding: 24px 24px;
-  border: 1px solid var(--border-2);
+  border: 1px solid var(--line);
   border-radius: var(--r-sm);
+  box-shadow: var(--shadow-1), var(--edge);
   background: var(--panel);
 }
 .fs-inhalt-titel {
@@ -2100,17 +2115,18 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   justify-content: space-between;
   min-height: 190px;                 /* war ein Quadrat — auf breiten Schirmen zu viel Leere */
   padding: 24px 28px;
-  border: 1px solid var(--border-2);
+  border: 1px solid var(--line);
   border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1), var(--edge);
   background: linear-gradient(180deg, var(--panel), var(--panel-2));
   color: var(--text);
-  transition: border-color var(--t-mittel) var(--ease), transform var(--t-mittel) var(--ease), background var(--t-mittel) var(--ease);
+  transition: border-color var(--t-mittel) var(--ease), transform var(--t-mittel) var(--ease), box-shadow var(--t-mittel) var(--ease);
 }
-.kachel:hover { color: var(--text); border-color: var(--text); transform: translateY(-3px); background: var(--wash-2); }
+.kachel:hover { color: var(--text); border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--shadow-2), var(--edge); }
 /* Die Kachel-eigene transition wuerde die des Scroll-Reveals ersetzen — dann
    blendet nichts ein. Beides zusammen: */
-.kachel.reveal, .kachel.reveal.in { transition: opacity var(--t-lang) var(--ease), transform var(--t-lang) var(--ease), border-color var(--t-mittel) var(--ease), background var(--t-mittel) var(--ease); }
-.kachel.settled { transition: transform var(--t-mittel) var(--ease), border-color var(--t-mittel) var(--ease), background var(--t-mittel) var(--ease); }   /* nach dem Einblenden: Hover-Tempo */
+.kachel.reveal, .kachel.reveal.in { transition: opacity var(--t-lang) var(--ease), transform var(--t-lang) var(--ease), border-color var(--t-mittel) var(--ease), box-shadow var(--t-mittel) var(--ease); }
+.kachel.settled { transition: transform var(--t-mittel) var(--ease), border-color var(--t-mittel) var(--ease), box-shadow var(--t-mittel) var(--ease); }   /* nach dem Einblenden: Hover-Tempo */
 
 .kachel-label {
   display: block;
@@ -2257,8 +2273,9 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   display: grid;
   gap: 16px;
   padding: var(--pad-panel);
-  border: 1px solid var(--border-2);
+  border: 1px solid var(--line);
   border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1), var(--edge);
   background: linear-gradient(180deg, var(--panel), var(--panel-2));
 }
 .partner-karte h2 { font-size: var(--fs-h3); letter-spacing: var(--ls-h3); }
@@ -2275,8 +2292,9 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   align-content: start;
   justify-items: start;
   padding: 16px 20px;
-  border: 1px solid var(--border-2);
+  border: 1px solid var(--line);
   border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1), var(--edge);
   background: var(--panel);
 }
 .modul.is-frei { border-color: var(--text); }
@@ -2320,8 +2338,9 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   display: grid;
   gap: 8px;
   padding: 16px 20px;
-  border: 1px solid var(--border-2);
+  border: 1px solid var(--line);
   border-radius: var(--r-lg);
+  box-shadow: var(--shadow-1), var(--edge);
   background: var(--panel);
 }
 .datei-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
