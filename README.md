@@ -210,6 +210,10 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Hover und Druck je Bauteil** (Loop 2, A4/4.2, 30.10.2026; Messgerät `hover_messung.js`): Druck überall
+  Skalierung 0,98 in 0,08 s (Knöpfe, Kacheln, Spielknöpfe, Menüknopf — vorher 0,99 / 0,97 / ohne), Links überall
+  Deckkraft 0,7 in 0,08 s (vorher nur Fußzeilen-Navigation), Kopfzeilen-Knopf ohne Link-Deckkraft, Menüknopf
+  mit Hover-Fläche.
 - **Einblendungen** (Loop 2, A4/4.1, 30.10.2026): der Beobachter staffelt, was zusammen ins Bild kommt (70 ms je
   Stufe, höchstens fünf), ein Element allein erscheint sofort (vorher fester Versatz aus der Rasterreihenfolge);
   Seitenköpfe zeigen Kicker, Titel, Lead und Aktion nacheinander wie der Hero (80-ms-Stufen); Hero-Stufen

@@ -413,7 +413,7 @@ html.ist-im-all .site-header, html.ist-im-all .helper {
   width: 42px;
   height: 42px;
   cursor: pointer;
-  transition: color var(--t-mittel) var(--ease), border-color var(--t-mittel) var(--ease);
+  transition: color var(--t-mittel) var(--ease), border-color var(--t-mittel) var(--ease), background var(--t-kurz) var(--ease), transform var(--t-kurz) var(--ease);
 }
 
 /* ---------- Sprache und Darstellung ----------
@@ -2311,7 +2311,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   transition: border-color var(--t-mittel) var(--ease), transform var(--t-mittel) var(--ease), box-shadow var(--t-mittel) var(--ease);
 }
 .kachel:hover { color: var(--text); border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--shadow-2), var(--edge); }
-.kachel:active { transform: translateY(-1px) scale(0.99); box-shadow: var(--shadow-1), var(--edge); transition-duration: 0.08s; }
+.kachel:active, .kachel.reveal.in:active, .kachel.settled:active { transform: translateY(-1px) scale(0.98); box-shadow: var(--shadow-1), var(--edge); transition-duration: 0.08s; }   /* Druck wie jeder Knopf; die .settled-Regel darf das nicht ueberschreiben (Loop 2, 4.2) */
 /* Die Kachel-eigene transition wuerde die des Scroll-Reveals ersetzen — dann
    blendet nichts ein. Beides zusammen: */
 .kachel.reveal, .kachel.reveal.in { transition: opacity var(--t-lang) var(--ease-out), transform var(--t-lang) var(--ease-out), border-color var(--t-mittel) var(--ease), box-shadow var(--t-mittel) var(--ease); }
@@ -3485,8 +3485,14 @@ html:not(.js) .sp { display: none; }
 
 /* Druckzustand der Spiel- und Textknoepfe (Loop 2, A4) */
 .sp-knopf:not(:disabled):active, .sp-order:not([aria-disabled="true"]):active, .sp-segmente button:active,
-.sp-schutz-feld button:active, .helper-list button:active { transform: scale(0.97); transition-duration: 0.08s; }
-.partner-textknopf:active, .footer-nav a:active, .site-nav a:active { opacity: 0.7; transition-duration: 0.08s; }
+.sp-schutz-feld button:active, .helper-list button:active { transform: scale(0.98); transition-duration: 0.08s; }
+/* Links druecken ueberall gleich: Deckkraft 0,7 in 0,08 s -- der Knopf in der Kopfzeile ist ein Knopf (Loop 2, 4.2) */
+.partner-textknopf:active, .footer-nav a:active, .footer-contact a:active, .footer-legal-nav a:active, .site-nav a:not(.btn):active,
+.prose a:active, .about-text a:active, .note a:active, .textlink:active, .step-row p a:active, .fs-inhalt a:active, .fs-oben a:active,
+.fs-absatz a:active, .helper-foot a:active, .page-head .kicker a:active { opacity: 0.7; transition-duration: 0.08s; }
+/* Menueknopf: Hover-Flaeche und Druck wie jeder Knopf */
+.nav-toggle:hover { background: var(--wash-2); }
+.nav-toggle:active { transform: scale(0.98); transition-duration: 0.08s; }
 
 /* Touch-Ziele (Loop 2, A7): auf Geraeten ohne feinen Zeiger mindestens 44 px hoch */
 @media (pointer: coarse) {
