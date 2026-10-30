@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Impressum, Datenschutz, 404** (Loop 2, A2/A5/A6/3.8, 30.10.2026): Prose-h2 mit 48 px Luft (die erste ohne),
+  404-Hero und -Fußzeile über Klassen statt Inline-Stilen (`.hero-404`, `.ohne-linie`), Marke `.pill` als 32-px-
+  Element mit Gap 8.
 - **Kontakt, Partnerzugang, Partnerseite im Raster** (Loop 2, A2/A5/3.7, 30.10.2026): Formular (Feld-Gap 8,
   Feldzeile 24, Textfeld 128, Auge-Icon 16), Kacheln 192 / 152, Schritt-Balken 24, Module und Dateien (Gaps 8,
   Abzeichen 1/8), Krone 32 × 24 wie ihr viewBox — vorher 15 Werte neben dem Raster.

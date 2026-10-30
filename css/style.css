@@ -553,8 +553,9 @@ html.ist-im-all .site-header, html.ist-im-all .helper {
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 7px 16px;
+  gap: 8px;
+  min-height: 32px;   /* Marke als 32-px-Element (Loop 2, 3.8) */
+  padding: 0 16px;
   border: 1px solid var(--border-2);
   border-radius: var(--r-sm);
   font-family: var(--mono);
@@ -1115,10 +1116,15 @@ html.ist-im-all .site-header, html.ist-im-all .helper {
 }
 
 .prose { max-width: 660px; }   /* 740 px = 80-81 Zeichen je Zeile (Loop 4.1) */
-.prose h2 { font-size: var(--fs-h3); margin: 40px 0 12px; }
+.prose h2 { font-size: var(--fs-h3); margin: var(--s-7) 0 12px; }   /* 48 px Luft vor jedem Abschnitt (Loop 2, 3.8) */
+.prose h2:first-child { margin-top: 0; }
 .prose p { color: var(--muted); margin-bottom: 16px; }
 
 .page-head { padding: 96px 0 56px; border-bottom: 1px solid var(--border); }
+/* 404 (Loop 2, 3.8): Hero fuellt vier Fuenftel des Schirms, die knappe Fusszeile ohne Haarlinien -- vorher
+   als Inline-Stile in 404.html */
+.hero-404 { min-height: calc(80vh - var(--header-h)); display: flex; align-items: center; }
+.footer-legal.ohne-linie, .footer-bottom.ohne-linie { border-top: none; }
 .page-head h1 { font-size: var(--fs-h1); }
 /* Der Kicker ist selbst ein <p> und darf hiervon nicht erfasst werden —
    sonst steht er im Seitenkopf groesser als in den Abschnitten. */
