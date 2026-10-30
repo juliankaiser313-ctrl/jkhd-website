@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Raster und Zeilenhöhen** (Loop 2, A1/A2, 30.10.2026): Abstands-Token `--s-1` … `--s-11` (4–160 px), alle
+  padding/margin/gap-Werte auf das 8-px-Raster (21 Fremdwerte wie 10, 14, 18, 22, 26, 30, 44, 54, 90, 110 px
+  gerundet), Zeilenhöhen und Laufweiten aus den Token der Skala (`--lh-*`, `--ls-*`, `--ls-wide`).
 - **Typografie-Skala** (Loop 2, A1, 30.10.2026): zehn Größen als Token im `:root` (`--fs-display` … `--fs-label`,
   fließend 375–1920 px) mit Zeilenhöhen/Laufweiten je Rolle; alle `font-size`-Deklarationen nehmen ein Token
   (`design_inventar.js`: vorher 67 Schrift-Kombinationen auf dem Laptop). Ausgenommen Marken-Lockup, Geisterziffern,
