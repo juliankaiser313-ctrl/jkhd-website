@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Was wir machen** (Loop 2, A6/3.2, 30.10.2026): Seitentitel (`.statement-lead`) auf h1-Stufe wie jeder
+  Seitenkopf (vorher h2-Stufe, so groß wie die Abschnitte darunter), Kicker 16 px; auf dem Handy steht die
+  Schritt-Ziffer über dem Titel und der Text nimmt die volle Breite (vorher 235 px neben der 76-px-Spalte).
 - **Startseite: Kopfzeile über dem All** (Loop 2, A6/3.1, 30.10.2026): sobald der Vorspann den Grund dunkel
   gemacht hat (`v ≥ 0,3`), setzt `js/universum.js` `html.ist-im-all`; Kopfzeile und Fragen-Blase tragen dann die
   Nacht-Töne (Tokens am Element, weich überblendet) statt als Papierbalken über dem Universum zu stehen;
