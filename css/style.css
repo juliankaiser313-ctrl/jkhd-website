@@ -2033,6 +2033,7 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   letter-spacing: var(--label-ls);
   text-transform: uppercase;
   line-height: var(--lh-small);
+  text-wrap: balance;   /* keine Witwe in zweizeiligen Titeln (Loop 2, 3.9) */
 }
 .fs-box-titel .katex { text-transform: none; letter-spacing: 0; }   /* Mathe im Titel bleibt Mathe */
 .fs-formel { padding: 8px 16px; overflow-x: auto; overflow-y: hidden; color: var(--text); }
@@ -2127,7 +2128,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 @media (max-width: 560px) {
   .fs-kapitel { padding: 48px 0; }
   .fs-inhalt { padding: 16px 16px; }
-  .fs-box-titel { padding: 8px 12px; font-size: var(--fs-small); }
+  .fs-box-titel { padding: 8px 12px; }   /* Groesse bleibt die Caption (Loop 2, 3.9) */
   .fs-formel { padding: 4px 12px; }
   .fs-formel .katex { font-size: 0.92em; }
 }

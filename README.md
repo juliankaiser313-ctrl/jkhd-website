@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Englische Seiten gespiegelt geprüft** (Loop 2, 3.9, 30.10.2026): 14 Seiten × 4 Kombinationen, Typografie,
+  Ruhe, Bildlauf (3 × 2) und Startseite ohne Befund; gefunden und behoben (DE wie EN): Formelkasten-Titel schmal
+  15 statt 13 px, Witwe in zweizeiligen Kastentiteln (`text-wrap: balance`).
 - **Impressum, Datenschutz, 404** (Loop 2, A2/A5/A6/3.8, 30.10.2026): Prose-h2 mit 48 px Luft (die erste ohne),
   404-Hero und -Fußzeile über Klassen statt Inline-Stilen (`.hero-404`, `.ohne-linie`), Marke `.pill` als 32-px-
   Element mit Gap 8.
