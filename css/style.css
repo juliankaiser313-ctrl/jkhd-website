@@ -149,7 +149,17 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 16px); }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 16px); -webkit-text-size-adjust: 100%; }
+/* Feinheiten (Loop 2, A7, 30.10.2026): kein blaues Tipp-Aufblitzen auf iOS/Android, Ankerziele landen
+   unter der Kopfzeile, Silbentrennung im deutschen Fliesstext (nur dort), typografische
+   Anfuehrungszeichen fuer <q>, Ziffern in Zahlenspalten gleich breit. */
+* { -webkit-tap-highlight-color: transparent; }
+[id] { scroll-margin-top: calc(var(--header-h) + 16px); }
+:lang(de) p, :lang(de) li, :lang(de) dd { hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 8 4 4; }
+:lang(de) q { quotes: "\201E" "\201C" "\201A" "\2018"; }
+:lang(en) q { quotes: "\201C" "\201D" "\2018" "\2019"; }
+h1, h2, h3, .kicker, .btn, .kachel-label, .brand, code, kbd, .katex { hyphens: manual; -webkit-hyphens: manual; }
+table, .partner-daten dd, .sp-werte dd, .sp-ende-werte dd { font-variant-numeric: tabular-nums; }
 
 body {
   background: var(--bg);
@@ -172,7 +182,7 @@ a:hover { color: var(--accent); }
 /* Inhalt breiter als zuvor (war 1200), damit auf grossen Bildschirmen nicht
    die Haelfte leer bleibt. Kopfzeile und Fussbereich laufen
    noch weiter — das fuellt die Seite, ohne die Lesbarkeit zu opfern. */
-.container { width: 100%; max-width: 1680px; margin: 0 auto; padding: 0 48px; }
+.container { width: 100%; max-width: 1680px; margin: 0 auto; padding: 0 max(48px, env(safe-area-inset-left)) 0 max(48px, env(safe-area-inset-right)); }
 
 .site-header .container,
 .site-footer .container { max-width: 1860px; }
@@ -1353,8 +1363,8 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
 
 .helper {
   position: fixed;
-  right: 24px;
-  bottom: 24px;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
   z-index: 200;
   display: flex;
   /* Der Behaelter ist breiter als der Knopf: Solange das Feld offen ist,
@@ -3306,3 +3316,13 @@ html:not(.js) .sp { display: none; }
 .sp-knopf:not(:disabled):active, .sp-order:not([aria-disabled="true"]):active, .sp-segmente button:active,
 .sp-schutz-feld button:active, .helper-list button:active { transform: scale(0.97); transition-duration: 0.08s; }
 .partner-textknopf:active, .footer-nav a:active, .site-nav a:active { opacity: 0.7; transition-duration: 0.08s; }
+
+/* Touch-Ziele (Loop 2, A7): auf Geraeten ohne feinen Zeiger mindestens 44 px hoch */
+@media (pointer: coarse) {
+  .btn, .nav-toggle, .helper-btn, .sp-knopf, .sp-segmente button, .sp-schutz-feld button, .sp-schutz-feld input,
+  .partner-textknopf, .footer-nav a, .footer-contact a, .footer-legal-nav a, .lang-switch a, .theme-switch button,
+  .field input, .field select, .helper-list button { min-height: 44px; }
+  .footer-nav a, .footer-contact a, .footer-legal-nav a { display: inline-flex; align-items: center; }
+  .nav-toggle { min-width: 44px; }
+  .brand { min-height: 44px; display: inline-flex; align-items: center; }
+}
