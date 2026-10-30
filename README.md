@@ -210,6 +210,11 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Fußzeile und Fragen-Blase** (Loop 2, A4/A5/2.8–2.9, 30.10.2026): Fußzeile als eigene ruhige Fläche
+  (`--wash-1`), Links als Caption in 32-px-Zeilen, Rechtstext und Schlusszeile aus dem Raster, unten 96 px;
+  schmal zwei Spalten statt einer 1.300 px langen. Fragen-Blase gleitet auf (400 ms, Auslauf) und zu (240 ms,
+  Einlauf; `hidden` erst nach `transitionend`, bei reduzierter Bewegung sofort), Kopf 56 px mit 32-px-
+  Schließen-Knopf, Eingabe aus der Skala, Senden wie jeder Primär-Knopf, FAQ-Link im Textlink-Muster.
 - **Labels, Felder, Hinweiskästen** (Loop 2, A5/2.4–2.6, 30.10.2026): ein Label-Muster (Mono 11 px, 600, gesperrt,
   Großbuchstaben — auch die Fußzeilen-Titel und alle dt), Felder 48 px fest mit weichem Fokusring (3 px, Tinte 6 %),
   Hinweiskasten 16/24 aus dem Raster.

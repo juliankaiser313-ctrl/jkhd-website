@@ -683,23 +683,40 @@ if (siteHeader) {
 
   // fokus=false beim Schliessen von aussen: Wer daneben klickt, will dort
   // weiterlesen — dann darf der Knopf den Fokus nicht zurueckreiszen.
+  // Das Feld gleitet auf und zu (Loop 2, A4): beim Oeffnen steht es erst unsichtbar im Dokument
+  // (hidden weg, Umbruch erzwingen), dann schaltet is-open den Uebergang an. Beim Schliessen
+  // faellt hidden erst, wenn der Uebergang zu Ende ist (transitionend, Rueckfall 600 ms) --
+  // bei reduzierter Bewegung sofort, da laeuft kein Uebergang.
+  let zuTimer = 0;
+  const zuEnde = (e) => {
+    if (e && (e.target !== panel || e.propertyName !== "opacity")) return;
+    panel.removeEventListener("transitionend", zuEnde);
+    clearTimeout(zuTimer);
+    if (!wrap.classList.contains("is-open")) panel.hidden = true;
+  };
   function oeffnen(auf, fokus = true) {
-    panel.hidden = !auf;
     btn.setAttribute("aria-expanded", String(auf));
-    wrap.classList.toggle("is-open", auf);
+    panel.removeEventListener("transitionend", zuEnde);
+    clearTimeout(zuTimer);
     if (auf) {
+      panel.hidden = false;
+      void panel.offsetHeight;
+      wrap.classList.add("is-open");
       begruessen();
       zaehlen();
       // Am Rechner gleich ins Eingabefeld. Auf dem Handy wuerde das die Tastatur
       // aufreissen und den halben Chat verdecken -- dort bekommt das Feld selbst
       // den Fokus (Bildschirmleser nennen seinen Namen), getippt wird nach Antippen.
       (matchMedia("(pointer: coarse)").matches ? panel : feld).focus();
-    } else if (fokus) {
-      btn.focus();
+    } else {
+      wrap.classList.remove("is-open");
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) panel.hidden = true;
+      else { panel.addEventListener("transitionend", zuEnde); zuTimer = setTimeout(zuEnde, 600); }
+      if (fokus) btn.focus();
     }
   }
 
-  btn.addEventListener("click", () => oeffnen(panel.hidden));
+  btn.addEventListener("click", () => oeffnen(!wrap.classList.contains("is-open")));
   close.addEventListener("click", () => oeffnen(false));
 
   // Der angeklickte Knopf verschwindet beim Neuaufbau -- damit die Tastatur
