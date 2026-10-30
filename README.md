@@ -210,6 +210,10 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Mathematik-Seiten** (Loop 2, A2/A5/A6/3.5, 30.10.2026): schmal maskiert eine senkrechte Maske die
+  Hintergrundformeln des Kopfs hinter Kicker, Titel und Lead (oben bleiben sie klar; vorher liefen sie unter dem
+  Titel hindurch); Inhaltskarte 32 px, Listenpunkte 8 px, Einstiegskarten `--pad-card`, Inhalts-Titel im
+  Label-Muster. Formelkästen (Haarlinie, Mono-Titel, KaTeX) blieben wie seit Loop 1.
 - **Simulation im Raster** (Loop 2, A2/A3/A5/3.4, 30.10.2026): Brett, Tafeln, Handel, SL/TP, Protokoll,
   Bestenliste, Podest und Statistik ohne Werte neben dem 4-px-Raster (vorher 41: 6, 20, 28, 46, 62, 76, 92 …),
   Brett-Innenabstand `--pad-card`, SL/TP-Fokusring wie jedes Feld, Start-/Ende-Schicht mit Schatten-3 + Kante,
