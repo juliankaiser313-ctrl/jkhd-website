@@ -560,6 +560,7 @@ html.ist-im-all .site-header, html.ist-im-all .helper {
   border-radius: var(--r-sm);
   font-family: var(--mono);
   font-size: var(--fs-label);
+  font-weight: 600;
   letter-spacing: var(--label-ls);
   text-transform: uppercase;
   color: var(--muted);
@@ -1074,7 +1075,7 @@ html.ist-im-all .site-header, html.ist-im-all .helper {
   padding: var(--pad-panel);
 }
 
-.founder-name { font-weight: 800; }
+.founder-name { font-weight: 800; line-height: var(--lh-h3); }
 .founder-role { display: block; color: var(--accent); margin: 8px 0 16px; }
 
 .founder-card p { max-width: 62ch; color: var(--muted); font-size: var(--fs-small); }   /* 78ch = 92 Zeichen je Zeile (Loop 4.1) */
@@ -1116,7 +1117,7 @@ html.ist-im-all .site-header, html.ist-im-all .helper {
 }
 
 .prose { max-width: 660px; }   /* 740 px = 80-81 Zeichen je Zeile (Loop 4.1) */
-.prose h2 { font-size: var(--fs-h3); margin: var(--s-7) 0 12px; }   /* 48 px Luft vor jedem Abschnitt (Loop 2, 3.8) */
+.prose h2 { font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: var(--ls-h3); margin: var(--s-7) 0 12px; }   /* 48 px Luft vor jedem Abschnitt (Loop 2, 3.8) */
 .prose h2:first-child { margin-top: 0; }
 .prose p { color: var(--muted); margin-bottom: 16px; }
 
@@ -2166,6 +2167,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   font-size: var(--fs-h3);
   font-weight: 500;
   line-height: var(--lh-h3);
+  letter-spacing: var(--ls-h3);
   color: var(--text) !important;
   margin-bottom: 24px;
 }
@@ -2321,6 +2323,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   display: block;
   font-family: var(--mono);
   font-size: var(--label);
+  font-weight: 600;   /* Label-Muster (Loop 2, 5.1) */
   letter-spacing: var(--label-ls);
   text-transform: uppercase;
   color: var(--accent);
@@ -2332,8 +2335,9 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .kachel .kachel-label {
   font-family: var(--serif);
   font-size: var(--fs-h3);
+  font-weight: 500;   /* wie jeder Serifen-Titel in h3-Groesse (Loop 2, 5.1) */
   line-height: var(--lh-h3);
-  letter-spacing: var(--ls-h4);
+  letter-spacing: var(--ls-h3);
   text-transform: none;
   color: var(--text);
 }
@@ -3067,7 +3071,7 @@ html:not(.js) .sp { display: none; }
   font-size: var(--fs-h3);
   font-weight: 500;
   line-height: var(--lh-h3);
-  letter-spacing: var(--ls-h2);
+  letter-spacing: var(--ls-h3);
 }
 .sp-schicht h3:focus { outline: none; }   /* bekommt den Fokus nur per Skript, beim Spielende */
 .sp-schicht ul { margin: 16px 0 0 24px; color: var(--muted); }

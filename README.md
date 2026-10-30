@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Restposten aus dem Nachher-Inventar** (Loop 2, 5.1, 30.10.2026): Partner-Kicker und 404-Marke im Label-Muster
+  (600), alle Serifen-Titel in h3-Größe mit einer Laufweite (`--ls-h3`) und Schnitt 500 (Prose-h2, Start-Schicht,
+  Kontakt-Kacheln, Profil-Lead), Gründername mit Titel-Zeilenhöhe.
 - **Universum, zwei Kanten** (Loop 2, A4/A8/4.3, 30.10.2026): die Punktkopie der Hero-Schrift sitzt jetzt auf der
   Grundlinie (textBaseline alphabetic + fontBoundingBoxAscent) statt 0,1 em zu hoch — kein Doppelbild mehr beim
   Auflösen; am Nordpol der Erde blenden Tag- und Wolkentextur ab 74° Breite auf eine längenunabhängige Farbe
