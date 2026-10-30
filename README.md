@@ -210,6 +210,11 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Startseite: Kopfzeile über dem All** (Loop 2, A6/3.1, 30.10.2026): sobald der Vorspann den Grund dunkel
+  gemacht hat (`v ≥ 0,3`), setzt `js/universum.js` `html.ist-im-all`; Kopfzeile und Fragen-Blase tragen dann die
+  Nacht-Töne (Tokens am Element, weich überblendet) statt als Papierbalken über dem Universum zu stehen;
+  zurück, sobald der Abschnitt den Schirm verlässt. Marken-Lockups (Kopfzeile, Hero) und `.hero-sub` aus der
+  Skala, Hero-Ränder aus dem Raster.
 - **Fußzeile und Fragen-Blase** (Loop 2, A4/A5/2.8–2.9, 30.10.2026): Fußzeile als eigene ruhige Fläche
   (`--wash-1`), Links als Caption in 32-px-Zeilen, Rechtstext und Schlusszeile aus dem Raster, unten 96 px;
   schmal zwei Spalten statt einer 1.300 px langen. Fragen-Blase gleitet auf (400 ms, Auslauf) und zu (240 ms,

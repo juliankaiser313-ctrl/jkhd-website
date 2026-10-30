@@ -1458,11 +1458,18 @@ void main() {
     vorspann = hero && weg > 0 && !reduziert.matches ? clamp((VORSPANN_BUEHNEN * H) / weg, 0, 0.2) : 0;
     zugabe = weg > 0 && !reduziert.matches ? clamp((1.1 * H) / weg, 0, 0.2) : 0;
   }
+  // Kopfzeile und Fragen-Blase ueber dem All (Loop 2, 3.1): sobald der Grund im Vorspann ueberwiegend
+  // dunkel ist (grundFarbe dunkelt ueber 0,1-0,5), tragen sie die Nacht-Toene (css: html.ist-im-all);
+  // verlaesst der Abschnitt den Schirm (Beobachter unten), kommt der Tag zurueck
+  const dokumentWurzel = document.documentElement;
+  function kopfImAll(an) {
+    if (dokumentWurzel.classList.contains("ist-im-all") !== an) dokumentWurzel.classList.toggle("ist-im-all", an);
+  }
   function bild(p, zeit, still) {
     const ohne = still || (vorspann <= 0 && zugabe <= 0);
     const v = ohne ? 1 : clamp(p / vorspann, 0, 1);
     const p2 = ohne ? p : clamp((p - vorspann) / Math.max(0.01, 1 - vorspann - zugabe), 0, 1);
-    if (!still) heroZeigen(v);
+    if (!still) { heroZeigen(v); kopfImAll(!ohne && v >= 0.3); }
     bildFlug(p2, zeit, still, v);
     if (v < 1) verwandlung(v);
   }
@@ -2471,7 +2478,7 @@ void main() {
 
   new IntersectionObserver((eintraege) => {
     if (eintraege.some((e) => e.isIntersecting)) starten();
-    else anhalten();
+    else { anhalten(); kopfImAll(false); }
   }).observe(abschnitt);
 
   window.addEventListener("resize", () => { groesseAnpassen(); if (reduziert.matches) bild(0.95, 0, true); });

@@ -253,10 +253,30 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
   backdrop-filter: blur(16px) saturate(1.4);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   border-bottom: 1px solid var(--border);
-  transition: background var(--t-mittel) var(--ease);
+  transition: background var(--t-mittel) var(--ease), border-color var(--t-mittel) var(--ease);
 }
 
 .site-header.scrolled { background: var(--header-bg-scrolled); }
+/* Ueber dem All (Loop 2, A6/3.1, 30.10.2026): sobald der Vorspann des Universums den Grund dunkel
+   gemacht hat, setzt js/universum.js html.ist-im-all -- Kopfzeile und Fragen-Blase tragen dann die
+   Nacht-Toene, statt als Papierbalken ueber dem schwarzen Himmel zu stehen (im Dunkel-Modus aendert
+   sich nichts). Die Werte sind die des Dunkel-Blocks oben; var()-Ketten (--line-strong) muessen hier
+   neu gesetzt werden, weil sie am :root aufgeloest werden. */
+html.ist-im-all .site-header, html.ist-im-all .helper {
+  --bg: #0b0b0c; --panel: #121214; --panel-2: #17171a; --border: #242426; --border-2: #46464a;
+  --text: #f4f2ee; --muted: #9d9d99; --accent: #f4f2ee; --accent-dim: rgba(244, 242, 238, 0.1);
+  --header-bg: rgba(11, 11, 12, 0.72); --header-bg-scrolled: rgba(11, 11, 12, 0.9);
+  --wash-1: rgba(244, 242, 238, 0.03); --wash-2: rgba(244, 242, 238, 0.055); --wash-3: rgba(244, 242, 238, 0.08);
+  --line: #242426; --line-strong: #46464a;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.5), 0 20px 48px rgba(0, 0, 0, 0.5);
+  --shadow-3: 0 4px 12px rgba(0, 0, 0, 0.55), 0 32px 80px rgba(0, 0, 0, 0.6);
+  --edge: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+/* und der Wechsel geschieht weich: Flaeche, Haarlinie, Zeichen, Schrift, Knopf */
+.brand svg { transition: fill var(--t-mittel) var(--ease); }
+.brand-word, .brand-line1, .brand-line2 { transition: color var(--t-mittel) var(--ease); }
+.brand-divider { transition: background var(--t-mittel) var(--ease); }
 
 .nav-wrap {
   height: var(--header-h);
@@ -269,7 +289,7 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
 .brand { display: flex; align-items: center; gap: 12px; }
 .brand svg { width: 26px; height: 26px; fill: var(--text); flex-shrink: 0; }
 .brand-word {
-  font-size: 0.92rem;
+  font-size: var(--fs-small);   /* Lockup aus der Skala (Loop 2, 3.1) */
   font-weight: 800;
   letter-spacing: 0.34em;
   color: var(--text);
@@ -286,7 +306,7 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
 .brand-tag { display: flex; flex-direction: column; line-height: 1.3; }
 
 .brand-line1 {
-  font-size: 0.8rem;
+  font-size: var(--fs-caption);
   font-weight: 700;
   letter-spacing: 0.05em;
   color: var(--text);
@@ -294,7 +314,7 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
 
 .brand-line2 {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.03em;
   color: var(--muted);
   white-space: nowrap;
@@ -393,6 +413,7 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
   width: 42px;
   height: 42px;
   cursor: pointer;
+  transition: color var(--t-mittel) var(--ease), border-color var(--t-mittel) var(--ease);
 }
 
 /* ---------- Sprache und Darstellung ----------
@@ -615,28 +636,29 @@ h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: 800; lette
 .hero-sub {
   margin: 24px auto 0;
   max-width: 640px;
-  font-size: 1.12rem;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
   color: var(--muted);
 }
 
 /* Marken-Lockup im Hero: unter der Ueberschrift statt einer Unterzeile
    (Julian, 19.09.2026). Dieselben Bausteine wie in der Kopfzeile, nur
    groesser und mittig; die Kopfzeile behaelt ihr eigenes Lockup. */
-.hero-brand { justify-content: center; margin: 34px auto 0; gap: 16px; }
-.hero-brand svg { width: 38px; height: 38px; }
-.hero-brand .brand-word { font-size: 1.2rem; }
+.hero-brand { justify-content: center; margin: var(--s-6) auto 0; gap: 16px; }   /* Raster + Skala (Loop 2, 3.1) */
+.hero-brand svg { width: 40px; height: 40px; }
+.hero-brand .brand-word { font-size: var(--fs-h4); }
 .hero-brand .brand-divider { height: 40px; }
 .hero-brand .brand-tag { text-align: left; }
-.hero-brand .brand-line1 { font-size: 1rem; }
-.hero-brand .brand-line2 { font-size: 0.72rem; }
+.hero-brand .brand-line1 { font-size: var(--fs-body); }
+.hero-brand .brand-line2 { font-size: var(--fs-label); }
 
 @media (max-width: 560px) {
-  .hero-brand { gap: 12px; margin-top: 28px; }
-  .hero-brand svg { width: 30px; height: 30px; }
-  .hero-brand .brand-word { font-size: 1rem; }
+  .hero-brand { gap: 12px; margin-top: var(--s-5); }
+  .hero-brand svg { width: 32px; height: 32px; }
+  .hero-brand .brand-word { font-size: var(--fs-body); }
   .hero-brand .brand-divider { height: 32px; }
-  .hero-brand .brand-line1 { font-size: 0.88rem; }
-  .hero-brand .brand-line2 { font-size: 0.62rem; }
+  .hero-brand .brand-line1 { font-size: var(--fs-caption); }
+  .hero-brand .brand-line2 { font-size: var(--fs-label); }
 }
 
 .hero-actions { margin-top: 40px; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
@@ -1479,7 +1501,8 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   text-transform: uppercase;
   cursor: pointer;
   box-shadow: var(--shadow-2);
-  transition: transform var(--t-kurz) var(--ease), box-shadow var(--t-kurz) var(--ease);
+  transition: transform var(--t-kurz) var(--ease), box-shadow var(--t-kurz) var(--ease),
+    background var(--t-mittel) var(--ease), color var(--t-mittel) var(--ease), border-color var(--t-mittel) var(--ease);
 }
 .helper-btn:hover { transform: translateY(-2px); }
 .helper-btn:active { transform: translateY(0) scale(0.98); box-shadow: var(--shadow-1); transition-duration: 0.08s; }
