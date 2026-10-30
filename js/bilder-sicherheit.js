@@ -36,7 +36,7 @@ window.JKHDBilder.sicherheit = function (k) {
   }
   function pfeil(x0, y0, x1, y1, farbe, gestrichelt) {
     ctx.save();
-    ctx.strokeStyle = farbe; ctx.fillStyle = farbe; ctx.lineWidth = 1.4; ctx.lineCap = "round";
+    ctx.strokeStyle = farbe; ctx.fillStyle = farbe; ctx.lineWidth = 1.5; ctx.lineCap = "round";   /* Icon = Rolle Linie (Loop 2, A8) */
     if (gestrichelt) ctx.setLineDash([4, 4]);
     ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
     ctx.setLineDash([]);
@@ -50,7 +50,7 @@ window.JKHDBilder.sicherheit = function (k) {
   }
   function notiz(x, y, gr, farbe) {   // ein Zettel mit drei Zeilen
     ctx.save();
-    ctx.strokeStyle = farbe; ctx.lineWidth = 1.3; ctx.lineCap = "round";
+    ctx.strokeStyle = farbe; ctx.lineWidth = 1.5; ctx.lineCap = "round";
     const r = gr / 2;
     ctx.strokeRect(x - r * 0.7 + 0.5, y - r + 0.5, r * 1.4, r * 2);
     for (let j = 0; j < 3; j++) { ctx.beginPath(); ctx.moveTo(x - r * 0.4, y - r * 0.5 + j * r * 0.5); ctx.lineTo(x + r * (j === 2 ? 0.05 : 0.4), y - r * 0.5 + j * r * 0.5); ctx.stroke(); }

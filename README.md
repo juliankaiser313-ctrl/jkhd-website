@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Bildlauf-Seiten: eine Strichstärke je Rolle** (Loop 2, A8/3.3, 30.10.2026): in `js/bildlauf.js` und
+  `js/bilder-*.js` nur noch 1 (Haarlinie), 1,5 (Kurve, Linie, Icon) und 2 (Rahmen) statt sieben Werten; der
+  Prozess-Chip nimmt die Caption wie jede Beschriftung. Farben aus den Tokens, Beschriftungen skaliert, DPR ≤ 2.
 - **Was wir machen** (Loop 2, A6/3.2, 30.10.2026): Seitentitel (`.statement-lead`) auf h1-Stufe wie jeder
   Seitenkopf (vorher h2-Stufe, so groß wie die Abschnitte darunter), Kicker 16 px; auf dem Handy steht die
   Schritt-Ziffer über dem Titel und der Text nimmt die volle Breite (vorher 235 px neben der 76-px-Spalte).

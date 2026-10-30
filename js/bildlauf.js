@@ -85,7 +85,14 @@
   // 29.10.2026, Punkt 1.2). Ab 1100 px x1,2, ab 700 px x1,1, am Handy wie gezeichnet; das
   // Zeichen am Ende (lockupZeichnen) nimmt die rohe mono().
   const schriftSkala = () => (klein ? 1 : B >= 1100 ? 1.2 : 1.1);
-  const monoBild = (px, gewicht) => mono(Math.round(px * schriftSkala()), gewicht);
+  // ... und rastet auf die Skala der Seite ein (Label 11, Caption 13, Klein 15, Text 17): vorher standen
+  // 12 und 14 px (Laptop) bzw. 10, 12 und 14 px (Handy) zwischen den Stufen (Loop 2, A8/3.3)
+  const SCHRIFT_REIHE = [11, 13, 15, 17];
+  const einrasten = (px) => SCHRIFT_REIHE.reduce((best, s) => {
+    const d = Math.abs(s - px), db = Math.abs(best - px);
+    return d < db || (d === db && s > best) ? s : best;   // bei Gleichstand die groessere Stufe
+  }, SCHRIFT_REIHE[0]);
+  const monoBild = (px, gewicht) => mono(einrasten(px * schriftSkala()), gewicht);
 
   // ---- Groesse ----
   let B = 0, H = 0, dpr = 1, klein = false;
@@ -219,7 +226,7 @@
   function linieRund(w, ab, anzahl, x0, y0, b, h, anteil, farbe, staerke) {
     const n = Math.max(2, Math.floor(anzahl * anteil));
     ctx.strokeStyle = farbe;
-    ctx.lineWidth = staerke || 1.6;
+    ctx.lineWidth = staerke || 1.5;   /* Rolle Kurve/Linie (Loop 2, A8/3.3) */
     ctx.lineJoin = "round";
     ctx.beginPath();
     for (let i = 0; i < n; i++) {
@@ -231,7 +238,7 @@
   function linie(w, x0, y0, b, h, anteil, farbe, staerke) {
     const n = Math.max(2, Math.min(w.length, Math.floor(w.length * anteil)));
     ctx.strokeStyle = farbe;
-    ctx.lineWidth = staerke || 1.6;
+    ctx.lineWidth = staerke || 1.5;   /* Rolle Kurve/Linie (Loop 2, A8/3.3) */
     ctx.lineJoin = "round";
     ctx.beginPath();
     for (let i = 0; i < n; i++) {

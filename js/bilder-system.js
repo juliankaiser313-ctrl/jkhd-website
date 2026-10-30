@@ -30,7 +30,7 @@ window.JKHDBilder.system = function (k) {
   // Kleine Hilfen
   function pfeil(x0, y0, x1, y1, farbe) {
     ctx.save();
-    ctx.strokeStyle = farbe; ctx.fillStyle = farbe; ctx.lineWidth = 1.4; ctx.lineCap = "round";
+    ctx.strokeStyle = farbe; ctx.fillStyle = farbe; ctx.lineWidth = 1.5; ctx.lineCap = "round";   /* Icon = Rolle Linie (Loop 2, A8) */
     ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
     const w = Math.atan2(y1 - y0, x1 - x0);
     ctx.beginPath();
@@ -330,7 +330,7 @@ window.JKHDBilder.system = function (k) {
     ctx.strokeStyle = F.tinte; ctx.lineWidth = 1.5; ctx.beginPath();
     for (let j = 0; j < fenster; j++) { const x = x0 + (j / (fenster - 1)) * b, y = y0 + hK - wert(PAAR_A, lauf + j) * hK * 0.7 - hK * 0.1; if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
     ctx.stroke();
-    ctx.strokeStyle = F.matt; ctx.lineWidth = 1.3; ctx.beginPath();
+    ctx.strokeStyle = F.matt; ctx.lineWidth = 1.5; ctx.beginPath();
     for (let j = 0; j < fenster; j++) { const i = lauf + j; const x = x0 + (j / (fenster - 1)) * b, y = y0 + hK - (wert(PAAR_A, i) * 0.7 + 0.1 + wert(PAAR_ABSTAND, i)) * hK; if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); }
     ctx.stroke();
     text("A", x0 + b + 4 - 14, y0 + hK - wert(PAAR_A, lauf + 159) * hK * 0.7 - hK * 0.1 + 4, mono(11), F.tinte);
@@ -378,7 +378,7 @@ window.JKHDBilder.system = function (k) {
       return Math.floor(s / stufe) * hub - faelle * D - steigung * s;
     };
     const basis = y0 + hK * 0.75;
-    ctx.strokeStyle = F.tinte; ctx.lineWidth = 1.6; ctx.lineJoin = "round";
+    ctx.strokeStyle = F.tinte; ctx.lineWidth = 1.5; ctx.lineJoin = "round";
     ctx.beginPath();
     for (let x = x0; x <= sichtbar; x += 2) {
       const y = basis - stand(x - x0 + schub);

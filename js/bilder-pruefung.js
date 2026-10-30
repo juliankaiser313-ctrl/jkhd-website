@@ -387,7 +387,7 @@ window.JKHDBilder.pruefung = function (k) {
     const takt = 28;
     const schub = zeit * 36;
     const sichtbar = x0 + b * clamp(t / 0.6, 0, 1);
-    ctx.strokeStyle = F.tinte; ctx.lineWidth = 1.6; ctx.lineJoin = "round";
+    ctx.strokeStyle = F.tinte; ctx.lineWidth = 1.5; ctx.lineJoin = "round";
     ctx.beginPath();
     for (let x = x0; x <= sichtbar; x += 2) {
       const s = (((x - x0 + schub) % P) + P) % P;
@@ -403,7 +403,7 @@ window.JKHDBilder.pruefung = function (k) {
       const links = Math.max(xs, x0), rechts = Math.min(xe, sichtbar);
       if (xs >= x0 && xs <= sichtbar) k.textHalten(T("Prozess läuft, Arbeit steht", "process runs, work stalls"), xs + 6, yM - amp - 10, mono(11), F.rot);
       if (rechts - links > 60) {
-        ctx.strokeStyle = F.rot; ctx.lineWidth = 1.2;
+        ctx.strokeStyle = F.rot; ctx.lineWidth = 1;
         ctx.beginPath(); ctx.moveTo(links, yM + amp * 0.7); ctx.lineTo(rechts - 8, yM + amp * 0.7); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(links, yM + amp * 0.5); ctx.lineTo(links, yM + amp * 0.9); ctx.moveTo(rechts - 8, yM + amp * 0.5); ctx.lineTo(rechts - 8, yM + amp * 0.9); ctx.stroke();
         text(T("Wächter: beendet", "watchdog: ended"), links, yM + amp + 16, mono(11), F.rot);
@@ -414,7 +414,7 @@ window.JKHDBilder.pruefung = function (k) {
       }
     }
     const chip = klein ? T("Liste: läuft", "list: running") : T("in der Prozessliste: läuft", "in the process list: running");
-    ctx.font = mono(12);
+    ctx.font = mono(11);   /* Caption aus der Skala wie jede Beschriftung (Loop 2, A8) */
     const cb = ctx.measureText(chip).width + 22;
     const cx = x0 + b - cb, cy = A.y + 4;
     ctx.strokeStyle = F.gruen; ctx.lineWidth = 1;
@@ -436,7 +436,7 @@ window.JKHDBilder.pruefung = function (k) {
   function glyph(art, x, y, gr, farbe) {
     ctx.save();
     ctx.translate(x, y);
-    ctx.strokeStyle = farbe; ctx.fillStyle = farbe; ctx.lineWidth = 1.6; ctx.lineCap = "round";
+    ctx.strokeStyle = farbe; ctx.fillStyle = farbe; ctx.lineWidth = 1.5; ctx.lineCap = "round";   /* Icon = Rolle Linie (Loop 2, A8) */
     const r = gr / 2;
     ctx.beginPath();
     if (art === 0) {
