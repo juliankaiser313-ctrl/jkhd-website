@@ -210,6 +210,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Zeilenhöhen der 28-px-Titel, KaTeX-Schriften vorgeladen** (Loop 2, 5.1, 30.10.2026): Creed-Karten-h3 und
+  Partnerkasten-/Partnerkarten-h2 mit der Zeilenhöhe ihrer Größe (`--lh-h3`) statt der ihrer Tag-Stufe; die sechs
+  Formelseiten laden `KaTeX_Main-Regular` und `KaTeX_Math-Italic` vor (kein 2-px-Sprung der Kopfformeln beim Laden).
 - **Restposten aus dem Nachher-Inventar** (Loop 2, 5.1, 30.10.2026): Partner-Kicker und 404-Marke im Label-Muster
   (600), alle Serifen-Titel in h3-Größe mit einer Laufweite (`--ls-h3`) und Schnitt 500 (Prose-h2, Start-Schicht,
   Kontakt-Kacheln, Profil-Lead), Gründername mit Titel-Zeilenhöhe.

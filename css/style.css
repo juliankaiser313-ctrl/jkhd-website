@@ -727,7 +727,7 @@ html.ist-im-all .site-header, html.ist-im-all .helper {
 
 .creed-inner h3,
 .layer-head h3,
-.founder-name { font-size: var(--h3-lg); letter-spacing: var(--ls-h3); }
+.founder-name { font-size: var(--h3-lg); line-height: var(--lh-h3); letter-spacing: var(--ls-h3); }   /* Zeilenhoehe der Groesse, nicht der Tag-Stufe (Loop 2, 5.1) */
 
 /* ---------- Zusammenarbeit: Zielgruppe, Leistungen, Exklusivität ---------- */
 
@@ -2385,7 +2385,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 }
 .partner > * { position: relative; z-index: 1; }
 
-.partner h2 { margin: 8px 0 12px; font-size: var(--fs-h3); letter-spacing: var(--ls-h3); }
+.partner h2 { margin: 8px 0 12px; font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: var(--ls-h3); }
 .partner-kopf p { max-width: 52ch; color: var(--muted); font-size: var(--fs-small); }
 
 .partner-koerper { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 16px; }
@@ -2471,7 +2471,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
   box-shadow: var(--shadow-1), var(--edge);
   background: linear-gradient(180deg, var(--panel), var(--panel-2));
 }
-.partner-karte h2 { font-size: var(--fs-h3); letter-spacing: var(--ls-h3); }
+.partner-karte h2 { font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: var(--ls-h3); }
 .partner-karte p { max-width: 52ch; color: var(--muted); overflow-wrap: anywhere; }   /* lange Adressen sprengen sonst das Handy */
 .partner-karte .btn { justify-self: start; }
 
