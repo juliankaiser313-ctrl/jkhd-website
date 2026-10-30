@@ -2592,7 +2592,7 @@ html:not(.js) .sp { display: none; }
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas: "leiste" "tafeln" "nachricht" "chart" "handel" "schutz" "legende" "protokoll";
   gap: 16px;
-  padding: 20px;
+  padding: var(--pad-card);   /* Raster (Loop 2, 3.4) */
 }
 
 /* Doppeltippen auf einen Knopf soll zweimal handeln, nicht die Seite zoomen
@@ -2612,7 +2612,7 @@ html:not(.js) .sp { display: none; }
 .sp kbd,
 .sp-regel kbd {
   display: inline-block;
-  padding: 0 5px;
+  padding: 0 4px;
   font-family: var(--mono);
   font-size: var(--label);
   font-weight: 600;
@@ -2635,14 +2635,14 @@ html:not(.js) .sp { display: none; }
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border);
 }
-.sp-leiste-info { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; }
+.sp-leiste-info { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 24px; }
 .sp-uhr { font-family: var(--mono); font-size: var(--fs-h4); color: var(--text); }
-.sp-uhr .sp-label { margin-right: 6px; }
+.sp-uhr .sp-label { margin-right: 8px; }
 .sp-steuerung { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 8px; }
 
 /* 35 Zeichen: so lang ist die laengste der drei Fassungen ("Keys off: you are typing in a
    field"); die Knoepfe daneben bleiben stehen, wenn der Hinweis wechselt */
-.sp-tasten { min-width: 35ch; margin-right: 6px; font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
+.sp-tasten { min-width: 35ch; margin-right: 8px; font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
 .sp-tasten-an,
 .sp-tasten-feld { display: none; color: var(--text); }
 .sp:focus-within .sp-tasten-an { display: inline; }
@@ -2696,7 +2696,7 @@ html:not(.js) .sp { display: none; }
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 6px 8px;
+  gap: 8px;
   margin-bottom: 8px;
 }
 .sp-tafel h3 { font-size: var(--h3-sm); }
@@ -2726,9 +2726,9 @@ html:not(.js) .sp { display: none; }
 
 /* Weg von der Pleitegrenze (links) zum Ziel (rechts), logarithmisch; die
    Lage der Startmarke setzt js/spiel.js aus den Regeln. */
-.sp-weg { position: relative; height: 10px; margin: 16px 0 4px; background: var(--panel-2); border: 1px solid var(--border-2); }
+.sp-weg { position: relative; height: 8px; margin: 16px 0 4px; background: var(--panel-2); border: 1px solid var(--border-2); }
 .sp-weg-fuellung { position: absolute; top: 0; bottom: 0; left: 0; width: 50%; background: var(--text); }
-.sp-weg-start { position: absolute; top: -5px; bottom: -5px; left: 50%; width: 2px; margin-left: -1px; background: var(--muted); }
+.sp-weg-start { position: absolute; top: -4px; bottom: -4px; left: 50%; width: 2px; margin-left: -1px; background: var(--muted); }
 .sp-weg-skala { position: relative; height: 1.5em; font-family: var(--mono); font-size: var(--label); color: var(--muted); }
 .sp-weg-skala span { position: absolute; top: 0; white-space: nowrap; }
 .sp-weg-skala span:first-child { left: 0; }
@@ -2764,7 +2764,7 @@ html:not(.js) .sp { display: none; }
   grid-area: nachricht;
   display: flex;
   align-items: center;
-  min-height: 46px;
+  min-height: 48px;
   padding: 8px 16px;
   font-size: var(--fs-small);
   color: var(--muted);
@@ -2806,7 +2806,7 @@ html:not(.js) .sp { display: none; }
   left: 50%;
   transform: translateX(-50%);
   max-width: calc(100% - 24px);
-  padding: 5px 12px;
+  padding: 4px 12px;
   font-family: var(--mono);
   font-size: var(--label);
   font-weight: 600;
@@ -2821,14 +2821,14 @@ html:not(.js) .sp { display: none; }
   grid-area: legende;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 16px;
+  gap: 8px 16px;
   min-width: 0;
   list-style: none;
   font-size: var(--caption);
   color: var(--muted);
 }
-.sp-legende li { display: inline-flex; align-items: center; gap: 7px; }
-.sp-legende svg { width: 26px; height: 12px; flex-shrink: 0; color: var(--text); }
+.sp-legende li { display: inline-flex; align-items: center; gap: 8px; }
+.sp-legende svg { width: 24px; height: 12px; flex-shrink: 0; color: var(--text); }
 .sp-legende .sp-leise { color: var(--muted); }   /* Stop und Nachricht zeichnet der Chart in Grau */
 .sp-legende svg,
 .sp-order-was svg { fill: none; stroke: currentColor; stroke-width: 1; }
@@ -2846,7 +2846,7 @@ html:not(.js) .sp { display: none; }
   justify-content: center;
   gap: 3px;
   min-width: 0;
-  min-height: 62px;
+  min-height: 64px;
   padding: 8px 16px;
   font: inherit;
   text-align: left;
@@ -2924,7 +2924,7 @@ html:not(.js) .sp { display: none; }
   color: var(--muted);
 }
 .sp-schutz-kopf p { font-size: var(--caption); color: var(--muted); }
-.sp-schutz-zeile { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; min-width: 0; }
+.sp-schutz-zeile { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
 .sp-schutz-name {
   width: 2rem;
   font-family: var(--mono);
@@ -2966,7 +2966,7 @@ html:not(.js) .sp { display: none; }
   border: 1px solid var(--muted);   /* ein leeres Feld ist nur am Rand zu erkennen: 3:1 (WCAG 1.4.11) */
   border-radius: 0;
 }
-.sp-schutz-feld input:focus { position: relative; z-index: 1; outline: none; border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
+.sp-schutz-feld input:focus { position: relative; z-index: 1; outline: none; border-color: var(--text); box-shadow: 0 0 0 3px var(--accent-dim); }   /* Fokusring wie jedes Feld (Loop 2, 3.4) */
 .sp-schutz-info {
   flex-basis: 100%;
   min-height: 1.5em;
@@ -2998,7 +2998,7 @@ html:not(.js) .sp { display: none; }
   background: var(--bg);
   border: 1px solid var(--border);
 }
-.sp-algo-jetzt .sp-label { margin-right: 6px; }
+.sp-algo-jetzt .sp-label { margin-right: 8px; }
 .sp-protokoll-leer { font-size: var(--fs-caption); color: var(--muted); }
 .sp-protokoll ol { list-style: none; }
 .sp-protokoll li {
@@ -3019,7 +3019,7 @@ html:not(.js) .sp { display: none; }
   display: grid;
   justify-items: center;
   align-content: start;
-  padding: 64px 20px 20px;
+  padding: 64px 24px 24px;
   overflow: auto;
   background: var(--header-bg-scrolled);
 }
@@ -3030,7 +3030,7 @@ html:not(.js) .sp { display: none; }
   background: var(--bg);
   border: 1px solid var(--border-2);
   border-radius: var(--r-md);
-  box-shadow: 0 22px 48px var(--shadow-soft);
+  box-shadow: var(--shadow-3), var(--edge);   /* Schatten-3 wie jedes schwebende Feld (Loop 2, A3) */
 }
 .sp-schicht .kicker { margin-bottom: 12px; }
 .sp-schicht h3 {
@@ -3041,7 +3041,7 @@ html:not(.js) .sp { display: none; }
   letter-spacing: var(--ls-h2);
 }
 .sp-schicht h3:focus { outline: none; }   /* bekommt den Fokus nur per Skript, beim Spielende */
-.sp-schicht ul { margin: 16px 0 0 20px; color: var(--muted); }
+.sp-schicht ul { margin: 16px 0 0 24px; color: var(--muted); }
 .sp-schicht li + li { margin-top: 4px; }
 .sp-schicht-inhalt > p:not(.kicker) { margin-top: 12px; color: var(--muted); }
 .sp-schicht-knoepfe { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
@@ -3049,8 +3049,8 @@ html:not(.js) .sp { display: none; }
 .sp-ende-werte {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px 20px;
-  margin-top: 20px;
+  gap: 12px 24px;
+  margin-top: 24px;
   padding-top: 16px;
   border-top: 1px solid var(--border);
 }
@@ -3084,7 +3084,7 @@ html:not(.js) .sp { display: none; }
 .sp-regel p { font-size: var(--fs-small); line-height: var(--lh-body); color: var(--muted); }
 .sp-regel-algo { max-width: 900px; margin-top: 48px; }
 .sp-regel-algo > p { color: var(--muted); max-width: 56ch; }   /* in 900 px liefen 106-111 Zeichen je Zeile (Loop 4.1) */
-.sp-regel-algo ul { margin: 16px 0 0 20px; color: var(--muted); max-width: 56ch; }
+.sp-regel-algo ul { margin: 16px 0 0 24px; color: var(--muted); max-width: 56ch; }
 .sp-regel-algo li + li { margin-top: 8px; }
 .sp-regel-abschnitt .note { margin-top: 40px; }
 
@@ -3107,8 +3107,8 @@ html:not(.js) .sp { display: none; }
       "chart handel"
       "chart schutz"
       "protokoll protokoll";
-    gap: 8px 20px;
-    padding: 16px 20px;
+    gap: 8px 24px;
+    padding: 16px 24px;
   }
   .sp-leiste { padding-bottom: 8px; }
   .sp-leiste .sp-knopf,
@@ -3123,11 +3123,11 @@ html:not(.js) .sp { display: none; }
   .sp-weg-skala { display: none; }
   /* Immer zwei Reihen zu drei Werten -- als Fliesszeile brach die Tafel je nach Laenge
      der Werte in eine, zwei oder drei Reihen um (gemessen 14.10.2026) */
-  .sp-werte { flex-basis: 100%; display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 2px 20px; margin-top: 6px; padding-top: 6px; }
+  .sp-werte { flex-basis: 100%; display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 2px 24px; margin-top: 8px; padding-top: 8px; }
   .sp-werte dt { white-space: nowrap; }
-  .sp-werte > div { display: flex; align-items: baseline; gap: 6px; }
+  .sp-werte > div { display: flex; align-items: baseline; gap: 8px; }
   .sp-werte dd { font-size: var(--fs-caption); }
-  .sp-nachricht { min-height: 38px; padding: 6px 12px; font-size: var(--fs-caption); }
+  .sp-nachricht { min-height: 40px; padding: 8px 12px; font-size: var(--fs-caption); }
   /* Chart so hoch wie die rechte Spalte; die Legende liegt unten im Chartbereich */
   .sp-chartbereich { display: flex; flex-direction: column; min-height: 0; padding-bottom: 40px; }
   .sp-chart { flex: 1 1 auto; height: auto; min-height: 300px; }
@@ -3145,8 +3145,8 @@ html:not(.js) .sp { display: none; }
   .sp-order-glatt { grid-column: 1 / -1; }
   /* Order-Knoepfe einzeilig je Zeile: Mit 10 px Rand und 6 px Abstand passt auch
      "Verkaufen 1.234 S" (157 px) in die 164 px des 186-px-Knopfs, gemessen 11.10.2026 */
-  .sp-order { min-height: 50px; padding: 6px 8px; gap: 2px; }
-  .sp-order-was { gap: 4px 6px; font-size: var(--fs-caption); letter-spacing: var(--ls-wide); }
+  .sp-order { min-height: 48px; padding: 8px 12px; gap: 2px; }
+  .sp-order-was { gap: 4px 8px; font-size: var(--fs-caption); letter-spacing: var(--ls-wide); }
   .sp-order-wo { font-size: var(--fs-label); }
   .sp-meldung { min-height: calc(3 * 1.7em); min-height: 3lh; font-size: var(--fs-caption); }
   .sp-schutz { gap: 4px; padding-top: 8px; }
@@ -3156,7 +3156,7 @@ html:not(.js) .sp { display: none; }
   .sp-schutz-feld button { min-width: 40px; min-height: 40px; }
   .sp-schutz-aktionen .sp-knopf { min-height: 40px; padding: 0 8px; }
   .sp-schutz-info { min-height: 1.3em; font-size: var(--fs-caption); }
-  .sp-schutz-fuss { gap: 6px 12px; }
+  .sp-schutz-fuss { gap: 8px 12px; }
   .sp-schutz-fuss .sp-knopf { min-height: 40px; padding: 0 8px; }
 }
 
@@ -3164,8 +3164,8 @@ html:not(.js) .sp { display: none; }
    die Abstandszeilen unter SL/TP entfallen, dann passt das Brett bis SL/TP auch in
    620 px Fensterhoehe */
 @media (min-width: 1141px) and (max-height: 700px) {
-  .sp-koerper { gap: 8px 20px; padding: 12px 20px; }
-  .sp-leiste { padding-bottom: 6px; }
+  .sp-koerper { gap: 8px 24px; padding: 12px 24px; }
+  .sp-leiste { padding-bottom: 8px; }
   .sp-legende { display: none; }
   .sp-chartbereich { padding-bottom: 0; }
   .sp-chart { min-height: 260px; }
@@ -3223,11 +3223,11 @@ html:not(.js) .sp { display: none; }
   .sp-tempo-label { display: none; }   /* die Gruppe heisst trotzdem "Tempo" (aria-label) */
   .sp-tafeln { gap: 8px; }
   .sp-tafel { padding: 8px 8px 8px; }
-  .sp-tafel-kopf { margin-bottom: 6px; }
+  .sp-tafel-kopf { margin-bottom: 8px; }
   .sp-kapital { font-size: var(--fs-h3); }
   .sp-weg { margin-top: 8px; }
   .sp-werte { grid-template-columns: minmax(0, 1fr); gap: 3px; margin-top: 8px; padding-top: 8px; }
-  .sp-werte > div { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 6px; }
+  .sp-werte > div { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 8px; }
   .sp-werte dt { letter-spacing: var(--ls-wide); }
   .sp-werte dd { margin-left: auto; font-size: var(--fs-caption); }
   /* Die Hoehe ueber dem Chart bleibt gleich, sonst verschoebe sich alles
@@ -3244,10 +3244,10 @@ html:not(.js) .sp { display: none; }
   /* "fuehrt" als Reiter auf der oberen Kante der Tafel: Es nimmt keinen
      Platz, der Kopf bricht nie um, und beide Tafeln bleiben buendig. */
   .sp-tafel { position: relative; }
-  .sp-fuehrt { position: absolute; top: -9px; right: 8px; padding: 1px 6px; }
+  .sp-fuehrt { position: absolute; top: -8px; right: 8px; padding: 1px 8px; }
   /* Das Nachrichtenband ist immer zwei Zeilen hoch: "Eingetreten: ..., Kurs
      -1,25 %" braucht schmal zwei, "Keine Nachricht angekuendigt" eine. */
-  .sp-nachricht { min-height: calc(2 * 1.7em + 18px); padding: 8px 12px; font-size: var(--fs-caption); }
+  .sp-nachricht { min-height: calc(2 * 1.7em + 16px); padding: 8px 12px; font-size: var(--fs-caption); }
   .sp-meldung { min-height: calc(4 * 1.7em); min-height: 4lh; }
   .sp-schutz-info { min-height: calc(2 * 1.7em); min-height: 2lh; }
   .sp-chart { height: 240px; }
@@ -3290,7 +3290,7 @@ html:not(.js) .sp { display: none; }
 
 /* Bestenliste der Simulation: das Formular in der Endkarte und die Liste
    unter dem Brett (js/spiel.js); eigener Eintrag mit Rahmen */
-.sp-besten-form { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+.sp-besten-form { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
 .sp-besten-hinweis { font-weight: 600; color: var(--text); }
 .sp-besten-label {
   display: block;
@@ -3319,7 +3319,7 @@ html:not(.js) .sp { display: none; }
 .sp-besten-form.ist-fertig .sp-besten-label,
 .sp-besten-form.ist-fertig .sp-besten-zeile { display: none; }
 .sp-besten-form.ist-fertig .sp-besten-meldung { color: var(--text); font-weight: 600; }
-.sp-besten { margin-top: 28px; list-style: none; border-top: 1px solid var(--border-2); }
+.sp-besten { margin-top: 32px; list-style: none; border-top: 1px solid var(--border-2); }
 .sp-besten li {
   display: grid;
   grid-template-columns: 3em minmax(0, 1fr) auto auto;   /* Pokal und Rang */
@@ -3338,7 +3338,7 @@ html:not(.js) .sp { display: none; }
    Rang in der Liste und ein Podest daneben mit Kranz, Pokal, Name und Zeit. Die Formen
    sind Symbole in simulation.html, die Farbe kommt aus --medaille (currentColor). */
 .sp-symbole { position: absolute; width: 0; height: 0; overflow: hidden; }
-.sp-besten-koerper { display: grid; gap: 28px; margin-top: 28px; }
+.sp-besten-koerper { display: grid; gap: 32px; margin-top: 32px; }
 .sp-besten-koerper .sp-besten { margin-top: 0; }
 .sp-besten li.ist-gold { --medaille: var(--gold); }
 .sp-besten li.ist-silber { --medaille: var(--silber); }
@@ -3349,22 +3349,22 @@ html:not(.js) .sp { display: none; }
 .sp-besten li.ist-bronze .sp-besten-rang { font-weight: 700; color: var(--medaille); }
 .sp-pokal { width: 1em; height: 1em; flex-shrink: 0; fill: currentColor; }
 .sp-podest { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 8px; margin: 0; padding: 0; list-style: none; }
-.sp-podest-platz { --medaille: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; text-align: center; }
+.sp-podest-platz { --medaille: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; text-align: center; }
 .sp-podest-platz.ist-gold { --medaille: var(--gold); }
 .sp-podest-platz.ist-silber { --medaille: var(--silber); }
 .sp-podest-platz.ist-bronze { --medaille: var(--bronze); }
 .sp-podest-platz.ist-leer { --medaille: var(--border-2); }
-.sp-podest-ehrung { position: relative; width: 76px; height: 76px; color: var(--medaille); }
+.sp-podest-ehrung { position: relative; width: 80px; height: 80px; color: var(--medaille); }
 .sp-podest-ehrung .sp-kranz { position: absolute; inset: 0; width: 100%; height: 100%; fill: currentColor; }
-.sp-podest-ehrung .sp-pokal { position: absolute; top: 50%; left: 50%; width: 30px; height: 30px; transform: translate(-50%, -46%); }
-.sp-podest-platz.ist-gold .sp-podest-ehrung { width: 92px; height: 92px; }
-.sp-podest-platz.ist-gold .sp-podest-ehrung .sp-pokal { width: 36px; height: 36px; }
+.sp-podest-ehrung .sp-pokal { position: absolute; top: 50%; left: 50%; width: 32px; height: 32px; transform: translate(-50%, -46%); }
+.sp-podest-platz.ist-gold .sp-podest-ehrung { width: 96px; height: 96px; }
+.sp-podest-platz.ist-gold .sp-podest-ehrung .sp-pokal { width: 40px; height: 40px; }
 .sp-podest-name { max-width: 100%; font-weight: 700; font-size: var(--fs-small); line-height: 1.3; overflow-wrap: anywhere; }
 .sp-podest-platz.ist-leer .sp-podest-name { font-weight: 500; color: var(--muted); }
 .sp-podest-zeit { min-height: 1.3em; font-family: var(--mono); font-size: var(--caption); color: var(--muted); }
 .sp-podest-stufe { display: flex; justify-content: center; width: 100%; padding-top: 8px; font-family: var(--mono); font-size: var(--fs-h3); font-weight: 700; line-height: 1; color: var(--medaille); background: var(--wash-3); border-top: 3px solid var(--medaille); }
 .sp-podest-platz.ist-gold .sp-podest-stufe { height: 104px; }
-.sp-podest-platz.ist-silber .sp-podest-stufe { height: 78px; }
+.sp-podest-platz.ist-silber .sp-podest-stufe { height: 80px; }
 .sp-podest-platz.ist-bronze .sp-podest-stufe { height: 60px; }
 @media (min-width: 1141px) {
   .sp-besten-koerper { grid-template-columns: minmax(0, 1fr) 400px; gap: 40px; align-items: start; }
@@ -3380,15 +3380,15 @@ html:not(.js) .sp { display: none; }
   border: 1px solid var(--border-2);
 }
 .sp-besten-statistik dt { font-family: var(--mono); font-size: var(--label); letter-spacing: var(--label-ls); text-transform: uppercase; color: var(--muted); }
-.sp-besten-statistik dd { margin: 6px 0 0; font-family: var(--mono); font-size: var(--fs-h4); font-weight: 700; color: var(--text); }
+.sp-besten-statistik dd { margin: 8px 0 0; font-family: var(--mono); font-size: var(--fs-h4); font-weight: 700; color: var(--text); }
 @media (max-width: 560px) {
   .sp-besten li { grid-template-columns: 2.6em minmax(0, 1fr) auto; gap: 8px 8px; }
   .sp-podest { order: -1; }   /* am Handy ueber der Liste */
   .sp-podest-ehrung { width: 64px; height: 64px; }
-  .sp-podest-platz.ist-gold .sp-podest-ehrung { width: 76px; height: 76px; }
+  .sp-podest-platz.ist-gold .sp-podest-ehrung { width: 80px; height: 80px; }
   .sp-podest-platz.ist-gold .sp-podest-stufe { height: 84px; }
   .sp-podest-platz.ist-silber .sp-podest-stufe { height: 64px; }
-  .sp-podest-platz.ist-bronze .sp-podest-stufe { height: 50px; }
+  .sp-podest-platz.ist-bronze .sp-podest-stufe { height: 48px; }
   .sp-besten-datum { display: none; }
   .sp-besten-statistik { grid-template-columns: 1fr; gap: 8px; }
 }

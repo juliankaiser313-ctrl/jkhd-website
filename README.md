@@ -210,6 +210,10 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Simulation im Raster** (Loop 2, A2/A3/A5/3.4, 30.10.2026): Brett, Tafeln, Handel, SL/TP, Protokoll,
+  Bestenliste, Podest und Statistik ohne Werte neben dem 4-px-Raster (vorher 41: 6, 20, 28, 46, 62, 76, 92 …),
+  Brett-Innenabstand `--pad-card`, SL/TP-Fokusring wie jedes Feld, Start-/Ende-Schicht mit Schatten-3 + Kante,
+  Podest 80 / 96 px mit Pokal 32 / 40.
 - **Bildlauf-Seiten: eine Strichstärke je Rolle** (Loop 2, A8/3.3, 30.10.2026): in `js/bildlauf.js` und
   `js/bilder-*.js` nur noch 1 (Haarlinie), 1,5 (Kurve, Linie, Icon) und 2 (Rahmen) statt sieben Werten; der
   Prozess-Chip nimmt die Caption wie jede Beschriftung. Farben aus den Tokens, Beschriftungen skaliert, DPR ≤ 2.
