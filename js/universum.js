@@ -815,10 +815,26 @@ void main() {
   vec2 zuv = vec2((lonG - uZiel.x) / uZiel.z, 1.0 - (latG - uZiel.y) / uZiel.w);
   float zielDrin = kante(zuv) * uZielMix;
   vec3 tag = mix(texture2D(uTag, uv).rgb, texture2D(uTagEu, euv).rgb, euDrin);
+  // Pol (Loop 2, 4.3): die oberste Texelzeile wird ueber 360 Grad gestreckt und lief sternfoermig zusammen --
+  // ab 74 Grad Breite blenden Tag und Wolken auf eine laengenunabhaengige Farbe, Lichter gibt es dort nicht
+  float pol = smoothstep(0.96, 0.995, abs(w.z));
+  float polWolke = 0.0;
+  if (pol > 0.0) {   // Mittel ueber acht Laengen je Breite: keine Streifen, keine Ringe einer einzelnen Laenge
+    vec3 polFarbe = vec3(0.0);
+    for (int i = 0; i < 8; i++) {
+      vec2 puv = vec2((float(i) + 0.5) / 8.0, uv.y);
+      polFarbe += texture2D(uTag, puv, 4.0).rgb;   // grobe Mip-Stufe: auch ueber die Breite geglaettet, keine Ringe
+      polWolke += texture2D(uWolken, puv, 4.0).r;
+    }
+    tag = mix(tag, polFarbe / 8.0, pol);
+    polWolke = polWolke / 8.0 * uWolkenMix;
+  }
   vec3 nacht = mix(lichter(uNacht, uv), lichter(uNachtEu, euv), euDrin);
+  nacht = mix(nacht, vec3(0.0), pol);
   nacht = mix(nacht, lichter(uNachtZiel, zuv), zielDrin);
   float wasser = smoothstep(0.02, 0.14, tag.b - max(tag.r, tag.g));
   float wolke = texture2D(uWolken, vec2(fract(uv.x + uWolkenVersatz), uv.y)).r * uWolkenMix;
+  wolke = mix(wolke, polWolke, pol);
   float diff = dot(n, sonne);
   float tagLicht = smoothstep(-0.1, 0.3, diff);
   float daemmer = exp(-pow(diff / 0.15, 2.0));
@@ -1522,11 +1538,18 @@ void main() {
     g.fillStyle = "#fff";
     g.strokeStyle = "#fff";
     g.lineWidth = 1;
-    g.textBaseline = "middle";
+    // Jedes Zeichen auf seine Grundlinie (Loop 2, 4.3): das DOM-Rechteck eines Zeichens reicht von der
+    // Oberlaenge bis zur Unterlaenge der Schrift, fontBoundingBoxAscent ist dieselbe Oberlaenge -- so liegt
+    // die Punktkopie genau auf der Schrift. Mit textBaseline "middle" (Mitte des Geviertkastens) stand
+    // sie etwa 0,1 em zu hoch, und im Uebergang sah man ein Doppelbild.
+    g.textBaseline = "alphabetic";
     const range = document.createRange();
     for (const el of hero.querySelectorAll("h1, .brand-word, .brand-line1, .brand-line2, .hero-actions .btn")) {
       const st = getComputedStyle(el);
       g.font = st.fontStyle + " " + st.fontWeight + " " + st.fontSize + " " + st.fontFamily;
+      const mass = g.measureText("Hg");
+      const oben = Number.isFinite(mass.fontBoundingBoxAscent) ? mass.fontBoundingBoxAscent : null;   // sonst Mitte wie frueher
+      g.textBaseline = oben === null ? "middle" : "alphabetic";
       const gross = st.textTransform === "uppercase";
       const laeufer = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
       let knoten;
@@ -1539,7 +1562,7 @@ void main() {
           range.setEnd(knoten, i + 1);
           const r = range.getClientRects()[0];
           if (!r || r.width <= 0) continue;
-          g.fillText(gross ? ch.toUpperCase() : ch, r.left - sr.left, r.top - sr.top + r.height / 2);
+          g.fillText(gross ? ch.toUpperCase() : ch, r.left - sr.left, r.top - sr.top + (oben === null ? r.height / 2 : oben));
         }
       }
     }
