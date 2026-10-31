@@ -2202,7 +2202,7 @@ void main() {
         ctx.fillStyle = "#cfcdc8";
         gesperrt("Quant Systems", zx, wy + Math.max(16, m * 0.045), `700 ${Math.round(Math.max(10, m * 0.023))}px Manrope, "Segoe UI", sans-serif`, 0.05);
         ctx.fillStyle = "#9d9d99";
-        gesperrt("Just Know How to Dominate.", zx, wy + Math.max(30, m * 0.085), `${Math.round(Math.max(9, m * 0.02))}px "Cascadia Code", Consolas, monospace`, 0.03);
+        gesperrt("Just Know How to Dominate.", zx, wy + Math.max(30, m * 0.085), `${Math.round(Math.max(9, m * 0.02))}px "Cascadia Code", Consolas, monospace`, 0.03, "#f4f2ee");
       }
     }
     // Glanz auf dem Glas des Monitors, Betriebslicht
@@ -2406,13 +2406,19 @@ void main() {
   }
 
   // Text mit Zeichenabstand (em-Anteil), zentriert
-  function gesperrt(text, x, y, font, abstand) {
+  // farbeGross: Grossbuchstaben in dieser Farbe, der Rest in der gesetzten -- die Initialen J, K, H, D der
+  // zweiten Zeile der Marke, wie `.brand-line2 b` im CSS (31.10.2026)
+  function gesperrt(text, x, y, font, abstand, farbeGross) {
     ctx.font = font;
     const em = parseFloat(font.match(/(\d+(?:\.\d+)?)px/)[1]);
     const breiten = [...text].map((c) => ctx.measureText(c).width);
     const gesamt = breiten.reduce((a, b) => a + b, 0) + em * abstand * (text.length - 1);
+    const rest = ctx.fillStyle;
     let lx = x - gesamt / 2;
-    [...text].forEach((c, i) => { ctx.fillText(c, lx, y); lx += breiten[i] + em * abstand; });
+    [...text].forEach((c, i) => {
+      if (farbeGross) ctx.fillStyle = /[A-Z]/.test(c) ? farbeGross : rest;
+      ctx.fillText(c, lx, y); lx += breiten[i] + em * abstand;
+    });
   }
 
   // ---- Fortschritt, Schleife ----

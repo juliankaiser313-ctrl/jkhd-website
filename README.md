@@ -210,6 +210,14 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Der Name ausgeschrieben** (31.10.2026): Julian: „JKHD bedeutet Just Know How to Dominate.“ In jeder Marke
+  (Kopfzeile, Hero, Fußzeile, Ohne-JS-Zeichen, 32 Seiten) tragen die Anfangsbuchstaben J, K, H, D der zweiten
+  Zeile jetzt die Textfarbe (`.brand-line2 b`, nur Farbe — die Punktkopie des Heros bleibt zeichengenau); das
+  Wort JKHD ist ein `<abbr title="Just Know How to Dominate">`; die Marken-Links heißen für Vorleser „JKHD
+  (Just Know How to Dominate) — Startseite/Home“; Unternehmen/Company bekamen die Zeile „Name“ in „Auf einen
+  Blick“ und den Satz „JKHD steht für …“ / „JKHD stands for …“; die Strukturdaten der Startseiten `alternateName`
+  und `slogan`; die beiden Leinwand-Zeichen (Schluss der Bildlauf-Seiten, Monitor im Universum) zeichnen die
+  Initialen ebenso hell. Messgerät/Fotos: `JKHD-Pruefwerkzeuge/fotos/name-jkhd`, Patch `patch_name_jkhd.py`.
 - **Zeilenhöhen der 28-px-Titel, KaTeX-Schriften vorgeladen** (Loop 2, 5.1, 30.10.2026): Creed-Karten-h3 und
   Partnerkasten-/Partnerkarten-h2 mit der Zeilenhöhe ihrer Größe (`--lh-h3`) statt der ihrer Tag-Stufe; die sechs
   Formelseiten laden `KaTeX_Main-Regular` und `KaTeX_Math-Italic` vor (kein 2-px-Sprung der Kopfformeln beim Laden).
@@ -488,6 +496,10 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
 - **Unternehmen:** Die Überschrift ist Julians eigener Satz vom 19.09.2026 (Kehrtwende: JKHD
   verkauft nichts). Seit 26.09.2026 ohne das alte Angebot (Kunden, Leistungen, Aufträge) und
   ohne die leeren Bildkästen.
+- **Der Name (alle Marken, Unternehmen/Company):** Julian, 31.10.2026: „JKHD bedeutet Just Know How to
+  Dominate.“ Der Satz „JKHD steht für Just Know How to Dominate.“ / „JKHD stands for …“ und die Zeile „Name“
+  in „Auf einen Blick“ sind sein Wortlaut, nichts dazu erfunden; in der Marke sind seither die
+  Anfangsbuchstaben J, K, H, D hell, damit die zweite Zeile als Auflösung der vier Buchstaben lesbar ist.
 - **Impressum, zweiter Kontaktweg:** Neben der E-Mail verlangt § 5 Abs. 1 Nr. 2 DDG (EuGH
   C-298/07) einen zweiten schnellen Kontaktweg; das ist der Knopf „Anfrage“ im Kasten
   `#partner` auf kontakt.html. Wer den Kasten dort entfernt oder verschiebt, muss den Verweis

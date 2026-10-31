@@ -275,7 +275,7 @@ html.ist-im-all .site-header, html.ist-im-all .helper {
 }
 /* und der Wechsel geschieht weich: Flaeche, Haarlinie, Zeichen, Schrift, Knopf */
 .brand svg { transition: fill var(--t-mittel) var(--ease); }
-.brand-word, .brand-line1, .brand-line2 { transition: color var(--t-mittel) var(--ease); }
+.brand-word, .brand-line1, .brand-line2, .brand-line2 b { transition: color var(--t-mittel) var(--ease); }
 .brand-divider { transition: background var(--t-mittel) var(--ease); }
 
 .nav-wrap {
@@ -319,6 +319,13 @@ html.ist-im-all .site-header, html.ist-im-all .helper {
   color: var(--muted);
   white-space: nowrap;
 }
+
+/* Der Name ausgeschrieben (31.10.2026): die Anfangsbuchstaben J, K, H, D der zweiten Zeile tragen die Textfarbe,
+   der Rest bleibt matt -- so liest sich „Just Know How to Dominate.“ als Aufloesung der vier Buchstaben. Nur die
+   Farbe wechselt (Gewicht und Groesse bleiben), damit die Punktkopie des Heros in js/universum.js zeichengenau
+   bleibt. Das Wort JKHD ist ein <abbr> und traegt die Aufloesung als title -- ohne die Punktlinie des Browsers. */
+.brand-line2 b, .universum-spruch b { font-weight: inherit; color: var(--text); }
+abbr.brand-word { text-decoration: none; cursor: inherit; }
 
 /* ---------- Navigation ----------
    Schmal (bis 1140 px): alles liegt hinter dem Menueknopf, das Feld klappt
@@ -3471,6 +3478,7 @@ html:not(.js) .sp { display: none; }
 .universum-ohne-js svg { width: 88px; height: 88px; fill: #f4f2ee; }
 .universum-ohne-js .universum-wort { color: #f4f2ee; font-weight: 800; font-size: var(--fs-h3); letter-spacing: 0.34em; transform: translateX(0.17em); }
 .universum-ohne-js .universum-spruch { color: #9d9d99; font-family: var(--mono); font-size: var(--fs-caption); }
+.universum-ohne-js .universum-spruch b { color: #f4f2ee; }
 .universum.ist-still { height: auto; }
 .universum.ist-still .universum-buehne { position: static; height: auto; display: flex; flex-direction: column; }
 .universum.ist-still .universum-hero {

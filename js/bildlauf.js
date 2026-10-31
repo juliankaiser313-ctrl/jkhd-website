@@ -287,6 +287,10 @@
   function gesperrt(c, s, x, y, abst) {
     for (const ch of s) { c.fillText(ch, x, y); x += c.measureText(ch).width + abst; }
   }
+  // Die Anfangsbuchstaben J, K, H, D in der Tinte, der Rest matt -- wie `.brand-line2 b` im CSS (31.10.2026)
+  function gesperrtInitialen(c, s, x, y, abst, tinte, matt) {
+    for (const ch of s) { c.fillStyle = /[A-Z]/.test(ch) ? tinte : matt; c.fillText(ch, x, y); x += c.measureText(ch).width + abst; }
+  }
   function lockupMasse(c) {
     const kf = klein ? 1.0 : B < 1100 ? 1.7 : 2.1;   // Vergroesserung gegen den Hero (38 px Balken)
     const bal = 38 * kf, luecke = 16 * kf;
@@ -326,9 +330,8 @@
     c.fillStyle = farbe || F.tinte;
     c.font = sans(m.zeile1, 700);
     gesperrt(c, "Quant Systems", x, m.cy - m.zeile1 * 0.55, m.zeile1 * 0.05);
-    c.fillStyle = farbe || F.matt;
     c.font = mono(m.zeile2);
-    gesperrt(c, "Just Know How to Dominate.", x, m.cy + m.zeile2 * 0.85, m.zeile2 * 0.03);
+    gesperrtInitialen(c, "Just Know How to Dominate.", x, m.cy + m.zeile2 * 0.85, m.zeile2 * 0.03, farbe || F.tinte, farbe || F.matt);
     c.restore();
   }
   let teilchen = null;
