@@ -650,25 +650,15 @@ abbr.brand-word { text-decoration: none; cursor: inherit; }
   color: var(--muted);
 }
 
-/* Marken-Lockup im Hero: unter der Ueberschrift statt einer Unterzeile
-   (Julian, 19.09.2026). Dieselben Bausteine wie in der Kopfzeile, nur
-   groesser und mittig; die Kopfzeile behaelt ihr eigenes Lockup. */
-.hero-brand { justify-content: center; margin: var(--s-6) auto 0; gap: 16px; }   /* Raster + Skala (Loop 2, 3.1) */
-.hero-brand svg { width: 40px; height: 40px; }
-.hero-brand .brand-word { font-size: var(--fs-h4); }
-.hero-brand .brand-divider { height: 40px; }
-.hero-brand .brand-tag { text-align: left; }
-.hero-brand .brand-line1 { font-size: var(--fs-body); }
-.hero-brand .brand-line2 { font-size: var(--fs-label); }
-
-@media (max-width: 560px) {
-  .hero-brand { gap: 12px; margin-top: var(--s-5); }
-  .hero-brand svg { width: 32px; height: 32px; }
-  .hero-brand .brand-word { font-size: var(--fs-body); }
-  .hero-brand .brand-divider { height: 32px; }
-  .hero-brand .brand-line1 { font-size: var(--fs-caption); }
-  .hero-brand .brand-line2 { font-size: var(--fs-label); }
-}
+/* Startseite (Julians Vorgaben 31.10.2026): die Hero-Ueberschrift in der Grotesk statt in der Serife
+   („praegnante Sans-Serif, unterstreicht den mathematischen Charakter“) — nur der volle Hero der
+   Startseite; die 404-Seite behaelt .hero h1 in der Serife wie alle Seitentitel. Das Marken-Lockup unter
+   der Ueberschrift (seit 19.09.2026) ist weg („doppelt gemoppelt“ zur Kopfzeile); an seiner Stelle steht
+   der Spruch der Fusszeile als .hero-sub. */
+.hero-voll h1 { font-family: var(--sans); font-weight: 700; letter-spacing: -0.035em; }
+/* Das Zeichen allein (drei Balken, ohne Wortmarke) zwischen Ueberschrift und Spruch, das Doppelte der
+   Kopfzeile (.brand svg 26 px) — Julian, 31.10.2026: „nur die 3 Striche, etwa doppelt so gross wie links oben“ */
+.hero-zeichen { display: block; width: 52px; height: 52px; margin: 32px auto 0; fill: var(--text); }
 
 .hero-actions { margin-top: 40px; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
 

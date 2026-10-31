@@ -1544,7 +1544,7 @@ void main() {
     // sie etwa 0,1 em zu hoch, und im Uebergang sah man ein Doppelbild.
     g.textBaseline = "alphabetic";
     const range = document.createRange();
-    for (const el of hero.querySelectorAll("h1, .brand-word, .brand-line1, .brand-line2, .hero-actions .btn")) {
+    for (const el of hero.querySelectorAll("h1, .hero-sub, .hero-actions .btn")) {
       const st = getComputedStyle(el);
       g.font = st.fontStyle + " " + st.fontWeight + " " + st.fontSize + " " + st.fontFamily;
       const mass = g.measureText("Hg");
@@ -1566,15 +1566,11 @@ void main() {
         }
       }
     }
-    for (const svg of hero.querySelectorAll(".hero-brand svg")) {
+    for (const svg of hero.querySelectorAll(".hero-zeichen")) {
       const r = svg.getBoundingClientRect(), k = r.width / 100;
       for (const re of svg.querySelectorAll("rect")) {
         g.fillRect(r.left - sr.left + re.x.baseVal.value * k, r.top - sr.top + re.y.baseVal.value * k, re.width.baseVal.value * k, re.height.baseVal.value * k);
       }
-    }
-    for (const el of hero.querySelectorAll(".brand-divider")) {
-      const r = el.getBoundingClientRect();
-      g.fillRect(r.left - sr.left, r.top - sr.top, Math.max(1, r.width), r.height);
     }
     for (const el of hero.querySelectorAll(".hero-actions .btn")) {
       const r = el.getBoundingClientRect();
