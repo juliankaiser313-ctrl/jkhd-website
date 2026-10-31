@@ -2288,6 +2288,7 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 }
 
 .statement + .note { margin-top: 48px; }
+.creed + .note { margin-top: 48px; }   /* Annahme-Kasten unter den Projekt-Karten (31.10.2026) */
 
 /* Partnerzugang: Sprungknopf zum Anmeldekasten unten auf der Seite */
 .statement-aktion { margin-top: 32px; }

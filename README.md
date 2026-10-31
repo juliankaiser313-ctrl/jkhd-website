@@ -224,6 +224,11 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Abschnitt „Regeln der Firmen“ (sechs Schritte: Verlustgrenzen, Konsistenz, Mengen/Märkte/Zeiten, Verbotenes,
   Auszahlungen, Regeländerungen mit dem AGB-Wächter); „Weg einer Idee“ und „Sperren“ unverändert, jetzt mit
   den Ankern `#weg` und `#sperren`; Beschreibungen (meta/og) und sitemap-lastmod neu. Kein neues CSS.
+  Nachtrag (vierte Nachricht, Stempel 20261031c): Kasten „Was davon den echten Markt erreicht — eine Annahme,
+  keine Messung“ unter den Projekt-Karten (interner Ausgleich bei den Firmen; etwa 20 von 28 Millionen bzw. 400 von
+  560 Millionen intern, etwa 8 bzw. 160 Millionen am echten Markt über verschiedene Broker; Co-Location der Firmen;
+  Marktwert und Besitzrecht bei den Firmen; Ausführung über mehrere Börsen), neue Regel `.creed + .note`,
+  Patch `patch_was_wir_machen_annahme.py`.
   Messgerät/Fotos: `JKHD-Pruefwerkzeuge/fotos/was-wir-machen`, Patch `patch_was_wir_machen.py`.
 - **Der Name ausgeschrieben** (31.10.2026): Julian: „JKHD bedeutet Just Know How to Dominate.“ In jeder Marke
   (Kopfzeile, Hero, Fußzeile, Ohne-JS-Zeichen, 32 Seiten) tragen die Anfangsbuchstaben J, K, H, D der zweiten
@@ -526,7 +531,15 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
   mehrere Milliarden Dollar — oft nicht am echten Markt, weil die internen Systeme der Firmen die Trades nicht
   live schicken, aber das ist nur ein Vorteil.“ Deshalb „28.000.000 € wert“ statt „Kaufkraft“ (die wäre das
   Marktvolumen); der Halbsatz „Ein Volumen dieser Größe bewegt dann keinen Preis gegen uns“ ist meine Begründung
-  für sein „nur ein Vorteil“ und steht zur Streichung, wenn er es anders meint.
+  für sein „nur ein Vorteil“ und steht zur Streichung, wenn er es anders meint. Vierte Nachricht: „die Trades
+  werden oft nur intern bei den Firmen ausgeglichen; das System von JKHD kann das nicht sicher bestätigen, aber wir
+  gehen davon aus, dass etwa 20 Mio Marktwert bzw. bei voller Belastung 400 Mio intern bleiben und keine echten
+  Marktbewegungen erzeugen, und etwa 8 Mio bzw. 160 Mio am echten Markt bewegt werden, über unterschiedliche
+  Broker; die Firmen bezahlen teure Co-Location direkt vor der Börse und sparen uns Millionen an Gebühren;
+  Marktwert und Besitzrecht entfallen uns komplett, was uns Verstöße ausschließt; die Trades kommen über mehrere
+  Börsen weltweit verteilt — das Problem der Firmen, nicht das von JKHD.“ Die Teilbeträge stehen ohne
+  Währungszeichen, weil 400 + 160 die 560.000.000 € ergeben müssen (er schrieb „$“); „zwischen ihren eigenen
+  Konten“ und „es sieht nur den Preis, nicht den Weg der Order“ sind meine Erklärungen.
   „Handelt Kapital von Prop-Firmen“ statt „verwaltet“, weil Unternehmen/Fußzeile sagen, dass JKHD kein fremdes
   Vermögen verwaltet. Die Regeln der Firmen stammen aus
   deren Verträgen und Regelseiten (ohne Firmennamen, ohne deren Zahlen); die Aussagen über das System
