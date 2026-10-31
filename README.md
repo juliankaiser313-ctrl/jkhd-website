@@ -8,7 +8,7 @@ Deutsch in der Wurzel, Englisch unter `/en/`.
 ## Struktur
 
 ```
-index.html         Startseite: Hero mit Überschrift in der Grotesk, dem Zeichen (drei Balken), dem Spruch der Fußzeile und zwei Knöpfen auf der Bühne der
+index.html         Startseite: Hero mit Überschrift in der Grotesk, dem Zeichen (drei Balken, 78 px) und zwei Knöpfen auf der Bühne der
                    Universum-Animation (js/universum.js; das Marken-Lockup im Hero ist seit 31.10.2026 weg);
                    die Laufleiste ist seit 10.10.2026 weg
 was-wir-machen.html  Was wir machen (Julians Textfassung vom 31.10.2026, Wortlaut unverändert): Kopf (ein Satz, drei
@@ -214,7 +214,7 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
-- **Startseite, Hero nach Julians Vorgaben** (31.10.2026, Stempel 20261031i): er reichte eine Gestaltungsbewertung
+- **Startseite, Hero nach Julians Vorgaben** (31.10.2026, Stempel 20261031j): er reichte eine Gestaltungsbewertung
   mit drei Punkten ein. (1) Die Hauptüberschrift „Quantitative Systeme.“ steht jetzt in der Hausschrift Manrope
   (`.hero-voll h1`: var(--sans), 700, -0.035em) statt in der Serife — nur der volle Hero der Startseite (DE/EN), die
   404-Seite und alle Seitentitel bleiben in der Serife. (2) Das Marken-Lockup unter der Überschrift ist weg („doppelt
@@ -222,7 +222,8 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Spruch mit ab, die Abtastung von Zeichen und Strich des Lockups und die `.hero-brand`-Regeln sind entfernt.
   Julian danach: „es fehlt jetzt irgendwie das Logo“ — seitdem stehen die drei Balken allein (ohne Wortmarke,
   `.hero-zeichen`, 52 px = das Doppelte der Kopfzeile) zwischen Überschrift und Spruch; universum.js tastet sie
-  mit ab (Patch `patch_startseite_zeichen.py`).
+  mit ab (Patch `patch_startseite_zeichen.py`). Nach dem Live-Blick dann: „der Spruch wieder weg und dafür das
+  Logo nochmal 50 % größer“ — Spruch raus, Zeichen 78 px (Patch `patch_startseite_zeichen_gross.py`).
   (3) Favicon: war bereits eingebunden (favicon.ico/.svg/-96/-192, apple-touch-icon; live 200) — keine Änderung.
   Patch `JKHD-Pruefwerkzeuge/patch_startseite_hero.py`, Fotos `fotos/startseite/`.
 - **„Unternehmen“ komplett in Julians Textfassung** (31.10.2026, Stempel 20261031g): Julian lieferte beide Texte
@@ -560,8 +561,9 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
 - **System:** Julian, 11.10.2026: „bei System auch sowas machen — dort eher weniger Text und
   eher mehr Animation.“ Texte: die Seite vom 23.09.2026, gekürzt; keine Anleitung, nur die Idee.
 - **Startseite, Hero (31.10.2026):** Julians Vorgaben aus einer eingereichten Gestaltungsbewertung (Sans-Serif für
-  die Überschrift, Lockup im Hero weg, stattdessen Slogan oder kurze Beschreibung). Der Spruch im Hero ist der
-  bestehende Spruch der Fußzeile („Nirgends und doch überall.“ / „Nowhere and yet everywhere.“), kein neuer Text.
+  die Überschrift, Lockup im Hero weg, stattdessen Slogan oder kurze Beschreibung). Der Spruch der Fußzeile
+  („Nirgends und doch überall.“ / „Nowhere and yet everywhere.“) stand kurz im Hero (Stempel 20261031i) und ist
+  auf Julians Wunsch wieder weg; im Hero stehen Überschrift, Zeichen und Knöpfe.
 - **Unternehmen (Textfassung 31.10.2026):** beide Seiten Wort für Wort aus Julians Dateien `unternehmen_de.md` und
   `company_en.md` (Kopien in `JKHD-Pruefwerkzeuge/unternehmen/quellen/`). Meine Anteile: die Verpackung, der
   Kicker „// Unternehmen“, die Nummern 01–04 der Karten, die Initialen-Auszeichnung des Namens wie in der Marke,

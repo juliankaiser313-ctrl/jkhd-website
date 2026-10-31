@@ -653,12 +653,13 @@ abbr.brand-word { text-decoration: none; cursor: inherit; }
 /* Startseite (Julians Vorgaben 31.10.2026): die Hero-Ueberschrift in der Grotesk statt in der Serife
    („praegnante Sans-Serif, unterstreicht den mathematischen Charakter“) — nur der volle Hero der
    Startseite; die 404-Seite behaelt .hero h1 in der Serife wie alle Seitentitel. Das Marken-Lockup unter
-   der Ueberschrift (seit 19.09.2026) ist weg („doppelt gemoppelt“ zur Kopfzeile); an seiner Stelle steht
-   der Spruch der Fusszeile als .hero-sub. */
+   der Ueberschrift (seit 19.09.2026) ist weg („doppelt gemoppelt“ zur Kopfzeile); der Spruch der Fusszeile
+   stand kurz an seiner Stelle (Stempel 20261031i) und ist auf Julians Wunsch wieder weg. */
 .hero-voll h1 { font-family: var(--sans); font-weight: 700; letter-spacing: -0.035em; }
-/* Das Zeichen allein (drei Balken, ohne Wortmarke) zwischen Ueberschrift und Spruch, das Doppelte der
-   Kopfzeile (.brand svg 26 px) — Julian, 31.10.2026: „nur die 3 Striche, etwa doppelt so gross wie links oben“ */
-.hero-zeichen { display: block; width: 52px; height: 52px; margin: 32px auto 0; fill: var(--text); }
+/* Das Zeichen allein (drei Balken, ohne Wortmarke) unter der Ueberschrift, das Dreifache der Kopfzeile
+   (.brand svg 26 px) — Julian, 31.10.2026: erst „etwa doppelt so gross wie links oben“ (52 px), dann
+   „nochmal 50 % groesser“ (78 px) */
+.hero-zeichen { display: block; width: 78px; height: 78px; margin: 32px auto 0; fill: var(--text); }
 
 .hero-actions { margin-top: 40px; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
 

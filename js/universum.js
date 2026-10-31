@@ -1544,7 +1544,7 @@ void main() {
     // sie etwa 0,1 em zu hoch, und im Uebergang sah man ein Doppelbild.
     g.textBaseline = "alphabetic";
     const range = document.createRange();
-    for (const el of hero.querySelectorAll("h1, .hero-sub, .hero-actions .btn")) {
+    for (const el of hero.querySelectorAll("h1, .hero-actions .btn")) {
       const st = getComputedStyle(el);
       g.font = st.fontStyle + " " + st.fontWeight + " " + st.fontSize + " " + st.fontFamily;
       const mass = g.measureText("Hg");
