@@ -3519,3 +3519,19 @@ html:not(.js) .sp { display: none; }
 
 /* Menueknopf: die kleine Knopfgroesse (Loop 2, A5) */
 .nav-toggle { width: 40px; height: 40px; }
+
+/* ---- Zertifikate (31.10.2026): Urkunden der Firmen, je eine Karte ---- */
+.zert-raster { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap: 24px; }
+.zert { display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; }
+.zert img { display: block; width: 100%; height: auto; border-bottom: 1px solid var(--border); }
+.zert-text { padding: var(--pad-card); }
+.zert-label { margin-bottom: 8px; }
+.zert-text h3 { font-size: var(--h3-sm); letter-spacing: var(--ls-h4); margin-bottom: 16px; }
+.zert-meta { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; font-size: var(--fs-small); }
+.zert-meta dt { color: var(--muted); }
+.zert-meta dd { color: var(--text); }
+.zert-breit { grid-column: 1 / -1; max-width: 900px; }
+@media (max-width: 560px) {
+  .zert-meta { grid-template-columns: 1fr; gap: 2px; }
+  .zert-meta dd { margin-bottom: 8px; }
+}

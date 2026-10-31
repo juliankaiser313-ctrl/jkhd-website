@@ -26,6 +26,8 @@ sicherheit.html    Sicherheit am EIGENEN System — als Animation beim Scrollen 
 simulation.html    Spiel „Sie gegen den JKHD-Algo“ (27.09.2026): erfundener Goldmarkt, beide
                    starten mit 100.000 $, wer zuerst 1.000.000 $ hat, gewinnt (siehe unten)
 mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
+zertifikate.html   Seit 31.10.2026: Urkunden der Firmen (FundedNext Futures „Rising Trader“, Lucid Trading
+                   „Lucid Funded Account“), je eine Karte mit Bild und Fakten; Bilder in assets/zertifikate.
 unternehmen.html   Seit 26.09.2026 ohne altes Angebot: Julians Satz als Überschrift, Profil +
                    Auf einen Blick, „Was JKHD nicht tut", Austausch, 4 Grundsätze (.creed),
                    Gründer, Kontakt; die leeren Bildkästen („Einblicke") sind weg
@@ -133,7 +135,7 @@ Datei. Wer einen Text ändert, ändert ihn in **beiden** Fassungen.
 - **Seitenpaare:** `was-wir-machen.html ↔ en/what-we-do.html`, `pruefung.html ↔ en/testing.html`,
   `sicherheit.html ↔ en/security.html`,
   `mathematik.html ↔ en/mathematics.html`, `mathematik-grundlagen.html ↔ en/mathematics-basics.html`,
-  `unternehmen.html ↔ en/company.html`, `kontakt.html ↔ en/contact.html`,
+  `unternehmen.html ↔ en/company.html`, `zertifikate.html ↔ en/certificates.html`, `kontakt.html ↔ en/contact.html`,
   `partnerzugang.html ↔ en/partner-access.html`,
   `impressum.html ↔ en/imprint.html`, `datenschutz.html ↔ en/privacy.html`,
   `index.html`, `system.html` und `simulation.html` heißen in beiden Sprachen
@@ -210,6 +212,14 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Neue Seite „Zertifikate“** (31.10.2026): Julian: „eine neue Seite mit Zertifikaten, die das System bereits
+  von den Firmen erhalten hat.“ zertifikate.html + en/certificates.html: je Urkunde eine Karte — FundedNext
+  Futures „Certificate of Appreciation — Rising Trader“ (Futures Rapid Pro Challenge $100K, Issue Date
+  05/09/2026, aus seiner PDF gerendert, Original-PDF verlinkt) und Lucid Trading „Lucid Funded Account —
+  Evaluation completed“ (LucidPro 25K, 2026-09-16); dazu der Abschnitt „Nachweise“ mit der Tradesyncer-Karte
+  vom 29.10. (fünf Konten bei Apex, MNQ — ausdrücklich kein Zertifikat, die Zahlen sind die der Plattform).
+  Neuer Bauteil `.zert*` im CSS, Menüpunkt und Fußzeile auf allen Seiten, Sitemap, Stempel 20261031d. Patch
+  `JKHD-Pruefwerkzeuge/patch_zertifikate.py`, Quellen `zertifikate/quellen`, Fotos `fotos/zertifikate`.
 - **„Was wir machen“ erklärt das ganze Projekt** (31.10.2026): Julian: „wirklich erklären, was wir machen —
   das komplette Projekt, dass wir Prop-Firmen-Gelder verwalten, mit einer Kaufkraft bis zu 28 Mio, und dass
   der Algo die Regeln einhalten muss, jede auch so kleine AGB-Bedingung.“ Dazu: „alle Firmen aufzählen:
@@ -545,6 +555,12 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
   deren Verträgen und Regelseiten (ohne Firmennamen, ohne deren Zahlen); die Aussagen über das System
   (Prüfung vor jedem Einstieg, eine Richtung je Markt, Glattstell-Fenster, Auszahlungsgründe, AGB-Wächter)
   sind aus dem Quelltext des Systems belegt — Prinzip, kein Bauplan.
+- **Zertifikate:** Julian, 31.10.2026: „eine neue Seite mit Zertifikaten, die das System bereits erhalten hat
+  von den Firmen“; er schickte `Prop Zertifikat.zip` (PDF FundedNext Futures, Rising Trader, 05/09/2026 — Format
+  des Datums offen, deshalb „Datum wie auf der Urkunde“), einen Bild-Link mit der Lucid-Urkunde (2026-09-16) und
+  die Tradesyncer-Karte aus seinen Downloads („das hier“; Jahr 2026 aus dem Dateidatum 29.10.2026). Alle Angaben
+  auf den Karten stehen so auf Urkunde bzw. Karte; Überschriften, Einleitungen, die Erklärung „das finanzierte
+  Konto nach bestandener Prüfung“ und der Satz, dass die Zahlen die der Plattform sind, sind meine Formulierung.
 - **Impressum, zweiter Kontaktweg:** Neben der E-Mail verlangt § 5 Abs. 1 Nr. 2 DDG (EuGH
   C-298/07) einen zweiten schnellen Kontaktweg; das ist der Knopf „Anfrage“ im Kasten
   `#partner` auf kontakt.html. Wer den Kasten dort entfernt oder verschiebt, muss den Verweis

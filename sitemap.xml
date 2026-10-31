@@ -188,4 +188,20 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/partner-access.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/partnerzugang.html"/>
   </url>
+  <url>
+    <loc>https://www.jkhd.de/zertifikate.html</loc>
+    <lastmod>2026-10-31</lastmod>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/zertifikate.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/certificates.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/zertifikate.html"/>
+  </url>
+  <url>
+    <loc>https://www.jkhd.de/en/certificates.html</loc>
+    <lastmod>2026-10-31</lastmod>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.jkhd.de/zertifikate.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.jkhd.de/en/certificates.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.jkhd.de/zertifikate.html"/>
+  </url>
 </urlset>
