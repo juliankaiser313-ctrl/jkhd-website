@@ -210,6 +210,21 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **„Was wir machen“ erklärt das ganze Projekt** (31.10.2026): Julian: „wirklich erklären, was wir machen —
+  das komplette Projekt, dass wir Prop-Firmen-Gelder verwalten, mit einer Kaufkraft bis zu 28 Mio, und dass
+  der Algo die Regeln einhalten muss, jede auch so kleine AGB-Bedingung.“ Dazu: „alle Firmen aufzählen:
+  FundedNext, Topstep, Apex, Lucid, The5ers, TPT und FTMO; alle Konten zusammen 28.000.000 €; Konten von
+  50.000 $ bis 300.000 $, die ich durch ein System handle und mich dabei an jede Regel halte.“ Und: „eine
+  einzige vollständig ausgelastete Position bewegt 560.000.000 € Marktvolumen, eine abgeschlossene Transaktion
+  mehr als 1 Milliarde US-Dollar, täglich mehrere Milliarden Dollar — oft nicht am echten Markt, weil die internen
+  Systeme der Firmen die Trades nicht live schicken; nur ein Vorteil.“ was-wir-machen.html und
+  en/what-we-do.html: neuer Kopfsatz und Absatz (Prop-Firma, Konto, Gewinnteilung, die sieben Firmen, die
+  Kontogrößen, 28.000.000 € Wert, die zwei Aufgaben des Systems), neuer Abschnitt „Das Projekt“ (vier
+  Creed-Karten, darunter das Marktvolumen) und neuer
+  Abschnitt „Regeln der Firmen“ (sechs Schritte: Verlustgrenzen, Konsistenz, Mengen/Märkte/Zeiten, Verbotenes,
+  Auszahlungen, Regeländerungen mit dem AGB-Wächter); „Weg einer Idee“ und „Sperren“ unverändert, jetzt mit
+  den Ankern `#weg` und `#sperren`; Beschreibungen (meta/og) und sitemap-lastmod neu. Kein neues CSS.
+  Messgerät/Fotos: `JKHD-Pruefwerkzeuge/fotos/was-wir-machen`, Patch `patch_was_wir_machen.py`.
 - **Der Name ausgeschrieben** (31.10.2026): Julian: „JKHD bedeutet Just Know How to Dominate.“ In jeder Marke
   (Kopfzeile, Hero, Fußzeile, Ohne-JS-Zeichen, 32 Seiten) tragen die Anfangsbuchstaben J, K, H, D der zweiten
   Zeile jetzt die Textfarbe (`.brand-line2 b`, nur Farbe — die Punktkopie des Heros bleibt zeichengenau); das
@@ -500,6 +515,23 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
   Dominate.“ Der Satz „JKHD steht für Just Know How to Dominate.“ / „JKHD stands for …“ und die Zeile „Name“
   in „Auf einen Blick“ sind sein Wortlaut, nichts dazu erfunden; in der Marke sind seither die
   Anfangsbuchstaben J, K, H, D hell, damit die zweite Zeile als Auflösung der vier Buchstaben lesbar ist.
+- **Was wir machen (das Projekt, die Regeln der Firmen):** Julian, 31.10.2026: „wirklich erklären, was wir
+  machen — das komplette Projekt, dass wir Prop-Firmen-Gelder verwalten, mit einer Kaufkraft bis zu 28 Mio,
+  und dass der Algo die Regeln einhalten muss, jede auch so kleine AGB-Bedingung.“ Und: „alle Firmen aufzählen:
+  FundedNext, Topstep, Apex, Lucid, The5ers, TPT und FTMO; alle Konten zusammen 28.000.000 €; Konten von
+  50.000 $ bis 300.000 $, die ich durch ein System handle und mich dabei an jede Regel halte.“ Die sieben Firmen,
+  die Kontogrößen und die 28.000.000 € sind seine Angaben; „handeln“ ist sein Wort („die ich durch ein System
+  handle“); „TPT“ steht, wie er es schrieb. Dritte Nachricht: „eine einzige vollständig ausgelastete Position
+  bewegt 560.000.000 € Marktvolumen, eine abgeschlossene Transaktion mehr als 1 Milliarde US-Dollar, täglich
+  mehrere Milliarden Dollar — oft nicht am echten Markt, weil die internen Systeme der Firmen die Trades nicht
+  live schicken, aber das ist nur ein Vorteil.“ Deshalb „28.000.000 € wert“ statt „Kaufkraft“ (die wäre das
+  Marktvolumen); der Halbsatz „Ein Volumen dieser Größe bewegt dann keinen Preis gegen uns“ ist meine Begründung
+  für sein „nur ein Vorteil“ und steht zur Streichung, wenn er es anders meint.
+  „Handelt Kapital von Prop-Firmen“ statt „verwaltet“, weil Unternehmen/Fußzeile sagen, dass JKHD kein fremdes
+  Vermögen verwaltet. Die Regeln der Firmen stammen aus
+  deren Verträgen und Regelseiten (ohne Firmennamen, ohne deren Zahlen); die Aussagen über das System
+  (Prüfung vor jedem Einstieg, eine Richtung je Markt, Glattstell-Fenster, Auszahlungsgründe, AGB-Wächter)
+  sind aus dem Quelltext des Systems belegt — Prinzip, kein Bauplan.
 - **Impressum, zweiter Kontaktweg:** Neben der E-Mail verlangt § 5 Abs. 1 Nr. 2 DDG (EuGH
   C-298/07) einen zweiten schnellen Kontaktweg; das ist der Knopf „Anfrage“ im Kasten
   `#partner` auf kontakt.html. Wer den Kasten dort entfernt oder verschiebt, muss den Verweis
