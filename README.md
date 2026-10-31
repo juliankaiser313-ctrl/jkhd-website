@@ -212,6 +212,10 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Abschnitt „Wie groß ist das Risiko?“** (31.10.2026, Stempel 20261031e): Julian: „JKHD wird oft gefragt, wie
+  hoch das Risiko ist …“ (vollständig unter Herkunft); auf was-wir-machen.html + en/what-we-do.html nach den
+  Sperren, `.section-head` + `.prose`, Anker `#risiko`; die Sätze auf seinen Wunsch geglättet, Inhalt seiner.
+  Patch `JKHD-Pruefwerkzeuge/patch_was_wir_machen_risiko.py`, Fotos `fotos/was-wir-machen/risiko-*`.
 - **Neue Seite „Zertifikate“** (31.10.2026): Julian: „eine neue Seite mit Zertifikaten, die das System bereits
   von den Firmen erhalten hat.“ zertifikate.html + en/certificates.html: je Urkunde eine Karte — FundedNext
   Futures „Certificate of Appreciation — Rising Trader“ (Futures Rapid Pro Challenge $100K, Issue Date
@@ -555,6 +559,20 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
   deren Verträgen und Regelseiten (ohne Firmennamen, ohne deren Zahlen); die Aussagen über das System
   (Prüfung vor jedem Einstieg, eine Richtung je Markt, Glattstell-Fenster, Auszahlungsgründe, AGB-Wächter)
   sind aus dem Quelltext des Systems belegt — Prinzip, kein Bauplan.
+- **Risiko (Was wir machen):** Julian, 31.10.2026: „JKHD wird oft gefragt, wie hoch das Risiko ist, und auch
+  behauptet, dass das Risiko enorm sei. Das hört sich erstmal logisch an und klingt vielleicht bestätigend, ist
+  aber ein klassischer Fehler. JKHD kennt jedes einzelne Risiko in jeder Millisekunde bis in die kleinsten
+  rechenbaren Bereiche berechnet; ich kann Ihnen also exakt erklären, was passiert, wenn ich über die Straße
+  laufe und ein Auto mich überfährt (in Bezug auf das System); die Risiken sind in Centbeträgen kalkuliert und
+  hinterfragen jede mögliche Chance, die schlecht gehen kann. … Wenn also jemand behauptet, dass das System von
+  JKHD riskant ist, hast du dich mal gefragt, wie riskant es ist, über eine gewöhnliche Straße zu laufen? Ist
+  dieser Person überhaupt bewusst, auf was für Gefahren sie sich einlässt, ohne jegliches Wissen darüber, und es
+  dann einen ‚Fehler‘ nennt, nur weil das Wissen darüber fehlte; dieses Fehlen jedoch nur eine Verschönredung der
+  Niederlage darstellt, damit sich eine Person nicht schlecht fühlen muss. Denn dies ist oft die Wahrheit in den
+  Systemen des Menschen und denen der Maschinen. Kannst du aber die Sätze schöner machen und besser?“ — Die
+  Fassung auf der Seite ist meine Glättung seiner Sätze (Inhalt und Reihenfolge seine; „in Cent, nicht in
+  Gefühlen“ und „die freundlichere Beschreibung einer Niederlage“ sind meine Wendungen für „in Centbeträgen
+  kalkuliert“ und „Verschönredung der Niederlage“; „ich“ wurde zu „der Gründer“, der Leser bleibt beim „Sie“).
 - **Zertifikate:** Julian, 31.10.2026: „eine neue Seite mit Zertifikaten, die das System bereits erhalten hat
   von den Firmen“; er schickte `Prop Zertifikat.zip` (PDF FundedNext Futures, Rising Trader, 05/09/2026 — Format
   des Datums offen, deshalb „Datum wie auf der Urkunde“), einen Bild-Link mit der Lucid-Urkunde (2026-09-16) und
