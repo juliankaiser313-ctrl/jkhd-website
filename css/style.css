@@ -2290,6 +2290,21 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .statement + .note { margin-top: 48px; }
 .creed + .note { margin-top: 48px; }   /* Annahme-Kasten unter den Projekt-Karten (31.10.2026) */
 
+/* „Was wir machen“ in Julians Textfassung (31.10.2026): der Kopf hat mehrere Absätze und eine Zweierliste
+   (Ziffern wie .step-num), eine Projekt-Karte zwei Absätze, hervorgehobene Begriffe stehen in Textfarbe */
+.statement-more p + p, .statement-more p + .statement-liste { margin-top: 16px; }
+.statement-liste { list-style: none; display: grid; gap: 8px; counter-reset: kernaufgabe; }
+.statement-liste li { display: grid; grid-template-columns: 2.4em 1fr; counter-increment: kernaufgabe; }
+.statement-liste li::before {
+  content: counter(kernaufgabe, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: var(--fs-caption);
+  color: var(--accent);
+  padding-top: 5px;
+}
+.statement-more strong, .step-row p strong, .prose strong { color: var(--text); font-weight: 600; }
+.creed-say + .creed-say { margin-top: 12px; }
+
 /* Partnerzugang: Sprungknopf zum Anmeldekasten unten auf der Seite */
 .statement-aktion { margin-top: 32px; }
 

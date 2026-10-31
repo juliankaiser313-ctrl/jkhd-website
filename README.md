@@ -10,8 +10,9 @@ Deutsch in der Wurzel, Englisch unter `/en/`.
 ```
 index.html         Startseite: Hero mit Marken-Lockup und zwei Knöpfen auf der Bühne der Universum-Animation (js/universum.js);
                    die Laufleiste ist seit 10.10.2026 weg
-was-wir-machen.html  Was wir machen: „Kurz gesagt“ (ein Satz, ein Absatz, Bäcker-Kasten), „Weg einer Idee“ (6 Schritte),
-                   „Sperren“ (4), Kontaktkasten
+was-wir-machen.html  Was wir machen (Julians Textfassung vom 31.10.2026, Wortlaut unverändert): Kopf (ein Satz, drei
+                   Absätze, Zweierliste, IP-Kasten), „Das Projekt“ (4 Karten), „Regeln der Firmen“ (6), „Weg einer
+                   Idee“ (6), „Fail-Safe & Sicherheit“ (4 Karten), „Risikoprofil“, Kontaktkasten
 system.html        Die Grundarten — als Animation beim Scrollen (js/bildlauf.js + js/bilder-system.js): acht Grundarten
                    automatischer Handelssysteme, je ein Bild, das den Mechanismus und den Haken zeigt, dazu
                    „Und bei uns?“; je Bild zwei Sätze (11.10.2026; die Textfassung vom 23.09.2026 liegt in der Git-Historie)
@@ -212,6 +213,16 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **„Was wir machen“ komplett in Julians Textfassung** (31.10.2026, Stempel 20261031f): Julian lieferte beide Texte
+  als Dateien (`was_wir_machen_jkhd.md`, `what_we_do_jkhd.md`; Kopien in `JKHD-Pruefwerkzeuge/was-wir-machen/quellen/`):
+  „ändere den Text in das, was hier steht … verpacke es schön, damit es gut aussieht, aber ändere nicht den Text.“
+  Wortlaut unverändert übernommen (zwei Tippfehler korrigiert: „Tikebene“ → „Tickebene“, „Handeltag“ → „Handelstag“).
+  Verpackung: Kopf als `.statement` mit Absätzen und Zweierliste (`.statement-liste`), IP-Kasten als `.note`, „Das
+  Projekt“ und „Fail-Safe & Sicherheit“ als `.creed`-Karten, „Regeln der Firmen“ und „Weg einer Idee“ als `.steps`,
+  „Risikoprofil“ als `.section-head` + `.prose`; seine Überschriften sind die Abschnittstitel (ohne Kicker). Damit
+  ersetzt: Bäcker-Kasten, Annahme-Kasten, „Sperren“ und „Wie groß ist das Risiko?“ (Fassung in der Git-Historie,
+  c142fa8). Beschreibungen (meta/og) aus seinen Sätzen gekürzt. Patch `JKHD-Pruefwerkzeuge/patch_was_wir_machen_text.py`,
+  Fotos `fotos/was-wir-machen/neu-*`.
 - **Abschnitt „Wie groß ist das Risiko?“** (31.10.2026, Stempel 20261031e): Julian: „JKHD wird oft gefragt, wie
   hoch das Risiko ist …“ (vollständig unter Herkunft); auf was-wir-machen.html + en/what-we-do.html nach den
   Sperren, `.section-head` + `.prose`, Anker `#risiko`; die Sätze auf seinen Wunsch geglättet, Inhalt seiner.
@@ -559,6 +570,14 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
   deren Verträgen und Regelseiten (ohne Firmennamen, ohne deren Zahlen); die Aussagen über das System
   (Prüfung vor jedem Einstieg, eine Richtung je Markt, Glattstell-Fenster, Auszahlungsgründe, AGB-Wächter)
   sind aus dem Quelltext des Systems belegt — Prinzip, kein Bauplan.
+- **Was wir machen (Textfassung 31.10.2026):** beide Seiten Wort für Wort aus Julians Dateien `was_wir_machen_jkhd.md`
+  und `what_we_do_jkhd.md` (Kopien in `JKHD-Pruefwerkzeuge/was-wir-machen/quellen/`). Meine Anteile: die Verpackung,
+  der Kicker „// Was wir machen“, die Nummern 01–06 der Schritte und Karten, geschützte Leerzeichen, typografische
+  Anführungszeichen, die beiden Tippfehler-Korrekturen und die Beschreibungen (meta/og). Die Aussagen über das System
+  sind seine; nicht aus dem Quelltext belegt sind: Trailing-Drawdown „auf Tickebene“ (die Engine rechnet je Bar),
+  Glattstellen „vor News-Events“, „Automatischer Ausschluss von Latency-Arbitrage … Mikrokontrakten“ (das System
+  handelt selbst einen Micro-Future), dynamische Drosselung der Positionsgröße nach Konsistenzklausel (geprüft wird
+  an der Auszahlung), Startverweigerung bei fehlender Risikogrenze (der Deckel für offenes Risiko ist optional).
 - **Risiko (Was wir machen):** Julian, 31.10.2026: „JKHD wird oft gefragt, wie hoch das Risiko ist, und auch
   behauptet, dass das Risiko enorm sei. Das hört sich erstmal logisch an und klingt vielleicht bestätigend, ist
   aber ein klassischer Fehler. JKHD kennt jedes einzelne Risiko in jeder Millisekunde bis in die kleinsten
