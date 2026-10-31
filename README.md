@@ -8,7 +8,7 @@ Deutsch in der Wurzel, Englisch unter `/en/`.
 ## Struktur
 
 ```
-index.html         Startseite: Hero mit Überschrift in der Grotesk, dem Zeichen (drei Balken, 78 px) und zwei Knöpfen auf der Bühne der
+index.html         Startseite: Hero mit Überschrift in der Grotesk, dem Zeichen (drei Balken, 104 px) und zwei Knöpfen auf der Bühne der
                    Universum-Animation (js/universum.js; das Marken-Lockup im Hero ist seit 31.10.2026 weg);
                    die Laufleiste ist seit 10.10.2026 weg
 was-wir-machen.html  Was wir machen (Julians Textfassung vom 31.10.2026, Wortlaut unverändert): Kopf (ein Satz, drei
@@ -214,7 +214,7 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
-- **Startseite, Hero nach Julians Vorgaben** (31.10.2026, Stempel 20261031j): er reichte eine Gestaltungsbewertung
+- **Startseite, Hero nach Julians Vorgaben** (31.10.2026, Stempel 20261031k): er reichte eine Gestaltungsbewertung
   mit drei Punkten ein. (1) Die Hauptüberschrift „Quantitative Systeme.“ steht jetzt in der Hausschrift Manrope
   (`.hero-voll h1`: var(--sans), 700, -0.035em) statt in der Serife — nur der volle Hero der Startseite (DE/EN), die
   404-Seite und alle Seitentitel bleiben in der Serife. (2) Das Marken-Lockup unter der Überschrift ist weg („doppelt
@@ -223,7 +223,9 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Julian danach: „es fehlt jetzt irgendwie das Logo“ — seitdem stehen die drei Balken allein (ohne Wortmarke,
   `.hero-zeichen`, 52 px = das Doppelte der Kopfzeile) zwischen Überschrift und Spruch; universum.js tastet sie
   mit ab (Patch `patch_startseite_zeichen.py`). Nach dem Live-Blick dann: „der Spruch wieder weg und dafür das
-  Logo nochmal 50 % größer“ — Spruch raus, Zeichen 78 px (Patch `patch_startseite_zeichen_gross.py`).
+  Logo nochmal 50 % größer“ — Spruch raus, Zeichen 78 px (Patch `patch_startseite_zeichen_gross.py`). Und nach
+  dem nächsten Live-Blick: „die Striche noch etwas größer“ — Zeichen 104 px, das Vierfache der Kopfzeile, Abstände
+  unverändert (Patch `patch_startseite_zeichen_groesser.py`).
   (3) Favicon: war bereits eingebunden (favicon.ico/.svg/-96/-192, apple-touch-icon; live 200) — keine Änderung.
   Patch `JKHD-Pruefwerkzeuge/patch_startseite_hero.py`, Fotos `fotos/startseite/`.
 - **„Unternehmen“ komplett in Julians Textfassung** (31.10.2026, Stempel 20261031g): Julian lieferte beide Texte
