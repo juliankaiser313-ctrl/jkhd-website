@@ -2305,6 +2305,15 @@ a.fs-karte:focus-visible { outline: 1px solid var(--text); outline-offset: -4px;
 .statement-more strong, .step-row p strong, .prose strong { color: var(--text); font-weight: 600; }
 .creed-say + .creed-say { margin-top: 12px; }
 
+/* Unternehmen in Julians Textfassung (31.10.2026): Listen im Profiltext (Marker in Akzentfarbe, Labels in
+   Textfarbe), das erste Label steht oben bündig mit dem Kasten „Auf einen Blick“ */
+.about-text .founder-subhead:first-child { margin-top: 0; }
+.about-text ul { margin: 12px 0 0 1.1em; list-style: disc; color: var(--muted); font-size: var(--fs-small); max-width: 60ch; }
+.about-text li + li { margin-top: 6px; }
+.about-text li::marker { color: var(--accent); }
+.about-text ul + p { margin-top: 16px; }
+.about-text strong { color: var(--text); font-weight: 600; }
+
 /* Partnerzugang: Sprungknopf zum Anmeldekasten unten auf der Seite */
 .statement-aktion { margin-top: 32px; }
 

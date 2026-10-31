@@ -29,9 +29,9 @@ simulation.html    Spiel „Sie gegen den JKHD-Algo“ (27.09.2026): erfundener 
 mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
 zertifikate.html   Seit 31.10.2026: Urkunden der Firmen (FundedNext Futures „Rising Trader“, Lucid Trading
                    „Lucid Funded Account“), je eine Karte mit Bild und Fakten; Bilder in assets/zertifikate.
-unternehmen.html   Seit 26.09.2026 ohne altes Angebot: Julians Satz als Überschrift, Profil +
-                   Auf einen Blick, „Was JKHD nicht tut", Austausch, 4 Grundsätze (.creed),
-                   Gründer, Kontakt; die leeren Bildkästen („Einblicke") sind weg
+unternehmen.html   Unternehmen (Julians Textfassung vom 31.10.2026, Wortlaut unverändert): Kopf, „Profil“ (vier
+                   Labels: Gebaut aus eigenem Bedarf, Name, Regulatorische Abgrenzung, Fachlicher Austausch;
+                   daneben „Auf einen Blick“), „Grundsätze“ (4 Karten), „Der Gründer“, Kontaktkasten
 kontakt.html       Drei Kacheln (kontakt@ / service@ / info@) + Partnerzugang (siehe unten)
 partnerzugang.html Partnerzugang als eigene Seite (26.09.2026): wofür, Mindestvoraussetzungen,
                    unten derselbe Anmeldekasten; im Menü hinter dem Knopf (breit) bzw. in
@@ -213,6 +213,15 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **„Unternehmen“ komplett in Julians Textfassung** (31.10.2026, Stempel 20261031g): Julian lieferte beide Texte
+  als Dateien (`unternehmen_de.md`, `company_en.md`; Kopien in `JKHD-Pruefwerkzeuge/unternehmen/quellen/`): „und das
+  bei Unternehmen bitte ersetzen“. Wortlaut unverändert (zwei Tippfehler korrigiert: „Propriatäre“ → „Proprietäre“,
+  „; Autorisierte Partner“ → „; autorisierte Partner“). Verpackung: Kopf `.page-head`, „Profil“ als `.about` mit
+  seinen vier H3 als `.founder-subhead`-Labels, Dreierliste und Abgrenzungsliste als `ul`, seine Tabelle „Auf einen
+  Blick“ als `.about-facts`; „Grundsätze“ `.creed`, „Der Gründer“ `.founder-card`; Überschriften ohne Kicker; Links
+  auf Kontaktformular/Partnerzugang sind Verpackung. Weg: der Hinweis-Kasten auf Prüfungen/Sicherheit (alte Fassung
+  in der Git-Historie, b32fdb9). Beschreibungen (meta/og) aus seinen Sätzen gekürzt, Sitemap lastmod. Patch
+  `JKHD-Pruefwerkzeuge/patch_unternehmen_text.py`, Fotos `fotos/unternehmen/`.
 - **„Was wir machen“ komplett in Julians Textfassung** (31.10.2026, Stempel 20261031f): Julian lieferte beide Texte
   als Dateien (`was_wir_machen_jkhd.md`, `what_we_do_jkhd.md`; Kopien in `JKHD-Pruefwerkzeuge/was-wir-machen/quellen/`):
   „ändere den Text in das, was hier steht … verpacke es schön, damit es gut aussieht, aber ändere nicht den Text.“
@@ -538,9 +547,12 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
   die Seite vom 24.09.2026, gekürzt; Prinzip statt Bauplan (keine Pfade, Formate, Orte).
 - **System:** Julian, 11.10.2026: „bei System auch sowas machen — dort eher weniger Text und
   eher mehr Animation.“ Texte: die Seite vom 23.09.2026, gekürzt; keine Anleitung, nur die Idee.
-- **Unternehmen:** Die Überschrift ist Julians eigener Satz vom 19.09.2026 (Kehrtwende: JKHD
-  verkauft nichts). Seit 26.09.2026 ohne das alte Angebot (Kunden, Leistungen, Aufträge) und
-  ohne die leeren Bildkästen.
+- **Unternehmen (Textfassung 31.10.2026):** beide Seiten Wort für Wort aus Julians Dateien `unternehmen_de.md` und
+  `company_en.md` (Kopien in `JKHD-Pruefwerkzeuge/unternehmen/quellen/`). Meine Anteile: die Verpackung, der
+  Kicker „// Unternehmen“, die Nummern 01–04 der Karten, die Initialen-Auszeichnung des Namens wie in der Marke,
+  die Links, geschützte Leerzeichen, die beiden Tippfehler-Korrekturen und die Beschreibungen (meta/og). Davor:
+  Überschrift Julians Satz vom 19.09.2026 (Kehrtwende: JKHD verkauft nichts); seit 26.09.2026 ohne das alte
+  Angebot (Kunden, Leistungen, Aufträge) und ohne die leeren Bildkästen.
 - **Der Name (alle Marken, Unternehmen/Company):** Julian, 31.10.2026: „JKHD bedeutet Just Know How to
   Dominate.“ Der Satz „JKHD steht für Just Know How to Dominate.“ / „JKHD stands for …“ und die Zeile „Name“
   in „Auf einen Blick“ sind sein Wortlaut, nichts dazu erfunden; in der Marke sind seither die
