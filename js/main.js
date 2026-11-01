@@ -14,6 +14,9 @@ const T = (de, en) => (IST_EN ? en : de);
 // Der Knopf steht im Markup hinter der Navigation; damit Tab nach dem Oeffnen
 // ins Menue fuehrt und nicht in den Seiteninhalt, bekommt der erste Punkt den
 // Fokus (Vollpruefung 11.10.2026).
+// Solange das Menue offen ist, traegt <html> die Klasse menue-offen: unter 1141 px steht die Seite
+// dahinter still und die Fragen-Blase ist weg (style.css); --menue-rand ersetzt die Rollleiste, die mit
+// overflow:hidden verschwindet, damit nichts springt (am Handy 0). Julian, 01.11.2026.
 const navToggle = document.querySelector(".nav-toggle");
 const siteNav = document.querySelector(".site-nav");
 
@@ -22,6 +25,8 @@ if (navToggle && siteNav) {
   navToggle.setAttribute("aria-controls", siteNav.id);
   const zeigen = (auf, fokus) => {
     siteNav.classList.toggle("open", auf);
+    if (auf) document.documentElement.style.setProperty("--menue-rand", (window.innerWidth - document.documentElement.clientWidth) + "px");
+    document.documentElement.classList.toggle("menue-offen", auf);
     navToggle.setAttribute("aria-expanded", String(auf));
     navToggle.setAttribute("aria-label", auf ? T("Menü schließen", "Close menu") : T("Menü öffnen", "Open menu"));
     if (auf && fokus) {
@@ -54,11 +59,12 @@ if (navToggle && siteNav) {
     zeigen(!siteNav.classList.contains("open"), e.detail === 0);
   });
 
-  // Ein Klick auf einen Menuepunkt schliesst das Feld. Bei einem Sprung auf
+  // Ein Klick auf einen Menuepunkt schliesst das Feld, auch auf „KI Fragen“ (der
+  // Punkt oeffnet danach die Blase, siehe Assistent unten). Bei einem Sprung auf
   // derselben Seite (Anker) bliebe es sonst offen stehen und
   // verdeckte unterhalb von 1141 px genau das Ziel.
   siteNav.addEventListener("click", (e) => {
-    if (e.target.closest("a[href]")) zeigen(false);
+    if (e.target.closest("a[href], .nav-ki")) zeigen(false);
   });
 
   document.addEventListener("click", () => {
@@ -321,10 +327,12 @@ if (siteHeader) {
   // Beschreibung des Felds fuer Bildschirmleser. Der Knopf traegt
   // einen eigenen Namen: auf dem Handy ist sein Text ausgeblendet (style.css),
   // und display:none zaehlt fuer den Namen nicht mit.
+  // Das Symbol der Blase, auch fuer den Menuepunkt „KI Fragen“ (unten)
+  const SYMBOL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.6a8.2 8.2 0 0 1-8.8 8.2 8.6 8.6 0 0 1-3.1-.7L3.5 20.5l1.4-5a8.2 8.2 0 0 1-.9-3.7 8.2 8.2 0 0 1 8.2-8.2h.5a8.2 8.2 0 0 1 7.8 7.8z"/><path d="M10.2 9.6a1.9 1.9 0 0 1 3.7.6c0 1.3-1.9 1.9-1.9 1.9"/><path d="M12 15.4h.01"/></svg>';
   const html = `
     <button class="helper-btn" type="button" aria-expanded="false" aria-controls="helper-panel"
             aria-label="${T("Fragen und KI-Assistent", "Questions and AI assistant")}">
-      <span class="helper-btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.6a8.2 8.2 0 0 1-8.8 8.2 8.6 8.6 0 0 1-3.1-.7L3.5 20.5l1.4-5a8.2 8.2 0 0 1-.9-3.7 8.2 8.2 0 0 1 8.2-8.2h.5a8.2 8.2 0 0 1 7.8 7.8z"/><path d="M10.2 9.6a1.9 1.9 0 0 1 3.7.6c0 1.3-1.9 1.9-1.9 1.9"/><path d="M12 15.4h.01"/></svg></span>
+      <span class="helper-btn-icon" aria-hidden="true">${SYMBOL}</span>
       <span class="helper-btn-text">${T("Fragen", "Questions")}</span>
     </button>
     <div class="helper-panel" id="helper-panel" role="dialog" aria-modal="false" tabindex="-1"
@@ -369,6 +377,20 @@ if (siteHeader) {
   wrap.className = "helper";
   wrap.innerHTML = html;
   document.body.appendChild(wrap);
+
+  // „KI Fragen“ im Handy-Menue (Julian, 01.11.2026: solange das Menue offen ist, soll die Blase weg sein
+  // und dafuer ein Punkt im Menue stehen, der dasselbe tut wie die Blase). Der Punkt kommt vor
+  // Impressum/Datenschutz; auf breiten Schirmen blendet style.css ihn aus (.nav-ki), dort bleibt die Blase.
+  const navKi = (() => {
+    const prefs = document.querySelector(".site-nav .nav-prefs");
+    if (!prefs) return null;
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "nav-ki";
+    b.innerHTML = `<span class="nav-ki-icon" aria-hidden="true">${SYMBOL}</span><span>${T("KI Fragen", "AI questions")}</span>`;
+    prefs.insertBefore(b, prefs.querySelector(".nav-legal"));
+    return b;
+  })();
 
   const btn = wrap.querySelector(".helper-btn");
   const panel = wrap.querySelector(".helper-panel");
@@ -716,6 +738,10 @@ if (siteHeader) {
 
   btn.addEventListener("click", () => oeffnen(!wrap.classList.contains("is-open")));
   close.addEventListener("click", () => oeffnen(false));
+  // Der Menuepunkt: das Menue schliesst sich durch seinen eigenen Zuhoerer waehrend desselben Klicks
+  // (Navigation oben); die Blase oeffnet sich einen Takt spaeter -- dann ist sie wieder sichtbar und kann
+  // den Fokus nehmen, und der Dokument-Zuhoerer unten (schliesst bei Klick daneben) sieht sie noch zu.
+  if (navKi) navKi.addEventListener("click", () => requestAnimationFrame(() => oeffnen(true)));
 
   // Der angeklickte Knopf verschwindet beim Neuaufbau -- damit die Tastatur
   // nicht im Nichts landet, bekommt der Gegenknopf den Fokus: in der Antwort

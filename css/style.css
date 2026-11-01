@@ -346,6 +346,14 @@ abbr.brand-word { text-decoration: none; cursor: inherit; }
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-3);
   padding: 12px 28px 16px;
+  /* Handy-Menue (Julian, 01.11.2026): das Menue ist hoeher als mancher Schirm (761 px bei 15 Zeilen;
+     iPhone SE 667 px) und haengt an der klebenden Kopfzeile -- es rollt deshalb in sich; die Seite
+     dahinter steht still, solange es offen ist (html.menue-offen, weiter unten). Wer dvh nicht kennt,
+     nimmt die vh-Zeile. */
+  max-height: calc(100vh - var(--header-h));
+  max-height: calc(100dvh - var(--header-h));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   /* gleitet auf und zu (Loop 2, A4): unsichtbar = nicht fokussierbar, nicht klickbar */
   visibility: hidden;
   opacity: 0;
@@ -392,6 +400,47 @@ abbr.brand-word { text-decoration: none; cursor: inherit; }
    mit einem Tipp erreichbar sein (Vollpruefung 11.10.2026). */
 .nav-legal { font-size: var(--fs-caption); font-weight: 500; }
 .nav-nur-breit { display: none; }   /* nur im Klappfeld breiter Schirme */
+
+/* „KI Fragen“ im Handy-Menue (Julian, 01.11.2026): solange das Menue offen ist, ist die Fragen-Blase
+   weg, und dafuer steht hier ein Punkt, der dasselbe tut wie die Blase (js/main.js legt ihn an, vor
+   Impressum/Datenschutz). Eine Zeile wie die Seitenlinks, mit dem Symbol der Blase; auf breiten Schirmen
+   (ab 1141 px, dort bleibt die Blase) ausgeblendet. */
+.nav-ki {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--t-kurz) var(--ease);
+}
+.nav-ki:hover { color: var(--text); }
+.nav-ki:active { opacity: 0.7; transition-duration: 0.08s; }
+.nav-ki-icon { display: flex; }
+.nav-ki-icon svg { width: 17px; height: 17px; display: block; }
+
+/* Offenes Handy-Menue: die Seite dahinter steht still (kein Rollen, keine Touch-Geste auf der Seite; der
+   Rand ersetzt eine Rollleiste, die mit overflow:hidden verschwindet, am Handy 0), und die Fragen-Blase ist
+   ausgeblendet -- sie stand ueber den unteren Menuezeilen (gemessen 01.11.2026: Blase 748-796 px, Menue bis
+   835 px bei 812 px Hoehe). Ab 1141 px gilt nichts davon: dort ist das Menue ein kleines Klappfeld. */
+@media (max-width: 1140px) {
+  html.menue-offen { overflow: hidden; touch-action: none; padding-right: var(--menue-rand, 0px); }
+  html.menue-offen .helper {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--t-kurz) var(--ease), visibility 0s linear var(--t-kurz);
+  }
+}
 
 /* Beide als eigene Punkte: links die Beschriftung wie bei den uebrigen
    Eintraegen, rechts die Segmente. */
@@ -1369,6 +1418,8 @@ abbr.brand-word { text-decoration: none; cursor: inherit; }
     transform: none;
     pointer-events: auto;
     transition: none;
+    max-height: none;      /* das Rollen in sich gilt nur dem Handy-Menue */
+    overflow: visible;
 
     /* Der freie Platz sammelt sich links: Marke bleibt am linken Rand,
        die Leiste steht als Block unmittelbar vor dem Menueknopf. */
@@ -1421,6 +1472,7 @@ abbr.brand-word { text-decoration: none; cursor: inherit; }
      die Startseite; auf dem Handy steht der Punkt oben in der Liste. */
   .nav-nur-schmal { display: none; }
   .nav-nur-breit { display: block; }
+  .nav-ki { display: none; }   /* die Blase bleibt, der Punkt „KI Fragen“ ist nur fuers Handy-Menue */
 
   /* Im Feld braucht die letzte Zeile keine Trennlinie */
   .nav-prefs > :last-child { border-bottom: none; padding-bottom: 4px; }
@@ -1507,6 +1559,8 @@ html:not(.js) .nav-toggle, html:not(.js) .nav-theme { display: none; }
   flex-direction: column-reverse;
   align-items: flex-end;
   gap: 12px;
+  /* blendet aus und wieder ein, wenn das Handy-Menue auf- und zugeht (html.menue-offen) */
+  transition: opacity var(--t-kurz) var(--ease), visibility 0s;
 }
 
 .helper-btn {

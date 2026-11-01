@@ -214,6 +214,18 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Handy-Menü: rollt in sich, Seite steht still, „KI Fragen“ statt Blase** (01.11.2026, Stempel 20261101a):
+  Julian am Handy: „wenn ich oben aufs Menü drücke, ist erstens die KI-Frageblase im Weg, und wenn ich
+  runterscrolle, scrollt der Hintergrund, aber nicht die Menüleiste“ (Wortlaut unter Herkunft). Gemessen: das
+  Menü ist 761 px hoch und hängt an der klebenden Kopfzeile — bei 375 × 812 lag der Kontakt-Knopf unter dem
+  Rand (818 px), auf einem iPhone SE (667 px) fehlten 165 px, und die Blase (748–796 px) stand über den unteren
+  Zeilen. Seither: `.site-nav` unter 1141 px mit `max-height: calc(100dvh − Kopfzeile)` und `overflow-y: auto`
+  (rollt in sich); solange das Menü offen ist, trägt `<html>` die Klasse `menue-offen` — die Seite dahinter
+  steht still (`overflow: hidden`, `touch-action: none`, `--menue-rand` ersetzt eine verschwindende Rollleiste)
+  und die Blase ist ausgeblendet. Dafür legt js/main.js im Menü vor Impressum/Datenschutz den Punkt
+  „KI Fragen“ / „AI questions“ an (`.nav-ki`, Symbol der Blase): ein Tipp schließt das Menü und öffnet die
+  Blase wie der Knopf unten rechts. Ab 1141 px ändert sich nichts (Klappfeld, Blase bleibt, Punkt
+  ausgeblendet). Patch `JKHD-Pruefwerkzeuge/patch_menue_handy.py`, Fotos `fotos/menue/`.
 - **Startseite, Hero nach Julians Vorgaben** (31.10.2026, Stempel 20261031k): er reichte eine Gestaltungsbewertung
   mit drei Punkten ein. (1) Die Hauptüberschrift „Quantitative Systeme.“ steht jetzt in der Hausschrift Manrope
   (`.hero-voll h1`: var(--sans), 700, -0.035em) statt in der Serife — nur der volle Hero der Startseite (DE/EN), die
@@ -566,6 +578,13 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
   die Überschrift, Lockup im Hero weg, stattdessen Slogan oder kurze Beschreibung). Der Spruch der Fußzeile
   („Nirgends und doch überall.“ / „Nowhere and yet everywhere.“) stand kurz im Hero (Stempel 20261031i) und ist
   auf Julians Wunsch wieder weg; im Hero stehen Überschrift, Zeichen und Knöpfe.
+- **Handy-Menü und „KI Fragen“ (01.11.2026):** Julian: „wenn ich auf der Handy-Version oben auf die 3 Striche
+  drücke, also aufs Menü, dann ist erstens die KI-Frageblase im Weg, und wenn ich runterscrolle, dann scrollt
+  der Hintergrund, aber nicht die Menüleiste — kannst du erstens das verbessern; und sobald man nur auf dem
+  Handy das Menü öffnet, soll dort die KI-Frageblase verschwinden und ein zusätzlicher Punkt im Menü dafür
+  erscheinen, auf dem steht ‚KI Fragen‘. Wenn man dann auf den drückt, ist das, wie wenn man auf die KI-Blase
+  jetzt drückt, aber dieser weiße Kasten erscheint nicht, wenn das Menü auf dem Handy offen ist.“ Der Punkt
+  heißt „KI Fragen“ (sein Wortlaut); die englische Fassung „AI questions“ ist nicht von ihm.
 - **Unternehmen (Textfassung 31.10.2026):** beide Seiten Wort für Wort aus Julians Dateien `unternehmen_de.md` und
   `company_en.md` (Kopien in `JKHD-Pruefwerkzeuge/unternehmen/quellen/`). Meine Anteile: die Verpackung, der
   Kicker „// Unternehmen“, die Nummern 01–04 der Karten, die Initialen-Auszeichnung des Namens wie in der Marke,
