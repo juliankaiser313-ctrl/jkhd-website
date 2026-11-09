@@ -3600,6 +3600,10 @@ html:not(.js) .sp { display: none; }
 .zert-meta dt { color: var(--muted); }
 .zert-meta dd { color: var(--text); }
 .zert-breit { grid-column: 1 / -1; max-width: 900px; }
+/* Kennung einer Urkunde (zweite Lucid-Urkunde, 09.11.2026) in der Mono-Schrift wie die Kicker. Bei Grundschrift
+   in einer Zeile, auch in der schmalsten zweispaltigen Karte (340 px bei 800, 1164 und 1528 px Fensterbreite:
+   Wertspalte 194,7 px, Kennung 182,8 px + Komma); bei groesserer Schrift bricht sie an einem Bindestrich um. */
+.zert-code { font-family: var(--mono); font-size: var(--fs-caption); }
 @media (max-width: 560px) {
   .zert-meta { grid-template-columns: 1fr; gap: 2px; }
   .zert-meta dd { margin-bottom: 8px; }

@@ -29,7 +29,8 @@ simulation.html    Spiel „Sie gegen den JKHD-Algo“ (27.09.2026): erfundener 
                    starten mit 100.000 $, wer zuerst 1.000.000 $ hat, gewinnt (siehe unten)
 mathematik.html    Verfahren und Formeln, je mit Nutzen und Fallstrick
 zertifikate.html   Seit 31.10.2026: Urkunden der Firmen (FundedNext Futures „Rising Trader“, Lucid Trading
-                   „Lucid Funded Account“), je eine Karte mit Bild und Fakten; Bilder in assets/zertifikate.
+                   „Lucid Funded Account“ vom 16.09. und „Funded Account“ vom 09.11.2026), je eine Karte mit
+                   Bild und Fakten; Bilder in assets/zertifikate.
 unternehmen.html   Unternehmen (Julians Textfassung vom 31.10.2026, Wortlaut unverändert): Kopf, „Profil“ (vier
                    Labels: Gebaut aus eigenem Bedarf, Name, Regulatorische Abgrenzung, Fachlicher Austausch;
                    daneben „Auf einen Blick“), „Grundsätze“ (4 Karten), „Der Gründer“, Kontaktkasten
@@ -214,6 +215,15 @@ Eigene Seite `simulation.html` / `en/simulation.html`, im Menü nach
   Ergebnis (beim ersten Sieg seit dem Öffnen der Seite die Zahl der Partien)
   und – nach einem Sieg mit Eintrag – Spitzname, Spielzeit, Spielnummer und
   Tempo, wie auf `simulation.html` und in `datenschutz.html` beschrieben.
+- **Zertifikate: zweite Lucid-Urkunde** (09.11.2026, Stempel 20261109a): Julian schickte das Bild aus seinen
+  Downloads („Kannst du … das auch bei Zertifikate Hinzufügen ?“; Wortlaut unter Herkunft). Lucid Trading „Funded
+  Account — Evaluation completed by Julian Kaiser“, Account Type LucidPro 25K, 2026-11-09, unter dem QR-Code die
+  Kennung YCZC-RND3-FCPN-TNX1-0H1G. Dritte Karte im Raster, direkt nach der ersten Lucid-Urkunde (16.09.2026), DE und
+  EN gleich gebaut, die Kennung in der Mono-Schrift (`.zert-code`; passt auch in die schmalste zweispaltige Karte
+  von 340 px in eine Zeile, bricht bei größerer Schrift an einem Bindestrich um). Bild neu kodiert wie die erste
+  Lucid-Urkunde (JPEG 85, 1500 × 1075, ohne Metadaten): `assets/zertifikate/lucid-funded-account-lucidpro-25k-2026-11-09.jpg`.
+  Sitemap-Datum beider Seiten 09.11. Patch `JKHD-Pruefwerkzeuge/patch_zertifikat_lucid2.py`, Quelle
+  `zertifikate/quellen`, Fotos `fotos/zertifikate-lucid2`.
 - **Handy-Menü: rollt in sich, Seite steht still, „KI Fragen“ statt Blase** (01.11.2026, Stempel 20261101a):
   Julian am Handy: „wenn ich oben aufs Menü drücke, ist erstens die KI-Frageblase im Weg, und wenn ich
   runterscrolle, scrollt der Hintergrund, aber nicht die Menüleiste“ (Wortlaut unter Herkunft). Gemessen: das
@@ -648,6 +658,10 @@ in den Seiten (Vollprüfung 11.10.2026, Bericht „interne-html-kommentare-oeffe
   die Tradesyncer-Karte aus seinen Downloads („das hier“; Jahr 2026 aus dem Dateidatum 29.10.2026). Alle Angaben
   auf den Karten stehen so auf Urkunde bzw. Karte; Überschriften, Einleitungen, die Erklärung „das finanzierte
   Konto nach bestandener Prüfung“ und der Satz, dass die Zahlen die der Plattform sind, sind meine Formulierung.
+  Julian, 09.11.2026: „Kannst du rest-86696135bea4c010c6c3f43fb9269e5e-kw7xtbju das auch bei Zertifikate
+  Hinzufügen ?“ — das Bild dieses Namens aus seinen Downloads, die zweite Lucid-Urkunde (Funded Account,
+  LucidPro 25K, 2026-11-09). Der QR-Code ist nicht ausgelesen und nichts ist nach außen verlinkt; die Kennung
+  steht als Text auf der Karte, so wie sie unter dem QR-Code gedruckt ist.
 - **Impressum, zweiter Kontaktweg:** Neben der E-Mail verlangt § 5 Abs. 1 Nr. 2 DDG (EuGH
   C-298/07) einen zweiten schnellen Kontaktweg; das ist der Knopf „Anfrage“ im Kasten
   `#partner` auf kontakt.html. Wer den Kasten dort entfernt oder verschiebt, muss den Verweis
